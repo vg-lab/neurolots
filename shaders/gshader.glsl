@@ -1,9 +1,10 @@
 /**
- * @author Juan José García Cantero
- * @version 0.1
-
- * @copyright Copyright (C) 2011-2015 GMRV - Human Brain Project
- * @license License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ * @file    gshader.glsl
+ * @brief
+ * @author  Juan JosÃ© GarcÃ­a <juanjosegarciacan@gmail.com>
+ * @date
+ * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
  */
 
 #version 440
@@ -22,14 +23,14 @@ uniform mat4 view;
 
 void main()
 {
-	normal = normalize(tePosition[0]-teCenter[0]);
-	gl_Position = gl_in[0].gl_Position; EmitVertex();
+  normal = normalize(tePosition[0]-teCenter[0]);
+  gl_Position = gl_in[0].gl_Position; EmitVertex();
 
-	normal = normalize(tePosition[1]-teCenter[1]);
-	gl_Position = gl_in[1].gl_Position; EmitVertex();
+  normal = normalize(tePosition[1]-teCenter[1]);
+  gl_Position = gl_in[1].gl_Position; EmitVertex();
 
-	normal = normalize(tePosition[2]-teCenter[2]);
-	gl_Position = gl_in[2].gl_Position; EmitVertex();
+  normal = normalize(tePosition[2]-teCenter[2]);
+  gl_Position = gl_in[2].gl_Position; EmitVertex();
 
-	EndPrimitive();
+  EndPrimitive();
 }

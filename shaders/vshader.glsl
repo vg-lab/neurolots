@@ -1,10 +1,10 @@
 /**
- * @author Juan Jos� Garc�a Cantero
- * @version 0.1
-
- * @copyright Copyright (C) 2011-2015 GMRV - Human Brain Project
- * @license License: http://www.gnu.org/licenses/gpl.html GPL version 2 or 
- * higher
+ * @file    vshader.glsl
+ * @brief
+ * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @date
+ * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
  */
 
 #version 440
@@ -28,14 +28,14 @@ uniform float maxDist;
 
 float levelDist( vec3 pos)
 {
-	return ( lod - 1 ) * clamp( ( 1.0 - length( pos - cameraPos ) / maxDist ), 0.0,
-	         1.0 ) + 1;
+  return ( lod - 1 ) * clamp( ( 1.0 - length( pos - cameraPos ) / maxDist ), 
+         0.0, 1.0 ) + 1;
 }
 
 void main( void )
 {
-	vPosition = inVertex + desp;
-	vCenter = inCenter + desp;
-	vTangent = inTangent;
-	vlot = levelDist( vCenter );
+  vPosition = inVertex + desp;
+  vCenter = inCenter + desp;
+  vTangent = inTangent;
+  vlot = levelDist( vCenter );
 }

@@ -1,9 +1,9 @@
 /**
- * @file 	NeuronMesh.h
+ * @file    NeuronMesh.h
  * @brief
- * @author 	Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjosegarciacan@gmail.com>
  * @date
- * @remarks	Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
@@ -36,38 +36,38 @@ class NeuronMesh {
 public:
 
 NeuronMesh( std::string & file_name, Program * _program, Camera * _camera,
-			Eigen::Vector3d _desp, Eigen::Vector3d _color );
-	~NeuronMesh( void );
+      Eigen::Vector3d _desp, Eigen::Vector3d _color );
+  ~NeuronMesh( void );
 
-	void Init( void );
-	void Paint( void );
-	void CreateLinesMesh( );
+  void Init( void );
+  void Paint( void );
+  void CreateLinesMesh( );
 
 
 
 private:
-	void Load( std::string & file_name );
-	void ReadOBJ( std::string & file_name );
-	void ReadMOBJ( std::string & file_name );
+  void Load( std::string & file_name );
+  void ReadOBJ( std::string & file_name );
+  void ReadMOBJ( std::string & file_name );
 
-	std::vector<float> vertices_;
-	std::vector<float> tangents_;
-	std::vector<float> centers_;
-	std::vector<unsigned int> mesh_;
-	std::vector<int> nodeIndices_;
+  std::vector<float> vertices_;
+  std::vector<float> tangents_;
+  std::vector<float> centers_;
+  std::vector<unsigned int> mesh_;
+  std::vector<int> nodeIndices_;
 
-	std::vector<float> verticesLine_;
-	std::vector<int> meshLine_;
+  std::vector<float> verticesLine_;
+  std::vector<int> meshLine_;
 
-	Program * program_;
-	Camera * camera_;
+  Program * program_;
+  Camera * camera_;
 
-	GLuint vao_;
-	GLuint * vbo_;
+  GLuint vao_;
+  GLuint * vbo_;
 
-	int size_;
-	std::vector<float> desp_;
-	std::vector<float> color_;
+  int size_;
+  std::vector<float> desp_;
+  std::vector<float> color_;
 
 };
 

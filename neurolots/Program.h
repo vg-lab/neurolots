@@ -1,9 +1,9 @@
 /**
- * @file 	Progam.h
+ * @file    Progam.h
  * @brief
- * @author 	Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjosegarciacan@gmail.com>
  * @date
- * @remarks	Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
@@ -24,73 +24,73 @@
 namespace neurolots
 {
 
-	class Program
-	{
+  class Program
+  {
 
-		public:
+    public:
 
-			Program( void );
-			~Program( void );
+      Program( void );
+      ~Program( void );
 
-			void Init( void );
+      void Init( void );
 
-			//Seters
-			void lod( float _lod );
-			void tng( float _tng );
-			void maxDist( float _maxDist );
+      //Seters
+      void lod( float _lod );
+      void tng( float _tng );
+      void maxDist( float _maxDist );
 
-			//Geters
-			GLuint id( void );
-			GLint inVertex( void );
-			GLint inCenter( void );
-			GLint inTangent( void );
-			GLuint vshader( void );
-			GLuint teshader( void );
-			GLuint tcshader( void );
-			GLuint fshader( void );
-			GLint uProy( void );
-			GLint uView( void );
-			GLint uModel( void );
-			GLint uColor( void );
-			GLint uCameraPos( void );
-			GLint uDesp( void );
-			GLint uLod( void );
-			GLint uTng( void );
-			GLint uMaxDist( void );
+      //Geters
+      GLuint id( void );
+      GLint inVertex( void );
+      GLint inCenter( void );
+      GLint inTangent( void );
+      GLuint vshader( void );
+      GLuint teshader( void );
+      GLuint tcshader( void );
+      GLuint fshader( void );
+      GLint uProy( void );
+      GLint uView( void );
+      GLint uModel( void );
+      GLint uColor( void );
+      GLint uCameraPos( void );
+      GLint uDesp( void );
+      GLint uLod( void );
+      GLint uTng( void );
+      GLint uMaxDist( void );
 
-			float lod( void );
-			float tng( void );
-			float maxDist(void);
+      float lod( void );
+      float tng( void );
+      float maxDist(void);
 
-		private:
+    private:
 
-			GLuint LoadShader( const char * fileName, GLenum type );
-			void ShaderInit( void );
+      GLuint LoadShader( const char * fileName, GLenum type );
+      void ShaderInit( void );
 
-			GLuint id_;
-			GLint inVertex_;
-			GLint inCenter_;
-			GLint inTangent_;
+      GLuint id_;
+      GLint inVertex_;
+      GLint inCenter_;
+      GLint inTangent_;
 
-			GLuint vshader_;
-			GLuint teshader_;
-			GLuint tcshader_;
-			GLuint fshader_;
+      GLuint vshader_;
+      GLuint teshader_;
+      GLuint tcshader_;
+      GLuint fshader_;
 
-			GLint uProy_;
-			GLint uView_;
-			GLint uModel_;
-			GLint uColor_;
-			GLint uCameraPos_;
-			GLint uDesp_;
-			GLint uLod_;
-			GLint uTng_;
-			GLint uMaxDist_;
+      GLint uProy_;
+      GLint uView_;
+      GLint uModel_;
+      GLint uColor_;
+      GLint uCameraPos_;
+      GLint uDesp_;
+      GLint uLod_;
+      GLint uTng_;
+      GLint uMaxDist_;
 
-			float maxDist_;
-			float lod_;
-			float tng_;
-	};
+      float maxDist_;
+      float lod_;
+      float tng_;
+  };
 
 }// end namespace neurolots
 
