@@ -12,6 +12,10 @@ cmake_minimum_required(VERSION 2.8)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
 
+#FIND NSOL
+find_package(nsol REQUIRED)
+include_directories(BEFORE SYSTEM ${NSOL_INCLUDE_DIRS}) 
+
 #FIND EIGEN 
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -60,8 +64,8 @@ endif(NOT GLUT_FOUND)
 
 
 
-add_executable(neurolots neurolots/Main.cpp) 
+add_executable(neurolots neurolots/Main.cpp neurolots/Program.cpp neurolots/Camera.cpp neurolots/NeuronMesh.cpp) 
 
-target_link_libraries(neurolots  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${NSOL_LINK_LIBRARIES} nsol)
-
+target_link_libraries(neurolots  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${NSOL_LIBRARIES})
+ 
 install(FILES README.md DESTINATION doc )
