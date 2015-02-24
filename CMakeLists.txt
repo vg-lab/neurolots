@@ -8,18 +8,21 @@
 project(neurolots)
 cmake_minimum_required(VERSION 2.8)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
 
 #FIND NSOL
 find_package(nsol REQUIRED)
-include_directories(BEFORE SYSTEM ${NSOL_INCLUDE_DIRS}) 
+include_directories(${NSOL_INCLUDE_DIRS}) 
 
 #FIND EIGEN 
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
-message(${EIGEN3_INCLUDE_DIR})
+
 
 #########################################################
 # FIND NVIDIA OPENGL
@@ -62,10 +65,11 @@ if(NOT GLUT_FOUND)
 message(ERROR " GLUT not found!")
 endif(NOT GLUT_FOUND)
 
+add_executable(neurolots neurolots/Main.cpp neurolots/Program.cpp 
+               neurolots/Camera.cpp neurolots/NeuronMesh.cpp 
+               neurolots/NeuronMeshGenerator.cpp ) 
 
-
-add_executable(neurolots neurolots/Main.cpp neurolots/Program.cpp neurolots/Camera.cpp neurolots/NeuronMesh.cpp) 
-
-target_link_libraries(neurolots  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${NSOL_LIBRARIES})
+target_link_libraries(neurolots  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} 
+                                 ${GLEW_LIBRARIES} ${NSOL_LIBRARIES})
  
 install(FILES README.md DESTINATION doc )

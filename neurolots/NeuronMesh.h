@@ -19,6 +19,7 @@
 //Neurolots
 #include "Program.h"
 #include "Camera.h"
+#include "NeuronMeshGenerator.h"
 
 //Eigen
 #include <Eigen/Dense>
@@ -33,41 +34,43 @@ namespace neurolots {
 
 class NeuronMesh {
 
-public:
+  public:
 
-NeuronMesh( std::string & file_name, Program * _program, Camera * _camera,
-      Eigen::Vector3d _desp, Eigen::Vector3d _color );
-  ~NeuronMesh( void );
+    NeuronMesh( std::string & file_name, Program * _program, Camera * _camera,
+              Eigen::Vector3d _desp, Eigen::Vector3d _color );
+    ~NeuronMesh( void );
 
-  void Init( void );
-  void Paint( void );
-  void CreateLinesMesh( );
+    void Init( void );
+    void Paint( void );
+    void CreateLinesMesh( );
 
 
 
-private:
-  void Load( std::string & file_name );
-  void ReadOBJ( std::string & file_name );
-  void ReadMOBJ( std::string & file_name );
+  private:
 
-  std::vector<float> vertices_;
-  std::vector<float> tangents_;
-  std::vector<float> centers_;
-  std::vector<unsigned int> mesh_;
-  std::vector<int> nodeIndices_;
+    void Load( std::string & file_name );
+    void ReadOBJ( std::string & file_name );
+    void ReadMOBJ( std::string & file_name );
 
-  std::vector<float> verticesLine_;
-  std::vector<int> meshLine_;
+    std::vector<float> vertices_;
+    std::vector<float> tangents_;
+    std::vector<float> centers_;
+    std::vector<unsigned int> mesh_;
+    std::vector<int> nodeIndices_;
 
-  Program * program_;
-  Camera * camera_;
 
-  GLuint vao_;
-  GLuint * vbo_;
+    Program * program_;
+    Camera * camera_;
 
-  int size_;
-  std::vector<float> desp_;
-  std::vector<float> color_;
+    GLuint vao_;
+    GLuint * vbo_;
+
+    GLuint _vaoLines;
+    GLuint * _vboLines;
+
+    int size_;
+    std::vector<float> desp_;
+    std::vector<float> color_;
 
 };
 

@@ -32,8 +32,6 @@ namespace neurolots
   {
     f_ = 1.0f / tan (fov_ * ( 3.141599f / 360.0f ));
 
-    std::cout << "calculo de la matriz de proyeccion f: " << f_ << std::endl;
-    std::cout << "ratio : "<< ratio_ << std::endl;
     proy_ << f_ / ratio_, 0.0f, 0.0f, 0.0f,
         0.0f, f_, 0.0f, 0.0f,
         0.0f, 0.0f,( farPlane_ + nearPlane_ ) / ( nearPlane_ - farPlane_ ),

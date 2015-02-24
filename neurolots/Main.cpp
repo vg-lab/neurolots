@@ -37,6 +37,8 @@ void sceneInit( void )
   glPolygonMode( GL_FRONT_AND_BACK , GL_FILL );
   glEnable( GL_CULL_FACE );
 
+  glLineWidth( 1.5 );
+
   mesh->Init();
 }
 
@@ -175,7 +177,7 @@ void resizeFunc( int w, int h )
 int main( int argc, char * argv[ ])
 {
   camera = new Camera( );
-  program = new Program( );
+  program = new Program( Program::LINES );
 
   if( argc == 2 )
   {
@@ -205,6 +207,8 @@ int main( int argc, char * argv[ ])
 
   glewExperimental = GL_TRUE;
   GLenum err = glewInit( );
+
+/*
   if( GLEW_OK != err )
   {
     std::cout << "Error: " << glewGetErrorString( err ) << std::endl;
@@ -212,6 +216,7 @@ int main( int argc, char * argv[ ])
   const GLubyte * oglVersion = glGetString( GL_VERSION );
   std::cout << "Este sistema soporta la Versión " << oglVersion << " de OpenGL."
             << std::endl;
+*/
 
   program->Init( );
   sceneInit( );

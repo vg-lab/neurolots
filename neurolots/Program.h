@@ -29,7 +29,14 @@ namespace neurolots
 
     public:
 
-      Program( void );
+      typedef enum
+      {
+        LINES = 0,
+        TRIANGLES,
+        QUADS
+      } TProgram;
+
+      Program( TProgram type_ = LINES );
       ~Program( void );
 
       void Init( void );
@@ -40,6 +47,7 @@ namespace neurolots
       void maxDist( float _maxDist );
 
       //Geters
+      TProgram type( void );
       GLuint id( void );
       GLint inVertex( void );
       GLint inCenter( void );
@@ -67,6 +75,8 @@ namespace neurolots
       GLuint LoadShader( const char * fileName, GLenum type );
       void ShaderInit( void );
 
+      TProgram _type;
+
       GLuint id_;
       GLint inVertex_;
       GLint inCenter_;
@@ -75,6 +85,7 @@ namespace neurolots
       GLuint vshader_;
       GLuint teshader_;
       GLuint tcshader_;
+      GLuint gshader_;
       GLuint fshader_;
 
       GLint uProy_;

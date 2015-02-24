@@ -1,5 +1,7 @@
 #include "NeuronMesh.h"
 
+using namespace std;
+
 namespace neurolots
 {
 
@@ -21,7 +23,20 @@ namespace neurolots
     color_[ 1 ]= _color.y( );
     color_[ 2 ]= _color.z( );
 
-    Load( file_name );
+    //Load( file_name );
+
+    if( ! file_name.compare( file_name.length( ) - 3, 3, "swc" ))
+    {
+      NeuronMeshGenerator nMeshGen( file_name.c_str( ));
+      nMeshGen.GenerateStructure( );
+      vertices_ = nMeshGen.Vertices( );
+      mesh_ = nMeshGen.Mesh( );
+    }
+    else
+    {
+      Load( file_name );
+    }
+
   }
 
   NeuronMesh::~NeuronMesh( void )
@@ -46,11 +61,17 @@ namespace neurolots
   {
     if ( file_name.length() < 5 ||
          file_name.compare( file_name.length( ) - 3, 3, "obj" ))
-      throw file_name + std::string( ": Bad format file" );
+    {
+      cout << file_name << ": Bad format file" << endl;
+      exit(1);
+    }
 
     std::ifstream inStream( file_name.c_str( ));
     if ( !inStream.is_open( ))
-      throw file_name + std::string( ": Error openning the file" );
+    {
+      cout << file_name << ": Error opennig the file" << endl;
+      exit(1);
+    }
 
     std::string line;
     while ( !inStream.eof( ))
@@ -91,12 +112,17 @@ namespace neurolots
 
     if ( file_name.length() < 6 ||
          file_name.compare( file_name.length( ) - 4, 4, "mobj" ))
-      throw file_name + std::string( ": Bad format file" );
+    {
+      cout << file_name << ": Bad format file" << endl;
+      exit(1);
+    }
 
     std::ifstream inStream( file_name.c_str( ));
     if ( !inStream.is_open( ))
-      throw file_name + std::string( ": Error openning the file" );
-
+    {
+      cout << file_name << ": Error opennig the file" << endl;
+      exit(1);
+    }
     std::string line;
     while( !inStream.eof( ))
     {
@@ -126,7 +152,7 @@ namespace neurolots
     }
     inStream.close();
 
-    for ( int i = 0; i < nodeIndices_.size( ); i++){
+    for ( unsigned int i = 0; i < nodeIndices_.size( ); i++){
       int id = nodeIndices_[ i ];
       tangents_.push_back( tangs[id].x( ));
       tangents_.push_back( tangs[id].y( ));
@@ -140,39 +166,64 @@ namespace neurolots
   void NeuronMesh::Init( void )
   {
     // VAO Generation
-    glGenVertexArrays( 1, &vao_ );
-    glBindVertexArray( vao_ );
+        glGenVertexArrays( 1, &vao_ );
+        glBindVertexArray( vao_ );
 
-    //VBOs Generation
-    vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );
-    glGenBuffers(4,vbo_);
+        size_ = mesh_.size( );
 
-    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 0 ]);
-    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
-                  &vertices_[0], GL_STATIC_DRAW );
-    glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( program_->inVertex() );
+    switch( program_->type( ))
+    {
+      case Program::LINES:
+        //VBOs Generation
+        vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 2 );
+        glGenBuffers(2,vbo_);
 
-    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
-    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers_.size( ),
-                  centers_.data( ), GL_STATIC_DRAW );
-    glVertexAttribPointer( program_->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( program_->inCenter() );
+        glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
+        glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
+                      vertices_.data( ), GL_STATIC_DRAW );
+        glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
+                               0 );
+        glEnableVertexAttribArray( program_->inVertex() );
 
-    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
-    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents_.size( ),
-                  tangents_.data( ), GL_STATIC_DRAW );
-    glVertexAttribPointer( program_->inTangent( ), 3, GL_FLOAT, GL_FALSE, 0,
-                           0 );
-    glEnableVertexAttribArray( program_->inTangent() );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[1]);
+        glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_,
+                      mesh_.data( ), GL_STATIC_DRAW );
+        break;
 
-    size_ = mesh_.size( );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_, &mesh_[0],
-                  GL_STATIC_DRAW );
+      case Program::TRIANGLES:
+        break;
 
+      case Program::QUADS:
+        vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );
+        glGenBuffers(4,vbo_);
 
-    std::cout << mesh_.size() / 4 << " facetas cargadas"<< std::endl;
+        glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
+        glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
+                      vertices_.data( ), GL_STATIC_DRAW );
+        glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
+                               0 );
+        glEnableVertexAttribArray( program_->inVertex() );
+
+        glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
+        glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers_.size( ),
+                      centers_.data( ), GL_STATIC_DRAW );
+        glVertexAttribPointer( program_->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0,
+                               0 );
+        glEnableVertexAttribArray( program_->inCenter() );
+
+        glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
+        glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents_.size( ),
+                      tangents_.data( ), GL_STATIC_DRAW );
+        glVertexAttribPointer( program_->inTangent( ), 3, GL_FLOAT, GL_FALSE, 0,
+                               0 );
+        glEnableVertexAttribArray( program_->inTangent() );
+
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
+        glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_,
+                      mesh_.data( ), GL_STATIC_DRAW );
+        break;
+
+    }
 
     glBindVertexArray( 0 );
   }
@@ -181,7 +232,6 @@ namespace neurolots
   {
     glUseProgram( program_->id( ));
 
-    glUniform3fv( program_->uCameraPos( ), 1, camera_->GetCameraPos( ));
     glUniform3fv( program_->uColor( ), 1, color_.data( ));
     glUniform3fv( program_->uDesp( ), 1, desp_.data());
 
@@ -191,44 +241,40 @@ namespace neurolots
     glUniformMatrix4fv( program_->uProy( ), 1, GL_FALSE,
                         camera_->GetProjectionMatrix( ));
 
-    float lod = program_->lod( );
-    float tng = program_->tng( );
-    float max = program_->maxDist( );
-
-    glUniform1fv( program_->uLod( ), 1, &lod);
-    glUniform1fv( program_->uTng( ), 1, &tng);
-    glUniform1fv( program_->uMaxDist( ), 1, &max);
-
     glBindVertexArray(vao_);
 
-    glPatchParameteri( GL_PATCH_VERTICES, 4 );
-    glDrawElements( GL_PATCHES, size_, GL_UNSIGNED_INT, 0 );
-  }
-
-  void NeuronMesh::CreateLinesMesh()
-  {
-    verticesLine_.clear( );
-    meshLine_.clear( );
-
-    int size = vertices_.size( );
-    for ( int i=0; i < size; i++ )
+    switch( program_->type() )
     {
-      verticesLine_.push_back( vertices_[ i ]);
-    }
-    for ( int i=0; i < size; i++ )
-    {
-      verticesLine_.push_back( centers_[ i ]);
+      case Program::LINES:
+        glDrawElements( GL_LINES, size_, GL_UNSIGNED_INT, 0);
+        break;
+
+      case Program::TRIANGLES:
+        break;
+
+      case Program::QUADS:
+        glUniform3fv( program_->uCameraPos( ), 1, camera_->GetCameraPos( ));
+
+        float lod = program_->lod( );
+        float tng = program_->tng( );
+        float max = program_->maxDist( );
+
+        glUniform1fv( program_->uLod( ), 1, &lod);
+        glUniform1fv( program_->uTng( ), 1, &tng);
+        glUniform1fv( program_->uMaxDist( ), 1, &max);
+
+        glPatchParameteri( GL_PATCH_VERTICES, 4 );
+        glDrawElements( GL_PATCHES, size_, GL_UNSIGNED_INT, 0 );
+        break;
+
     }
 
-    size /= 3;
-    for ( int i=0; i < size; i++ )
-    {
-      meshLine_.push_back( i );
-      meshLine_.push_back( i + size );
-    }
 
-    std::cout << "Numero de lineas " << size << std::endl;
-    std::cout << "Numero de indices " << meshLine_.size( ) << std::endl;
+
+
+
+
+
   }
 
 } // end namespace neurolots

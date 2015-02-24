@@ -3,8 +3,9 @@
 namespace neurolots
 {
 
-  Program::Program( void )
-    : id_( 0 )
+  Program::Program( TProgram type_ )
+    : _type( type_ )
+    , id_( 0 )
     , inVertex_( -1 )
     , inCenter_( -1 )
     , inTangent_( -1 )
@@ -84,32 +85,55 @@ namespace neurolots
 
   void Program::ShaderInit( void )
   {
-    const char vname[ ] = "/home/jjgarcia/jambs/src/neurolots/shaders/"
-                          "vshader.glsl";
-    const char tcname[ ] = "/home/jjgarcia/jambs/src/neurolots/shaders/"
-                           "tcshader.glsl";
-    const char tename[ ] = "/home/jjgarcia/jambs/src/neurolots/shaders/"
-                           "teshader.glsl";
-    const char fname[ ] = "/home/jjgarcia/jambs/src/neurolots/shaders/"
-                          "fshader.glsl";
 
-    //comopilacion de shaders
-    vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
-    tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-    teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-    fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
-
-    //Lincado de shaders
     id_ = glCreateProgram( );
 
-    std::cout << "Program id: " << id_ <<std::endl;
-    glAttachShader( id_, vshader_ );
-    glAttachShader( id_, tcshader_ );
-    glAttachShader( id_, teshader_ );
-    glAttachShader( id_, fshader_ );
-    glBindAttribLocation( id_, 0, "inVertex" );
-    glBindAttribLocation( id_, 1, "inCenter" );
-    glBindAttribLocation( id_, 2, "inTangent" );
+    char* vname;
+    char* tcname;
+    char* tename;
+    char* gname;
+    char* fname;
+
+    switch ( _type )
+    {
+      case LINES:
+        vname = "/home/jjgarcia/shaders/lines/vshader.glsl";
+        fname = "/home/jjgarcia/shaders/lines/fshader.glsl";
+        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
+        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+        glAttachShader( id_, vshader_ );
+        glAttachShader( id_, fshader_ );
+        glBindAttribLocation( id_, 0, "inVertex" );
+        break;
+
+      case TRIANGLES:
+        std::cout << "Triangles not implemented" << std::endl;
+        break;
+
+      case QUADS:
+        vname = "/home/jjgarcia/shaders/quads/vshader.glsl";
+        tcname = "/home/jjgarcia/shaders/quads/tcshader.glsl";
+        tename = "/home/jjgarcia/shaders/quads/teshader.glsl";
+        fname = "/home/jjgarcia/shaders/quads/fshader.glsl";
+
+        //comopilacion de shaders
+        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
+        tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+        teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+
+        glAttachShader( id_, vshader_ );
+        glAttachShader( id_, tcshader_ );
+        glAttachShader( id_, teshader_ );
+        glAttachShader( id_, fshader_ );
+
+        glBindAttribLocation( id_, 0, "inVertex" );
+        glBindAttribLocation( id_, 1, "inCenter" );
+        glBindAttribLocation( id_, 2, "inTangent" );
+        break;
+
+    }
+
     glLinkProgram( id_ );
     //Comprobacion de lincado
     int linked;
@@ -129,20 +153,36 @@ namespace neurolots
       return;
     }
 
-    //Variables uniform
-    uProy_ = glGetUniformLocation( id_, "proy" );
-    uView_ = glGetUniformLocation( id_, "view" );
-    uColor_ = glGetUniformLocation( id_, "color" );
-    uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
-    uDesp_ = glGetUniformLocation( id_, "desp" );
-    uLod_ = glGetUniformLocation( id_, "lod" );
-    uTng_ = glGetUniformLocation( id_, "tng" );
-    uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+    switch ( _type )
+    {
+      case LINES:
+        uProy_ = glGetUniformLocation( id_, "proy" );
+        uView_ = glGetUniformLocation( id_, "view" );
+        uColor_ = glGetUniformLocation( id_, "color" );
+        uDesp_ = glGetUniformLocation( id_, "desp" );
+        inVertex_ = glGetAttribLocation( id_, "inVertex" );
+        break;
 
-    //Atributos de entrada a shaders
-    inVertex_ = glGetAttribLocation( id_, "inVertex" );
-    inCenter_ = glGetAttribLocation( id_, "inCenter" );
-    inTangent_ = glGetAttribLocation( id_, "inTangent" );
+      case TRIANGLES:
+        std::cout << "Triangles not implemented" << std::endl;
+        break;
+
+      case QUADS:
+        //Variables uniform
+        uProy_ = glGetUniformLocation( id_, "proy" );
+        uView_ = glGetUniformLocation( id_, "view" );
+        uColor_ = glGetUniformLocation( id_, "color" );
+        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+        uDesp_ = glGetUniformLocation( id_, "desp" );
+        uLod_ = glGetUniformLocation( id_, "lod" );
+        uTng_ = glGetUniformLocation( id_, "tng" );
+        uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+        //Atributos de entrada a shaders
+        inVertex_ = glGetAttribLocation( id_, "inVertex" );
+        inCenter_ = glGetAttribLocation( id_, "inCenter" );
+        inTangent_ = glGetAttribLocation( id_, "inTangent" );
+        break;
+    }
   }
 
   void Program::Init( void )
@@ -163,6 +203,11 @@ namespace neurolots
   void Program::maxDist( float _maxDist )
   {
     maxDist_=_maxDist;
+  }
+
+  Program::TProgram Program::type( void )
+  {
+    return _type;
   }
 
   GLuint Program::id( void )
@@ -264,7 +309,6 @@ namespace neurolots
   {
     return maxDist_;
   }
-
 
 } // end namespace neurolots
 
