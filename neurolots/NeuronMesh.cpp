@@ -5,37 +5,26 @@ using namespace std;
 namespace neurolots
 {
 
-  NeuronMesh::NeuronMesh( std::string & file_name, Program * _program,
-                          Camera * _camera, Eigen::Vector3d _desp,
-                          Eigen::Vector3d _color )
-    : program_( _program )
+  NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_, Program * _program,
+                          Camera * _camera )
+    : _morpho( morpho_ )
+    , program_( _program )
     , camera_( _camera )
   {
     desp_.resize( 3 );
 
-    desp_[ 0 ]= _desp.x( );
-    desp_[ 1 ]= _desp.y( );
-    desp_[ 2 ]= _desp.z( );
+    desp_[ 0 ]= 0.0;
+    desp_[ 1 ]= 0.0;
+    desp_[ 2 ]= 0.0;
 
     color_.resize( 3 );
 
-    color_[ 0 ]= _color.x( );
-    color_[ 1 ]= _color.y( );
-    color_[ 2 ]= _color.z( );
+    color_[ 0 ]= 0.2;
+    color_[ 1 ]= 0.5;
+    color_[ 2 ]= 0.7;
 
-    //Load( file_name );
-
-    if( ! file_name.compare( file_name.length( ) - 3, 3, "swc" ))
-    {
-      NeuronMeshGenerator nMeshGen( file_name.c_str( ));
-      nMeshGen.GenerateStructure( );
-      vertices_ = nMeshGen.Vertices( );
-      mesh_ = nMeshGen.Mesh( );
-    }
-    else
-    {
-      Load( file_name );
-    }
+    NeuronMeshGenerator::GenerateMesh( _morpho, vertices_, centers_, tangents_,
+                                       mesh_);
 
   }
 
@@ -240,6 +229,8 @@ namespace neurolots
 
     glUniformMatrix4fv( program_->uProy( ), 1, GL_FALSE,
                         camera_->GetProjectionMatrix( ));
+
+
 
     glBindVertexArray(vao_);
 

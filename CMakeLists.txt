@@ -67,7 +67,8 @@ endif(NOT GLUT_FOUND)
 
 add_executable(neurolots neurolots/Main.cpp neurolots/Program.cpp 
                neurolots/Camera.cpp neurolots/NeuronMesh.cpp 
-               neurolots/NeuronMeshGenerator.cpp ) 
+               neurolots/NeuronMeshGenerator.cpp neurolots/Morphologies.cpp
+               neurolots/NeuronsCollection.cpp ) 
 
 target_link_libraries(neurolots  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} 
                                  ${GLEW_LIBRARIES} ${NSOL_LIBRARIES})

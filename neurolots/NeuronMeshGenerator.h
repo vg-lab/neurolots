@@ -15,43 +15,56 @@
 #include <iostream>
 #include <vector>
 
-namespace neurolots {
+#include <Eigen/Dense>
 
-class NeuronMeshGenerator {
+namespace neurolots
+{
 
-  public:
+  class NeuronMeshGenerator
+  {
 
-    NeuronMeshGenerator( const char * file_name );
-    ~NeuronMeshGenerator( void );
+    public:
 
-    void GenerateStructure( void );
-    void GenerateMesh( void );
-
-    std::vector< float > Vertices( void );
-    std::vector< unsigned int > Mesh( void );
-
-  private:
-
-    void _GenerateStructure( nsol::SectionPtr section );
-    void _GenerateMesh( nsol::SectionPtr section );
-
-    unsigned int _NumNodes( void );
-    unsigned int _NumNodes( nsol::SectionPtr section );
-
-    unsigned int _MaxId( void );
-    unsigned int _MaxId( nsol::SectionPtr section );
+      NeuronMeshGenerator( void );
+      ~NeuronMeshGenerator( void );
 
 
+      static nsol::NeuronMorphologyPtr ReadMorphology( const char * file_name );
+      static void GenerateStructure( nsol::NeuronMorphologyPtr morpho,
+                                     std::vector< float > & vertices,
+                                     std::vector< unsigned int> & mesh );
+      static void GenerateMesh( nsol::NeuronMorphologyPtr morpho,
+                                std::vector< float > & vertices,
+                                std::vector< float > & centers,
+                                std::vector< float > & tangents,
+                                std::vector< unsigned int > & mesh );
 
-    nsol::NeuronMorphologyPtr _morfo;
 
-    std::vector< int > _ids;
-    int _numIds;
+    private:
 
-    std::vector< float > _vertices;
-    std::vector< unsigned int > _mesh;
+      static void _GenerateStructure( nsol::SectionPtr section,
+                                      std::vector< float > & vertices,
+                                      std::vector< unsigned int > & mesh,
+                                      std::vector< unsigned int > & ids);
+      static void _GenerateMesh( nsol::SectionPtr section,
+                                 std::vector< float > & vertices,
+                                 std::vector< float > & centers,
+                                 std::vector< float > & tangents,
+                                 std::vector< unsigned int > & mesh);
 
-};
+      static unsigned int _NumNodes( nsol::NeuronMorphologyPtr morpho );
+      static unsigned int _NumNodes( nsol::SectionPtr section );
+
+      static unsigned int _MaxId( nsol::NeuronMorphologyPtr morpho );
+      static unsigned int _MaxId( nsol::SectionPtr section );
+
+      static void _CreateSphere( Eigen::Vector3f center, float radius,
+                                 std::vector< float > & vertices,
+                                 std::vector< float > & centers,
+                                 std::vector< float > & tangents,
+                                 std::vector< unsigned int > & mesh );
+
+  };
 
 } // end namespace neurolots
 

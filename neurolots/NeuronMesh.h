@@ -29,50 +29,54 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <map>
 
-namespace neurolots {
-
-class NeuronMesh {
-
-  public:
-
-    NeuronMesh( std::string & file_name, Program * _program, Camera * _camera,
-              Eigen::Vector3d _desp, Eigen::Vector3d _color );
-    ~NeuronMesh( void );
-
-    void Init( void );
-    void Paint( void );
-    void CreateLinesMesh( );
+namespace neurolots
+{
 
 
+  class NeuronMesh
+  {
 
-  private:
+    public:
 
-    void Load( std::string & file_name );
-    void ReadOBJ( std::string & file_name );
-    void ReadMOBJ( std::string & file_name );
+      NeuronMesh( nsol::NeuronMorphologyPtr morpho_, Program * _program,
+                  Camera * _camera );
+      ~NeuronMesh( void );
 
-    std::vector<float> vertices_;
-    std::vector<float> tangents_;
-    std::vector<float> centers_;
-    std::vector<unsigned int> mesh_;
-    std::vector<int> nodeIndices_;
+      void Init( void );
+      void Paint( void );
+      void CreateLinesMesh( );
+
+    private:
+
+      void Load( std::string & file_name );
+      void ReadOBJ( std::string & file_name );
+      void ReadMOBJ( std::string & file_name );
+
+      std::vector<float> vertices_;
+      std::vector<float> tangents_;
+      std::vector<float> centers_;
+      std::vector<unsigned int> mesh_;
+      std::vector<int> nodeIndices_;
 
 
-    Program * program_;
-    Camera * camera_;
+      nsol::NeuronMorphologyPtr _morpho;
 
-    GLuint vao_;
-    GLuint * vbo_;
+      Program * program_;
+      Camera * camera_;
 
-    GLuint _vaoLines;
-    GLuint * _vboLines;
+      GLuint vao_;
+      GLuint * vbo_;
 
-    int size_;
-    std::vector<float> desp_;
-    std::vector<float> color_;
+      GLuint _vaoLines;
+      GLuint * _vboLines;
 
-};
+      int size_;
+      std::vector<float> desp_;
+      std::vector<float> color_;
+
+  };
 
 } // end namespace neurolots
 

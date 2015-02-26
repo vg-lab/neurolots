@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Program.h"
 #include "NeuronMesh.h"
+#include "NeuronsCollection.h"
 
 #include <iostream>
 
@@ -28,7 +29,7 @@ bool mode = true;
 
 Camera * camera;
 Program * program;
-NeuronMesh * mesh;
+NeuronsCollection * neuronsCollection;
 
 void sceneInit( void )
 {
@@ -39,14 +40,14 @@ void sceneInit( void )
 
   glLineWidth( 1.5 );
 
-  mesh->Init();
+  neuronsCollection->Init();
 }
 
 void paintFunc(void)
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  mesh->Paint( );
+  neuronsCollection->Paint( );
 
   glUseProgram( 0 );
   glFlush( );
@@ -139,11 +140,11 @@ void mouseFunc( int boton, int state, int _x, int _y )
   }
   if ( boton == 3 && state == GLUT_DOWN )
   {
-    camera->LocalDisplace( 0.0f, 0.0f, -2.0f );
+    camera->LocalDisplace( 0.0f, 0.0f, -10.0f );
   }
   if ( boton == 4 && state == GLUT_DOWN )
   {
-    camera->LocalDisplace( 0.0f, 0.0f, 2.0f );
+    camera->LocalDisplace( 0.0f, 0.0f, 10.0f );
   }
 }
 
@@ -157,7 +158,7 @@ void mouseMoveFunc( int _x, int _y )
   }
   if( translation )
   {
-    camera->LocalDisplace(( m_x - _x ) * 0.1, ( _y - m_y ) * 0.1, 0.0f );
+    camera->LocalDisplace(( m_x - _x ) * 0.5, ( _y - m_y ) * 0.5, 0.0f );
     m_x = _x;
     m_y = _y;
   }
@@ -177,13 +178,23 @@ void resizeFunc( int w, int h )
 int main( int argc, char * argv[ ])
 {
   camera = new Camera( );
-  program = new Program( Program::LINES );
+  program = new Program( Program::QUADS );
 
   if( argc == 2 )
   {
-    string file_name( argv[ 1 ]);
-    mesh = new NeuronMesh( file_name, program, camera, Vector3d(0,0,0),
-                           Vector3d( 0.2, 0.5, 0.7 ));
+    neuronsCollection = new NeuronsCollection( argv[1], program, camera );
+//    string file_name( argv[ 1 ]);
+//
+//    nsol::BBPSDKReader r;
+//
+//    std::map<unsigned int, nsol::ColumnPtr> colums;
+//
+//    colums = r.readExperiment( argv[1], 0);
+//
+//    nsol::NeuronMorphologyPtr morpho = colums[0]->miniColumns()[0]->neurons()[2]->morphology();
+//
+//    mesh = new NeuronMesh( morpho, program, camera);
+
   }
   else
   {
@@ -206,7 +217,7 @@ int main( int argc, char * argv[ ])
   glutReshapeFunc( resizeFunc );
 
   glewExperimental = GL_TRUE;
-  GLenum err = glewInit( );
+/*  GLenum err =*/glewInit( );
 
 /*
   if( GLEW_OK != err )

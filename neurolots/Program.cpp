@@ -24,7 +24,7 @@ namespace neurolots
     , uMaxDist_( -1 )
     , lod_( 1.0f )
     , tng_( 0.0f )
-    , maxDist_( 100.0f )
+    , maxDist_( 500.0f )
   {
   }
 
@@ -111,10 +111,10 @@ namespace neurolots
         break;
 
       case QUADS:
-        vname = "/home/jjgarcia/shaders/quads/vshader.glsl";
-        tcname = "/home/jjgarcia/shaders/quads/tcshader.glsl";
-        tename = "/home/jjgarcia/shaders/quads/teshader.glsl";
-        fname = "/home/jjgarcia/shaders/quads/fshader.glsl";
+        vname = "/home/jjgarcia/shaders/quads/tessBasic/vshader.glsl";
+        tcname = "/home/jjgarcia/shaders/quads/tessBasic/tcshader.glsl";
+        tename = "/home/jjgarcia/shaders/quads/tessBasic/teshader.glsl";
+        fname = "/home/jjgarcia/shaders/quads/tessBasic/fshader.glsl";
 
         //comopilacion de shaders
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
@@ -158,6 +158,7 @@ namespace neurolots
       case LINES:
         uProy_ = glGetUniformLocation( id_, "proy" );
         uView_ = glGetUniformLocation( id_, "view" );
+        uModel_ = glGetUniformLocation( id_, "model" );
         uColor_ = glGetUniformLocation( id_, "color" );
         uDesp_ = glGetUniformLocation( id_, "desp" );
         inVertex_ = glGetAttribLocation( id_, "inVertex" );
@@ -171,6 +172,7 @@ namespace neurolots
         //Variables uniform
         uProy_ = glGetUniformLocation( id_, "proy" );
         uView_ = glGetUniformLocation( id_, "view" );
+        uModel_ = glGetUniformLocation( id_, "model" );
         uColor_ = glGetUniformLocation( id_, "color" );
         uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
         uDesp_ = glGetUniformLocation( id_, "desp" );
