@@ -12,46 +12,50 @@ namespace neurolots
 
     std::string fName(file_name);
 
-    if ( fName.length() < 5 ||
-         fName.compare( fName.length( ) - 3, 3, "swc" ))
-    {
-      nsol::BBPSDKReaderTemplated< nsol::Node,
-                                   nsol::Segment,
-                                   nsol::Section,
-                                   nsol::Dendrite,
-                                   nsol::Axon,
-                                   nsol::Soma,
-                                   NeuronMorphology,
-                                   nsol::Neuron,
-                                   nsol::MiniColumn,
-                                   nsol::Column > bbpsdkReader;
-
-      _colums = bbpsdkReader.readExperiment( file_name, 0);
-    }
-    else
+    if ( !(fName.length() < 5 ||
+         fName.compare( fName.length( ) - 3, 3, "swc" )))
     {
       std::cout << "Leyendo swc" << std::endl;
 
-      nsol::SwcReaderTemplated< nsol::Node,
-                                nsol::Segment,
-                                nsol::Section,
-                                nsol::Dendrite,
-                                nsol::Axon,
-                                nsol::Soma,
-                                NeuronMorphology,
-                                nsol::Neuron > swcReader;
+           nsol::SwcReaderTemplated< nsol::Node,
+                                     nsol::Segment,
+                                     nsol::Section,
+                                     nsol::Dendrite,
+                                     nsol::Axon,
+                                     nsol::Soma,
+                                     NeuronMorphology,
+                                     nsol::Neuron > swcReader;
 
-      nsol::NeuronPtr neuron = swcReader.readNeuron( file_name );
-      nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
-      miniColumn->addNeuron( neuron );
-      nsol::ColumnPtr column = new nsol::Column();
-      column->addMiniColumn( miniColumn );
+           nsol::NeuronPtr neuron = swcReader.readNeuron( file_name );
+           nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
+           miniColumn->addNeuron( neuron );
+           nsol::ColumnPtr column = new nsol::Column();
+           column->addMiniColumn( miniColumn );
 
-      _colums.clear( );
+           _colums.clear( );
 
-      _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
-                      ::value_type( 0 , column ));
+           _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
+                           ::value_type( 0 , column ));
+
     }
+
+#ifdef NSOL_WITH_BBPSDK
+    else
+    {
+      nsol::BBPSDKReaderTemplated< nsol::Node,
+                                         nsol::Segment,
+                                         nsol::Section,
+                                         nsol::Dendrite,
+                                         nsol::Axon,
+                                         nsol::Soma,
+                                         NeuronMorphology,
+                                         nsol::Neuron,
+                                         nsol::MiniColumn,
+                                         nsol::Column > bbpsdkReader;
+
+            _colums = bbpsdkReader.readExperiment( file_name, 0);
+    }
+#endif
     _GenerateMeshes( );
 
   }
