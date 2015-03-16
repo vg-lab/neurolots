@@ -101,20 +101,52 @@ namespace neurolots
         fname = "/home/jjgarcia/shaders/lines/fshader.glsl";
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
         fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+
         glAttachShader( id_, vshader_ );
         glAttachShader( id_, fshader_ );
+
         glBindAttribLocation( id_, 0, "inVertex" );
         break;
 
       case TRIANGLES:
-        std::cout << "Triangles not implemented" << std::endl;
+        vname = "/home/jjgarcia/shaders/triangles/vshader.glsl";
+        fname = "/home/jjgarcia/shaders/triangles/fshader.glsl";
+        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
+        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+
+        glAttachShader( id_, vshader_ );
+        glAttachShader( id_, fshader_ );
+
+        glBindAttribLocation( id_, 0, "inVertex" );
+        glBindAttribLocation( id_, 1, "inCenter" );
         break;
 
-      case QUADS:
-        vname = "/home/jjgarcia/shaders/quads/tessBasic/vshader.glsl";
-        tcname = "/home/jjgarcia/shaders/quads/tessBasic/tcshader.glsl";
-        tename = "/home/jjgarcia/shaders/quads/tessBasic/teshader.glsl";
-        fname = "/home/jjgarcia/shaders/quads/tessBasic/fshader.glsl";
+      case QUADSTESSADAP:
+        vname = "/home/jjgarcia/shaders/quads/originalShader/vshader.glsl";
+        tcname = "/home/jjgarcia/shaders/quads/originalShader/tcshader.glsl";
+        tename = "/home/jjgarcia/shaders/quads/originalShader/teshader.glsl";
+        fname = "/home/jjgarcia/shaders/quads/originalShader/fshader.glsl";
+
+        //comopilacion de shaders
+        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
+        tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+        teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+
+        glAttachShader( id_, vshader_ );
+        glAttachShader( id_, tcshader_ );
+        glAttachShader( id_, teshader_ );
+        glAttachShader( id_, fshader_ );
+
+        glBindAttribLocation( id_, 0, "inVertex" );
+        glBindAttribLocation( id_, 1, "inCenter" );
+        break;
+
+      case QUADSTESSADAPTNG:
+        vname = "/home/jjgarcia/shaders/quads/tessAdapTangs/vshader.glsl";
+        tcname = "/home/jjgarcia/shaders/quads/tessAdapTangs/tcshader.glsl";
+        tename = "/home/jjgarcia/shaders/quads/tessAdapTangs/teshader.glsl";
+        fname = "/home/jjgarcia/shaders/quads/tessAdapTangs/fshader.glsl";
 
         //comopilacion de shaders
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
@@ -160,15 +192,38 @@ namespace neurolots
         uView_ = glGetUniformLocation( id_, "view" );
         uModel_ = glGetUniformLocation( id_, "model" );
         uColor_ = glGetUniformLocation( id_, "color" );
-        uDesp_ = glGetUniformLocation( id_, "desp" );
         inVertex_ = glGetAttribLocation( id_, "inVertex" );
         break;
 
       case TRIANGLES:
-        std::cout << "Triangles not implemented" << std::endl;
+        //Variables uniform
+        uProy_ = glGetUniformLocation( id_, "proy" );
+        uView_ = glGetUniformLocation( id_, "view" );
+        uModel_ = glGetUniformLocation( id_, "model" );
+        uColor_ = glGetUniformLocation( id_, "color" );
+        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+        //Atributos de entrada a shaders
+        inVertex_ = glGetAttribLocation( id_, "inVertex" );
+        inCenter_ = glGetAttribLocation( id_, "inCenter" );
         break;
 
-      case QUADS:
+      case QUADSTESSADAP:
+        //Variables uniform
+        uProy_ = glGetUniformLocation( id_, "proy" );
+        uView_ = glGetUniformLocation( id_, "view" );
+        uModel_ = glGetUniformLocation( id_, "model" );
+        uColor_ = glGetUniformLocation( id_, "color" );
+        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+        uLod_ = glGetUniformLocation( id_, "lod" );
+        uTng_ = glGetUniformLocation( id_, "tng" );
+        uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+        //Atributos de entrada a shaders
+        inVertex_ = glGetAttribLocation( id_, "inVertex" );
+        inCenter_ = glGetAttribLocation( id_, "inCenter" );
+        inTangent_ = glGetAttribLocation( id_, "inTangent" );
+        break;
+
+      case QUADSTESSADAPTNG:
         //Variables uniform
         uProy_ = glGetUniformLocation( id_, "proy" );
         uView_ = glGetUniformLocation( id_, "view" );

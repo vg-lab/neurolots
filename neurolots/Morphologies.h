@@ -15,12 +15,13 @@
 #include <nsol/nsol.h>
 
 #include <iostream>
-#include <map>
+#include <unordered_map>
+
 
 namespace neurolots
 {
   typedef NeuronMesh * NeuronMeshPtr;
-  typedef std::map< nsol::NeuronMorphologyPtr, NeuronMeshPtr > TMorphoMap;
+  typedef std::unordered_map< nsol::NeuronMorphologyPtr, NeuronMeshPtr > TMorphoMap;
 
   class Morphologies
   {
@@ -42,7 +43,7 @@ namespace neurolots
 
     private:
 
-      std::map < nsol::NeuronMorphologyPtr, NeuronMeshPtr > _morphoMap;
+      std::unordered_map < nsol::NeuronMorphologyPtr, NeuronMeshPtr > _morphoMap;
 
   };
 

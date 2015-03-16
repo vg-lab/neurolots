@@ -19,7 +19,8 @@
 //Neurolots
 #include "Program.h"
 #include "Camera.h"
-#include "NeuronMeshGenerator.h"
+#include <NeuronMeshGenerator.h>
+#include <Icosphere.h>
 
 //Eigen
 #include <Eigen/Dense>
@@ -30,6 +31,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+
 
 namespace neurolots
 {
@@ -73,10 +75,13 @@ namespace neurolots
       GLuint * _vboLines;
 
       int size_;
-      std::vector<float> desp_;
       std::vector<float> color_;
 
+      bool _isInit;
+
   };
+
+  typedef NeuronMesh * NeuronMeshPtr;
 
 } // end namespace neurolots
 

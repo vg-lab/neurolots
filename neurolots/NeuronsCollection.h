@@ -10,7 +10,7 @@
 #ifndef __NEUROLOTS_NEURONS_COLLECTION__
 #define __NEUROLOTS_NEURONS_COLLECTION__
 
-#include "Morphologies.h"
+#include "NeuronMorphology.h"
 #include "NeuronMesh.h"
 #include "Program.h"
 #include "Camera.h"
@@ -34,16 +34,25 @@ namespace neurolots
 
       void Init( void );
       void Paint( void );
+      void PaintMiniColum( unsigned int nColumn, unsigned int nMiniColumn );
+      void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
+                        unsigned int nNeuron );
+      void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
+                        unsigned int nNeuron, float x, float y, float z );
+      void Anim( void );
 
     private:
 
       void _GenerateMeshes( void );
+      void _GenerateMeshes( unsigned int nColumn, unsigned int nMiniColumn,
+                            unsigned int nNeuron  );
 
       Program * _program;
       Camera * _camera;
 
-      Morphologies _morphos;
       std::map<unsigned int, nsol::ColumnPtr> _colums;
+
+      int _cont;
   };
 
 } // end namespace neurolots

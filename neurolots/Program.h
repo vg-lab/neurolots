@@ -33,7 +33,8 @@ namespace neurolots
       {
         LINES = 0,
         TRIANGLES,
-        QUADS
+        QUADSTESSADAP,
+        QUADSTESSADAPTNG,
       } TProgram;
 
       Program( TProgram type_ = LINES );
@@ -41,12 +42,12 @@ namespace neurolots
 
       void Init( void );
 
-      //Seters
+      //Setters
       void lod( float _lod );
       void tng( float _tng );
       void maxDist( float _maxDist );
 
-      //Geters
+      //Getters
       TProgram type( void );
       GLuint id( void );
       GLint inVertex( void );

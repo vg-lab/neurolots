@@ -27,6 +27,8 @@ int m_x, m_y;
 
 bool mode = true;
 
+int cont = 0;
+
 Camera * camera;
 Program * program;
 NeuronsCollection * neuronsCollection;
@@ -47,7 +49,32 @@ void paintFunc(void)
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  neuronsCollection->Paint( );
+
+
+//  neuronsCollection->Paint( );
+  neuronsCollection->PaintMiniColum( 0, 0 );
+//  neuronsCollection->PaintMiniColum( 0, 1 );
+//  for ( int i = 0; i < 10; i++ )
+//  {
+//    for ( int j = 0; j < 10; j++ )
+//    {
+//      for ( int k = 0; k < 10; k++ )
+//      {
+//        neuronsCollection->PaintNeuron(0,0,49, i*100, j*100, k*100);
+//      }
+//    }
+//  }
+
+  //neuronsCollection->PaintNeuron(0,0,0);
+
+//  cont ++;
+//
+//  if( cont >= 10  )
+//    cont = 0;
+//
+//
+//  neuronsCollection->PaintMiniColum( 0,cont );
+  //neuronsCollection->Anim( );
 
   glUseProgram( 0 );
   glFlush( );
@@ -158,7 +185,7 @@ void mouseMoveFunc( int _x, int _y )
   }
   if( translation )
   {
-    camera->LocalDisplace(( m_x - _x ) * 0.5, ( _y - m_y ) * 0.5, 0.0f );
+    camera->LocalDisplace(( m_x - _x ) * 0.1, ( _y - m_y ) * 0.1, 0.0f );
     m_x = _x;
     m_y = _y;
   }
@@ -178,29 +205,19 @@ void resizeFunc( int w, int h )
 int main( int argc, char * argv[ ])
 {
   camera = new Camera( );
-  program = new Program( Program::QUADS );
+
 
   if( argc == 2 )
   {
+    program = new Program( Program::QUADSTESSADAPTNG );
     neuronsCollection = new NeuronsCollection( argv[1], program, camera );
-//    string file_name( argv[ 1 ]);
-//
-//    nsol::BBPSDKReader r;
-//
-//    std::map<unsigned int, nsol::ColumnPtr> colums;
-//
-//    colums = r.readExperiment( argv[1], 0);
-//
-//    nsol::NeuronMorphologyPtr morpho = colums[0]->miniColumns()[0]->neurons()[2]->morphology();
-//
-//    mesh = new NeuronMesh( morpho, program, camera);
-
   }
   else
   {
     std::cout << "Usage Error" << std::endl;
     exit( 0 );
   }
+
   glutInit( &argc, argv );
   glutInitContextVersion( 4, 4 );
 

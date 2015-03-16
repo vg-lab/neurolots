@@ -17,7 +17,7 @@ namespace neurolots
   void Morphologies::Add( NeuronMorphologyPtr morpho,
                                     NeuronMeshPtr neuronMesh )
   {
-    _morphoMap.insert(map< NeuronMorphologyPtr, NeuronMeshPtr >
+    _morphoMap.insert(unordered_map< NeuronMorphologyPtr, NeuronMeshPtr >
                       ::value_type(morpho,neuronMesh));
 
   }
@@ -29,7 +29,7 @@ namespace neurolots
 
   NeuronMeshPtr Morphologies::GetNeuronMesh( nsol::NeuronMorphologyPtr morpho )
   {
-    map< NeuronMorphologyPtr, NeuronMeshPtr >::iterator itt;
+    unordered_map< NeuronMorphologyPtr, NeuronMeshPtr >::iterator itt;
     itt = _morphoMap.find( morpho );
 
     if( itt == _morphoMap.end( ))
