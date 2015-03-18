@@ -17,8 +17,6 @@
 namespace neurolots
 {
 
-  typedef GeometricPrimitive * GeometricPrimitivePtr;
-
   class VectorizedNode
   {
 
@@ -46,6 +44,7 @@ namespace neurolots
       VectorizedNode* Father( void );
       std::vector< VectorizedNode* > Childs( void );
       bool Bifurcation( void );
+      bool FirstNode( void );
 
 
     private:
@@ -61,8 +60,11 @@ namespace neurolots
       std::vector< VectorizedNode* > _childs;
 
       bool _bifurcation;
+      bool _firstNode;
 
   };
+
+  typedef VectorizedNode* VectorizedNodePtr;
 
 }// end namespace neurolots
 

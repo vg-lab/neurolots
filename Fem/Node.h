@@ -7,8 +7,8 @@
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_NODE__
-#define __NEUROLOTS_NODE__
+#ifndef __FEM_NODE__
+#define __FEM_NODE__
 
 //Eigen
 #include <Eigen/Dense>
@@ -37,6 +37,7 @@ namespace fem
       Eigen::Vector3f Pos( void );
       Eigen::Vector3f Force( void );
       Eigen::Vector3f Center( void );
+      Eigen::Vector3f Tangent( void );
       bool Fixed( void );
       bool Contorn( void );
 
@@ -48,6 +49,7 @@ namespace fem
       void Pos( Eigen::Vector3f );
       void Force( Eigen::Vector3f );
       void Center( Eigen::Vector3f );
+      void Tangent( Eigen::Vector3f );
       void Fixed( bool );
       void Contorn( bool );
 
@@ -60,6 +62,7 @@ namespace fem
       Eigen::Vector3f _pos;
       Eigen::Vector3f _force;
       Eigen::Vector3f _center;
+      Eigen::Vector3f _tangent;
 
       bool _fixed;
       bool _contorn;
@@ -76,17 +79,19 @@ namespace fem
 
       static void NodesToVectors( std::vector< NodePtr >& nodes,
                                  std::vector< float >& vertices,
-                                 std::vector< float >& centers );
+                                 std::vector< float >& centers,
+                                 std::vector< float >& tagents );
 
       static void ContornNodesToVectors( std::vector< NodePtr >& nodes,
                                          std::vector< float >& vertices,
-                                         std::vector< float >& centers );
+                                         std::vector< float >& centers,
+                                         std::vector< float >& tagents );
 
 
   };
 
 } // end namespace fem
 
-#endif // __NEUROLOTS_NODE__
+#endif // __FEM_NODE__
 
 //EOF

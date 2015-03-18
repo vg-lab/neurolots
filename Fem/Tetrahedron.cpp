@@ -82,13 +82,14 @@ namespace fem
                                    std::vector< NodePtr >& nodes,
                                    std::vector< float >& vertices,
                                    std::vector< float >& centers,
+                                   std::vector< float >& tangents,
                                    std::vector< unsigned int >& mesh )
   {
-    Nodes::NodesToVectors( nodes, vertices, centers);
+    Nodes::NodesToVectors( nodes, vertices, centers, tangents);
 
     mesh.clear( );
 
-    for ( int i = 0; i < tetrahedra.size( ); i++ )
+    for ( unsigned int i = 0; i < tetrahedra.size( ); i++ )
     {
       TetrahedronPtr tet = tetrahedra[i];
       int n0 = tet->Node0( )->Id( );
@@ -112,13 +113,12 @@ namespace fem
                                    std::vector< NodePtr >& nodes,
                                    std::vector< float >& vertices,
                                    std::vector< float >& centers,
+                                   std::vector< float >& tangents,
                                    std::vector< unsigned int >& mesh )
   {
-    Nodes::ContornNodesToVectors( nodes, vertices, centers);
+    Nodes::ContornNodesToVectors( nodes, vertices, centers, tangents );
 
-    mesh.clear( );
-
-    for ( int i = 0; i < tetrahedra.size( ); i++ )
+    for ( unsigned int i = 0; i < tetrahedra.size( ); i++ )
     {
       TetrahedronPtr tet = tetrahedra[i];
       int n0 = tet->Node0( )->Id2( );
@@ -126,19 +126,24 @@ namespace fem
       int n2 = tet->Node2( )->Id2( );
       int n3 = tet->Node3( )->Id2( );
 
-      if( tet->Face0( ))
+      bool fixed0 = tet->Node0( )->Fixed( );
+      bool fixed1 = tet->Node1( )->Fixed( );
+      bool fixed2 = tet->Node2( )->Fixed( );
+      bool fixed3 = tet->Node3( )->Fixed( );
+
+      if( tet->Face0( )  && !( fixed0 & fixed1 & fixed2 ))
       {
         mesh.push_back( n0 ); mesh.push_back( n1 ); mesh.push_back( n2 );
       }
-      if( tet->Face1( ))
+      if( tet->Face1( )  && !( fixed0 && fixed2 && fixed3 ))
       {
         mesh.push_back( n0 ); mesh.push_back( n2 ); mesh.push_back( n3 );
       }
-      if( tet->Face2( ))
+      if( tet->Face2( )  && !( fixed0 && fixed3 && fixed1 ))
       {
         mesh.push_back( n0 ); mesh.push_back( n3 ); mesh.push_back( n1 );
       }
-      if( tet->Face3( ))
+      if( tet->Face3( )  && !( fixed1 && fixed3 && fixed2 ))
       {
         mesh.push_back( n1 ); mesh.push_back( n3 ); mesh.push_back( n2 );
       }

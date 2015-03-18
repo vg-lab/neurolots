@@ -121,6 +121,25 @@ namespace neurolots
         glBindAttribLocation( id_, 1, "inCenter" );
         break;
 
+      case TRIANGLESTESS:
+        vname = "/home/jjgarcia/shaders/triangles/tess/vshader.glsl";
+        tcname = "/home/jjgarcia/shaders/triangles/tess/tcshader.glsl";
+        tename = "/home/jjgarcia/shaders/triangles/tess/teshader.glsl";
+        fname = "/home/jjgarcia/shaders/triangles/tess/fshader.glsl";
+        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
+        tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+        teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+
+        glAttachShader( id_, vshader_ );
+        glAttachShader( id_, tcshader_ );
+        glAttachShader( id_, teshader_ );
+        glAttachShader( id_, fshader_ );
+
+        glBindAttribLocation( id_, 0, "inVertex" );
+        glBindAttribLocation( id_, 1, "inCenter" );
+        break;
+
       case QUADSTESSADAP:
         vname = "/home/jjgarcia/shaders/quads/originalShader/vshader.glsl";
         tcname = "/home/jjgarcia/shaders/quads/originalShader/tcshader.glsl";
@@ -202,6 +221,22 @@ namespace neurolots
         uModel_ = glGetUniformLocation( id_, "model" );
         uColor_ = glGetUniformLocation( id_, "color" );
         uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+
+        //Atributos de entrada a shaders
+        inVertex_ = glGetAttribLocation( id_, "inVertex" );
+        inCenter_ = glGetAttribLocation( id_, "inCenter" );
+        break;
+
+      case TRIANGLESTESS:
+        //Variables uniform
+        uProy_ = glGetUniformLocation( id_, "proy" );
+        uView_ = glGetUniformLocation( id_, "view" );
+        uModel_ = glGetUniformLocation( id_, "model" );
+        uColor_ = glGetUniformLocation( id_, "color" );
+        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+        uLod_ = glGetUniformLocation( id_, "lod" );
+        uTng_ = glGetUniformLocation( id_, "tng" );
+        uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
         //Atributos de entrada a shaders
         inVertex_ = glGetAttribLocation( id_, "inVertex" );
         inCenter_ = glGetAttribLocation( id_, "inCenter" );
@@ -230,7 +265,6 @@ namespace neurolots
         uModel_ = glGetUniformLocation( id_, "model" );
         uColor_ = glGetUniformLocation( id_, "color" );
         uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
-        uDesp_ = glGetUniformLocation( id_, "desp" );
         uLod_ = glGetUniformLocation( id_, "lod" );
         uTng_ = glGetUniformLocation( id_, "tng" );
         uMaxDist_ = glGetUniformLocation( id_, "maxDist" );

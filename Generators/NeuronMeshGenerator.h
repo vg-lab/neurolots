@@ -18,6 +18,7 @@
 #include <Eigen/Dense>
 
 #include "VectorizedNode.h"
+#include "Icosphere.h"
 
 namespace neurolots
 {
@@ -48,7 +49,8 @@ namespace neurolots
                                 std::vector< float >& vertices,
                                 std::vector< float >& centers,
                                 std::vector< float >& tangents,
-                                std::vector< unsigned int >& mesh );
+                                std::vector< unsigned int >& mesh,
+                                unsigned int& somaEnd);
       static void GenerateMeshQuads( std::vector< VectorizedNodePtr >& vNodes,
                                      std::vector< float >& vertices,
                                      std::vector< float >& centers,
@@ -57,17 +59,26 @@ namespace neurolots
       static void GenerateMeshTriangles( nsol::NeuronMorphologyPtr morpho,
                                       std::vector< float >& vertices,
                                       std::vector< float >& centers,
+                                      std::vector< float >& tangents,
                                       std::vector< unsigned int >& mesh );
       static void GenerateMeshTriangles(
                                       std::vector< VectorizedNodePtr > & vNodes,
                                       std::vector< float >& vertices,
                                       std::vector< float >& centers,
+                                      std::vector< float >& tangents,
                                       std::vector< unsigned int >& mesh );
 
       static void GenerateSomaTriangles( nsol::SomaPtr soma,
                                  std::vector< VectorizedNodePtr > & firstNodes,
                                  std::vector< float >& vertices,
                                  std::vector< float >& centers,
+                                 std::vector< float >& tangents,
+                                 std::vector< unsigned int >& mesh );
+      static void GenerateSomaQuads( nsol::SomaPtr soma,
+                                 std::vector< VectorizedNodePtr > & firstNodes,
+                                 std::vector< float >& vertices,
+                                 std::vector< float >& centers,
+                                 std::vector< float >& tangents,
                                  std::vector< unsigned int >& mesh );
 
       static void VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
@@ -102,6 +113,7 @@ namespace neurolots
       static void _GenerateMeshTriangles( nsol::SectionPtr section,
                                        std::vector< float > & vertices,
                                        std::vector< float > & centers,
+                                       std::vector< float >& tangents,
                                        std::vector< unsigned int > & mesh);
 
       static void _VectorizeMorpho( nsol::SectionPtr section,
@@ -123,6 +135,7 @@ namespace neurolots
       static void _CreateSphereTriangles( Eigen::Vector3f center, float radius,
                                        std::vector< float > & vertices,
                                        std::vector< float > & centers,
+                                       std::vector< float >& tangents,
                                        std::vector< unsigned int > & mesh );
       static void _CreateTrianglePipe( GeometricPrimitivePtr geom0,
                                GeometricPrimitivePtr geom1,

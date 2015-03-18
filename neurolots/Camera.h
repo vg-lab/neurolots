@@ -61,6 +61,7 @@ namespace neurolots
 
       Eigen::Matrix4f proy_;
       Eigen::Matrix4f view_;
+
       Eigen::Matrix3f rot_;
 
       std::vector<float> positionVec_;

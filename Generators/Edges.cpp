@@ -44,8 +44,8 @@ namespace neurolots
   fem::NodePtr Edges::AddEdge( std::vector< fem::NodePtr >& nodes,
                                fem::NodePtr node0, fem::NodePtr node1 )
   {
-    int idMin;
-    int idMax;
+    unsigned int idMin;
+    unsigned int idMax;
 
     if( node0->Id() > node1->Id( ))
     {
@@ -65,9 +65,9 @@ namespace neurolots
 
 
     //Conprube if the edge exist
-    for(int i=0; i < _edges[idMin].size();  i++)
+    for ( unsigned int i=0; i < _edges[idMin].size();  i++)
     {
-      int id = _edges[idMin][i].Node();
+      unsigned int id = _edges[idMin][i].Node();
       if(id == idMax )
       {
         return _edges[idMin][i].MiddleNode( );
@@ -94,11 +94,12 @@ namespace neurolots
 
     if(( contorn = (node0->Contorn( ) && node1->Contorn( ))))
     {
-      pos.normalize( );
+      pos = (pos - _center).normalized();
       pos = _center + _radius * pos;
     }
 
     fem::NodePtr node = new fem::Node( pos, id, contorn );
+    node->Center( _center );
     nodes.push_back( node );
 
     return node;

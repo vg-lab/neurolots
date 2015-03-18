@@ -7,8 +7,8 @@
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_TETRAHEDRON__
-#define __NEUROLOTS_TETRAHEDRON__
+#ifndef __FEM_TETRAHEDRON__
+#define __FEM_TETRAHEDRON__
 
 //Eigen
 #include <Eigen/Dense>
@@ -65,6 +65,7 @@ namespace fem
                                   std::vector< NodePtr >& nodes,
                                   std::vector< float >& vertices,
                                   std::vector< float >& centers,
+                                  std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
       static void ContornFacesToVectors(
@@ -72,11 +73,12 @@ namespace fem
                                   std::vector< NodePtr >& nodes,
                                   std::vector< float >& vertices,
                                   std::vector< float >& centers,
+                                  std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
   };
 
 } // end namespace fem
 
-#endif // __NEUROLOTS_TETRAHEDRON__
+#endif // __FEM_TETRAHEDRON__
 
 //EOF

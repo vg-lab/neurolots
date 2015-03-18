@@ -14,6 +14,7 @@ namespace fem
     , _pos( pos0_ )
     , _force( Eigen::Vector3f::Zero( ))
     , _center( Eigen::Vector3f::Zero( ))
+    , _tangent( Eigen::Vector3f::Zero( ))
     , _fixed( false )
     , _contorn( contorn_)
   {
@@ -59,6 +60,11 @@ namespace fem
   Eigen::Vector3f Node::Center( void )
   {
     return _center;
+  }
+
+  Eigen::Vector3f Node::Tangent( void )
+  {
+    return _tangent;
   }
 
   bool Node::Fixed( void )
@@ -107,6 +113,11 @@ namespace fem
     _center = center_;
   }
 
+  void Node::Tangent( Eigen::Vector3f tangent_ )
+  {
+    _tangent = tangent_;
+  }
+
   void Node::Fixed( bool fixed_ )
   {
     _fixed = fixed_;
@@ -135,10 +146,9 @@ namespace fem
 
   void Nodes::NodesToVectors( std::vector< NodePtr >& nodes,
                              std::vector< float >& vertices,
-                             std::vector< float >& centers )
+                             std::vector< float >& centers,
+                             std::vector< float >& tangents )
   {
-    vertices.clear( );
-    centers.clear( );
 
     for ( int i = 0; i < nodes.size( ); i++ )
     {
@@ -151,15 +161,18 @@ namespace fem
       centers.push_back( node->Center( ).x());
       centers.push_back( node->Center( ).y());
       centers.push_back( node->Center( ).z());
+
+      tangents.push_back( node->Tangent( ).x());
+      tangents.push_back( node->Tangent( ).y());
+      tangents.push_back( node->Tangent( ).z());
     }
   }
 
   void Nodes::ContornNodesToVectors( std::vector< NodePtr >& nodes,
                                      std::vector< float >& vertices,
-                                     std::vector< float >& centers )
+                                     std::vector< float >& centers,
+                                     std::vector< float >& tangents  )
     {
-      vertices.clear( );
-      centers.clear( );
 
       int contornNodes = 0;
       for ( int i = 0; i < nodes.size( ); i++ )
@@ -178,6 +191,10 @@ namespace fem
           centers.push_back( node->Center( ).x());
           centers.push_back( node->Center( ).y());
           centers.push_back( node->Center( ).z());
+
+          tangents.push_back( node->Tangent( ).x());
+          tangents.push_back( node->Tangent( ).y());
+          tangents.push_back( node->Tangent( ).z());
         }
       }
     }

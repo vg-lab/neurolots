@@ -5,49 +5,24 @@ using namespace std;
 namespace neurolots
 {
 
-  NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_, Program * _program,
+  NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
+                          Program * programTriangles_, Program * programQuads_,
                           Camera * _camera )
     : _morpho( morpho_ )
-    , program_( _program )
+    , _programTriangles( programTriangles_ )
+    , _programQuads( programQuads_ )
     , camera_( _camera )
     , _isInit( false )
   {
-    std::vector< VectorizedNodePtr > vNodes;
-
     color_.resize( 3 );
 
     color_[ 0 ]= 0.2;
     color_[ 1 ]= 0.5;
     color_[ 2 ]= 0.7;
 
-    Icosphere ico(Eigen::Vector3f(0,0,0), 3, 3);
 
-    switch( program_->type( ))
-    {
-      case Program::LINES:
-        NeuronMeshGenerator::VectorizeMorpho( _morpho, vNodes );
-        NeuronMeshGenerator::GenerateStructure( vNodes, vertices_, mesh_);
-        break;
-
-      case Program::TRIANGLES:
-        //ico.PassContornToVector( vertices_, centers_, mesh_ );
-        NeuronMeshGenerator::VectorizeMorpho( _morpho, vNodes );
-        NeuronMeshGenerator::GenerateMeshTriangles( vNodes, vertices_,
-                                                    centers_, mesh_);
-        break;
-
-      case Program::QUADSTESSADAP:
-        NeuronMeshGenerator::VectorizeMorpho( _morpho, vNodes );
-        NeuronMeshGenerator::GenerateMeshQuads( vNodes, vertices_, centers_,
-                                                tangents_, mesh_);
-        break;
-
-      case Program::QUADSTESSADAPTNG:
-        NeuronMeshGenerator::VectorizeMorpho( _morpho, vNodes );
-        NeuronMeshGenerator::GenerateMeshQuads( vNodes, vertices_, centers_,
-                                                tangents_, mesh_ );
-        break;
-    }
+    NeuronMeshGenerator::GenerateMeshQuads( _morpho, vertices_, centers_,
+                                            tangents_, mesh_, _somaEnd );
   }
 
   NeuronMesh::~NeuronMesh( void )
@@ -184,111 +159,43 @@ namespace neurolots
       glGenVertexArrays( 1, &vao_ );
       glBindVertexArray( vao_ );
 
-      size_ = mesh_.size( );
+      _size = mesh_.size( );
 
-      switch( program_->type( ))
-      {
-        case Program::LINES:
-          //VBOs Generation
-          vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 2 );
-          glGenBuffers(2,vbo_);
 
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
-                        vertices_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inVertex() );
+      vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );
+      glGenBuffers(4,vbo_);
 
-          glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[1]);
-          glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_,
-                        mesh_.data( ), GL_STATIC_DRAW );
-          break;
+      glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
+                    vertices_.data( ), GL_STATIC_DRAW );
+      glVertexAttribPointer( _programTriangles->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
+                             0 );
+      glEnableVertexAttribArray( _programTriangles->inVertex() );
+      glVertexAttribPointer( _programQuads->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
+                                   0 );
+      glEnableVertexAttribArray( _programQuads->inVertex() );
 
-        case Program::TRIANGLES:
-          vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 3 );
-          glGenBuffers(3,vbo_);
+      glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers_.size( ),
+                    centers_.data( ), GL_STATIC_DRAW );
+      glVertexAttribPointer( _programTriangles->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0,
+                             0 );
+      glEnableVertexAttribArray( _programTriangles->inCenter() );
+      glVertexAttribPointer( _programQuads->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0,
+                                   0 );
+      glEnableVertexAttribArray( _programQuads->inCenter() );
 
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
-                        vertices_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inVertex() );
+      glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents_.size( ),
+                    tangents_.data( ), GL_STATIC_DRAW );
+      glVertexAttribPointer( _programQuads->inTangent( ), 3, GL_FLOAT, GL_FALSE, 0,
+                             0 );
+      glEnableVertexAttribArray( _programQuads->inTangent() );
 
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers_.size( ),
-                        centers_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inCenter() );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
+      glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
+                    mesh_.data( ), GL_STATIC_DRAW );
 
-          glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 2 ]);
-          glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_,
-                        mesh_.data( ), GL_STATIC_DRAW );
-          break;
-
-        case Program::QUADSTESSADAP:
-          vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );
-          glGenBuffers(4,vbo_);
-
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
-                        vertices_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inVertex() );
-
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers_.size( ),
-                        centers_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inCenter() );
-
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents_.size( ),
-                        tangents_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inTangent( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                         0 );
-          glEnableVertexAttribArray( program_->inTangent() );
-
-          glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
-          glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_,
-                        mesh_.data( ), GL_STATIC_DRAW );
-          break;
-
-        case Program::QUADSTESSADAPTNG:
-          vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );
-          glGenBuffers(4,vbo_);
-
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices_.size( ),
-                        vertices_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inVertex( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inVertex() );
-
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers_.size( ),
-                        centers_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inCenter( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inCenter() );
-
-          glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
-          glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents_.size( ),
-                        tangents_.data( ), GL_STATIC_DRAW );
-          glVertexAttribPointer( program_->inTangent( ), 3, GL_FLOAT, GL_FALSE, 0,
-                                 0 );
-          glEnableVertexAttribArray( program_->inTangent() );
-
-          glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
-          glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * size_,
-                        mesh_.data( ), GL_STATIC_DRAW );
-
-          break;
-      }
 
       glBindVertexArray( 0 );
 
@@ -301,59 +208,28 @@ namespace neurolots
 
   void NeuronMesh::Paint(void)
   {
-    glUniform3fv( program_->uColor( ), 1, color_.data( ));
 
-    glUniformMatrix4fv( program_->uView( ), 1, GL_FALSE,
-                        camera_->GetViewMatrix());
 
-    glUniformMatrix4fv( program_->uProy( ), 1, GL_FALSE,
-                        camera_->GetProjectionMatrix( ));
-
-    glUniform3fv( program_->uCameraPos( ), 1, camera_->GetCameraPos( ));
 
     glBindVertexArray(vao_);
 
-    float lod;
-    float tng;
-    float max;
+    glUseProgram( _programTriangles->id( ));
 
-    switch( program_->type() )
-    {
-      case Program::LINES:
-        glDrawElements( GL_LINES, size_, GL_UNSIGNED_INT, 0);
-        break;
+    glPatchParameteri( GL_PATCH_VERTICES, 3 );
+    glDrawElements( GL_PATCHES, _somaEnd, GL_UNSIGNED_INT, 0 );
 
-      case Program::TRIANGLES:
-        glDrawElements( GL_TRIANGLES, size_, GL_UNSIGNED_INT, 0 );
-        break;
+//    glDrawRangeElements( GL_TRIANGLES, 0, _somaEnd, _somaEnd, GL_UNSIGNED_INT,
+//                             0 );
 
-      case Program::QUADSTESSADAP:
-        lod = program_->lod( );
-        tng = program_->tng( );
-        max = program_->maxDist( );
+    glUseProgram( _programQuads->id( ));
+    glUniform3fv( _programTriangles->uColor( ), 1, color_.data( ));
 
-        glUniform1fv( program_->uLod( ), 1, &lod);
-        glUniform1fv( program_->uTng( ), 1, &tng);
-        glUniform1fv( program_->uMaxDist( ), 1, &max);
 
-        glPatchParameteri( GL_PATCH_VERTICES, 4 );
-        glDrawElements( GL_PATCHES, size_, GL_UNSIGNED_INT, 0 );
-        break;
-
-      case Program::QUADSTESSADAPTNG:
-        lod = program_->lod( );
-        tng = program_->tng( );
-        max = program_->maxDist( );
-
-        glUniform1fv( program_->uLod( ), 1, &lod);
-        glUniform1fv( program_->uTng( ), 1, &tng);
-        glUniform1fv( program_->uMaxDist( ), 1, &max);
-
-        glPatchParameteri( GL_PATCH_VERTICES, 4 );
-        glDrawElements( GL_PATCHES, size_, GL_UNSIGNED_INT, 0 );
-        break;
-
-    }
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+//    glDrawRangeElements( GL_PATCHES, _somaEnd, _size, _size-_somaEnd, GL_UNSIGNED_INT,
+//                         0 );
+    glDrawElements( GL_PATCHES,  _size-_somaEnd, GL_UNSIGNED_INT,
+                 (void *) (_somaEnd*sizeof(int)));
 
   }
 

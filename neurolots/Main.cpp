@@ -30,7 +30,8 @@ bool mode = true;
 int cont = 0;
 
 Camera * camera;
-Program * program;
+Program * programTriangles;
+Program * programQuads;
 NeuronsCollection * neuronsCollection;
 
 void sceneInit( void )
@@ -111,34 +112,34 @@ void keyboardFunc( unsigned char key, int _x, int _y )
       camera->IncrementRotation( -0.05f );
       break;
     case 'w':
-      program->lod( program->lod( ) + 1.0f );
-      std::cout << "Lod: " << program->lod() << std::endl;
+      programQuads->lod( programQuads->lod( ) + 1.0f );
+      std::cout << "Lod: " << programQuads->lod() << std::endl;
       break;
     case 's':
-      program->lod( program->lod( ) - 1.0f );
-      if ( program->lod( ) < 1.0f )
-        program->lod( 1.0f );
-      std::cout << "Lod: " << program->lod() << std::endl;
+      programQuads->lod( programQuads->lod( ) - 1.0f );
+      if ( programQuads->lod( ) < 1.0f )
+        programQuads->lod( 1.0f );
+      std::cout << "Lod: " << programQuads->lod() << std::endl;
       break;
     case 'e':
-      program->tng( program->tng( ) + 0.1f );
-      std::cout << "Tng: " << program->tng() << std::endl;
+      programQuads->tng( programQuads->tng( ) + 0.1f );
+      std::cout << "Tng: " << programQuads->tng() << std::endl;
       break;
     case 'd':
-      program->tng( program->tng( ) - 0.1f );
-      if ( program->tng( ) < 0.0f )
-        program->tng( 0.0f );
-      std::cout << "Tng: " << program->tng() << std::endl;
+      programQuads->tng( programQuads->tng( ) - 0.1f );
+      if ( programQuads->tng( ) < 0.0f )
+        programQuads->tng( 0.0f );
+      std::cout << "Tng: " << programQuads->tng() << std::endl;
       break;
     case 'r':
-      program->maxDist( program->maxDist( ) + 1 );
-      std::cout << "Max distance: " << program->maxDist() << std::endl;
+      programQuads->maxDist( programQuads->maxDist( ) + 1 );
+      std::cout << "Max distance: " << programQuads->maxDist() << std::endl;
       break;
     case 'f':
-      program->maxDist( program->maxDist( ) - 1 );
-      if( program->maxDist( ) < 2 )
-        program->maxDist( 2 );
-      std::cout << "Max distance: " << program->maxDist() << std::endl;
+      programQuads->maxDist( programQuads->maxDist( ) - 1 );
+      if( programQuads->maxDist( ) < 2 )
+        programQuads->maxDist( 2 );
+      std::cout << "Max distance: " << programQuads->maxDist() << std::endl;
       break;
   }
 }
@@ -209,8 +210,10 @@ int main( int argc, char * argv[ ])
 
   if( argc == 2 )
   {
-    program = new Program( Program::QUADSTESSADAPTNG );
-    neuronsCollection = new NeuronsCollection( argv[1], program, camera );
+    programQuads = new Program( Program::QUADSTESSADAPTNG );
+    programTriangles = new Program( Program::TRIANGLESTESS );
+    neuronsCollection = new NeuronsCollection( argv[1], programTriangles,
+                                               programQuads, camera );
   }
   else
   {
@@ -246,7 +249,8 @@ int main( int argc, char * argv[ ])
             << std::endl;
 */
 
-  program->Init( );
+  programTriangles->Init( );
+  programQuads->Init( );
   sceneInit( );
 
   glutMainLoop( );

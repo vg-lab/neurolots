@@ -28,8 +28,8 @@ namespace neurolots
 
     public:
 
-      NeuronsCollection( const char * file_name, Program * program_,
-                         Camera * camera_ );
+      NeuronsCollection( const char * file_name, Program * programTriangles_,
+                         Program * programQuads_, Camera * camera_ );
       ~NeuronsCollection( void );
 
       void Init( void );
@@ -47,12 +47,13 @@ namespace neurolots
       void _GenerateMeshes( unsigned int nColumn, unsigned int nMiniColumn,
                             unsigned int nNeuron  );
 
-      Program * _program;
+      Program * _programTriangles;
+      Program * _programQuads;
       Camera * _camera;
 
       std::map<unsigned int, nsol::ColumnPtr> _colums;
 
-      int _cont;
+      unsigned int _cont;
   };
 
 } // end namespace neurolots

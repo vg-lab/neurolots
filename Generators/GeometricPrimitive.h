@@ -46,6 +46,8 @@ namespace neurolots
 
   };
 
+  typedef GeometricPrimitive * GeometricPrimitivePtr;
+
 } // end namespace neurolots
 
 #endif // __NEUROLOTS_GEOMETRIC_PRIMITIVE__

@@ -33,6 +33,7 @@ namespace neurolots
       {
         LINES = 0,
         TRIANGLES,
+        TRIANGLESTESS,
         QUADSTESSADAP,
         QUADSTESSADAPTNG,
       } TProgram;

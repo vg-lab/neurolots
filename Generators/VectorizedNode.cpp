@@ -7,6 +7,7 @@ namespace neurolots
     : _primitive( nullptr )
     , _father( nullptr )
     , _bifurcation( false )
+    , _firstNode( true )
   {
     _childs.clear();
   }
@@ -59,6 +60,7 @@ namespace neurolots
   void VectorizedNode::Father( VectorizedNode* father_)
   {
     _father = father_;
+    _firstNode = false;
   }
 
 
@@ -101,6 +103,11 @@ namespace neurolots
   bool VectorizedNode::Bifurcation( void )
   {
     return _bifurcation;
+  }
+
+  bool VectorizedNode::FirstNode( void )
+  {
+    return _firstNode;
   }
 
 }// end namespace neurolots

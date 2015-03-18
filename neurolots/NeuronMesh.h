@@ -42,7 +42,8 @@ namespace neurolots
 
     public:
 
-      NeuronMesh( nsol::NeuronMorphologyPtr morpho_, Program * _program,
+      NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
+                  Program * programTriangles_, Program * programQuads_,
                   Camera * _camera );
       ~NeuronMesh( void );
 
@@ -65,7 +66,8 @@ namespace neurolots
 
       nsol::NeuronMorphologyPtr _morpho;
 
-      Program * program_;
+      Program * _programTriangles;
+      Program * _programQuads;
       Camera * camera_;
 
       GLuint vao_;
@@ -74,7 +76,9 @@ namespace neurolots
       GLuint _vaoLines;
       GLuint * _vboLines;
 
-      int size_;
+      unsigned int _size;
+      unsigned int _somaEnd;
+
       std::vector<float> color_;
 
       bool _isInit;

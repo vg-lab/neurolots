@@ -17,6 +17,8 @@
 #include <Tetrahedron.h>
 
 #include "Edges.h"
+#include "Quad.h"
+#include "VectorizedNode.h"
 
 #include <iostream>
 #include <vector>
@@ -31,25 +33,36 @@ namespace neurolots
 
     public:
 
-      Icosphere( Eigen::Vector3f center_, float radius_, int level  );
+      Icosphere( Eigen::Vector3f center_, float radius_, unsigned int level  );
       ~Icosphere( void );
 
-      void PassToVector( std::vector< float >& vertices,
-                         std::vector< float >& centers,
-                         std::vector< unsigned int >& mesh );
-      void PassContornToVector( std::vector< float >& vertices,
-                                std::vector< float >& centers,
-                                std::vector< unsigned int >& mesh );
+      void CalculateSoma( std::vector< VectorizedNodePtr >& firstNodes );
+
+      void PassTrianglesToVector( std::vector< float >& vertices,
+                                  std::vector< float >& centers,
+                                  std::vector< float >& tangents,
+                                  std::vector< unsigned int >& mesh );
+
+      void PassContornTrianglesToVector( std::vector< float >& vertices,
+                                         std::vector< float >& centers,
+                                         std::vector< float >& tangents,
+                                         std::vector< unsigned int >& mesh );
+
+      void PassQuadsToVector( std::vector< float >& vertices,
+                               std::vector< float >& centers,
+                               std::vector< float >& tangents,
+                               std::vector< unsigned int >& mesh );
 
     private:
 
-      void _DivideSphere( int level );
+      void _DivideSphere( unsigned int level );
 
       Eigen::Vector3f _center;
       float _radius;
 
       std::vector< fem::NodePtr > _nodes;
       std::vector< fem::TetrahedronPtr > _tetrahedra;
+      std::vector< QuadPtr > _quads;
 
   };
 

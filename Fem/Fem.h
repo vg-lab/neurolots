@@ -7,8 +7,8 @@
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_FEM__
-#define __NEUROLOTS_FEM__
+#ifndef __FEM_FEM__
+#define __FEM_FEM__
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -65,6 +65,6 @@ namespace fem
 
 }// end namespace fem
 
-#endif // __NEUROLOTS_FEM__
+#endif // __FEM_FEM__
 
 //EOF
