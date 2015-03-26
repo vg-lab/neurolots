@@ -77,12 +77,16 @@ namespace neurolots
     for ( unsigned int i=0; i < quads.size(); i++ )
     {
       QuadPtr quad = quads[i];
+      if( quad->Free( ))
+      {
+        mesh.push_back( quad->Node0( )->Id2( ) );
+        mesh.push_back( quad->Node1( )->Id2( ) );
+        mesh.push_back( quad->Node3( )->Id2( ) );
 
-      mesh.push_back( quad->Node0( )->Id2( ) );
-      mesh.push_back( quad->Node1( )->Id2( ) );
-      mesh.push_back( quad->Node3( )->Id2( ) );
-      mesh.push_back( quad->Node2( )->Id2( ) );
-
+        mesh.push_back( quad->Node1( )->Id2( ) );
+        mesh.push_back( quad->Node2( )->Id2( ) );
+        mesh.push_back( quad->Node3( )->Id2( ) );
+      }
     }
   }
 
@@ -98,7 +102,8 @@ namespace neurolots
     for ( unsigned int i = 0; i < quads.size( ); i++ )
     {
       quad = quads[i];
-      if ( quad->Free( ))
+      if ( !quad->Node0( )->Fixed( ) && !quad->Node1( )->Fixed( )
+           && !quad->Node2( )->Fixed( ) && !quad->Node3( )->Fixed( ))
       {
         dist = ( quad->Center( ) - position ).norm( );
         if ( dist < minDist)

@@ -63,7 +63,6 @@ namespace neurolots
     _firstNode = false;
   }
 
-
   //Getters
   int VectorizedNode::Id( void )
   {

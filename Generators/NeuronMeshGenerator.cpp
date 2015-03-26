@@ -148,6 +148,13 @@ namespace neurolots
       {
         _CreateQuadPipe( vNode->Father( )->Primitive( ),
                              vNode->Primitive(), mesh );
+        if( vNode->Childs( ).size( ) == 0 )
+        {
+          mesh.push_back( vNode->Primitive( )->A( ));
+          mesh.push_back( vNode->Primitive( )->B( ));
+          mesh.push_back( vNode->Primitive( )->D( ));
+          mesh.push_back( vNode->Primitive( )->C( ));
+        }
       }
     }
   }
@@ -173,6 +180,13 @@ namespace neurolots
       if( vNode->Father( ) != nullptr )
       {
         _CreateQuadPipe( vNode->Father( )->Primitive( ), vNode->Primitive(), mesh );
+        if( vNode->Childs( ).size( ) == 0 )
+        {
+          mesh.push_back( vNode->Primitive( )->A( ));
+          mesh.push_back( vNode->Primitive( )->B( ));
+          mesh.push_back( vNode->Primitive( )->D( ));
+          mesh.push_back( vNode->Primitive( )->C( ));
+        }
       }
     }
   }
@@ -260,7 +274,8 @@ namespace neurolots
 
     ico.CalculateSoma( firstNodes );
 
-    ico.PassContornTrianglesToVector( vertices, centers, tangents, mesh );
+    ico.PassContornTrianglesToVector( firstNodes, vertices, centers, tangents,
+                                      mesh );
   }
 
   void NeuronMeshGenerator::GenerateSomaQuads( nsol::SomaPtr soma,
@@ -382,13 +397,32 @@ namespace neurolots
         }
         else //Bifurcation and normal node
         {
+
+          Eigen::Vector3f localTangent;
           for ( unsigned int j = 0; j < childNodes.size(); j++ )
           {
-            tangent += ( childNodes[j]->Position( ) - vNode->Position( ) ).normalized( );
+            localTangent = childNodes[j]->Position( ) - vNode->Position( );
+            if( localTangent.norm( ) > 0.000001 )
+            {
+              localTangent.normalize( );
+            }
+            tangent += localTangent;
+//            tangent += ( childNodes[j]->Position( ) - vNode->Position( ) ).normalized( );
           }
-          tangent.normalize( );
-          tangent  += ( vNode->Position( ) - vNodeFather->Position( )).normalized( );
-          tangent.normalize( );
+          if( tangent.norm() > 0.000001)
+          {
+            tangent.normalize( );
+          }
+          localTangent = vNode->Position( ) - vNodeFather->Position( );
+          if( localTangent.norm( ) > 0.000001 )
+          {
+            localTangent.normalize( );
+          }
+          tangent  += localTangent;
+          if( tangent.norm() > 0.000001)
+          {
+            tangent.normalize( );
+          }
         }
 
         vNode->Tangent(tangent);
@@ -419,37 +453,75 @@ namespace neurolots
     {
       VectorizedNodePtr vNode = vNodes[i];
 
-      if ( true)//!vNode->FirstNode( ))
+      if ( !vNode->FirstNode( ))
       {
         center = vNode->Position( );
         tangent = vNode->Tangent();
 
+        VectorizedNodePtr father = vNode->Father( );
+
+        exe = father->Tangent( );
+
         q.setFromTwoVectors(exe,tangent);
+
+        GeometricPrimitivePtr fatherGeom = father->Primitive();
+
+        int vecId = fatherGeom->A( ) * 3;
+//        std::cout << " indice de vertice  " << vecId << std::endl;
+//        std::cout << " tamaño de vertices  " << vertices.size() << std::endl;
+//        std::cout << " componente x del vertice  " << vertices[vecId] << std::endl;
+
+        va = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
+             vertices[vecId + 2] ) - father->Position( )).normalized( );
+        vecId = fatherGeom->B( ) * 3;
+        vb = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
+             vertices[vecId + 2] )- father->Position( )).normalized( ) ;
+        vecId = fatherGeom->C( ) * 3;
+        vc = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
+             vertices[vecId + 2] ) - father->Position( )).normalized( );
+        vecId = fatherGeom->D( ) * 3;
+        vd = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
+             vertices[vecId + 2] ) - father->Position( )).normalized( );
+
+//        std::cout << "va: " << va.x() << " " << va.y() << " " << va.z() << std::endl;
+//        std::cout << "vb: " << vb.x() << " " << vb.y() << " " << vb.z() << std::endl;
+//        std::cout << "vc: " << vc.x() << " " << vc.y() << " " << vc.z() << std::endl;
+//        std::cout << "vd: " << vd.x() << " " << vd.y() << " " << vd.z() << std::endl;
 
         int a = vertices.size( ) / 3;
         position = q._transformVector( va ) * vNode->Radius( ) + center;
+//        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
         int b = vertices.size( ) / 3;
         position = q._transformVector( vb ) * vNode->Radius( ) + center;
+//        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
         int c = vertices.size( ) / 3;
         position = q._transformVector( vc ) * vNode->Radius( ) + center;
+//        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
         int d = vertices.size( ) / 3;
         position = q._transformVector( vd ) * vNode->Radius( ) + center;
+//        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
+//        std::getchar();
+
+        if ( vNode->Childs( ).size( ) == 0 )
+        {
+          center = center - tangent * 0.1;
+        }
 
         for (unsigned int j = 0; j < 4; j++ )
         {

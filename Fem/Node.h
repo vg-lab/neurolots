@@ -53,6 +53,9 @@ namespace fem
       void Fixed( bool );
       void Contorn( bool );
 
+      void AddCenter( Eigen::Vector3f add );
+
+
     private:
       unsigned int _id;
       unsigned int _id2;
@@ -86,6 +89,8 @@ namespace fem
                                          std::vector< float >& vertices,
                                          std::vector< float >& centers,
                                          std::vector< float >& tagents );
+
+      static void ContornIds( std::vector< NodePtr >& nodes );
 
 
   };

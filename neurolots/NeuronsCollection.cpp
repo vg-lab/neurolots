@@ -193,8 +193,12 @@ namespace neurolots
         tng = _programQuads->tng( );
         max = _programQuads->maxDist( );
 
-        std::vector< float > color;
-        color.push_back( 0.2 ); color.push_back( 0.5 ); color.push_back( 0.7 );
+        std::vector< float > color0;
+        color0.push_back( 0.3 ); color0.push_back( 0.5 ); color0.push_back( 0.7 );
+
+        std::vector< float > color1;
+        color1.push_back( 0.7 ); color1.push_back( 0.5 ); color1.push_back( 0.3 );
+
 
         glUseProgram( _programQuads->id( ));
         glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
@@ -202,7 +206,7 @@ namespace neurolots
         glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
                             _camera->GetProjectionMatrix( ));
         glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
-        glUniform3fv( _programQuads->uColor( ), 1, color.data( ));
+        ;
 
         glUniform1fv( _programQuads->uLod( ), 1, &lod);
         glUniform1fv( _programQuads->uTng( ), 1, &tng);
@@ -215,7 +219,6 @@ namespace neurolots
                             _camera->GetProjectionMatrix( ));
         glUniform3fv( _programTriangles->uCameraPos( ), 1,
                       _camera->GetCameraPos( ));
-        glUniform3fv( _programTriangles->uColor( ), 1, color.data( ));
 
         glUniform1fv( _programQuads->uLod( ), 1, &lod);
         glUniform1fv( _programQuads->uTng( ), 1, &tng);
@@ -240,10 +243,12 @@ namespace neurolots
        glUseProgram( _programQuads->id( ));
        glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
                                      tMatrix.data());
+       glUniform3fv( _programQuads->uColor( ), 1, color0.data( ));
 
        glUseProgram( _programTriangles->id( ));
        glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
                                      tMatrix.data());
+       glUniform3fv( _programQuads->uColor( ), 1, color1.data( ));
 
        neuronMesh->Paint( );
      }
@@ -390,45 +395,60 @@ namespace neurolots
     neuronMesh->Paint( );
   }
 
-  void NeuronsCollection::Anim( void )
+  void NeuronsCollection::PaintSoma( bool paintSoma )
   {
-//    nsol::Neurons neurons;
-//    nsol::NeuronPtr n;
-//    NeuronMeshPtr neuronMesh;
-//    //First minicolum
-//
-//    glUseProgram( _program->id( ));
-//
-//    neurons =_colums[0]->miniColumns( )[0]->neurons( );
-//
-//    _cont++;
-//
-//    if( _cont >= neurons.size( )*100 )
-//    {
-//      _cont = 0;
-//    }
-//
-//    std::cout << "cont " << _cont << " indice "<< _cont/100 <<std::endl;
-//
-//    n = neurons[_cont/100];
-//    neuronMesh = ((NeuronMorphologyPtr)n->morphology( ))->NeuronMesh( );
-//
-//    if(neuronMesh == nullptr )
-//       std::cout << "Morfología inexistente" << std::endl;
-//
-//    std::vector< float > tMatrix;
-//    tMatrix.resize(16);
-//    for(int i = 0; i < 4; i++ )
-//    {
-//      for(int j = 0; j < 4; j++)
-//      {
-//        tMatrix[j*4+i] = n->transform()[i][j];
-//      }
-//    }
-//    glUniformMatrix4fv( _program->uModel( ), 1, GL_FALSE, tMatrix.data());
-//    neuronMesh->Paint( );
+    nsol::MiniColumns miniColumns;
+    nsol::NeuronPtr neuron;
+    nsol::Neurons neurons;
+    NeuronMorphologyPtr morpho;
+    NeuronMeshPtr neuronMesh;
 
 
+    for( unsigned int i = 0; i < _colums.size(); i++ )
+    {
+      miniColumns = _colums[i]->miniColumns( );
+      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+      {
+        neurons = miniColumns[j]->neurons( );
+        for( unsigned int k = 0; k < neurons.size( ); k++ )
+        {
+          neuron = neurons[k];
+          morpho = (NeuronMorphologyPtr)neuron->morphology( );
+          neuronMesh = morpho->NeuronMesh( );
+
+          neuronMesh->PaintSoma( paintSoma );
+
+        }
+      }
+    }
+  }
+
+  void NeuronsCollection::PaintNeurites( bool paintNeurites )
+  {
+    nsol::MiniColumns miniColumns;
+    nsol::NeuronPtr neuron;
+    nsol::Neurons neurons;
+    NeuronMorphologyPtr morpho;
+    NeuronMeshPtr neuronMesh;
+
+
+    for( unsigned int i = 0; i < _colums.size(); i++ )
+    {
+      miniColumns = _colums[i]->miniColumns( );
+      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+      {
+        neurons = miniColumns[j]->neurons( );
+        for( unsigned int k = 0; k < neurons.size( ); k++ )
+        {
+          neuron = neurons[k];
+          morpho = (NeuronMorphologyPtr)neuron->morphology( );
+          neuronMesh = morpho->NeuronMesh( );
+
+          neuronMesh->PaintNeurites( paintNeurites );
+
+        }
+      }
+    }
   }
 
   // PRIVATE

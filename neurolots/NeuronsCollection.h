@@ -39,7 +39,9 @@ namespace neurolots
                         unsigned int nNeuron );
       void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
                         unsigned int nNeuron, float x, float y, float z );
-      void Anim( void );
+
+      void PaintSoma( bool paintSoma );
+      void PaintNeurites( bool paintNeurites);
 
     private:
 

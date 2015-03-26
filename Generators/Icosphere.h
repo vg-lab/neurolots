@@ -15,6 +15,7 @@
 
 #include <Node.h>
 #include <Tetrahedron.h>
+#include <Fem.h>
 
 #include "Edges.h"
 #include "Quad.h"
@@ -43,19 +44,23 @@ namespace neurolots
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
-      void PassContornTrianglesToVector( std::vector< float >& vertices,
-                                         std::vector< float >& centers,
-                                         std::vector< float >& tangents,
-                                         std::vector< unsigned int >& mesh );
+      void PassContornTrianglesToVector(
+                                  std::vector< VectorizedNodePtr >& firstNodes,
+                                  std::vector< float >& vertices,
+                                  std::vector< float >& centers,
+                                  std::vector< float >& tangents,
+                                  std::vector< unsigned int >& mesh );
 
       void PassQuadsToVector( std::vector< float >& vertices,
                                std::vector< float >& centers,
                                std::vector< float >& tangents,
                                std::vector< unsigned int >& mesh );
 
+
     private:
 
       void _DivideSphere( unsigned int level );
+      void _CalculateContornCenters( void );
 
       Eigen::Vector3f _center;
       float _radius;

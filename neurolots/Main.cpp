@@ -23,6 +23,9 @@ using namespace neurolots;
 bool rotation = false;
 bool translation = false;
 
+bool paintSoma = true;
+bool paintNeurites = true;
+
 int m_x, m_y;
 
 bool mode = true;
@@ -140,6 +143,14 @@ void keyboardFunc( unsigned char key, int _x, int _y )
       if( programQuads->maxDist( ) < 2 )
         programQuads->maxDist( 2 );
       std::cout << "Max distance: " << programQuads->maxDist() << std::endl;
+      break;
+    case 'o':
+      paintSoma = !paintSoma;
+      neuronsCollection->PaintSoma( paintSoma );
+      break;
+    case 'p':
+      paintNeurites = !paintNeurites;
+      neuronsCollection->PaintNeurites( paintNeurites );
       break;
   }
 }

@@ -101,6 +101,7 @@ namespace fem
   void Node::Pos( Eigen::Vector3f pos_ )
   {
     _pos = pos_;
+    _u = _pos - _pos0;
   }
 
   void Node::Force( Eigen::Vector3f force_ )
@@ -128,6 +129,10 @@ namespace fem
     _contorn = contorn_;
   }
 
+  void Node::AddCenter( Eigen::Vector3f add )
+  {
+    _center += add;
+  }
 
 
   /////////////////////////////
@@ -150,7 +155,7 @@ namespace fem
                              std::vector< float >& tangents )
   {
 
-    for ( int i = 0; i < nodes.size( ); i++ )
+    for ( unsigned int i = 0; i < nodes.size( ); i++ )
     {
       NodePtr node = nodes[i];
 
@@ -172,31 +177,46 @@ namespace fem
                                      std::vector< float >& vertices,
                                      std::vector< float >& centers,
                                      std::vector< float >& tangents  )
+  {
+
+    int contornNodes = 0;
+    for ( unsigned int i = 0; i < nodes.size( ); i++ )
     {
+      NodePtr node = nodes[i];
 
-      int contornNodes = 0;
-      for ( int i = 0; i < nodes.size( ); i++ )
+      if( node->Contorn( ))
       {
-        NodePtr node = nodes[i];
+        node->Id2( contornNodes );
+        contornNodes ++;
 
-        if( node->Contorn( ))
-        {
-          node->Id2( contornNodes );
-          contornNodes ++;
+        vertices.push_back( node->Pos( ).x( ));
+        vertices.push_back( node->Pos( ).y( ));
+        vertices.push_back( node->Pos( ).z( ));
 
-          vertices.push_back( node->Pos( ).x( ));
-          vertices.push_back( node->Pos( ).y( ));
-          vertices.push_back( node->Pos( ).z( ));
+        centers.push_back( node->Center( ).x());
+        centers.push_back( node->Center( ).y());
+        centers.push_back( node->Center( ).z());
 
-          centers.push_back( node->Center( ).x());
-          centers.push_back( node->Center( ).y());
-          centers.push_back( node->Center( ).z());
-
-          tangents.push_back( node->Tangent( ).x());
-          tangents.push_back( node->Tangent( ).y());
-          tangents.push_back( node->Tangent( ).z());
-        }
+        tangents.push_back( node->Tangent( ).x());
+        tangents.push_back( node->Tangent( ).y());
+        tangents.push_back( node->Tangent( ).z());
       }
     }
+  }
+
+  void Nodes::ContornIds( std::vector< NodePtr >& nodes )
+  {
+    unsigned int contornNode = 0;
+    NodePtr node;
+    for ( unsigned int i = 0; i < nodes.size(); i++ )
+    {
+      node = nodes[i];
+      if( node->Contorn( ))
+      {
+        node->Id2( contornNode );
+        contornNode ++;
+      }
+    }
+  }
 
 }// end namespace fem

@@ -22,9 +22,9 @@ namespace neurolots
     , uLod_( -1 )
     , uTng_( -1 )
     , uMaxDist_( -1 )
+    , maxDist_( 500.0f )
     , lod_( 1.0f )
     , tng_( 0.0f )
-    , maxDist_( 500.0f )
   {
   }
 
@@ -88,17 +88,17 @@ namespace neurolots
 
     id_ = glCreateProgram( );
 
-    char* vname;
-    char* tcname;
-    char* tename;
-    char* gname;
-    char* fname;
+    const char* vname;
+    const char* tcname;
+    const char* tename;
+    const char* fname;
 
     switch ( _type )
     {
       case LINES:
         vname = "/home/jjgarcia/shaders/lines/vshader.glsl";
         fname = "/home/jjgarcia/shaders/lines/fshader.glsl";
+
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
         fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
 

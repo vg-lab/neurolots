@@ -23,6 +23,8 @@ namespace fem
 
   }
 
+  //Getters
+
   NodePtr Tetrahedron::Node0( void )
   {
     return _node0;
@@ -41,6 +43,31 @@ namespace fem
   NodePtr Tetrahedron::Node3( void )
   {
     return _node3;
+  }
+
+  Eigen::MatrixXf Tetrahedron::B0( void )
+  {
+    return _b0;
+  }
+
+  Eigen::MatrixXf Tetrahedron::B1( void )
+  {
+    return _b1;
+  }
+
+  Eigen::MatrixXf Tetrahedron::B2( void )
+  {
+    return _b2;
+  }
+
+  Eigen::MatrixXf Tetrahedron::B3( void )
+  {
+    return _b3;
+  }
+
+  float Tetrahedron::Volume( void )
+  {
+    return _volume;
   }
 
   bool Tetrahedron::Face0( void )
@@ -63,6 +90,32 @@ namespace fem
     return _node1->Contorn( ) && _node3->Contorn( ) && _node2->Contorn( );
   }
 
+  //Setters
+
+  void Tetrahedron::B0( Eigen::MatrixXf b0_ )
+  {
+    _b0 = b0_;
+  }
+
+  void Tetrahedron::B1( Eigen::MatrixXf b1_ )
+  {
+    _b1 = b1_;
+  }
+
+  void Tetrahedron::B2( Eigen::MatrixXf b2_ )
+  {
+    _b2 = b2_;
+  }
+
+  void Tetrahedron::B3( Eigen::MatrixXf b3_ )
+  {
+    _b3 = b3_;
+  }
+
+  void Tetrahedron::Volume( float volume_ )
+  {
+    _volume = volume_;
+  }
 
   /////////////////////////////
   // Class Tetrahedra

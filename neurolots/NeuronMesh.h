@@ -49,20 +49,16 @@ namespace neurolots
 
       void Init( void );
       void Paint( void );
-      void CreateLinesMesh( );
+
+      //Getters
+      bool PaintSoma( void );
+      bool PaintNeurites( void );
+
+      //Setters
+      void PaintSoma( bool paintSoma_ );
+      void PaintNeurites( bool paintNeurites_ );
 
     private:
-
-      void Load( std::string & file_name );
-      void ReadOBJ( std::string & file_name );
-      void ReadMOBJ( std::string & file_name );
-
-      std::vector<float> vertices_;
-      std::vector<float> tangents_;
-      std::vector<float> centers_;
-      std::vector<unsigned int> mesh_;
-      std::vector<int> nodeIndices_;
-
 
       nsol::NeuronMorphologyPtr _morpho;
 
@@ -73,16 +69,13 @@ namespace neurolots
       GLuint vao_;
       GLuint * vbo_;
 
-      GLuint _vaoLines;
-      GLuint * _vboLines;
-
       unsigned int _size;
       unsigned int _somaEnd;
 
-      std::vector<float> color_;
-
       bool _isInit;
 
+      bool _paintSoma;
+      bool _paintNeurites;
   };
 
   typedef NeuronMesh * NeuronMeshPtr;

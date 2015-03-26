@@ -38,10 +38,25 @@ namespace fem
       NodePtr Node2( void );
       NodePtr Node3( void );
 
+      Eigen::MatrixXf B0( void );
+      Eigen::MatrixXf B1( void );
+      Eigen::MatrixXf B2( void );
+      Eigen::MatrixXf B3( void );
+
+      float Volume( void );
+
       bool Face0( void );
       bool Face1( void );
       bool Face2( void );
       bool Face3( void );
+
+      // Setters
+      void B0( Eigen::MatrixXf b0_ );
+      void B1( Eigen::MatrixXf b1_ );
+      void B2( Eigen::MatrixXf b2_ );
+      void B3( Eigen::MatrixXf b3_ );
+
+      void Volume( float volume_ );
 
     private:
 
@@ -49,6 +64,13 @@ namespace fem
       NodePtr _node1;
       NodePtr _node2;
       NodePtr _node3;
+
+      Eigen::MatrixXf _b0;
+      Eigen::MatrixXf _b1;
+      Eigen::MatrixXf _b2;
+      Eigen::MatrixXf _b3;
+
+      float _volume;
 
   };
 
@@ -75,6 +97,7 @@ namespace fem
                                   std::vector< float >& centers,
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
+
   };
 
 } // end namespace fem

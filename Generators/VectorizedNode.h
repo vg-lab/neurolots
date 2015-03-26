@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 
 #include "GeometricPrimitive.h"
+#include "Quad.h"
 
 namespace neurolots
 {
@@ -61,6 +62,7 @@ namespace neurolots
 
       bool _bifurcation;
       bool _firstNode;
+
 
   };
 
