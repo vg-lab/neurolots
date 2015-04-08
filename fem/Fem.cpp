@@ -73,8 +73,10 @@ namespace fem
       localCol = col;
       for( unsigned int j = 0; j < 3; j++ )
       {
-        _kMatrix( row + i, localCol + j ) = _kMatrix( row + i, localCol + j )
-                                            + sum( i, j );
+//        _kMatrix( row + i, localCol + j ) = _kMatrix( row + i, localCol + j )
+//                                            + sum( i, j );
+        _triplets.push_back( Eigen::Triplet< float >( row + i, localCol + j,
+                             sum( i, j )));
       }
     }
 
@@ -165,6 +167,8 @@ namespace fem
   void Fem::_ConformMatrixSystem( void )
   {
 
+    _triplets.clear( );
+
     _ids.resize( _nodes.size( ));
     unsigned int n = 0;
     for ( unsigned int i = 0; i < _nodes.size( ); i++ )
@@ -176,11 +180,10 @@ namespace fem
       }
     }
 
-    std::cout << "Numero de nodos: " << _nodes.size() << std::endl;
     _dim = n * 3;
-    std::cout << "dimensiones de la matriz " << _dim << std::endl;
+//    std::cout << "dimensiones de la matriz " << _dim << std::endl;
 
-    _kMatrix = Eigen::MatrixXf( _dim, _dim );
+    _kMatrix.resize( _dim, _dim );
     _b = Eigen::VectorXf( _dim );
     _u = Eigen::VectorXf( _dim );
 
@@ -406,7 +409,15 @@ namespace fem
       }
 
     }
+
+    _kMatrix.resizeNonZeros( _triplets.size( ));
+    _kMatrix.setFromTriplets( _triplets.begin( ), _triplets.end( ));
+
+    _triplets.clear( );
+
     _solver.compute( _kMatrix );
+
+
 
   }
 

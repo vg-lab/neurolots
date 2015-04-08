@@ -11,7 +11,7 @@
 #define __FEM_FEM__
 
 #include <Eigen/Dense>
-//#include <Eigen/Sparse>
+#include <Eigen/Sparse>
 #include <vector>
 #include <iostream>
 #include <cstdio>
@@ -48,10 +48,11 @@ namespace fem
       double _v;
       double _E;
       Eigen::MatrixXf _Material;
-      Eigen::MatrixXf _kMatrix;
+      std::vector< Eigen::Triplet< float >> _triplets;
+      Eigen::SparseMatrix< float > _kMatrix;
       Eigen::VectorXf _b;
       Eigen::VectorXf _u;
-      Eigen::LLT< Eigen::MatrixXf > _solver;
+      Eigen::ConjugateGradient< Eigen::SparseMatrix< float >> _solver;
       unsigned int _dim;
   };
 
