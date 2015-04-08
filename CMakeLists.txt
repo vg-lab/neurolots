@@ -21,6 +21,9 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 add_subdirectory( Fem )
 include_directories( Fem )
 
+add_subdirectory( femTests )
+include_directories( femTests )
+
 add_subdirectory( Generators )
 include_directories( Generators )
 

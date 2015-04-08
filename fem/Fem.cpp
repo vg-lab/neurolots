@@ -34,23 +34,29 @@ namespace fem
   {
     _ComputeTetrahedra( );
     _ConformMatrixSystem( );
-    _u = _solver.solve( _b );
-    //COMPORBACION DE U
+     _u = _solver.solve( _b );
 
-    for ( unsigned int i=0; i < _nodes.size(); i++){
-      if ( !_nodes[i]->Fixed( )){
+//     std::cout << "K:\n" << _kMatrix << std::endl;
+//     std::cout << "b:\n" << _b << std::endl;
+//     std::cout << "u:\n" << _u << std::endl;
+
+     //COMPORBACION DE U
+
+    for ( unsigned int i=0; i < _nodes.size(); i++)
+    {
+      if ( !_nodes[i]->Fixed( ))
+      {
         unsigned int id = _ids[_nodes[i]->Id( )];
         _nodes[i]->U( Eigen::Vector3f( _u[id*3], _u[id*3+1], _u[id*3+2]) );
       }
     }
-//    for(unsigned int i = 0 ; i < _dim; i++)
-//    {
-//      std::cout << "u [" << i << "] " << _u[i] << std::endl;
-//    }
+
+
     for ( unsigned int i = 0; i < _nodes.size(); i++ )
     {
       _nodes[i]->Pos( _nodes[i]->Pos0( ) + _nodes[i]->U( ));
     }
+
 
   }
 
@@ -170,6 +176,7 @@ namespace fem
       }
     }
 
+    std::cout << "Numero de nodos: " << _nodes.size() << std::endl;
     _dim = n * 3;
     std::cout << "dimensiones de la matriz " << _dim << std::endl;
 
@@ -219,27 +226,43 @@ namespace fem
       Eigen::Matrix3f K31 = B3_Tr * _Material * B1 * volume;
       Eigen::Matrix3f K32 = B3_Tr * _Material * B2 * volume;
       Eigen::Matrix3f K33 = B3_Tr * _Material * B3 * volume;
-
-      std::cout << "tet " << i << std::endl;
-      std::cout << "K00\n" << K00 << std::endl;
-      std::cout << "K01\n" << K01 << std::endl;
-      std::cout << "K02\n" << K02 << std::endl;
-      std::cout << "K03\n" << K03 << std::endl;
-
-      std::cout << "K10\n" << K10 << std::endl;
-      std::cout << "K11\n" << K11 << std::endl;
-      std::cout << "K12\n" << K12 << std::endl;
-      std::cout << "K13\n" << K13 << std::endl;
-
-      std::cout << "K20\n" << K10 << std::endl;
-      std::cout << "K21\n" << K11 << std::endl;
-      std::cout << "K22\n" << K12 << std::endl;
-      std::cout << "K23\n" << K13 << std::endl;
-
-      std::cout << "K30\n" << K30 << std::endl;
-      std::cout << "K31\n" << K31 << std::endl;
-      std::cout << "K32\n" << K32 << std::endl;
-      std::cout << "K33\n" << K33 << std::endl;
+//
+//      std::cout << "tet " << i << std::endl;
+//
+//      std::cout << "B0\n" << B0 << std::endl;
+//      std::cout << "B1\n" << B1 << std::endl;
+//      std::cout << "B2\n" << B2 << std::endl;
+//      std::cout << "B3\n" << B3 << std::endl;
+//
+//      std::cout << "B0_Tr\n" << B0_Tr << std::endl;
+//      std::cout << "B1_Tr\n" << B1_Tr << std::endl;
+//      std::cout << "B2_Tr\n" << B2_Tr << std::endl;
+//      std::cout << "B3_Tr\n" << B3_Tr << std::endl;
+//
+//      std::cout << "K00\n" << K00 << std::endl;
+//      std::cout << "K01\n" << K01 << std::endl;
+//      std::cout << "K02\n" << K02 << std::endl;
+//      std::cout << "K03\n" << K03 << std::endl;
+//
+//      std::cout << "K10\n" << K10 << std::endl;
+//      std::cout << "K11\n" << K11 << std::endl;
+//      std::cout << "K12\n" << K12 << std::endl;
+//      std::cout << "K13\n" << K13 << std::endl;
+//
+//      std::cout << "K20\n" << K20 << std::endl;
+//      std::cout << "K21\n" << K21 << std::endl;
+//      std::cout << "K22\n" << K22 << std::endl;
+//      std::cout << "K23\n" << K23 << std::endl;
+//
+//      std::cout << "K30\n" << K30 << std::endl;
+//      std::cout << "K31\n" << K31 << std::endl;
+//      std::cout << "K32\n" << K32 << std::endl;
+//      std::cout << "K33\n" << K33 << std::endl;
+//
+//      std::cout << "u0 \n" << tet->Node0( )->U( ) << std::endl;
+//      std::cout << "u1 \n" << tet->Node1( )->U( ) << std::endl;
+//      std::cout << "u2 \n" << tet->Node2( )->U( ) << std::endl;
+//      std::cout << "u3 \n" << tet->Node3( )->U( ) << std::endl;
 
       unsigned int id0 = tet->Node0( )->Id( );
       unsigned int id1 = tet->Node1( )->Id( );
@@ -316,6 +339,7 @@ namespace fem
       if ( !tet->Node2( )->Fixed( ))
       {
         _AddTokMatrix( id2, id2, K22 );
+
         // with node 0
         if ( !tet->Node0( )->Fixed( ) )
         {
@@ -325,15 +349,17 @@ namespace fem
         {
           _AddToB( id2, -K20 * tet->Node0( )->U( ));
         }
+
         // with node 1
         if ( !tet->Node1( )->Fixed( ) )
         {
-          _AddTokMatrix( id2, id1, K01 );
+          _AddTokMatrix( id2, id1, K21 );
         }
         else
         {
           _AddToB( id2, -K21 * tet->Node1( )->U( ));
         }
+
         // with node 3
         if ( !tet->Node3( )->Fixed( ) )
         {
@@ -356,7 +382,7 @@ namespace fem
         }
         else
         {
-          _AddToB( id3, -K30 * tet->Node3( )->U( ));
+          _AddToB( id3, -K30 * tet->Node0( )->U( ));
         }
         // with node 1
         if ( !tet->Node1( )->Fixed( ) )
@@ -380,8 +406,6 @@ namespace fem
       }
 
     }
-
-
     _solver.compute( _kMatrix );
 
   }

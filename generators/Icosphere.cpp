@@ -14,34 +14,35 @@ namespace neurolots
     _tetrahedra.clear( );
     _quads.clear( );
 
-    fem::NodePtr n0 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f, 0.0f ), 0 );
+    fem::NodePtr n0 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
+                                     0.0f ), 0 );
     n0->Center( _center );
     _nodes.push_back( n0 );
 
-    fem::NodePtr n1 = new fem::Node( _center + Eigen::Vector3f( 0.0f, _radius, 0.0f ), 1,
-                                     true );
+    fem::NodePtr n1 = new fem::Node( _center + Eigen::Vector3f( 0.0f, _radius,
+                                     0.0f ), 1, true );
     n1->Center( _center );
     _nodes.push_back( n1 );
-    fem::NodePtr n2 = new fem::Node( _center + Eigen::Vector3f( 0.0f, -_radius, 0.0f ), 2,
-                                     true );
+    fem::NodePtr n2 = new fem::Node( _center + Eigen::Vector3f( 0.0f, -_radius,
+                                     0.0f ), 2, true );
     n2->Center( _center );
     _nodes.push_back( n2 );
 
-    fem::NodePtr n3 = new fem::Node( _center + Eigen::Vector3f( _radius, 0.0f, 0.0f ), 3,
-                                     true );
+    fem::NodePtr n3 = new fem::Node( _center + Eigen::Vector3f( _radius, 0.0f,
+                                     0.0f ), 3, true );
     n3->Center( _center );
     _nodes.push_back( n3 );
-    fem::NodePtr n4 = new fem::Node( _center + Eigen::Vector3f( -_radius, 0.0f, 0.0f ), 4,
-                                     true );
+    fem::NodePtr n4 = new fem::Node( _center + Eigen::Vector3f( -_radius, 0.0f,
+                                     0.0f ), 4, true );
     n4->Center( _center );
     _nodes.push_back( n4 );
 
-    fem::NodePtr n5 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f, _radius ), 5,
-                                     true );
+    fem::NodePtr n5 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
+                                     _radius ), 5, true );
     n5->Center( _center );
     _nodes.push_back( n5 );
-    fem::NodePtr n6 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f, -_radius ), 6,
-                                     true );
+    fem::NodePtr n6 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
+                                     -_radius ), 6, true );
     n6->Center( _center );
     _nodes.push_back( n6 );
 
@@ -61,6 +62,7 @@ namespace neurolots
     _quads.push_back( new Quad( n3, n2, n4, n6 ));
 
     _DivideSphere( level );
+
   }
 
   Icosphere::~Icosphere( void )

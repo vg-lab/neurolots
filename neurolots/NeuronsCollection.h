@@ -34,6 +34,7 @@ namespace neurolots
 
       void Init( void );
       void Paint( void );
+
       void PaintMiniColum( unsigned int nColumn, unsigned int nMiniColumn );
       void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
                         unsigned int nNeuron );
