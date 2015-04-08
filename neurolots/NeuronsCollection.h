@@ -23,6 +23,9 @@
 
 namespace neurolots
 {
+
+  typedef std::map<unsigned int, nsol::ColumnPtr>* ColumnsPtr;
+
   class NeuronsCollection
   {
 
@@ -30,6 +33,9 @@ namespace neurolots
 
       NeuronsCollection( const char * file_name, Program * programTriangles_,
                          Program * programQuads_, Camera * camera_ );
+
+      NeuronsCollection( const char * file_name, char * quadsPath,
+                         char * trianglesPath , Camera * camera_ );
       ~NeuronsCollection( void );
 
       void Init( void );
@@ -44,6 +50,16 @@ namespace neurolots
       void PaintSoma( bool paintSoma );
       void PaintNeurites( bool paintNeurites);
 
+      void Lod( float lod_ );
+      void Tng( float tng_ );
+      void MaxDist( float maxDist_ );
+
+      void AddLod( float AddLod );
+      void AddTng( float AddTng );
+      void AddMaxDist( float AddMaxDist );
+
+      ColumnsPtr getColumns( void );
+
     private:
 
       void _GenerateMeshes( void );
@@ -53,6 +69,10 @@ namespace neurolots
       Program * _programTriangles;
       Program * _programQuads;
       Camera * _camera;
+
+      float _lod;
+      float _tng;
+      float _maxDist;
 
       std::map<unsigned int, nsol::ColumnPtr> _colums;
 

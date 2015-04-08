@@ -33,8 +33,6 @@ bool mode = true;
 int cont = 0;
 
 Camera * camera;
-Program * programTriangles;
-Program * programQuads;
 NeuronsCollection * neuronsCollection;
 
 void sceneInit( void )
@@ -115,34 +113,22 @@ void keyboardFunc( unsigned char key, int _x, int _y )
       camera->IncrementRotation( -0.05f );
       break;
     case 'w':
-      programQuads->lod( programQuads->lod( ) + 1.0f );
-      std::cout << "Lod: " << programQuads->lod() << std::endl;
+      neuronsCollection->AddLod( 1.0f );
       break;
     case 's':
-      programQuads->lod( programQuads->lod( ) - 1.0f );
-      if ( programQuads->lod( ) < 1.0f )
-        programQuads->lod( 1.0f );
-      std::cout << "Lod: " << programQuads->lod() << std::endl;
+      neuronsCollection->AddLod( -1.0f );
       break;
     case 'e':
-      programQuads->tng( programQuads->tng( ) + 0.1f );
-      std::cout << "Tng: " << programQuads->tng() << std::endl;
+      neuronsCollection->AddTng( 0.1f );
       break;
     case 'd':
-      programQuads->tng( programQuads->tng( ) - 0.1f );
-      if ( programQuads->tng( ) < 0.0f )
-        programQuads->tng( 0.0f );
-      std::cout << "Tng: " << programQuads->tng() << std::endl;
+      neuronsCollection->AddTng( -0.1f );
       break;
     case 'r':
-      programQuads->maxDist( programQuads->maxDist( ) + 1 );
-      std::cout << "Max distance: " << programQuads->maxDist() << std::endl;
+      neuronsCollection->AddMaxDist( 1 );
       break;
     case 'f':
-      programQuads->maxDist( programQuads->maxDist( ) - 1 );
-      if( programQuads->maxDist( ) < 2 )
-        programQuads->maxDist( 2 );
-      std::cout << "Max distance: " << programQuads->maxDist() << std::endl;
+      neuronsCollection->AddMaxDist( -1 );
       break;
     case 'o':
       paintSoma = !paintSoma;
@@ -219,18 +205,7 @@ int main( int argc, char * argv[ ])
   camera = new Camera( );
 
 
-  if( argc == 2 )
-  {
-    programQuads = new Program( Program::QUADSTESSADAPTNG );
-    programTriangles = new Program( Program::TRIANGLESTESS );
-    neuronsCollection = new NeuronsCollection( argv[1], programTriangles,
-                                               programQuads, camera );
-  }
-  else
-  {
-    std::cout << "Usage Error" << std::endl;
-    exit( 0 );
-  }
+
 
   glutInit( &argc, argv );
   glutInitContextVersion( 4, 4 );
@@ -250,6 +225,19 @@ int main( int argc, char * argv[ ])
   glewExperimental = GL_TRUE;
 /*  GLenum err =*/glewInit( );
 
+  if( argc == 2 )
+ {
+   neuronsCollection = new NeuronsCollection( argv[1],
+                                            "/home/jjgarcia/shaders/quads",
+                                            "/home/jjgarcia/shaders/triangles",
+                                            camera );
+ }
+ else
+ {
+   std::cout << "Usage Error" << std::endl;
+   exit( 0 );
+ }
+
 /*
   if( GLEW_OK != err )
   {
@@ -260,8 +248,6 @@ int main( int argc, char * argv[ ])
             << std::endl;
 */
 
-  programTriangles->Init( );
-  programQuads->Init( );
   sceneInit( );
 
   glutMainLoop( );
