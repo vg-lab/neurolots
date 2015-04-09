@@ -3,7 +3,7 @@
 namespace neurolots
 {
 
-  Program::Program( TProgram type_ )
+  Program::Program( TProgram type_, const char * path_ )
     : _type( type_ )
     , id_( 0 )
     , inVertex_( -1 )
@@ -25,6 +25,7 @@ namespace neurolots
     , maxDist_( 500.0f )
     , lod_( 1.0f )
     , tng_( 0.0f )
+    , _path( path_ )
   {
   }
 
@@ -88,16 +89,26 @@ namespace neurolots
 
     id_ = glCreateProgram( );
 
-    const char* vname;
-    const char* tcname;
-    const char* tename;
-    const char* fname;
+    char* vname;
+    char* tcname;
+    char* tename;
+    char* fname;
+
+    std::string localPath;
 
     switch ( _type )
     {
       case LINES:
-        vname = "/home/jjgarcia/shaders/lines/vshader.glsl";
-        fname = "/home/jjgarcia/shaders/lines/fshader.glsl";
+        localPath = std::string ( _path ) + std::string( "/vshader.glsl" );
+        vname = new char [localPath.length()+1];
+        std::strcpy( vname, localPath.c_str( ));
+
+        localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
+        fname = new char [localPath.length()+1];
+        std::strcpy( fname, localPath.c_str( ));
+
+        std::cout << vname << std::endl;
+        std::cout << fname << std::endl;
 
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
         fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
@@ -109,44 +120,22 @@ namespace neurolots
         break;
 
       case TRIANGLES:
-        vname = "/home/jjgarcia/shaders/triangles/vshader.glsl";
-        fname = "/home/jjgarcia/shaders/triangles/fshader.glsl";
-        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
-        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+        localPath = std::string ( _path ) + std::string( "/vshader.glsl" );
+        vname = new char [localPath.length()+1];
+        std::strcpy( vname, localPath.c_str( ));
 
-        glAttachShader( id_, vshader_ );
-        glAttachShader( id_, fshader_ );
+        localPath = std::string ( _path ) + std::string( "/tcshader.glsl" );
+        tcname = new char [localPath.length()+1];
+        std::strcpy( tcname, localPath.c_str( ));
 
-        glBindAttribLocation( id_, 0, "inVertex" );
-        glBindAttribLocation( id_, 1, "inCenter" );
-        break;
+        localPath = std::string ( _path ) + std::string( "/teshader.glsl" );
+        tename = new char [localPath.length()+1];
+        std::strcpy( tename, localPath.c_str( ));
 
-      case TRIANGLESTESS:
-        vname = "/home/jjgarcia/shaders/triangles/tess/vshader.glsl";
-        tcname = "/home/jjgarcia/shaders/triangles/tess/tcshader.glsl";
-        tename = "/home/jjgarcia/shaders/triangles/tess/teshader.glsl";
-        fname = "/home/jjgarcia/shaders/triangles/tess/fshader.glsl";
-        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
-        tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-        teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+        localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
+        fname = new char [localPath.length()+1];
+        std::strcpy( fname, localPath.c_str( ));
 
-        glAttachShader( id_, vshader_ );
-        glAttachShader( id_, tcshader_ );
-        glAttachShader( id_, teshader_ );
-        glAttachShader( id_, fshader_ );
-
-        glBindAttribLocation( id_, 0, "inVertex" );
-        glBindAttribLocation( id_, 1, "inCenter" );
-        break;
-
-      case QUADSTESSADAP:
-        vname = "/home/jjgarcia/shaders/quads/originalShader/vshader.glsl";
-        tcname = "/home/jjgarcia/shaders/quads/originalShader/tcshader.glsl";
-        tename = "/home/jjgarcia/shaders/quads/originalShader/teshader.glsl";
-        fname = "/home/jjgarcia/shaders/quads/originalShader/fshader.glsl";
-
-        //comopilacion de shaders
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
         tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
         teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
@@ -161,11 +150,22 @@ namespace neurolots
         glBindAttribLocation( id_, 1, "inCenter" );
         break;
 
-      case QUADSTESSADAPTNG:
-        vname = "/home/jjgarcia/shaders/quads/tessAdapTangs/vshader.glsl";
-        tcname = "/home/jjgarcia/shaders/quads/tessAdapTangs/tcshader.glsl";
-        tename = "/home/jjgarcia/shaders/quads/tessAdapTangs/teshader.glsl";
-        fname = "/home/jjgarcia/shaders/quads/tessAdapTangs/fshader.glsl";
+      case QUADS:
+        localPath = std::string ( _path ) + std::string( "/vshader.glsl" );
+        vname = new char [localPath.length()+1];
+        std::strcpy( vname, localPath.c_str( ));
+
+        localPath = std::string ( _path ) + std::string( "/tcshader.glsl" );
+        tcname = new char [localPath.length()+1];
+        std::strcpy( tcname, localPath.c_str( ));
+
+        localPath = std::string ( _path ) + std::string( "/teshader.glsl" );
+        tename = new char [localPath.length()+1];
+        std::strcpy( tename, localPath.c_str( ));
+
+        localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
+        fname = new char [localPath.length()+1];
+        std::strcpy( fname, localPath.c_str( ));
 
         //comopilacion de shaders
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
@@ -215,20 +215,6 @@ namespace neurolots
         break;
 
       case TRIANGLES:
-        //Variables uniform
-        uProy_ = glGetUniformLocation( id_, "proy" );
-        uView_ = glGetUniformLocation( id_, "view" );
-        uModel_ = glGetUniformLocation( id_, "model" );
-        uColor_ = glGetUniformLocation( id_, "color" );
-        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
-
-        //Atributos de entrada a shaders
-        inVertex_ = glGetAttribLocation( id_, "inVertex" );
-        inCenter_ = glGetAttribLocation( id_, "inCenter" );
-        break;
-
-      case TRIANGLESTESS:
-        //Variables uniform
         uProy_ = glGetUniformLocation( id_, "proy" );
         uView_ = glGetUniformLocation( id_, "view" );
         uModel_ = glGetUniformLocation( id_, "model" );
@@ -242,23 +228,7 @@ namespace neurolots
         inCenter_ = glGetAttribLocation( id_, "inCenter" );
         break;
 
-      case QUADSTESSADAP:
-        //Variables uniform
-        uProy_ = glGetUniformLocation( id_, "proy" );
-        uView_ = glGetUniformLocation( id_, "view" );
-        uModel_ = glGetUniformLocation( id_, "model" );
-        uColor_ = glGetUniformLocation( id_, "color" );
-        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
-        uLod_ = glGetUniformLocation( id_, "lod" );
-        uTng_ = glGetUniformLocation( id_, "tng" );
-        uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
-        //Atributos de entrada a shaders
-        inVertex_ = glGetAttribLocation( id_, "inVertex" );
-        inCenter_ = glGetAttribLocation( id_, "inCenter" );
-        inTangent_ = glGetAttribLocation( id_, "inTangent" );
-        break;
-
-      case QUADSTESSADAPTNG:
+      case QUADS:
         //Variables uniform
         uProy_ = glGetUniformLocation( id_, "proy" );
         uView_ = glGetUniformLocation( id_, "view" );

@@ -19,6 +19,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstring>
+
+
 
 
 namespace neurolots
@@ -33,12 +36,10 @@ namespace neurolots
       {
         LINES = 0,
         TRIANGLES,
-        TRIANGLESTESS,
-        QUADSTESSADAP,
-        QUADSTESSADAPTNG,
+        QUADS,
       } TProgram;
 
-      Program( TProgram type_ = LINES );
+      Program( TProgram type_, const char * path_ );
       ~Program( void );
 
       void Init( void );
@@ -103,6 +104,8 @@ namespace neurolots
       float maxDist_;
       float lod_;
       float tng_;
+
+      const char * _path;
   };
 
 }// end namespace neurolots
