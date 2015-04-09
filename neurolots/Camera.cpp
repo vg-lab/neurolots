@@ -85,6 +85,8 @@ namespace neurolots
             rot_( 1,0 ), rot_( 1,1 ), rot_( 1,2 ), desp.y( ),
             rot_( 2,0 ), rot_( 2,1 ), rot_( 2,2 ), desp.z( ),
             0.0f, 0.0f, 0.0f, 1.0f;
+
+    viewProj_ = proy_ * view_;
   }
 
   void Camera::UpdateRotation( float yaw, float pitch )
@@ -187,6 +189,25 @@ namespace neurolots
     viewVec_[14] = view_( 2, 3 ); viewVec_[15] = view_( 3, 3 );
 
     return viewVec_.data( );
+  }
+
+  float * Camera::GetViewProjectionMatrix( void )
+  {
+    viewProjVec_.resize( 16 );
+
+    viewProjVec_[0] = viewProj_( 0, 0 );  viewProjVec_[1] = viewProj_( 1, 0 );
+    viewProjVec_[2] = viewProj_( 2, 0 ); viewProjVec_[3] = viewProj_( 3, 0 );
+
+    viewProjVec_[4] = viewProj_( 0, 1 );  viewProjVec_[5] = viewProj_( 1, 1 );
+    viewProjVec_[6] = viewProj_( 2, 1 ); viewProjVec_[7] = viewProj_( 3, 1 );
+
+    viewProjVec_[8] = viewProj_( 0, 2 );  viewProjVec_[9] = viewProj_( 1, 2 );
+    viewProjVec_[10] = viewProj_( 2, 2 ); viewProjVec_[11] = viewProj_( 3, 2 );
+
+    viewProjVec_[12] = viewProj_( 0, 3 ); viewProjVec_[13] = viewProj_( 1, 3 );
+    viewProjVec_[14] = viewProj_( 2, 3 ); viewProjVec_[15] = viewProj_( 3, 3 );
+
+    return viewProjVec_.data();
   }
 
   float * Camera::GetCameraPos(void)

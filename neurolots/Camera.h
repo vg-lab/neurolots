@@ -43,6 +43,7 @@ namespace neurolots
       float * GetProjectionMatrix( void );
       float * GetViewMatrix( void );
       float * GetCameraPos( void );
+      float * GetViewProjectionMatrix( void );
 
     private:
 
@@ -61,12 +62,13 @@ namespace neurolots
 
       Eigen::Matrix4f proy_;
       Eigen::Matrix4f view_;
-
+      Eigen::Matrix4f viewProj_;
       Eigen::Matrix3f rot_;
 
       std::vector<float> positionVec_;
       std::vector<float> proyVec_;
       std::vector<float> viewVec_;
+      std::vector<float> viewProjVec_;
   };
 
 
