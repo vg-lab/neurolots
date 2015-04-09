@@ -15,9 +15,9 @@ namespace neurolots
     _programQuads->Init();
     _programTriangles->Init();
 
-    Lod( 5.0f );
+    Lod( 3.0f );
     Tng( 5.0f );
-    MaxDist( 250.0f );
+    MaxDist( 200.0f );
 
     NeuritesColor( Eigen::Vector3f( 0.3f, 0.3f, 0.3f));
     SomaColor( Eigen::Vector3f( 0.3f, 0.3f, 0.3f));
