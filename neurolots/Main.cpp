@@ -44,7 +44,6 @@ void sceneInit( void )
 
   glLineWidth( 1.5 );
 
-  neuronsCollection->Init();
 }
 
 void paintFunc(void)
@@ -226,17 +225,19 @@ int main( int argc, char * argv[ ])
 /*  GLenum err =*/glewInit( );
 
   if( argc == 2 )
- {
-   neuronsCollection = new NeuronsCollection( argv[1],
-                                            "/home/jjgarcia/shaders/quads",
-                                            "/home/jjgarcia/shaders/triangles",
-                                            camera );
- }
- else
- {
-   std::cout << "Usage Error" << std::endl;
-   exit( 0 );
- }
+  {
+    neuronsCollection = new NeuronsCollection( argv[1],
+                                             "/home/jjgarcia/shaders/quads",
+                                             "/home/jjgarcia/shaders/triangles",
+                                             camera );
+    neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3, 0.5, 0.7 ));
+    neuronsCollection->SomaColor( Eigen::Vector3f( 0.7, 0.5, 0.3 ));
+  }
+  else
+  {
+    std::cout << "Usage Error" << std::endl;
+    exit( 0 );
+  }
 
 /*
   if( GLEW_OK != err )

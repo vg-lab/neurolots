@@ -4,77 +4,10 @@ namespace neurolots
 {
 
   NeuronsCollection::NeuronsCollection( const char * file_name,
-                                        Program * programTriangles_,
-                                        Program * programQuads_,
-                                        Camera * camera_ )
-    : _programTriangles( programTriangles_ )
-    , _programQuads( programQuads_ )
-    , _camera( camera_ )
-    , _lod( 5.0f )
-    , _tng( 5.0f)
-    , _maxDist( 250.0f )
-    , _cont( 0 )
-  {
-
-    std::string fName(file_name);
-
-    if ( !(fName.length() < 5 ||
-         fName.compare( fName.length( ) - 3, 3, "swc" )))
-    {
-      std::cout << "Leyendo swc" << std::endl;
-
-           nsol::SwcReaderTemplated< nsol::Node,
-                                     nsol::Segment,
-                                     nsol::Section,
-                                     nsol::Dendrite,
-                                     nsol::Axon,
-                                     nsol::Soma,
-                                     NeuronMorphology,
-                                     nsol::Neuron > swcReader;
-
-           nsol::NeuronPtr neuron = swcReader.readNeuron( file_name );
-           nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
-           miniColumn->addNeuron( neuron );
-           nsol::ColumnPtr column = new nsol::Column();
-           column->addMiniColumn( miniColumn );
-
-           _colums.clear( );
-
-           _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
-                           ::value_type( 0 , column ));
-
-    }
-
-#ifdef NSOL_WITH_BBPSDK
-    else
-    {
-      nsol::BBPSDKReaderTemplated< nsol::Node,
-                                         nsol::Segment,
-                                         nsol::Section,
-                                         nsol::Dendrite,
-                                         nsol::Axon,
-                                         nsol::Soma,
-                                         NeuronMorphology,
-                                         nsol::Neuron,
-                                         nsol::MiniColumn,
-                                         nsol::Column > bbpsdkReader;
-
-            _colums = bbpsdkReader.readExperiment( file_name, 0);
-    }
-#endif
-    _GenerateMeshes( );
-
-  }
-
-
-  NeuronsCollection::NeuronsCollection( const char * file_name,
-                                        char * quadsPath,
-                                        char * trianglesPath,
+                                        const char * quadsPath,
+                                        const char * trianglesPath,
                                         Camera * camera_ )
     : _camera( camera_ )
-    , _lod( 5.0f )
-    , _tng( 5.0f)
-    , _maxDist( 250.0f )
     , _cont( 0 )
   {
     _programQuads = new Program( Program::QUADS, quadsPath );
@@ -82,6 +15,13 @@ namespace neurolots
     _programQuads->Init();
     _programTriangles->Init();
 
+    Lod( 5.0f );
+    Tng( 5.0f );
+    MaxDist( 250.0f );
+
+    NeuritesColor( Eigen::Vector3f( 0.3f, 0.3f, 0.3f));
+    SomaColor( Eigen::Vector3f( 0.3f, 0.3f, 0.3f));
+
     std::string fName(file_name);
 
     if ( !(fName.length() < 5 ||
@@ -129,7 +69,7 @@ namespace neurolots
     }
 #endif
     _GenerateMeshes( );
-
+    _Init();
   }
 
   NeuronsCollection::~NeuronsCollection( void )
@@ -139,34 +79,6 @@ namespace neurolots
 
   // PUBLIC
 
-  void NeuronsCollection::Init( void )
-  {
-    nsol::MiniColumns miniColumns;
-    nsol::NeuronPtr neuron;
-    nsol::Neurons neurons;
-    NeuronMorphologyPtr morpho;
-    NeuronMeshPtr neuronMesh;
-
-
-    for( unsigned int i = 0; i < _colums.size(); i++ )
-    {
-      miniColumns = _colums[i]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[j]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          neuron = neurons[k];
-          morpho = (NeuronMorphologyPtr)neuron->morphology( );
-          neuronMesh = morpho->NeuronMesh( );
-
-          neuronMesh->Init( );
-
-        }
-      }
-    }
-  }
-
   void NeuronsCollection::Paint( void )
   {
     nsol::MiniColumns miniColumns;
@@ -174,23 +86,12 @@ namespace neurolots
     nsol::NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
 
-    std::vector< float > color0;
-    color0.push_back( 0.3 ); color0.push_back( 0.5 ); color0.push_back( 0.7 );
-
-    std::vector< float > color1;
-    color1.push_back( 0.7 ); color1.push_back( 0.5 ); color1.push_back( 0.3 );
-
-
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
                         _camera->GetViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
                         _camera->GetProjectionMatrix( ));
     glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod);
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng);
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist);
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
@@ -200,9 +101,6 @@ namespace neurolots
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
                   _camera->GetCameraPos( ));
 
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod);
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng);
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist);
 
     for( unsigned int i = 0; i < _colums.size(); i++ )
     {
@@ -225,12 +123,10 @@ namespace neurolots
           }
 
           glUseProgram( _programQuads->id( ));
-          glUniform3fv( _programQuads->uColor( ), 1, color0.data( ));
           glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
                               tMatrix.data());
 
           glUseProgram( _programTriangles->id( ));
-          glUniform3fv( _programQuads->uColor( ), 1, color1.data( ));
           glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
                               tMatrix.data());
 
@@ -250,24 +146,12 @@ namespace neurolots
      nsol::NeuronPtr neuron;
      NeuronMeshPtr neuronMesh;
 
-    std::vector< float > color0;
-    color0.push_back( 0.3 ); color0.push_back( 0.5 ); color0.push_back( 0.7 );
-
-    std::vector< float > color1;
-    color1.push_back( 0.7 ); color1.push_back( 0.5 ); color1.push_back( 0.3 );
-
-
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
                         _camera->GetViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
                         _camera->GetProjectionMatrix( ));
     glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
-    ;
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod );
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng );
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
@@ -276,10 +160,6 @@ namespace neurolots
                         _camera->GetProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
                   _camera->GetCameraPos( ));
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod );
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng );
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
 
      //First minicolum
      neurons =_colums[nColumn]->miniColumns( )[nMiniColumn]->neurons( );
@@ -300,12 +180,10 @@ namespace neurolots
        glUseProgram( _programQuads->id( ));
        glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
                                      tMatrix.data());
-       glUniform3fv( _programQuads->uColor( ), 1, color0.data( ));
 
        glUseProgram( _programTriangles->id( ));
        glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
                                      tMatrix.data());
-       glUniform3fv( _programQuads->uColor( ), 1, color1.data( ));
 
        neuronMesh->Paint( );
      }
@@ -318,25 +196,12 @@ namespace neurolots
     nsol::NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
 
-
-    std::vector< float > color0;
-    color0.push_back( 0.3 ); color0.push_back( 0.5 ); color0.push_back( 0.7 );
-
-    std::vector< float > color1;
-    color1.push_back( 0.7 ); color1.push_back( 0.5 ); color1.push_back( 0.3 );
-
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
                         _camera->GetViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
                         _camera->GetProjectionMatrix( ));
     glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
-
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod );
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng );
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
-
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
@@ -345,10 +210,6 @@ namespace neurolots
                        _camera->GetProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
                  _camera->GetCameraPos( ));
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod );
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng );
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
 
     neuron = _colums[nColumn]->miniColumns( )[nMiniColumn]->
              neurons( )[nNeuron];
@@ -367,12 +228,10 @@ namespace neurolots
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
                                   tMatrix.data());
-    glUniform3fv( _programQuads->uColor( ), 1, color0.data( ));
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
                                   tMatrix.data());
-    glUniform3fv( _programTriangles->uColor( ), 1, color1.data( ));
 
     neuronMesh->Paint( );
   }
@@ -385,23 +244,12 @@ namespace neurolots
     nsol::NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
 
-    std::vector< float > color0;
-    color0.push_back( 0.3 ); color0.push_back( 0.5 ); color0.push_back( 0.7 );
-
-    std::vector< float > color1;
-    color1.push_back( 0.7 ); color1.push_back( 0.5 ); color1.push_back( 0.3 );
-
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
                         _camera->GetViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
                         _camera->GetProjectionMatrix( ));
     glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod );
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng );
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
-
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
@@ -410,10 +258,6 @@ namespace neurolots
                        _camera->GetProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
                  _camera->GetCameraPos( ));
-
-    glUniform1fv( _programQuads->uLod( ), 1, &_lod );
-    glUniform1fv( _programQuads->uTng( ), 1, &_tng );
-    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
 
     neuron = _colums[nColumn]->miniColumns( )[nMiniColumn]->
            neurons( )[nNeuron];
@@ -434,15 +278,61 @@ namespace neurolots
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
                                   tMatrix.data());
-    glUniform3fv( _programQuads->uColor( ), 1, color0.data( ));
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
                                   tMatrix.data());
-    glUniform3fv( _programTriangles->uColor( ), 1, color1.data( ));
 
     neuronMesh->Paint( );
   }
+
+  void NeuronsCollection::AddLod( float AddLod )
+  {
+    _lod += AddLod;
+    if ( _lod < 1.0f )
+          _lod = 1.0f;
+
+    glUseProgram( _programQuads->id( ));
+    glUniform1fv( _programQuads->uLod( ), 1, &_lod);
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform1fv( _programTriangles->uLod( ), 1, &_lod);
+  }
+
+  void NeuronsCollection::AddTng( float AddTng )
+  {
+    _tng += AddTng;
+    if ( _tng < 0.0f )
+      _tng = 0.0f;
+
+    glUseProgram( _programQuads->id( ));
+    glUniform1fv( _programQuads->uTng( ), 1, &_tng);
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform1fv( _programTriangles->uTng( ), 1, &_tng);
+  }
+
+  void NeuronsCollection::AddMaxDist( float AddMaxDist )
+  {
+    _maxDist += AddMaxDist;
+    if( _maxDist < 2 )
+      _maxDist = 2;
+
+    glUseProgram( _programQuads->id( ));
+    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform1fv( _programTriangles->uMaxDist( ), 1, &_maxDist );
+  }
+
+  //Getters
+
+  ColumnsPtr NeuronsCollection::getColumns( void )
+  {
+    return &_colums;
+  }
+
+  //Setters
 
   void NeuronsCollection::PaintSoma( bool paintSoma )
   {
@@ -503,46 +393,89 @@ namespace neurolots
   void NeuronsCollection::Lod( float lod_ )
   {
     _lod = lod_;
+
+    glUseProgram( _programQuads->id( ));
+    glUniform1fv( _programQuads->uLod( ), 1, &_lod);
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform1fv( _programTriangles->uLod( ), 1, &_lod);
   }
 
   void NeuronsCollection::Tng( float tng_ )
   {
     _tng = tng_;
+
+    glUseProgram( _programQuads->id( ));
+    glUniform1fv( _programQuads->uTng( ), 1, &_tng);
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform1fv( _programTriangles->uTng( ), 1, &_tng);
   }
 
   void NeuronsCollection::MaxDist( float maxDist_ )
   {
     _maxDist = maxDist_;
+
+    glUseProgram( _programQuads->id( ));
+    glUniform1fv( _programQuads->uMaxDist( ), 1, &_maxDist );
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform1fv( _programTriangles->uMaxDist( ), 1, &_maxDist );
   }
 
-  void NeuronsCollection::AddLod( float AddLod )
+  void NeuronsCollection::NeuritesColor( Eigen::Vector3f neuritesColor_ )
   {
-    _lod += AddLod;
-    if ( _lod < 1.0f )
-          _lod = 1.0f;
-  }
+    _neuritesColor.resize( 3 );
+    _neuritesColor[0] = neuritesColor_.x( );
+    _neuritesColor[1] = neuritesColor_.y( );
+    _neuritesColor[2] = neuritesColor_.z( );
 
-  void NeuronsCollection::AddTng( float AddTng )
-  {
-    _tng += AddTng;
-    if ( _tng < 0.0f )
-      _tng = 0.0f;
-  }
-
-  void NeuronsCollection::AddMaxDist( float AddMaxDist )
-  {
-    _maxDist += AddMaxDist;
-    if( _maxDist < 2 )
-      _maxDist = 2;
+    glUseProgram( _programQuads->id( ));
+    glUniform3fv( _programQuads->uColor( ), 1, _neuritesColor.data( ));
 
   }
 
-  ColumnsPtr NeuronsCollection::getColumns( void )
+  void NeuronsCollection::SomaColor( Eigen::Vector3f somaColor_ )
   {
-    return &_colums;
+    _somaColor.resize( 3 );
+    _somaColor[0] = somaColor_.x( );
+    _somaColor[1] = somaColor_.y( );
+    _somaColor[2] = somaColor_.z( );
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform3fv( _programTriangles->uColor( ), 1, _somaColor.data( ));
   }
 
   // PRIVATE
+
+  void NeuronsCollection::_Init( void )
+    {
+      nsol::MiniColumns miniColumns;
+      nsol::NeuronPtr neuron;
+      nsol::Neurons neurons;
+      NeuronMorphologyPtr morpho;
+      NeuronMeshPtr neuronMesh;
+
+
+      for( unsigned int i = 0; i < _colums.size(); i++ )
+      {
+        miniColumns = _colums[i]->miniColumns( );
+        for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+        {
+          neurons = miniColumns[j]->neurons( );
+          for( unsigned int k = 0; k < neurons.size( ); k++ )
+          {
+            neuron = neurons[k];
+            morpho = (NeuronMorphologyPtr)neuron->morphology( );
+            neuronMesh = morpho->NeuronMesh( );
+
+            neuronMesh->Init( );
+
+          }
+        }
+      }
+    }
+
   void NeuronsCollection::_GenerateMeshes( void )
   {
     nsol::ColumnPtr colum;

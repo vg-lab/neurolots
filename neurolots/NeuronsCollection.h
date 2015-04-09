@@ -34,11 +34,12 @@ namespace neurolots
       NeuronsCollection( const char * file_name, Program * programTriangles_,
                          Program * programQuads_, Camera * camera_ );
 
-      NeuronsCollection( const char * file_name, char * quadsPath,
-                         char * trianglesPath , Camera * camera_ );
+      NeuronsCollection( const char * file_name, const char * quadsPath,
+                         const char * trianglesPath , Camera * camera_ );
       ~NeuronsCollection( void );
 
-      void Init( void );
+
+
       void Paint( void );
 
       void PaintMiniColum( unsigned int nColumn, unsigned int nMiniColumn );
@@ -47,6 +48,16 @@ namespace neurolots
       void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
                         unsigned int nNeuron, float x, float y, float z );
 
+      void AddLod( float AddLod );
+      void AddTng( float AddTng );
+      void AddMaxDist( float AddMaxDist );
+
+      //Getters
+
+      ColumnsPtr getColumns( void );
+
+      //Setters
+
       void PaintSoma( bool paintSoma );
       void PaintNeurites( bool paintNeurites);
 
@@ -54,13 +65,14 @@ namespace neurolots
       void Tng( float tng_ );
       void MaxDist( float maxDist_ );
 
-      void AddLod( float AddLod );
-      void AddTng( float AddTng );
-      void AddMaxDist( float AddMaxDist );
+      void NeuritesColor( Eigen::Vector3f neuritesColor_ );
+      void SomaColor( Eigen::Vector3f somaColor_ );
 
-      ColumnsPtr getColumns( void );
+
 
     private:
+
+      void _Init( void );
 
       void _GenerateMeshes( void );
       void _GenerateMeshes( unsigned int nColumn, unsigned int nMiniColumn,
@@ -73,6 +85,9 @@ namespace neurolots
       float _lod;
       float _tng;
       float _maxDist;
+
+      std::vector< float > _neuritesColor;
+      std::vector< float > _somaColor;
 
       std::map<unsigned int, nsol::ColumnPtr> _colums;
 
