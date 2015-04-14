@@ -446,6 +446,25 @@ namespace neurolots
     glUniform3fv( _programTriangles->uColor( ), 1, _somaColor.data( ));
   }
 
+  void NeuronsCollection::NeuronColor( Eigen::Vector3f neuronColor_ )
+  {
+    _neuritesColor.resize( 3 );
+    _neuritesColor[0] = neuronColor_.x( );
+    _neuritesColor[1] = neuronColor_.y( );
+    _neuritesColor[2] = neuronColor_.z( );
+
+    glUseProgram( _programQuads->id( ));
+    glUniform3fv( _programQuads->uColor( ), 1, _neuritesColor.data( ));
+
+    _somaColor.resize( 3 );
+    _somaColor[0] = neuronColor_.x( );
+    _somaColor[1] = neuronColor_.y( );
+    _somaColor[2] = neuronColor_.z( );
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform3fv( _programTriangles->uColor( ), 1, _somaColor.data( ));
+  }
+
   // PRIVATE
 
   void NeuronsCollection::_Init( void )

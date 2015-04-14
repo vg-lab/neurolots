@@ -50,32 +50,7 @@ void paintFunc(void)
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-
-
-//  neuronsCollection->Paint( );
   neuronsCollection->PaintMiniColum( 0, 0 );
-//  neuronsCollection->PaintMiniColum( 0, 1 );
-//  for ( int i = 0; i < 10; i++ )
-//  {
-//    for ( int j = 0; j < 10; j++ )
-//    {
-//      for ( int k = 0; k < 10; k++ )
-//      {
-//        neuronsCollection->PaintNeuron(0,0,49, i*100, j*100, k*100);
-//      }
-//    }
-//  }
-
-  //neuronsCollection->PaintNeuron(0,0,0);
-
-//  cont ++;
-//
-//  if( cont >= 10  )
-//    cont = 0;
-//
-//
-//  neuronsCollection->PaintMiniColum( 0,cont );
-  //neuronsCollection->Anim( );
 
   glUseProgram( 0 );
   glFlush( );
@@ -222,7 +197,7 @@ int main( int argc, char * argv[ ])
   glutReshapeFunc( resizeFunc );
 
   glewExperimental = GL_TRUE;
-/*  GLenum err =*/glewInit( );
+  glewInit( );
 
   if( argc == 2 )
   {
@@ -232,6 +207,7 @@ int main( int argc, char * argv[ ])
                                              camera );
     neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3, 0.5, 0.7 ));
     neuronsCollection->SomaColor( Eigen::Vector3f( 0.7, 0.5, 0.3 ));
+    neuronsCollection->NeuronColor( Eigen::Vector3f( 0.7, 0.5, 0.0 ));
   }
   else
   {
@@ -239,15 +215,6 @@ int main( int argc, char * argv[ ])
     exit( 0 );
   }
 
-/*
-  if( GLEW_OK != err )
-  {
-    std::cout << "Error: " << glewGetErrorString( err ) << std::endl;
-  }
-  const GLubyte * oglVersion = glGetString( GL_VERSION );
-  std::cout << "Este sistema soporta la Versión " << oglVersion << " de OpenGL."
-            << std::endl;
-*/
 
   sceneInit( );
 

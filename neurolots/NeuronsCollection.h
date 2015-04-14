@@ -68,6 +68,8 @@ namespace neurolots
       void NeuritesColor( Eigen::Vector3f neuritesColor_ );
       void SomaColor( Eigen::Vector3f somaColor_ );
 
+      void NeuronColor( Eigen::Vector3f neuronColor_ );
+
 
 
     private:
