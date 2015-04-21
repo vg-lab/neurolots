@@ -184,7 +184,7 @@ int main( int argc, char * argv[ ])
   glutInit( &argc, argv );
   glutInitContextVersion( 4, 4 );
 
-  glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GL_DEPTH_BUFFER );
+  glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
   glutInitWindowPosition( 0, 0 );
   glutInitWindowSize( 600, 600 );
   glutCreateWindow( "NeuroLOT" );
