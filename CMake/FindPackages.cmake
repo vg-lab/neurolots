@@ -6,7 +6,7 @@ include_directories(${NSOL_INCLUDE_DIRS})
 
 #FIND EIGEN 
 find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories(BEFORE SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 
 #########################################################
@@ -16,7 +16,7 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   find_package(nvidiaOpenGL)
   if ( NVIDIA_OPENGL_gl_LIBRARY )
-    set( CMAKE_EXE_LINKER_FLAGS "-L${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
+    set( CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
     message(STATUS "nVidia library used ["
       ${NVIDIA_OPENGL_gl_LIBRARY_PATH}
       "]")
