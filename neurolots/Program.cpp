@@ -33,7 +33,7 @@ namespace neurolots
   {
   }
 
-  GLuint Program::LoadShader( const char *fileName, GLenum type )
+  GLuint Program::LoadShader( const char *fileName, GLenum type_ )
   {
     std::ifstream file;
     file.open( fileName, std::ios::in );
@@ -58,7 +58,7 @@ namespace neurolots
 
     //Creacion y compilacion del Shader
     GLuint shader;
-    shader = glCreateShader( type );
+    shader = glCreateShader( type_ );
     glShaderSource( shader, 1, ( const GLchar ** ) & source,
                     ( const GLint* ) & fileLen );
 

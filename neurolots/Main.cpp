@@ -57,7 +57,7 @@ void paintFunc(void)
   glutSwapBuffers( );
 }
 
-void keyboardFunc( unsigned char key, int _x, int _y )
+void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
 {
   switch( key )
   {

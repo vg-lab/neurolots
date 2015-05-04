@@ -114,11 +114,12 @@ namespace neurolots
           neuronMesh = ((NeuronMorphologyPtr)neuron->morphology( ))->NeuronMesh( );
           std::vector< float > tMatrix;
           tMatrix.resize(16);
-          for(int i = 0; i < 4; i++ )
+          for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
           {
-            for(int j = 0; j < 4; j++)
+            for(int matrixCol = 0; matrixCol < 4; matrixCol++)
             {
-              tMatrix[j*4+i] = neuron->transform()[i][j];
+              tMatrix[matrixCol*4+matrixRow] = 
+		neuron->transform()[matrixRow][matrixCol];
             }
           }
 
@@ -286,9 +287,9 @@ namespace neurolots
     neuronMesh->Paint( );
   }
 
-  void NeuronsCollection::AddLod( float AddLod )
+  void NeuronsCollection::AddLod( float AddLod_ )
   {
-    _lod += AddLod;
+    _lod += AddLod_;
     if ( _lod < 1.0f )
           _lod = 1.0f;
 
@@ -299,9 +300,9 @@ namespace neurolots
     glUniform1fv( _programTriangles->uLod( ), 1, &_lod);
   }
 
-  void NeuronsCollection::AddTng( float AddTng )
+  void NeuronsCollection::AddTng( float AddTng_ )
   {
-    _tng += AddTng;
+    _tng += AddTng_;
     if ( _tng < 0.0f )
       _tng = 0.0f;
 
@@ -312,9 +313,9 @@ namespace neurolots
     glUniform1fv( _programTriangles->uTng( ), 1, &_tng);
   }
 
-  void NeuronsCollection::AddMaxDist( float AddMaxDist )
+  void NeuronsCollection::AddMaxDist( float AddMaxDist_ )
   {
-    _maxDist += AddMaxDist;
+    _maxDist += AddMaxDist_;
     if( _maxDist < 2 )
       _maxDist = 2;
 

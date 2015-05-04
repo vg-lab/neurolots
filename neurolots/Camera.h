@@ -26,10 +26,10 @@ namespace neurolots
 
     public:
 
-      Camera( float _fov = 45.0f, float _ratio = ((float)16)/9, float _nearPlane = 0.1f,
-              float _farPlane = 10000.0f, float _x = 0.0f, float _y = 0.0f,
-              float _z = 100.0f, float _yaw = 0.0f, float _pitch = 0.0f,
-              float _roll = 0.0f );
+      Camera( float _fov = 45.0f, float _ratio = ((float)16)/9,
+        float _nearPlane = 0.1f, float _farPlane = 10000.0f, float _x = 0.0f,
+        float _y = 0.0f, float _z = 100.0f, float _yaw = 0.0f,
+        float _pitch = 0.0f, float _roll = 0.0f );
       ~Camera(void);
 
       void UpdateRatio( float _ratio );

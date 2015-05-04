@@ -3,8 +3,8 @@
 namespace neurolots
 {
 
-  NeuronMorphology::NeuronMorphology( nsol::SomaPtr soma )
-    : nsol::NeuronMorphology( soma )
+  NeuronMorphology::NeuronMorphology( nsol::SomaPtr soma_ )
+    : nsol::NeuronMorphology( soma_ )
     , _neuronMesh( nullptr )
     , _meshGenerated( false )
   {

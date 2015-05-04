@@ -279,7 +279,7 @@ namespace neurolots
   }
 
   void NeuronMeshGenerator::GenerateSomaQuads( nsol::SomaPtr soma,
-                                 std::vector< VectorizedNodePtr > & firstNodes,
+   		                 std::vector< VectorizedNodePtr > & /* firstNodes */,
                                  std::vector< float >& vertices,
                                  std::vector< float >& centers,
                                  std::vector< float >& tangents,

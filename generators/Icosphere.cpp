@@ -127,13 +127,13 @@ namespace neurolots
       float dist;
       Eigen::Vector3f pos = quad->Node0( )->Pos( );
 
-      for ( unsigned int i = 0; i < 4; i++ )
+      for ( unsigned int j = 0; j < 4; j++ )
       {
-        dist =  ( pos - position[i]).norm( );
+        dist =  ( pos - position[j]).norm( );
         if ( dist < minDist )
         {
           minDist = dist;
-          offset = i;
+          offset = j;
         }
       }
 
@@ -178,7 +178,7 @@ namespace neurolots
   }
 
   void Icosphere::PassContornTrianglesToVector(
-                                  std::vector< VectorizedNodePtr >& firstNodes,
+  			          std::vector< VectorizedNodePtr >& /* firstNodes */,
                                   std::vector< float >& vertices,
                                   std::vector< float >& centers,
                                   std::vector< float >& tangents,
