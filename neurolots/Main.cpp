@@ -77,14 +77,8 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
       }
       break;
     case 'c':
-      camera->Position( 0.0f, 0.0f, 20.0f );
-      camera->Rotation( 0.0f, 0.0f, 0.0f );
-      break;
-    case 'z':
-      camera->IncrementRotation( 0.05f );
-      break;
-    case 'x':
-      camera->IncrementRotation( -0.05f );
+      camera->Position( Eigen::Vector3f(0.0f, 0.0f, 20.0f ));
+      camera->Rotation( 0.0f, 0.0f );
       break;
     case 'w':
       neuronsCollection->AddLod( 1.0f );
@@ -139,11 +133,11 @@ void mouseFunc( int boton, int state, int _x, int _y )
   }
   if ( boton == 3 && state == GLUT_DOWN )
   {
-    camera->LocalDisplace( 0.0f, 0.0f, -10.0f );
+    camera->LocalDisplace( Eigen::Vector3f( 0.0f, 0.0f, -10.0f ));
   }
   if ( boton == 4 && state == GLUT_DOWN )
   {
-    camera->LocalDisplace( 0.0f, 0.0f, 10.0f );
+    camera->LocalDisplace( Eigen::Vector3f( 0.0f, 0.0f, 10.0f ));
   }
 }
 
@@ -151,13 +145,15 @@ void mouseMoveFunc( int _x, int _y )
 {
   if( rotation )
   {
-    camera->IncrementRotation( -( m_x - _x ) * 0.01, -( m_y - _y ) * 0.01 );
+    camera->LocalRotation( -( m_x - _x ) * 0.01, -( m_y - _y ) * 0.01 );
     m_x = _x;
     m_y = _y;
   }
   if( translation )
   {
-    camera->LocalDisplace(( m_x - _x ) * 0.1, ( _y - m_y ) * 0.1, 0.0f );
+    camera->LocalDisplace( Eigen::Vector3f(( m_x - _x ) * 0.1,
+                                           ( _y - m_y ) * 0.1,
+                                           0.0f ));
     m_x = _x;
     m_y = _y;
   }
@@ -176,7 +172,7 @@ void resizeFunc( int w, int h )
 
 int main( int argc, char * argv[ ])
 {
-  camera = new Camera( );
+  camera = new Camera( "hbpcam:" );
 
 
 

@@ -23,6 +23,7 @@
 
 #include <pthread.h>
 #include <mutex>
+#include <boost/bind.hpp>
 
 namespace neurolots
 {
@@ -35,43 +36,44 @@ namespace neurolots
       Camera( float fov_ = 45.0f, float ratio_ = ((float)16)/9,
         float nearPlane_ = 0.1f, float farPlane_ = 10000.0f, float x_ = 0.0f,
         float y_ = 0.0f, float z_ = 100.0f, float yaw_ = 0.0f,
-        float pitch_ = 0.0f, float roll_ = 0.0f );
+        float pitch_ = 0.0f );
 
       Camera( const char * uri_, float fov_ = 45.0f,
         float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
         float farPlane_ = 10000.0f, float x_ = 0.0f, float y_ = 0.0f,
-        float z_ = 100.0f, float yaw_ = 0.0f, float pitch_ = 0.0f,
-        float roll_ = 0.0f );
+        float z_ = 100.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
 
       ~Camera(void);
 
-      void LocalDisplace( float x_, float y_, float z_ );
-      void IncrementRotation( float yaw_, float pitch_ );
-      void IncrementRotation( float roll_ );
+      void LocalDisplace( Eigen::Vector3f displace_ );
+      void LocalRotation( float yaw_, float pitch_ );
 
       // GETTERS
 
-      float * ProjectionMatrix( void );
-      float * ViewMatrix( void );
-      float * Position( void );
+      float* ProjectionMatrix( void );
+      float* ViewMatrix( void );
+      float* Position( void );
+      zeq::Subscriber* Subscriber( void );
 
       // SETTERS
 
       void Ratio( float ratio_ );
-      void Rotation( float yaw_, float pitch_, float roll_ );
+      void Position( Eigen::Vector3f position_ );
       void Rotation( float yaw_, float pitch_ );
-      void Rotation( float roll_ );
-      void Position( float x_, float y_, float z_ );
 
     private:
 
-      void _BuildProjectionMatrix( void );
-      void _BuildRotationMatrix( void );
-      void _BuildViewMatrix( void );
+      void _Position( Eigen::Vector3f position_ );
+      void _Rotation( Eigen::Matrix3f rotation_ );
       void _ViewMatrixVectorized( std::vector<float>& viewVec_ );
+
+      void _BuildProjectionMatrix( void );
+      void _BuildViewMatrix( void );
 
       void _OnCameraEvent( const zeq::Event& event_ );
       static void* _Subscriber( void* camera_ );
+
+      Eigen::Matrix3f _RotationFromPY( float yaw_, float pitch_ );
 
       float _f;
       float _fov;
@@ -80,8 +82,7 @@ namespace neurolots
       float _farPlane;
 
       Eigen::Vector3f _position;
-      Eigen::Vector3f _rotation;
-      Eigen::Matrix3f _rot;
+      Eigen::Matrix3f _rotation;
 
       std::vector<float> _positionVec;
       std::vector<float> _projVec;
@@ -90,8 +91,12 @@ namespace neurolots
       bool _zeqConnection;
       lunchbox::URI _uri;
       zeq::Publisher* _publisher;
+      zeq::Subscriber* _subscriber;
 
+      std::mutex _positionMutex;
+      std::mutex _rotationMutex;
       std::mutex _viewMatrixMutex;
+
       pthread_t _subscriberThread;
 
   };
