@@ -7,60 +7,191 @@ using Eigen::Matrix4f;
 namespace neurolots
 {
 
-  Camera::Camera( float _fov, float _ratio, float _nearPlane, float _farPlane,
-                  float _x, float _y, float _z, float _yaw, float _pitch,
-                  float _roll)
-    : fov_( _fov )
-    , ratio_( _ratio)
-    , nearPlane_( _nearPlane )
-    , farPlane_( _farPlane )
+  Camera::Camera( float fov_, float ratio_, float nearPlane_, float farPlane_,
+      float x_, float y_, float z_, float yaw_, float pitch_, float roll_ )
+    : _fov( fov_ )
+    , _ratio( ratio_ )
+    , _nearPlane( nearPlane_ )
+    , _farPlane( farPlane_ )
+    , _zeqConnection( false )
 
   {
-    position_ = Vector3f( _x, _y, _z );
-    rotation_ = Vector3f( _yaw, _pitch, _roll );
+    _position = Vector3f( x_, y_, z_ );
+    _rotation = Vector3f( yaw_, pitch_, roll_ );
 
-    BuildProjectionMatrix( );
-    BuildRotationMatrix( );
-    BuildViewMatrix( );
+    _BuildProjectionMatrix( );
+    _BuildRotationMatrix( );
+    _BuildViewMatrix( );
+  }
+
+  Camera::Camera( const char * uri_, float fov_, float ratio_, float nearPlane_,
+      float farPlane_, float x_, float y_, float z_, float yaw_, float pitch_,
+      float roll_ )
+    : _fov( fov_ )
+    , _ratio( ratio_ )
+    , _nearPlane( nearPlane_ )
+    , _farPlane( farPlane_ )
+    , _zeqConnection( true )
+
+  {
+    _uri = lunchbox::URI(uri_);
+    _position = Vector3f( x_, y_, z_ );
+    _rotation = Vector3f( yaw_, pitch_, roll_ );
+
+    _BuildProjectionMatrix( );
+    _BuildRotationMatrix( );
+    _BuildViewMatrix( );
   }
 
   Camera::~Camera( void )
   {
   }
 
-  void Camera::BuildProjectionMatrix( void )
-  {
-    f_ = 1.0f / tan (fov_ * ( 3.141599f / 360.0f ));
+  // PUBLIC
 
-    proy_ << f_ / ratio_, 0.0f, 0.0f, 0.0f,
-        0.0f, f_, 0.0f, 0.0f,
-        0.0f, 0.0f,( farPlane_ + nearPlane_ ) / ( nearPlane_ - farPlane_ ),
-        ( 2.0f * farPlane_ * nearPlane_ ) / ( nearPlane_ - farPlane_ ),
-        0.0f, 0.0f, -1.0f, 0.0f;
+  void Camera::LocalDisplace( float x_, float y_, float z_ )
+  {
+    Vector3f localX, localY, localZ;
+
+    Eigen::Matrix3f rotT = _rot.transpose();
+
+    localX = rotT * Vector3f::UnitX();
+    localY = rotT * Vector3f::UnitY();
+    localZ = rotT * Vector3f::UnitZ();
+
+    _position += x_ * localX + y_ * localY + z_ * localZ;
+
+    _BuildViewMatrix( );
   }
 
-  void Camera::UpdateRatio( float _ratio )
+  void Camera::IncrementRotation( float yaw_, float pitch_ )
+    {
+      _rotation.x( ) += yaw_;
+      _rotation.y( ) += pitch_;
+
+      _BuildRotationMatrix( );
+      _BuildViewMatrix( );
+    }
+
+  void Camera::IncrementRotation( float roll_ )
   {
-    ratio_ = _ratio;
-    proy_(0,0) = f_ / ratio_;
-    BuildProjectionMatrix( );
+    _rotation.z( ) += roll_;
+    _BuildRotationMatrix( );
+    _BuildViewMatrix( );
   }
 
-  void Camera::BuildRotationMatrix( void )
+  // GETTERS
+
+  float * Camera::ProjectionMatrix( void )
+  {
+    return _projVec.data( );
+  }
+
+  float *  Camera::ViewMatrix( void )
+  {
+    return _viewVec.data( );
+  }
+
+  float * Camera::Position(void)
+  {
+    _positionVec.resize(3);
+
+    _positionVec[0] = _position.x( );
+    _positionVec[1] = _position.y( );
+    _positionVec[2] = _position.z( );
+
+    return _positionVec.data( );
+  }
+
+  // SETTERS
+
+  void Camera::Ratio( float ratio_ )
+  {
+    _ratio = ratio_;
+    _BuildProjectionMatrix( );
+  }
+
+  void Camera::Rotation( float yaw_, float pitch_ )
+  {
+    _rotation.x( ) = yaw_;
+    _rotation.y( ) = pitch_;
+
+    _BuildRotationMatrix( );
+    _BuildViewMatrix( );
+  }
+
+  void Camera::Rotation( float roll_ )
+  {
+    _rotation.z( ) = roll_;
+
+    _BuildRotationMatrix( );
+    _BuildViewMatrix( );
+  }
+
+  void Camera::Rotation( float yaw_, float pitch_, float roll_ )
+  {
+    _rotation.x( ) = yaw_;
+    _rotation.y( ) = pitch_;
+    _rotation.z( ) = roll_;
+
+    _BuildRotationMatrix();
+    _BuildViewMatrix();
+  }
+
+  void Camera::Position( float x_, float y_, float z_ )
+  {
+    _position.x() = x_;
+    _position.y() = y_;
+    _position.z() = z_;
+
+    _BuildViewMatrix();
+  }
+
+  // PRIVATE
+
+  void Camera::_BuildProjectionMatrix( void )
+  {
+    _f = 1.0f / tan (_fov * ( 3.141599f / 360.0f ));
+
+    _projVec.resize(16);
+
+    // row 1
+    _projVec[0] = _f / _ratio;
+    _projVec[1] = .0f;
+    _projVec[2] = .0f;
+    _projVec[3] = .0f;
+    // row 2
+    _projVec[4] = .0f;
+    _projVec[5] = _f;
+    _projVec[6] = .0f;
+    _projVec[7] = .0f;
+    // row 3
+    _projVec[8] = .0f;
+    _projVec[9] = .0f;
+    _projVec[10] = ( _farPlane + _nearPlane ) / ( _nearPlane - _farPlane );
+    _projVec[11] = -1.0f;
+    // row 4
+    _projVec[12] = .0f;
+    _projVec[13] = .0f;
+    _projVec[14] = ( 2.0f * _farPlane * _nearPlane ) / ( _nearPlane - _farPlane );
+    _projVec[15] = .0f;
+  }
+
+  void Camera::_BuildRotationMatrix( void )
   {
     Matrix3f rYaw;
     Matrix3f rPitch;
     Matrix3f rRoll;
 
     float sy, cy, sp, cp, sr, cr;
-    sy = sin( rotation_.x( ));
-    cy = cos( rotation_.x( ));
+    sy = sin( _rotation.x( ));
+    cy = cos( _rotation.x( ));
 
-    sp = sin( rotation_.y( ));
-    cp = cos( rotation_.y( ));
+    sp = sin( _rotation.y( ));
+    cp = cos( _rotation.y( ));
 
-    sr = sin( rotation_.z( ));
-    cr = cos( rotation_.z( ));
+    sr = sin( _rotation.z( ));
+    cr = cos( _rotation.z( ));
 
     rYaw << cy, 0.0f, sy,
             0.0f, 1.0f, 0.0f,
@@ -74,152 +205,46 @@ namespace neurolots
              sr, cr, 0.0f,
              0.0f, 0.0f, 1.0f;
 
-    rot_= rRoll * rPitch * rYaw;
+    _rot= rRoll * rPitch * rYaw;
   }
 
-  void Camera::BuildViewMatrix( void )
+  void Camera::_BuildViewMatrix( void )
   {
-    Vector3f desp = rot_ * -position_;
+    Vector3f desp = _rot * -_position;
 
-    view_ << rot_( 0,0 ), rot_( 0,1 ), rot_( 0,2 ), desp.x( ),
-            rot_( 1,0 ), rot_( 1,1 ), rot_( 1,2 ), desp.y( ),
-            rot_( 2,0 ), rot_( 2,1 ), rot_( 2,2 ), desp.z( ),
-            0.0f, 0.0f, 0.0f, 1.0f;
+    std::vector<float> viewVec(16);
 
-    viewProj_ = proy_ * view_;
+    // row 1
+    viewVec[0] = _rot( 0, 0 );
+    viewVec[1] = _rot( 1, 0 );
+    viewVec[2] = _rot( 2, 0 );
+    viewVec[3] = .0f;
+    // row 2
+    viewVec[4] = _rot( 0, 1 );
+    viewVec[5] = _rot( 1, 1 );
+    viewVec[6] = _rot( 2, 1 );
+    viewVec[7] = .0f;
+    // row 3
+    viewVec[8] = _rot( 0, 2 );
+    viewVec[9] = _rot( 1, 2 );
+    viewVec[10] = _rot( 2, 2 );
+    viewVec[11] = .0f;
+    // row 4
+    viewVec[12] = desp.x( );
+    viewVec[13] = desp.y( );
+    viewVec[14] = desp.z( );
+    viewVec[15] = 1.0f;
+
+    _ViewMatrixVectorized( viewVec );
   }
 
-  void Camera::UpdateRotation( float yaw, float pitch )
+  void Camera::_ViewMatrixVectorized( std::vector<float>& viewVec_ )
   {
-    rotation_.x( ) = yaw;
-    rotation_.y( ) = pitch;
-
-    BuildRotationMatrix( );
-    BuildViewMatrix( );
+    _viewMatrixMutex.lock( );
+    _viewVec = viewVec_;
+    _viewMatrixMutex.unlock( );
   }
 
-  void Camera::UpdateRotation( float roll )
-  {
-    rotation_.z( ) = roll;
-
-    BuildRotationMatrix( );
-    BuildViewMatrix( );
-  }
-
-  void Camera::UpdateRotation( float yaw, float pitch, float roll )
-  {
-    rotation_.x( ) = yaw;
-    rotation_.y( ) = pitch;
-    rotation_.z( ) = roll;
-
-    BuildRotationMatrix();
-    BuildViewMatrix();
-  }
-
-  void Camera::IncrementRotation( float yaw, float pitch )
-  {
-    rotation_.x( ) += yaw;
-    rotation_.y( ) += pitch;
-    BuildRotationMatrix();
-    BuildViewMatrix();
-  }
-
-  void Camera::IncrementRotation( float roll )
-  {
-    rotation_.z() += roll;
-    BuildRotationMatrix();
-    BuildViewMatrix();
-  }
-
-  void Camera::UpdatePosition( float x, float y, float z )
-  {
-    position_.x() = x;
-    position_.y() = y;
-    position_.z() = z;
-
-    BuildViewMatrix();
-  }
-
-  void Camera::LocalDisplace( float x, float y, float z )
-  {
-    Vector3f localX, localY, localZ;
-
-    localX = rot_.inverse() * Vector3f::UnitX();
-    localY = rot_.inverse() * Vector3f::UnitY();
-    localZ = rot_.inverse() * Vector3f::UnitZ();
-
-    position_ += x*localX + y*localY + z*localZ;
-
-    BuildViewMatrix();
-  }
-
-  float * Camera::GetProjectionMatrix( void )
-  {
-    proyVec_.resize(16);
-
-    proyVec_[0] = proy_( 0, 0 );  proyVec_[1] = proy_( 1, 0 );
-    proyVec_[2] = proy_( 2, 0 ); proyVec_[3] = proy_( 3, 0 );
-
-    proyVec_[4] = proy_( 0, 1 );  proyVec_[5] = proy_( 1, 1 );
-    proyVec_[6] = proy_( 2, 1 ); proyVec_[7] = proy_( 3, 1 );
-
-    proyVec_[8] = proy_( 0, 2 );  proyVec_[9] = proy_( 1, 2 );
-    proyVec_[10] = proy_( 2, 2 ); proyVec_[11] = proy_( 3, 2 );
-
-    proyVec_[12] = proy_( 0, 3 ); proyVec_[13] = proy_( 1, 3 );
-    proyVec_[14] = proy_( 2, 3 ); proyVec_[15] = proy_( 3, 3 );
-
-    return proyVec_.data( );
-  }
-
-  float *  Camera::GetViewMatrix( void )
-  {
-    viewVec_.resize( 16 );
-
-    viewVec_[0] = view_( 0, 0 );  viewVec_[1] = view_( 1, 0 );
-    viewVec_[2] = view_( 2, 0 ); viewVec_[3] = view_( 3, 0 );
-
-    viewVec_[4] = view_( 0, 1 );  viewVec_[5] = view_( 1, 1 );
-    viewVec_[6] = view_( 2, 1 ); viewVec_[7] = view_( 3, 1 );
-
-    viewVec_[8] = view_( 0, 2 );  viewVec_[9] = view_( 1, 2 );
-    viewVec_[10] = view_( 2, 2 ); viewVec_[11] = view_( 3, 2 );
-
-    viewVec_[12] = view_( 0, 3 ); viewVec_[13] = view_( 1, 3 );
-    viewVec_[14] = view_( 2, 3 ); viewVec_[15] = view_( 3, 3 );
-
-    return viewVec_.data( );
-  }
-
-  float * Camera::GetViewProjectionMatrix( void )
-  {
-    viewProjVec_.resize( 16 );
-
-    viewProjVec_[0] = viewProj_( 0, 0 );  viewProjVec_[1] = viewProj_( 1, 0 );
-    viewProjVec_[2] = viewProj_( 2, 0 ); viewProjVec_[3] = viewProj_( 3, 0 );
-
-    viewProjVec_[4] = viewProj_( 0, 1 );  viewProjVec_[5] = viewProj_( 1, 1 );
-    viewProjVec_[6] = viewProj_( 2, 1 ); viewProjVec_[7] = viewProj_( 3, 1 );
-
-    viewProjVec_[8] = viewProj_( 0, 2 );  viewProjVec_[9] = viewProj_( 1, 2 );
-    viewProjVec_[10] = viewProj_( 2, 2 ); viewProjVec_[11] = viewProj_( 3, 2 );
-
-    viewProjVec_[12] = viewProj_( 0, 3 ); viewProjVec_[13] = viewProj_( 1, 3 );
-    viewProjVec_[14] = viewProj_( 2, 3 ); viewProjVec_[15] = viewProj_( 3, 3 );
-
-    return viewProjVec_.data();
-  }
-
-  float * Camera::GetCameraPos(void)
-  {
-    positionVec_.resize(3);
-
-    positionVec_[0] = position_.x( );
-    positionVec_[1] = position_.y( );
-    positionVec_[2] = position_.z( );
-
-    return positionVec_.data( );
-  }
 
 } // end namespace neurolots
 

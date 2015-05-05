@@ -88,18 +88,18 @@ namespace neurolots
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
-                        _camera->GetViewMatrix());
+                        _camera->ViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
-                        _camera->GetProjectionMatrix( ));
-    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
+                        _camera->ProjectionMatrix( ));
+    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->Position( ));
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
-                        _camera->GetViewMatrix());
+                        _camera->ViewMatrix());
     glUniformMatrix4fv( _programTriangles->uProy( ), 1, GL_FALSE,
-                        _camera->GetProjectionMatrix( ));
+                        _camera->ProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
-                  _camera->GetCameraPos( ));
+                  _camera->Position( ));
 
 
     for( unsigned int i = 0; i < _colums.size(); i++ )
@@ -149,18 +149,18 @@ namespace neurolots
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
-                        _camera->GetViewMatrix());
+                        _camera->ViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
-                        _camera->GetProjectionMatrix( ));
-    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
+                        _camera->ProjectionMatrix( ));
+    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->Position( ));
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
-                        _camera->GetViewMatrix());
+                        _camera->ViewMatrix());
     glUniformMatrix4fv( _programTriangles->uProy( ), 1, GL_FALSE,
-                        _camera->GetProjectionMatrix( ));
+                        _camera->ProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
-                  _camera->GetCameraPos( ));
+                  _camera->Position( ));
 
      //First minicolum
      neurons =_colums[nColumn]->miniColumns( )[nMiniColumn]->neurons( );
@@ -199,18 +199,18 @@ namespace neurolots
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
-                        _camera->GetViewMatrix());
+                        _camera->ViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
-                        _camera->GetProjectionMatrix( ));
-    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
+                        _camera->ProjectionMatrix( ));
+    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->Position( ));
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
-                       _camera->GetViewMatrix());
+                       _camera->ViewMatrix());
     glUniformMatrix4fv( _programTriangles->uProy( ), 1, GL_FALSE,
-                       _camera->GetProjectionMatrix( ));
+                       _camera->ProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
-                 _camera->GetCameraPos( ));
+                 _camera->Position( ));
 
     neuron = _colums[nColumn]->miniColumns( )[nMiniColumn]->
              neurons( )[nNeuron];
@@ -247,18 +247,18 @@ namespace neurolots
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
-                        _camera->GetViewMatrix());
+                        _camera->ViewMatrix());
     glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
-                        _camera->GetProjectionMatrix( ));
-    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->GetCameraPos( ));
+                        _camera->ProjectionMatrix( ));
+    glUniform3fv( _programQuads->uCameraPos( ), 1, _camera->Position( ));
 
     glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
-                       _camera->GetViewMatrix());
+                       _camera->ViewMatrix());
     glUniformMatrix4fv( _programTriangles->uProy( ), 1, GL_FALSE,
-                       _camera->GetProjectionMatrix( ));
+                       _camera->ProjectionMatrix( ));
     glUniform3fv( _programTriangles->uCameraPos( ), 1,
-                 _camera->GetCameraPos( ));
+                 _camera->Position( ));
 
     neuron = _colums[nColumn]->miniColumns( )[nMiniColumn]->
            neurons( )[nNeuron];

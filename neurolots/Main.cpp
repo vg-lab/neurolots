@@ -77,8 +77,8 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
       }
       break;
     case 'c':
-      camera->UpdatePosition( 0.0f, 0.0f, 20.0f );
-      camera->UpdateRotation( 0.0f, 0.0f, 0.0f );
+      camera->Position( 0.0f, 0.0f, 20.0f );
+      camera->Rotation( 0.0f, 0.0f, 0.0f );
       break;
     case 'z':
       camera->IncrementRotation( 0.05f );
@@ -170,7 +170,7 @@ void idleFunc( )
 
 void resizeFunc( int w, int h )
 {
-  camera->UpdateRatio((( double ) w ) / h );
+  camera->Ratio((( double ) w ) / h );
   glViewport( 0, 0, w, h );
 }
 

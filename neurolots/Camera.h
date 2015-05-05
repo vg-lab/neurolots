@@ -17,6 +17,12 @@
 #include <vector>
 #include <iostream>
 
+#include <zeq/zeq.h>
+#include <zeq/hbp/hbp.h>
+#include <lunchbox/uri.h>
+
+#include <pthread.h>
+#include <mutex>
 
 namespace neurolots
 {
@@ -26,49 +32,68 @@ namespace neurolots
 
     public:
 
-      Camera( float _fov = 45.0f, float _ratio = ((float)16)/9,
-        float _nearPlane = 0.1f, float _farPlane = 10000.0f, float _x = 0.0f,
-        float _y = 0.0f, float _z = 100.0f, float _yaw = 0.0f,
-        float _pitch = 0.0f, float _roll = 0.0f );
+      Camera( float fov_ = 45.0f, float ratio_ = ((float)16)/9,
+        float nearPlane_ = 0.1f, float farPlane_ = 10000.0f, float x_ = 0.0f,
+        float y_ = 0.0f, float z_ = 100.0f, float yaw_ = 0.0f,
+        float pitch_ = 0.0f, float roll_ = 0.0f );
+
+      Camera( const char * uri_, float fov_ = 45.0f,
+        float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
+        float farPlane_ = 10000.0f, float x_ = 0.0f, float y_ = 0.0f,
+        float z_ = 100.0f, float yaw_ = 0.0f, float pitch_ = 0.0f,
+        float roll_ = 0.0f );
+
       ~Camera(void);
 
-      void UpdateRatio( float _ratio );
-      void UpdateRotation( float _yaw, float _pitch, float _roll );
-      void UpdateRotation( float _yaw, float _pitch );
-      void UpdateRotation( float _roll );
-      void UpdatePosition( float _x, float _y, float _z );
-      void LocalDisplace( float _x, float _y, float _z );
-      void IncrementRotation( float _yaw, float _pitch );
-      void IncrementRotation( float _roll );
-      float * GetProjectionMatrix( void );
-      float * GetViewMatrix( void );
-      float * GetCameraPos( void );
-      float * GetViewProjectionMatrix( void );
+      void LocalDisplace( float x_, float y_, float z_ );
+      void IncrementRotation( float yaw_, float pitch_ );
+      void IncrementRotation( float roll_ );
+
+      // GETTERS
+
+      float * ProjectionMatrix( void );
+      float * ViewMatrix( void );
+      float * Position( void );
+
+      // SETTERS
+
+      void Ratio( float ratio_ );
+      void Rotation( float yaw_, float pitch_, float roll_ );
+      void Rotation( float yaw_, float pitch_ );
+      void Rotation( float roll_ );
+      void Position( float x_, float y_, float z_ );
 
     private:
 
-      void BuildProjectionMatrix( void );
-      void BuildRotationMatrix( void );
-      void BuildViewMatrix( void );
+      void _BuildProjectionMatrix( void );
+      void _BuildRotationMatrix( void );
+      void _BuildViewMatrix( void );
+      void _ViewMatrixVectorized( std::vector<float>& viewVec_ );
 
-      Eigen::Vector3f position_;
-      Eigen::Vector3f rotation_;
+      void _OnCameraEvent( const zeq::Event& event_ );
+      static void* _Subscriber( void* camera_ );
 
-      float f_;
-      float fov_;
-      float ratio_;
-      float nearPlane_;
-      float farPlane_;
+      float _f;
+      float _fov;
+      float _ratio;
+      float _nearPlane;
+      float _farPlane;
 
-      Eigen::Matrix4f proy_;
-      Eigen::Matrix4f view_;
-      Eigen::Matrix4f viewProj_;
-      Eigen::Matrix3f rot_;
+      Eigen::Vector3f _position;
+      Eigen::Vector3f _rotation;
+      Eigen::Matrix3f _rot;
 
-      std::vector<float> positionVec_;
-      std::vector<float> proyVec_;
-      std::vector<float> viewVec_;
-      std::vector<float> viewProjVec_;
+      std::vector<float> _positionVec;
+      std::vector<float> _projVec;
+      std::vector<float> _viewVec;
+
+      bool _zeqConnection;
+      lunchbox::URI _uri;
+      zeq::Publisher* _publisher;
+
+      std::mutex _viewMatrixMutex;
+      pthread_t _subscriberThread;
+
   };
 
 
