@@ -21,6 +21,16 @@
 
 #include <iostream>
 
+#ifdef NEUROLOTS_WITH_ZEQ
+#include <zeq/zeq.h>
+#include <zeq/hbp/hbp.h>
+#include <lunchbox/uri.h>
+
+#include <pthread.h>
+#include <mutex>
+#include <boost/bind.hpp>
+#endif
+
 namespace neurolots
 {
 
@@ -30,23 +40,25 @@ namespace neurolots
   {
 
     public:
-
-      NeuronsCollection( const char * file_name, Program * programTriangles_,
-                         Program * programQuads_, Camera * camera_ );
-
       NeuronsCollection( const char * file_name, const char * quadsPath,
-                         const char * trianglesPath , Camera * camera_ );
-      ~NeuronsCollection( void );
+             const char * trianglesPath , Camera * camera_ );
 
+#ifdef NEUROLOTS_WITH_ZEQ
+      NeuronsCollection( const char* uri_, const char * file_name,
+          const char * quadsPath, const char * trianglesPath ,
+          Camera * camera_ );
+#endif
+
+      ~NeuronsCollection( void );
 
 
       void Paint( void );
 
       void PaintMiniColum( unsigned int nColumn, unsigned int nMiniColumn );
       void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
-                        unsigned int nNeuron );
+        unsigned int nNeuron );
       void PaintNeuron( unsigned int nColumn, unsigned int nMiniColumn,
-                        unsigned int nNeuron, float x, float y, float z );
+        unsigned int nNeuron, float x, float y, float z );
 
       void AddLod( float AddLod );
       void AddTng( float AddTng );
@@ -54,7 +66,11 @@ namespace neurolots
 
       //Getters
 
-      ColumnsPtr getColumns( void );
+      ColumnsPtr Columns( void );
+
+#ifdef NEUROLOTS_WITH_ZEQ
+      zeq::Subscriber* Subscriber( void );
+#endif
 
       //Setters
 
@@ -78,7 +94,14 @@ namespace neurolots
 
       void _GenerateMeshes( void );
       void _GenerateMeshes( unsigned int nColumn, unsigned int nMiniColumn,
-                            unsigned int nNeuron  );
+        unsigned int nNeuron  );
+
+      bool _IsSelected( nsol::NeuronPtr neuron_ );
+
+#ifdef NEUROLOTS_WITH_ZEQ
+      void _OnSelectionEvent( const zeq::Event& event_ );
+      static void* _Subscriber( void* collection_ );
+#endif
 
       Program * _programTriangles;
       Program * _programQuads;
@@ -94,6 +117,18 @@ namespace neurolots
       std::map<unsigned int, nsol::ColumnPtr> _colums;
 
       unsigned int _cont;
+
+      bool _zeqConnection;
+
+      std::set<unsigned int> _selectedNeurons;
+
+#ifdef NEUROLOTS_WITH_ZEQ
+      lunchbox::URI _uri;
+      zeq::Subscriber* _subscriber;
+
+      pthread_t _subscriberThread;
+#endif
+
   };
 
 } // end namespace neurolots

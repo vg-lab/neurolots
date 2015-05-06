@@ -10,6 +10,8 @@ namespace neurolots
     : _camera( camera_ )
     , _cont( 0 )
   {
+    _selectedNeurons.clear( );
+
     _programQuads = new Program( Program::QUADS, quadsPath );
     _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
     _programQuads->Init();
@@ -19,8 +21,7 @@ namespace neurolots
     Tng( 5.0f );
     MaxDist( 200.0f );
 
-    NeuritesColor( Eigen::Vector3f( 0.3f, 0.3f, 0.3f));
-    SomaColor( Eigen::Vector3f( 0.3f, 0.3f, 0.3f));
+    NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
 
     std::string fName(file_name);
 
@@ -81,10 +82,106 @@ namespace neurolots
 #endif
     }
 
+    _GenerateMeshes( );
+    _Init();
+
+    PaintNeurites( false );
+  }
+
+#ifdef NEUROLOTS_WITH_ZEQ
+  NeuronsCollection::NeuronsCollection( const char* uri_,
+      const char * file_name,
+      const char * quadsPath,
+      const char * trianglesPath,
+      Camera * camera_ )
+    : _camera( camera_ )
+    , _cont( 0 )
+  {
+    _uri = lunchbox::URI(uri_);
+    _selectedNeurons.clear( );
+
+    _programQuads = new Program( Program::QUADS, quadsPath );
+    _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
+    _programQuads->Init();
+    _programTriangles->Init();
+
+    Lod( 3.0f );
+    Tng( 5.0f );
+    MaxDist( 200.0f );
+
+    NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
+
+    std::string fName(file_name);
+
+    if ( !(fName.length() < 5 ||
+      fName.compare( fName.length( ) - 3, 3, "swc" )))
+    {
+      nsol::SwcReaderTemplated< nsol::Node,
+        nsol::Segment,
+        nsol::Section,
+        nsol::Dendrite,
+        nsol::Axon,
+        nsol::Soma,
+        NeuronMorphology,
+        nsol::Neuron > swcReader;
+
+      nsol::NeuronPtr neuron = swcReader.readNeuron( file_name );
+      if(neuron == nullptr)
+      {
+        std::cerr << "Error: Swc file doesn't exits" << std::endl;
+        exit( -1 );
+      }
+
+      nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
+      miniColumn->addNeuron( neuron );
+      nsol::ColumnPtr column = new nsol::Column();
+      column->addMiniColumn( miniColumn );
+
+      _colums.clear( );
+
+      _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
+        ::value_type( 0 , column ));
+    }
+    else
+    {
+ #ifdef NEUROLOTS_WITH_BBPSDK
+      nsol::BBPSDKReaderTemplated< nsol::Node,
+        nsol::Segment,
+        nsol::Section,
+        nsol::Dendrite,
+        nsol::Axon,
+        nsol::Soma,
+        NeuronMorphology,
+        nsol::Neuron,
+        nsol::MiniColumn,
+        nsol::Column > bbpsdkReader;
+
+      try{
+        _colums = bbpsdkReader.readExperiment( file_name, 0);
+      }
+      catch( int e )
+      {
+        std::cerr << "Error: can't load file: " << file_name << std::endl;
+        exit(-1);
+      }
+ #else
+      std::cerr << "Error: Bbpsdk support not built-in" << std::endl;
+      exit( -1 );
+ #endif
+    }
 
     _GenerateMeshes( );
     _Init();
+    PaintNeurites( false );
+
+    _subscriber = new zeq::Subscriber( _uri );
+
+    _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
+      boost::bind( &NeuronsCollection::_OnSelectionEvent , this, _1 ));
+
+    pthread_create( &_subscriberThread, NULL, _Subscriber, this );
   }
+#endif
 
   NeuronsCollection::~NeuronsCollection( void )
   {
@@ -136,7 +233,18 @@ namespace neurolots
 		neuron->transform()[matrixRow][matrixCol];
             }
           }
+#ifdef NEUROLOTS_WITH_ZEQ
+          neuronMesh->PaintSoma( true );
 
+          if( _IsSelected( neuron ) )
+          {
+            neuronMesh->PaintNeurites( true );
+          }
+          else
+          {
+            neuronMesh->PaintNeurites( false );
+          }
+#endif
           glUseProgram( _programQuads->id( ));
           glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
                               tMatrix.data());
@@ -340,14 +448,21 @@ namespace neurolots
     glUniform1fv( _programTriangles->uMaxDist( ), 1, &_maxDist );
   }
 
-  //Getters
+  // GETTERS
 
-  ColumnsPtr NeuronsCollection::getColumns( void )
+  ColumnsPtr NeuronsCollection::Columns( void )
   {
     return &_colums;
   }
 
-  //Setters
+#ifdef NEUROLOTS_WITH_ZEQ
+  zeq::Subscriber* NeuronsCollection::Subscriber( void )
+  {
+    return _subscriber;
+  }
+#endif
+
+  // SETTERS
 
   void NeuronsCollection::PaintSoma( bool paintSoma )
   {
@@ -558,5 +673,40 @@ namespace neurolots
     }
   }
 
+  bool NeuronsCollection::_IsSelected( nsol::NeuronPtr neuron_ )
+  {
+    return !( _selectedNeurons.find( neuron_->gid( )) ==
+              _selectedNeurons.end( ));
+  }
 
+
+
+#ifdef NEUROLOTS_WITH_ZEQ
+  void NeuronsCollection::_OnSelectionEvent( const zeq::Event& event_ )
+  {
+    std::vector<unsigned int> selected = zeq::hbp::deserializeSelectedIDs( event_ );
+    std::cout << "Neurons Selected" << std::endl;
+    _selectedNeurons.clear();
+    for( unsigned int i = 0; i < selected.size(); i ++)
+    {
+      std::cout << selected[i] << std::endl;
+      _selectedNeurons.insert( selected[i] );
+    }
+
+
+  }
+
+  void* NeuronsCollection::_Subscriber( void* collection_ )
+  {
+    NeuronsCollection* collection = ( NeuronsCollection* )collection_;
+    zeq::Subscriber* subscriber = collection->Subscriber( );
+    std::cout << "Waiting Selection Events..." << std::endl;
+    while ( true )
+    {
+      subscriber->receive( 10000 );
+    }
+    pthread_exit( NULL );
+  }
+
+#endif
 }

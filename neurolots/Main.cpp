@@ -207,7 +207,10 @@ int main( int argc, char * argv[ ])
   glewInit( );
 
   camera = new Camera( );
-
+//  neuronsCollection = new NeuronsCollection( argv[1],
+//                                             "/home/jjgarcia/shaders/quads",
+//                                             "/home/jjgarcia/shaders/triangles",
+//                                             camera );
 
   for( int i = 2; i < argc; i++ )
   {
@@ -217,22 +220,17 @@ int main( int argc, char * argv[ ])
       if( ++i < argc )
       {
         camera = new Camera( argv[i] );
+        neuronsCollection = new NeuronsCollection( argv[i],
+                                                   argv[1],
+                                                   "/home/jjgarcia/shaders/quads",
+                                                   "/home/jjgarcia/shaders/triangles",
+                                                   camera );
       }
 #else
       std::cerr << "Error: Zeq support not built-in" << std::endl;
 #endif
     }
   }
-
-
-  neuronsCollection = new NeuronsCollection( argv[1],
-                                           "/home/jjgarcia/shaders/quads",
-                                           "/home/jjgarcia/shaders/triangles",
-                                           camera );
-  neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3, 0.5, 0.7 ));
-  neuronsCollection->SomaColor( Eigen::Vector3f( 0.7, 0.5, 0.3 ));
-  neuronsCollection->NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
-  neuronsCollection->PaintNeurites( false );
 
 
 
