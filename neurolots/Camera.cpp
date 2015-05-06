@@ -14,7 +14,6 @@ namespace neurolots
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
     , _zeqConnection( false )
-
   {
     _Position( Vector3f( x_, y_, z_ ));
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
@@ -23,6 +22,7 @@ namespace neurolots
     _BuildViewMatrix( );
   }
 
+#ifdef NEUROLOTS_WITH_ZEQ
   Camera::Camera( const char * uri_, float fov_, float ratio_, float nearPlane_,
       float farPlane_, float x_, float y_, float z_, float yaw_, float pitch_ )
     : _fov( fov_ )
@@ -30,7 +30,6 @@ namespace neurolots
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
     , _zeqConnection( true )
-
   {
     _uri = lunchbox::URI(uri_);
 
@@ -48,6 +47,7 @@ namespace neurolots
     _BuildProjectionMatrix( );
     _BuildViewMatrix( );
   }
+#endif
 
   Camera::~Camera( void )
   {
@@ -100,10 +100,12 @@ namespace neurolots
     return _positionVec.data( );
   }
 
+#ifdef NEUROLOTS_WITH_ZEQ
   zeq::Subscriber* Camera::Subscriber( void )
   {
     return _subscriber;
   }
+#endif
 
   // SETTERS
 
@@ -125,6 +127,24 @@ namespace neurolots
   }
 
   // PRIVATE
+#ifndef NEUROLOTS_WITH_ZEQ
+
+  void Camera::_Position( Eigen::Vector3f position_ )
+  {
+    _position = position_;
+  }
+
+  void Camera::_Rotation( Eigen::Matrix3f rotation_ )
+  {
+    _rotation = rotation_;
+  }
+
+  void Camera::_ViewMatrixVectorized( std::vector<float>& viewVec_ )
+  {
+    _viewVec = viewVec_;
+  }
+
+#else
 
   void Camera::_Position( Eigen::Vector3f position_ )
   {
@@ -146,6 +166,10 @@ namespace neurolots
     _viewVec = viewVec_;
     _viewMatrixMutex.unlock( );
   }
+
+#endif
+
+
 
   void Camera::_BuildProjectionMatrix( void )
   {
@@ -201,14 +225,17 @@ namespace neurolots
     viewVec[13] = desp.y( );
     viewVec[14] = desp.z( );
     viewVec[15] = 1.0f;
-
+#ifdef NEUROLOTS_WITH_ZEQ
     if ( _zeqConnection )
     {
       _publisher->publish( zeq::hbp::serializeCamera( viewVec ));
+//      std::cout << "Evento publicado" << std::endl;
     }
+#endif
     _ViewMatrixVectorized( viewVec );
   }
 
+#ifdef NEUROLOTS_WITH_ZEQ
   void Camera::_OnCameraEvent( const zeq::Event& event_ )
   {
     std::vector<float> viewMatrixVec = zeq::hbp::deserializeCamera( event_ );
@@ -225,23 +252,21 @@ namespace neurolots
                           viewMatrixVec[13], viewMatrixVec[14] );
 
     _Position( pos );
-
-    std::cout << "Recieved Camera Event" << std::endl;
   }
 
   void* Camera::_Subscriber( void* camera_ )
   {
     Camera* camera = ( Camera* )camera_;
     zeq::Subscriber* subscriber = camera->Subscriber();
+    std::cout << "Waiting Camera Events..." << std::endl;
     while ( true )
     {
-      std::cout << "Waiting ..." << std::endl;
-      subscriber->receive( 1000 );
-
+      subscriber->receive( 10000 );
     }
 
     pthread_exit( NULL );
   }
+#endif
 
   Eigen::Matrix3f Camera::_RotationFromPY( float yaw_, float pitch_ )
   {

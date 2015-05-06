@@ -35,10 +35,21 @@ int cont = 0;
 Camera * camera;
 NeuronsCollection * neuronsCollection;
 
+void usageMessage()
+{
+  std::cerr << std::endl
+            << "Usage: "
+            << "neurolots" << " "
+            << "(-bc blue_config_path | -swc swc_file_list) "
+            << "-zeq uri"
+            << std::endl << std::endl;
+  exit(-1);
+}
+
 void sceneInit( void )
 {
   glEnable( GL_DEPTH_TEST );
-  glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
+  glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
   glPolygonMode( GL_FRONT_AND_BACK , GL_FILL );
   glEnable( GL_CULL_FACE );
 
@@ -50,7 +61,7 @@ void paintFunc(void)
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  neuronsCollection->PaintMiniColum( 0, 0 );
+  neuronsCollection->Paint( );
 
   glUseProgram( 0 );
   glFlush( );
@@ -77,7 +88,7 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
       }
       break;
     case 'c':
-      camera->Position( Eigen::Vector3f(0.0f, 0.0f, 20.0f ));
+      camera->Position( Eigen::Vector3f(0.0f, 0.0f, 100.0f ));
       camera->Rotation( 0.0f, 0.0f );
       break;
     case 'w':
@@ -172,10 +183,10 @@ void resizeFunc( int w, int h )
 
 int main( int argc, char * argv[ ])
 {
-  camera = new Camera( "hbpcam:" );
-
-
-
+  if( argc < 2 )
+  {
+    usageMessage( );
+  }
 
   glutInit( &argc, argv );
   glutInitContextVersion( 4, 4 );
@@ -195,21 +206,34 @@ int main( int argc, char * argv[ ])
   glewExperimental = GL_TRUE;
   glewInit( );
 
-  if( argc == 2 )
+  camera = new Camera( );
+
+
+  for( int i = 2; i < argc; i++ )
   {
-    neuronsCollection = new NeuronsCollection( argv[1],
-                                             "/home/jjgarcia/shaders/quads",
-                                             "/home/jjgarcia/shaders/triangles",
-                                             camera );
-    neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3, 0.5, 0.7 ));
-    neuronsCollection->SomaColor( Eigen::Vector3f( 0.7, 0.5, 0.3 ));
-    neuronsCollection->NeuronColor( Eigen::Vector3f( 0.7, 0.5, 0.0 ));
+    if( std::strcmp( argv[i], "-zeq" ) == 0 )
+    {
+#ifdef NEUROLOTS_WITH_ZEQ
+      if( ++i < argc )
+      {
+        camera = new Camera( argv[i] );
+      }
+#else
+      std::cerr << "Error: Zeq support not built-in" << std::endl;
+#endif
+    }
   }
-  else
-  {
-    std::cout << "Usage Error" << std::endl;
-    exit( 0 );
-  }
+
+
+  neuronsCollection = new NeuronsCollection( argv[1],
+                                           "/home/jjgarcia/shaders/quads",
+                                           "/home/jjgarcia/shaders/triangles",
+                                           camera );
+  neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3, 0.5, 0.7 ));
+  neuronsCollection->SomaColor( Eigen::Vector3f( 0.7, 0.5, 0.3 ));
+  neuronsCollection->NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
+  neuronsCollection->PaintNeurites( false );
+
 
 
   sceneInit( );

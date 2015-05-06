@@ -102,7 +102,7 @@ elseif(Eigen3_FOUND)
   set(EIGEN3_FOUND TRUE)
 endif()
 if(Eigen3_name)
-  list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_USE_EIGEN3)
+  list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_WITH_EIGEN3)
   if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
     list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Eigen3)
   endif()
@@ -126,7 +126,7 @@ elseif(nsol_FOUND)
   set(NSOL_FOUND TRUE)
 endif()
 if(nsol_name)
-  list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_USE_NSOL)
+  list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_WITH_NSOL)
   if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
     list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES nsol)
   endif()
@@ -141,102 +141,53 @@ endif()
 #########################################################
 # FIND Zeq
 #########################################################
-find_package(zeq REQUIRED)
-if(ZEQ_FOUND)
-  set(zeq_name ZEQ)
-  set(zeq_FOUND TRUE)
-elseif(zeq_FOUND)
-  set(zeq_name zeq)
-  set(ZEQ_FOUND TRUE)
-endif()
-if(zeq_name)
-  list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_USE_ZEQ)
-  if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES zeq)
-  endif()
-  set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} zeq")
-  link_directories(${${zeq_name}_LIBRARY_DIRS})
-  if(NOT "${${zeq_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
-    include_directories(BEFORE SYSTEM ${${zeq_name}_INCLUDE_DIRS})
-  endif()
-endif()
-
+if(NEUROLOTS_WITH_ZEQ)
+  find_package(zeq)
+  if(ZEQ_FOUND)
+    set(zeq_name ZEQ)
+    set(zeq_FOUND TRUE)
+  elseif(zeq_FOUND)
+    set(zeq_name zeq)
+    set(ZEQ_FOUND TRUE)
+  endif( )
+  if(zeq_name)
+    list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_WITH_ZEQ)
+    if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
+      list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES zeq)
+    endif( )
+    set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} zeq")
+    link_directories(${${zeq_name}_LIBRARY_DIRS})
+    if(NOT "${${zeq_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
+      include_directories(BEFORE SYSTEM ${${zeq_name}_INCLUDE_DIRS})
+    endif( )
+  endif( )
+endif( )
 
 
 #########################################################
 # FIND Bbpsdk
 #########################################################
-find_package(BBPSDK REQUIRED)
-if(BBPSDK_FOUND)
-  set(BBPSDK_name BBPSDK)
-  set(BBPSDK_FOUND TRUE)
-elseif(BBPSDK_FOUND)
-  set(BBPSDK_name BBPSDK)
-  set(BBPSDK_FOUND TRUE)
-endif()
-if(BBPSDK_name)
-  list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_USE_BBPSDK)
-  if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES BBPSDK)
+if(NEUROLOTS_WITH_BBPSDK)  
+  find_package(BBPSDK)
+  if(BBPSDK_FOUND)
+    set(BBPSDK_name BBPSDK)
+    set(BBPSDK_FOUND TRUE)
+  elseif(BBPSDK_FOUND)
+    set(BBPSDK_name BBPSDK)
+    set(BBPSDK_FOUND TRUE)
   endif()
-  set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} BBPSDK")
-  link_directories(${${BBPSDK_name}_LIBRARY_DIRS})
-  if(NOT "${${BBPSDK_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
-    include_directories(BEFORE SYSTEM ${${BBPSDK_name}_INCLUDE_DIRS})
+  if(BBPSDK_name)
+    list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_WITH_BBPSDK)
+    if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
+      list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES BBPSDK)
+    endif()
+    set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} BBPSDK")
+    link_directories(${${BBPSDK_name}_LIBRARY_DIRS})
+    if(NOT "${${BBPSDK_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
+      include_directories(BEFORE SYSTEM ${${BBPSDK_name}_INCLUDE_DIRS})
+    endif()
   endif()
-endif()
-
-
-
-# #FIND NSOL
-# find_package(nsol REQUIRED)
-# include_directories(${NSOL_INCLUDE_DIRS}) 
-
-# #FIND EIGEN 
-# find_package(Eigen3 REQUIRED)
-# include_directories(BEFORE SYSTEM ${EIGEN3_INCLUDE_DIR})
-
-
-# #########################################################
-# # FIND NVIDIA OPENGL
-# #########################################################
-# # This tries to fix problems when linking in Linux with nVidia OpenGL
-# if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#   find_package(nvidiaOpenGL)
-#   if ( NVIDIA_OPENGL_gl_LIBRARY )
-#     set( CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
-#     message(STATUS "nVidia library used ["
-#       ${NVIDIA_OPENGL_gl_LIBRARY_PATH}
-#       "]")
-#   endif()
-# endif()
-
-# #FIND OPENGL
-# find_package(OpenGL REQUIRED)
-# include_directories(${OpenGL_INCLUDE_DIRS})
-# link_directories(${OpenGL_LIBRARY_DIRS})
-# add_definitions(${OpenGL_DEFINITIONS})
-# if(NOT OPENGL_FOUND)
-# message(ERROR " OPENGL not found!")
-# endif(NOT OPENGL_FOUND)
-
-# # FIND GLEW
-# find_package(GLEW REQUIRED)
-# include_directories(${GLEW_INCLUDE_DIRS})
-# link_directories(${GLEW_LIBRARY_DIRS})
-# add_definitions(${GLEW_DEFINITIONS})
-# if(NOT GLEW_FOUND)
-# message(ERROR " GLEW not found!")
-# endif(NOT GLEW_FOUND)
-
-# #FIND GLUT
-# find_package(GLUT REQUIRED)
-# include_directories(${GLUT_INCLUDE_DIR})
-# link_directories(${GLUT_LIBRARY_DIRS})
-# add_definitions(${GLUT_DEFINITIONS})
-# if(NOT GLUT_FOUND)
-# message(ERROR " GLUT not found!")
-# endif(NOT GLUT_FOUND)
+endif( )
 
 
 

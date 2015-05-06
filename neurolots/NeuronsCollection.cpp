@@ -27,47 +27,61 @@ namespace neurolots
     if ( !(fName.length() < 5 ||
          fName.compare( fName.length( ) - 3, 3, "swc" )))
     {
-      std::cout << "Leyendo swc" << std::endl;
+      nsol::SwcReaderTemplated< nsol::Node,
+                                nsol::Segment,
+                                nsol::Section,
+                                nsol::Dendrite,
+                                nsol::Axon,
+                                nsol::Soma,
+                                NeuronMorphology,
+                                nsol::Neuron > swcReader;
 
-           nsol::SwcReaderTemplated< nsol::Node,
-                                     nsol::Segment,
-                                     nsol::Section,
-                                     nsol::Dendrite,
-                                     nsol::Axon,
-                                     nsol::Soma,
-                                     NeuronMorphology,
-                                     nsol::Neuron > swcReader;
+      nsol::NeuronPtr neuron = swcReader.readNeuron( file_name );
+      if(neuron == nullptr)
+      {
+        std::cerr << "Error: Swc file doesn't exits" << std::endl;
+        exit( -1 );
+      }
 
-           nsol::NeuronPtr neuron = swcReader.readNeuron( file_name );
-           nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
-           miniColumn->addNeuron( neuron );
-           nsol::ColumnPtr column = new nsol::Column();
-           column->addMiniColumn( miniColumn );
+      nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
+      miniColumn->addNeuron( neuron );
+      nsol::ColumnPtr column = new nsol::Column();
+      column->addMiniColumn( miniColumn );
 
-           _colums.clear( );
+      _colums.clear( );
 
-           _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
-                           ::value_type( 0 , column ));
-
+      _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
+                   ::value_type( 0 , column ));
     }
-
-#ifdef NSOL_WITH_BBPSDK
     else
     {
+#ifdef NEUROLOTS_WITH_BBPSDK
       nsol::BBPSDKReaderTemplated< nsol::Node,
-                                         nsol::Segment,
-                                         nsol::Section,
-                                         nsol::Dendrite,
-                                         nsol::Axon,
-                                         nsol::Soma,
-                                         NeuronMorphology,
-                                         nsol::Neuron,
-                                         nsol::MiniColumn,
-                                         nsol::Column > bbpsdkReader;
+                                   nsol::Segment,
+                                   nsol::Section,
+                                   nsol::Dendrite,
+                                   nsol::Axon,
+                                   nsol::Soma,
+                                   NeuronMorphology,
+                                   nsol::Neuron,
+                                   nsol::MiniColumn,
+                                   nsol::Column > bbpsdkReader;
 
-            _colums = bbpsdkReader.readExperiment( file_name, 0);
-    }
+      try{
+      _colums = bbpsdkReader.readExperiment( file_name, 0);
+      }
+      catch( int e )
+      {
+        std::cerr << "Error: can't load file: " << file_name << std::endl;
+        exit(-1);
+      }
+#else
+      std::cerr << "Error: Bbpsdk support not built-in" << std::endl;
+      exit( -1 );
 #endif
+    }
+
+
     _GenerateMeshes( );
     _Init();
   }

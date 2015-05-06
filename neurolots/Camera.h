@@ -17,6 +17,7 @@
 #include <vector>
 #include <iostream>
 
+#ifdef NEUROLOTS_WITH_ZEQ
 #include <zeq/zeq.h>
 #include <zeq/hbp/hbp.h>
 #include <lunchbox/uri.h>
@@ -24,6 +25,7 @@
 #include <pthread.h>
 #include <mutex>
 #include <boost/bind.hpp>
+#endif
 
 namespace neurolots
 {
@@ -37,11 +39,12 @@ namespace neurolots
         float nearPlane_ = 0.1f, float farPlane_ = 10000.0f, float x_ = 0.0f,
         float y_ = 0.0f, float z_ = 100.0f, float yaw_ = 0.0f,
         float pitch_ = 0.0f );
-
+#ifdef NEUROLOTS_WITH_ZEQ
       Camera( const char * uri_, float fov_ = 45.0f,
         float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
         float farPlane_ = 10000.0f, float x_ = 0.0f, float y_ = 0.0f,
         float z_ = 100.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
+#endif
 
       ~Camera(void);
 
@@ -53,7 +56,10 @@ namespace neurolots
       float* ProjectionMatrix( void );
       float* ViewMatrix( void );
       float* Position( void );
+
+#ifdef NEUROLOTS_WITH_ZEQ
       zeq::Subscriber* Subscriber( void );
+#endif
 
       // SETTERS
 
@@ -70,8 +76,10 @@ namespace neurolots
       void _BuildProjectionMatrix( void );
       void _BuildViewMatrix( void );
 
+#ifdef NEUROLOTS_WITH_ZEQ
       void _OnCameraEvent( const zeq::Event& event_ );
       static void* _Subscriber( void* camera_ );
+#endif
 
       Eigen::Matrix3f _RotationFromPY( float yaw_, float pitch_ );
 
@@ -89,6 +97,8 @@ namespace neurolots
       std::vector<float> _viewVec;
 
       bool _zeqConnection;
+#ifdef NEUROLOTS_WITH_ZEQ
+
       lunchbox::URI _uri;
       zeq::Publisher* _publisher;
       zeq::Subscriber* _subscriber;
@@ -98,7 +108,7 @@ namespace neurolots
       std::mutex _viewMatrixMutex;
 
       pthread_t _subscriberThread;
-
+#endif
   };
 
 
