@@ -205,33 +205,44 @@ int main( int argc, char * argv[ ])
 
   glewExperimental = GL_TRUE;
   glewInit( );
-
-  camera = new Camera( );
 //  neuronsCollection = new NeuronsCollection( argv[1],
 //                                             "/home/jjgarcia/shaders/quads",
 //                                             "/home/jjgarcia/shaders/triangles",
 //                                             camera );
 
+  char * file_name = argv[1];
+
+#ifdef NEUROLOTS_WITH_ZEQ
+  char * uri = nullptr;
+  bool connection = false;
+
   for( int i = 2; i < argc; i++ )
   {
     if( std::strcmp( argv[i], "-zeq" ) == 0 )
     {
-#ifdef NEUROLOTS_WITH_ZEQ
       if( ++i < argc )
       {
-        camera = new Camera( argv[i] );
-        neuronsCollection = new NeuronsCollection( argv[i],
-                                                   argv[1],
-                                                   "/home/jjgarcia/shaders/quads",
-                                                   "/home/jjgarcia/shaders/triangles",
-                                                   camera );
+        uri = argv[i];
+        connection = true;
       }
-#else
-      std::cerr << "Error: Zeq support not built-in" << std::endl;
-#endif
     }
   }
 
+  if ( connection )
+  {
+    camera = new Camera( uri );
+    neuronsCollection = new NeuronsCollection( uri, file_name, camera );
+  }
+  else
+  {
+    camera = new Camera( );
+    neuronsCollection = new NeuronsCollection( file_name, camera );
+  }
+#else
+  std::cerr << "ZEQ not supported" << std::endl;
+  camera = new Camera( );
+  neuronsCollection = new NeuronsCollection( file_name, camera );
+#endif
 
 
   sceneInit( );

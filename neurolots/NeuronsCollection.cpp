@@ -4,16 +4,32 @@ namespace neurolots
 {
 
   NeuronsCollection::NeuronsCollection( const char * file_name,
-                                        const char * quadsPath,
-                                        const char * trianglesPath,
                                         Camera * camera_ )
     : _camera( camera_ )
     , _cont( 0 )
   {
     _selectedNeurons.clear( );
 
+    char * shaders_path = getenv( "SHADERS_PATH" );
+    if( shaders_path == NULL )
+    {
+      std::cerr << "Environment Variable SHADERS_PATH not defined" << std::endl;
+      exit(-1);
+    }
+    std::string shadersPath =  std::string( shaders_path );
+
+    std::string path = shadersPath + std::string( "/quads" );
+    char * quadsPath = new char [ path.length()+1];
+    std::strcpy( quadsPath, path.c_str( ));
+
+    path = shadersPath + std::string( "/triangles" );
+    char * trianglesPath = new char [ path.length()+1];
+    std::strcpy( trianglesPath, path.c_str( ));
+
     _programQuads = new Program( Program::QUADS, quadsPath );
+
     _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
+
     _programQuads->Init();
     _programTriangles->Init();
 
@@ -91,8 +107,6 @@ namespace neurolots
 #ifdef NEUROLOTS_WITH_ZEQ
   NeuronsCollection::NeuronsCollection( const char* uri_,
       const char * file_name,
-      const char * quadsPath,
-      const char * trianglesPath,
       Camera * camera_ )
     : _camera( camera_ )
     , _cont( 0 )
@@ -100,8 +114,26 @@ namespace neurolots
     _uri = lunchbox::URI(uri_);
     _selectedNeurons.clear( );
 
+    char * shaders_path = getenv( "SHADERS_PATH" );
+    if( shaders_path == NULL )
+    {
+      std::cerr << "Environment Variable SHADERS_PATH not defined" << std::endl;
+      exit(-1);
+    }
+    std::string shadersPath =  std::string( shaders_path );
+
+    std::string path = shadersPath + std::string( "/quads" );
+    char * quadsPath = new char [ path.length()+1];
+    std::strcpy( quadsPath, path.c_str( ));
+
+    path = shadersPath + std::string( "/triangles" );
+    char * trianglesPath = new char [ path.length()+1];
+    std::strcpy( trianglesPath, path.c_str( ));
+
     _programQuads = new Program( Program::QUADS, quadsPath );
+
     _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
+
     _programQuads->Init();
     _programTriangles->Init();
 

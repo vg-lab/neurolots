@@ -136,6 +136,12 @@ namespace neurolots
         fname = new char [localPath.length()+1];
         std::strcpy( fname, localPath.c_str( ));
 
+        std::cout << "Triangles shaders: " << std::endl;
+        std::cout << "\t" << vname << std::endl;
+        std::cout << "\t" << tcname << std::endl;
+        std::cout << "\t" << tename << std::endl;
+        std::cout << "\t" << fname << std::endl;
+
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
         tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
         teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
@@ -166,6 +172,12 @@ namespace neurolots
         localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
         fname = new char [localPath.length()+1];
         std::strcpy( fname, localPath.c_str( ));
+
+        std::cout << "Quads shaders: " << std::endl;
+        std::cout << "\t" << vname << std::endl;
+        std::cout << "\t" << tcname << std::endl;
+        std::cout << "\t" << tename << std::endl;
+        std::cout << "\t" << fname << std::endl;
 
         //comopilacion de shaders
         vshader_ = LoadShader( vname, GL_VERTEX_SHADER );

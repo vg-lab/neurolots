@@ -20,6 +20,8 @@
 #include <Eigen/Dense>
 
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef NEUROLOTS_WITH_ZEQ
 #include <zeq/zeq.h>
@@ -40,12 +42,10 @@ namespace neurolots
   {
 
     public:
-      NeuronsCollection( const char * file_name, const char * quadsPath,
-             const char * trianglesPath , Camera * camera_ );
+      NeuronsCollection( const char * file_name, Camera * camera_ );
 
 #ifdef NEUROLOTS_WITH_ZEQ
       NeuronsCollection( const char* uri_, const char * file_name,
-          const char * quadsPath, const char * trianglesPath ,
           Camera * camera_ );
 #endif
 
