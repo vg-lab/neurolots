@@ -8,40 +8,46 @@ namespace neurolots
 {
 
   Camera::Camera( float fov_, float ratio_, float nearPlane_, float farPlane_,
-      float x_, float y_, float z_, float yaw_, float pitch_, float roll_ )
+      float x_, float y_, float z_, float yaw_, float pitch_ )
     : _fov( fov_ )
     , _ratio( ratio_ )
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
     , _zeqConnection( false )
-
   {
-    _position = Vector3f( x_, y_, z_ );
-    _rotation = Vector3f( yaw_, pitch_, roll_ );
+    _Position( Vector3f( x_, y_, z_ ));
+    _Rotation( _RotationFromPY( pitch_, yaw_ ));
 
     _BuildProjectionMatrix( );
-    _BuildRotationMatrix( );
     _BuildViewMatrix( );
   }
 
+#ifdef NEUROLOTS_WITH_ZEQ
   Camera::Camera( const char * uri_, float fov_, float ratio_, float nearPlane_,
-      float farPlane_, float x_, float y_, float z_, float yaw_, float pitch_,
-      float roll_ )
+      float farPlane_, float x_, float y_, float z_, float yaw_, float pitch_ )
     : _fov( fov_ )
     , _ratio( ratio_ )
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
     , _zeqConnection( true )
-
   {
     _uri = lunchbox::URI(uri_);
-    _position = Vector3f( x_, y_, z_ );
-    _rotation = Vector3f( yaw_, pitch_, roll_ );
+
+    _Position( Vector3f( x_, y_, z_ ));
+    _Rotation( _RotationFromPY( pitch_, yaw_ ));
+
+    _publisher = new zeq::Publisher( _uri );
+    _subscriber = new zeq::Subscriber( _uri );
+
+    _subscriber->registerHandler( zeq::hbp::EVENT_CAMERA,
+      boost::bind( &Camera::_OnCameraEvent , this, _1 ));
+
+    pthread_create( &_subscriberThread, NULL, _Subscriber, this );
 
     _BuildProjectionMatrix( );
-    _BuildRotationMatrix( );
     _BuildViewMatrix( );
   }
+#endif
 
   Camera::~Camera( void )
   {
@@ -49,34 +55,25 @@ namespace neurolots
 
   // PUBLIC
 
-  void Camera::LocalDisplace( float x_, float y_, float z_ )
+  void Camera::LocalDisplace( Eigen::Vector3f displace_ )
   {
     Vector3f localX, localY, localZ;
 
-    Eigen::Matrix3f rotT = _rot.transpose();
+    Eigen::Matrix3f rotT = _rotation.transpose();
 
     localX = rotT * Vector3f::UnitX();
     localY = rotT * Vector3f::UnitY();
     localZ = rotT * Vector3f::UnitZ();
 
-    _position += x_ * localX + y_ * localY + z_ * localZ;
+    _Position( _position + displace_.x() * localX + displace_.y() * localY +
+                 displace_.z() * localZ );
 
     _BuildViewMatrix( );
   }
 
-  void Camera::IncrementRotation( float yaw_, float pitch_ )
-    {
-      _rotation.x( ) += yaw_;
-      _rotation.y( ) += pitch_;
-
-      _BuildRotationMatrix( );
-      _BuildViewMatrix( );
-    }
-
-  void Camera::IncrementRotation( float roll_ )
+  void Camera::LocalRotation( float yaw_, float pitch_ )
   {
-    _rotation.z( ) += roll_;
-    _BuildRotationMatrix( );
+    _Rotation(  _RotationFromPY( yaw_, pitch_ ) * _rotation );
     _BuildViewMatrix( );
   }
 
@@ -103,6 +100,13 @@ namespace neurolots
     return _positionVec.data( );
   }
 
+#ifdef NEUROLOTS_WITH_ZEQ
+  zeq::Subscriber* Camera::Subscriber( void )
+  {
+    return _subscriber;
+  }
+#endif
+
   // SETTERS
 
   void Camera::Ratio( float ratio_ )
@@ -111,43 +115,61 @@ namespace neurolots
     _BuildProjectionMatrix( );
   }
 
+  void Camera::Position( Eigen::Vector3f position_ )
+  {
+    _Position( position_ );
+    _BuildViewMatrix();
+  }
+
   void Camera::Rotation( float yaw_, float pitch_ )
   {
-    _rotation.x( ) = yaw_;
-    _rotation.y( ) = pitch_;
-
-    _BuildRotationMatrix( );
-    _BuildViewMatrix( );
-  }
-
-  void Camera::Rotation( float roll_ )
-  {
-    _rotation.z( ) = roll_;
-
-    _BuildRotationMatrix( );
-    _BuildViewMatrix( );
-  }
-
-  void Camera::Rotation( float yaw_, float pitch_, float roll_ )
-  {
-    _rotation.x( ) = yaw_;
-    _rotation.y( ) = pitch_;
-    _rotation.z( ) = roll_;
-
-    _BuildRotationMatrix();
-    _BuildViewMatrix();
-  }
-
-  void Camera::Position( float x_, float y_, float z_ )
-  {
-    _position.x() = x_;
-    _position.y() = y_;
-    _position.z() = z_;
-
-    _BuildViewMatrix();
+    _Rotation( _RotationFromPY( yaw_, pitch_ ));
   }
 
   // PRIVATE
+#ifndef NEUROLOTS_WITH_ZEQ
+
+  void Camera::_Position( Eigen::Vector3f position_ )
+  {
+    _position = position_;
+  }
+
+  void Camera::_Rotation( Eigen::Matrix3f rotation_ )
+  {
+    _rotation = rotation_;
+  }
+
+  void Camera::_ViewMatrixVectorized( std::vector<float>& viewVec_ )
+  {
+    _viewVec = viewVec_;
+  }
+
+#else
+
+  void Camera::_Position( Eigen::Vector3f position_ )
+  {
+    _positionMutex.lock( );
+    _position = position_;
+    _positionMutex.unlock( );
+  }
+
+  void Camera::_Rotation( Eigen::Matrix3f rotation_ )
+  {
+    _rotationMutex.lock( );
+    _rotation = rotation_;
+    _rotationMutex.unlock( );
+  }
+
+  void Camera::_ViewMatrixVectorized( std::vector<float>& viewVec_ )
+  {
+    _viewMatrixMutex.lock( );
+    _viewVec = viewVec_;
+    _viewMatrixMutex.unlock( );
+  }
+
+#endif
+
+
 
   void Camera::_BuildProjectionMatrix( void )
   {
@@ -177,74 +199,99 @@ namespace neurolots
     _projVec[15] = .0f;
   }
 
-  void Camera::_BuildRotationMatrix( void )
-  {
-    Matrix3f rYaw;
-    Matrix3f rPitch;
-    Matrix3f rRoll;
-
-    float sy, cy, sp, cp, sr, cr;
-    sy = sin( _rotation.x( ));
-    cy = cos( _rotation.x( ));
-
-    sp = sin( _rotation.y( ));
-    cp = cos( _rotation.y( ));
-
-    sr = sin( _rotation.z( ));
-    cr = cos( _rotation.z( ));
-
-    rYaw << cy, 0.0f, sy,
-            0.0f, 1.0f, 0.0f,
-            -sy, 0.0f, cy;
-
-    rPitch << 1.0f, 0.0f, 0.0f,
-              0.0f, cp, -sp,
-              0.0f, sp, cp;
-
-    rRoll << cr, -sr, 0.0f,
-             sr, cr, 0.0f,
-             0.0f, 0.0f, 1.0f;
-
-    _rot= rRoll * rPitch * rYaw;
-  }
-
   void Camera::_BuildViewMatrix( void )
   {
-    Vector3f desp = _rot * -_position;
+    Vector3f desp = _rotation * -_position;
 
     std::vector<float> viewVec(16);
 
     // row 1
-    viewVec[0] = _rot( 0, 0 );
-    viewVec[1] = _rot( 1, 0 );
-    viewVec[2] = _rot( 2, 0 );
+    viewVec[0] = _rotation( 0, 0 );
+    viewVec[1] = _rotation( 1, 0 );
+    viewVec[2] = _rotation( 2, 0 );
     viewVec[3] = .0f;
     // row 2
-    viewVec[4] = _rot( 0, 1 );
-    viewVec[5] = _rot( 1, 1 );
-    viewVec[6] = _rot( 2, 1 );
+    viewVec[4] = _rotation( 0, 1 );
+    viewVec[5] = _rotation( 1, 1 );
+    viewVec[6] = _rotation( 2, 1 );
     viewVec[7] = .0f;
     // row 3
-    viewVec[8] = _rot( 0, 2 );
-    viewVec[9] = _rot( 1, 2 );
-    viewVec[10] = _rot( 2, 2 );
+    viewVec[8] = _rotation( 0, 2 );
+    viewVec[9] = _rotation( 1, 2 );
+    viewVec[10] = _rotation( 2, 2 );
     viewVec[11] = .0f;
     // row 4
     viewVec[12] = desp.x( );
     viewVec[13] = desp.y( );
     viewVec[14] = desp.z( );
     viewVec[15] = 1.0f;
-
+#ifdef NEUROLOTS_WITH_ZEQ
+    if ( _zeqConnection )
+    {
+      _publisher->publish( zeq::hbp::serializeCamera( viewVec ));
+//      std::cout << "Evento publicado" << std::endl;
+    }
+#endif
     _ViewMatrixVectorized( viewVec );
   }
 
-  void Camera::_ViewMatrixVectorized( std::vector<float>& viewVec_ )
+#ifdef NEUROLOTS_WITH_ZEQ
+  void Camera::_OnCameraEvent( const zeq::Event& event_ )
   {
-    _viewMatrixMutex.lock( );
-    _viewVec = viewVec_;
-    _viewMatrixMutex.unlock( );
+    std::vector<float> viewMatrixVec = zeq::hbp::deserializeCamera( event_ );
+    _ViewMatrixVectorized( viewMatrixVec );
+
+    Eigen::Matrix3f rot;
+    rot << viewMatrixVec[0], viewMatrixVec[4], viewMatrixVec[8],
+           viewMatrixVec[1], viewMatrixVec[5], viewMatrixVec[9],
+           viewMatrixVec[2], viewMatrixVec[6], viewMatrixVec[10];
+
+    _Rotation( rot );
+
+    Eigen::Vector3f pos = - rot.inverse() * Eigen::Vector3f( viewMatrixVec[12],
+                          viewMatrixVec[13], viewMatrixVec[14] );
+
+    _Position( pos );
   }
 
+  void* Camera::_Subscriber( void* camera_ )
+  {
+    Camera* camera = ( Camera* )camera_;
+    zeq::Subscriber* subscriber = camera->Subscriber();
+    std::cout << "Waiting Camera Events..." << std::endl;
+    while ( true )
+    {
+      subscriber->receive( 10000 );
+    }
+
+    pthread_exit( NULL );
+  }
+#endif
+
+  Eigen::Matrix3f Camera::_RotationFromPY( float yaw_, float pitch_ )
+  {
+    Matrix3f rot;
+    Matrix3f rYaw;
+    Matrix3f rPitch;
+
+
+    float sy, cy, sp, cp;
+    sy = sin( yaw_ );
+    cy = cos( yaw_ );
+    sp = sin( pitch_ );
+    cp = cos( pitch_ );
+
+    rYaw << cy, 0.0f, sy,
+      0.0f, 1.0f, 0.0f,
+      -sy, 0.0f, cy;
+
+    rPitch << 1.0f, 0.0f, 0.0f,
+      0.0f, cp, -sp,
+      0.0f, sp, cp;
+
+    rot= rPitch * rYaw;
+    return rot;
+  }
 
 } // end namespace neurolots
 

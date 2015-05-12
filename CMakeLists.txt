@@ -18,26 +18,22 @@ set(VERSION_MINOR "0")
 set(VERSION_PATCH "1")
 set(VERSION_ABI 1)
 
-include(Common)
+
 
 set(COMMON_PROJECT_DOMAIN gmrv.es)
 set(NEUROLOTS_DESCRIPTION "NeuroLOTs")
-#set(NEUROLOTS_DEPENDENT_LIBRARIES Lunchbox)
+#set(NEUROLOTS_DEPENDENT_LIBRARIES )
 
+option(NEUROLOTS_WITH_ZEQ "NEUROLOTS_WITH_ZEQ" ON)
+option(NEUROLOTS_WITH_BBPSDK "NEUROLOTS_WITH_BBPSDK" ON)
+
+include(Common)
 include(FindPackages)
 
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-unknown-pragmas")
 set(CMAKE_BUILD_TYPE Release)
-# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
-
-
 
 add_subdirectory( fem )
-#include_directories( fem )
-
 add_subdirectory( generators )
-#include_directories( generators )
-
 add_subdirectory( neurolots )
 
 include(CPackConfig)
