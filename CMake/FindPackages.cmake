@@ -11,7 +11,7 @@ find_package(PkgConfig)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   find_package(nvidiaOpenGL)
   if ( NVIDIA_OPENGL_gl_LIBRARY )
-    set( CMAKE_EXE_LINKER_FLAGS "-L${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
+    set( CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
     message(STATUS "nVidia library used ["
       ${NVIDIA_OPENGL_gl_LIBRARY_PATH}
       "]")
