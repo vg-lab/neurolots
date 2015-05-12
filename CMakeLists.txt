@@ -30,18 +30,10 @@ option(NEUROLOTS_WITH_BBPSDK "NEUROLOTS_WITH_BBPSDK" ON)
 include(Common)
 include(FindPackages)
 
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-unknown-pragmas")
 set(CMAKE_BUILD_TYPE Release)
-# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
-
-
 
 add_subdirectory( fem )
-#include_directories( fem )
-
 add_subdirectory( generators )
-#include_directories( generators )
-
 add_subdirectory( neurolots )
 
 include(CPackConfig)
