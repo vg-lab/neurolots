@@ -15,6 +15,8 @@
 
 #include <iostream>
 
+#define WINDOW_TITLE_PREFIX "NeuroLoTs"
+
 using Eigen::Vector3d;
 using namespace std;
 using namespace neurolots;
@@ -30,7 +32,7 @@ int m_x, m_y;
 
 bool mode = true;
 
-int cont = 0;
+unsigned int frameCount = 0;
 
 Camera * camera;
 NeuronsCollection * neuronsCollection;
@@ -59,6 +61,7 @@ void sceneInit( void )
 
 void paintFunc(void)
 {
+  frameCount ++;
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   neuronsCollection->Paint( );
@@ -181,6 +184,22 @@ void resizeFunc( int w, int h )
   glViewport( 0, 0, w, h );
 }
 
+void timerFunc( int value )
+{
+  if( 0 != value )
+  {
+    char * tmpString = new char[ 512 + strlen(WINDOW_TITLE_PREFIX )];
+
+    sprintf( tmpString, "%s: %d FPS", WINDOW_TITLE_PREFIX, frameCount );
+
+    glutSetWindowTitle( tmpString );
+    free( tmpString );
+  }
+
+  frameCount = 0;
+  glutTimerFunc( 1000, timerFunc, 1 );
+}
+
 int main( int argc, char * argv[ ])
 {
   if( argc < 2 )
@@ -194,7 +213,7 @@ int main( int argc, char * argv[ ])
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
   glutInitWindowPosition( 0, 0 );
   glutInitWindowSize( 600, 600 );
-  glutCreateWindow( "NeuroLOT" );
+  glutCreateWindow( WINDOW_TITLE_PREFIX );
 
   glutDisplayFunc( paintFunc );
   glutKeyboardFunc( keyboardFunc );
@@ -202,6 +221,7 @@ int main( int argc, char * argv[ ])
   glutMotionFunc( mouseMoveFunc );
   glutIdleFunc( idleFunc );
   glutReshapeFunc( resizeFunc );
+  glutTimerFunc( 0, timerFunc, 0);
 
   glewExperimental = GL_TRUE;
   glewInit( );
