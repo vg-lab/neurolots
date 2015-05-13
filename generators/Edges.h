@@ -17,6 +17,8 @@
 #include <iostream>
 #include <vector>
 
+#include <neurolots/api.h>
+
 namespace neurolots
 {
 
@@ -26,11 +28,17 @@ namespace neurolots
 
     public:
 
+      NEUROLOTS_API
       Edge( unsigned int node_, fem::NodePtr middleNode_ );
+
+      NEUROLOTS_API
       ~Edge( void );
 
       //Getters
+      NEUROLOTS_API
       unsigned int Node( void );
+
+      NEUROLOTS_API
       fem::NodePtr MiddleNode( void );
 
     private:
@@ -43,11 +51,17 @@ namespace neurolots
   class Edges
   {
     public:
+      NEUROLOTS_API
       Edges( Eigen::Vector3f _center, float _radius );
+
+      NEUROLOTS_API
       ~Edges( void );
 
+      NEUROLOTS_API
       fem::NodePtr AddEdge( std::vector< fem::NodePtr >& nodes,
                             fem::NodePtr node0, fem::NodePtr node1 );
+
+      NEUROLOTS_API
       void Clear( void );
 
     private:

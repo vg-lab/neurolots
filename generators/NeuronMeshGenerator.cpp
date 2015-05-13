@@ -69,7 +69,7 @@ namespace neurolots
 
     Eigen::Vector3f pos = vNode->Position( );
 
-    vNode->Primitive( new GeometricPrimitive( vertices.size() / 3 ));
+    vNode->Primitive( new GeometricPrimitive( int( vertices.size( )) / 3 ));
 
     vertices.push_back( pos.x( ));
     vertices.push_back( pos.y( ));
@@ -97,7 +97,7 @@ namespace neurolots
 
         VectorizedNodePtr vNode = vNodes[i];
 
-        int id1 = vertices.size() / 3;
+        int id1 = int( vertices.size( )) / 3;
 
         vNode->Primitive( new GeometricPrimitive( id1 ));
         Eigen::Vector3f pos = vNode->Position( );
@@ -136,7 +136,7 @@ namespace neurolots
     GenerateSomaTriangles( morpho->soma( ), firstNodes, vertices, centers,
                            tangents, mesh  );
 
-    somaEnd = mesh.size( );
+    somaEnd = int( mesh.size( ));
 
     CalculateTangents( vNodes );
     CalculateGeometry( vNodes, vertices, centers, tangents);
@@ -326,7 +326,7 @@ namespace neurolots
       Vec3f pos = node->point( );
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
       vNode->Radius( node->radius( ));
-      vNode->Id( vNodes.size( ));
+      vNode->Id( int( vNodes.size( )));
 
 //      std::cout << "Nodo " << node->id() << "\nPosicion: " << node->point().x()
 //                << " " << node->point().y() << " " << node->point().z()
@@ -362,7 +362,7 @@ namespace neurolots
       Vec3f pos = node->point( );
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
       vNode->Radius( node->radius( ));
-      vNode->Id( vNodes.size( ));
+      vNode->Id( int( vNodes.size( )));
 
 //      std::cout << "Nodo " << node->id() << "\nPosicion: " << node->point().x()
 //                << " " << node->point().y() << " " << node->point().z()
@@ -488,28 +488,28 @@ namespace neurolots
 //        std::cout << "vc: " << vc.x() << " " << vc.y() << " " << vc.z() << std::endl;
 //        std::cout << "vd: " << vd.x() << " " << vd.y() << " " << vd.z() << std::endl;
 
-        int a = vertices.size( ) / 3;
+        int a = int( vertices.size( )) / 3;
         position = q._transformVector( va ) * vNode->Radius( ) + center;
 //        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
-        int b = vertices.size( ) / 3;
+        int b = int( vertices.size( )) / 3;
         position = q._transformVector( vb ) * vNode->Radius( ) + center;
 //        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
-        int c = vertices.size( ) / 3;
+        int c = int( vertices.size( ) ) / 3;
         position = q._transformVector( vc ) * vNode->Radius( ) + center;
 //        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
         vertices.push_back( position.y( ));
         vertices.push_back( position.z( ));
 
-        int d = vertices.size( ) / 3;
+        int d = int( vertices.size( ) ) / 3;
         position = q._transformVector( vd ) * vNode->Radius( ) + center;
 //        std::cout << "position: " << position.x() << " " << position.y() << " " << position.z() << std::endl;
         vertices.push_back( position.x( ));
@@ -520,7 +520,7 @@ namespace neurolots
 
         if ( vNode->Childs( ).size( ) == 0 )
         {
-          center = center - tangent * 0.1;
+          center = center - tangent * 0.1f;
         }
 
         for (unsigned int j = 0; j < 4; j++ )
@@ -553,7 +553,7 @@ namespace neurolots
     while( segment != nullptr)
     {
       int id0 = ids[ segment->begin( )->id( )-1 ];
-      int id1 = vertices.size( )/3;
+      int id1 = int( vertices.size( ) ) / 3;
 
       NodePtr node = segment->end( );
 
@@ -590,7 +590,7 @@ namespace neurolots
       {
         int id0 = vNodes[ segment->begin()->id( ) - 1 ]->Primitive( )->A();
 
-        int id1 = vertices.size( ) / 3;
+        int id1 = int( vertices.size( ) ) / 3;
 
         NodePtr node = segment->end( );
 
@@ -694,7 +694,7 @@ namespace neurolots
 
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
       vNode->Radius( node->radius( ));
-      vNode->Id( vNodes.size() );
+      vNode->Id( int( vNodes.size( )));
       vNode->Father( vFatherNode);
       vNodes.push_back( vNode );
 
@@ -798,27 +798,27 @@ namespace neurolots
   {
 
     Eigen::Vector3f aux = center + Eigen::Vector3f( 0.0, 0.0, radius );
-    int id0 = vertices.size( ) / 3;
+    int id0 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( 0.0, 0.0, -radius );
-    int id1 = vertices.size( ) / 3;
+    int id1 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( radius, 0.0, 0.0 );
-    int id2 = vertices.size( ) / 3;
+    int id2 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( -radius, 0.0, 0.0 );
-    int id3 = vertices.size( ) / 3;
+    int id3 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( 0.0, radius, 0.0 );
-    int id4 = vertices.size( ) / 3;
+    int id4 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( 0.0, -radius, 0.0 );
-    int id5 = vertices.size( ) / 3;
+    int id5 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     for( int i = 0; i < 6; i++ )
@@ -856,27 +856,27 @@ namespace neurolots
   {
 
     Eigen::Vector3f aux = center + Eigen::Vector3f( 0.0, 0.0, radius );
-    int id0 = vertices.size( ) / 3;
+    int id0 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( 0.0, 0.0, -radius );
-    int id1 = vertices.size( ) / 3;
+    int id1 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( radius, 0.0, 0.0 );
-    int id2 = vertices.size( ) / 3;
+    int id2 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( -radius, 0.0, 0.0 );
-    int id3 = vertices.size( ) / 3;
+    int id3 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( 0.0, radius, 0.0 );
-    int id4 = vertices.size( ) / 3;
+    int id4 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     aux = center + Eigen::Vector3f( 0.0, -radius, 0.0 );
-    int id5 = vertices.size( ) / 3;
+    int id5 = int( vertices.size( ) ) / 3;
     vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
 
     for( int i = 0; i < 6; i++ )

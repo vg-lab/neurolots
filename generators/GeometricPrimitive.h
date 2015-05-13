@@ -10,6 +10,8 @@
 #ifndef __NEUROLOTS_GEOMETRIC_PRIMITIVE__
 #define __NEUROLOTS_GEOMETRIC_PRIMITIVE__
 
+
+
 namespace neurolots
 {
 
