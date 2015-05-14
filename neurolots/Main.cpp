@@ -229,9 +229,9 @@ int main( int argc, char * argv[ ])
                                            "/home/jjgarcia/shaders/quads",
                                            "/home/jjgarcia/shaders/triangles",
                                            camera );
-  neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3, 0.5, 0.7 ));
-  neuronsCollection->SomaColor( Eigen::Vector3f( 0.7, 0.5, 0.3 ));
-  neuronsCollection->NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
+  neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3f, 0.5f, 0.7f ));
+  neuronsCollection->SomaColor( Eigen::Vector3f( 0.7f, 0.5f, 0.3f ));
+  neuronsCollection->NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
   neuronsCollection->PaintNeurites( false );
 
 

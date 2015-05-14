@@ -1,5 +1,10 @@
 #include "Program.h"
 
+#include <cstring>
+#include <string>
+
+
+
 namespace neurolots
 {
 

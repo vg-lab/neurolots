@@ -9,7 +9,6 @@ set(NLGENERATOR_LINK_LIBRARIES nlfem)
 include_directories( ../fem )
 
 set(NLGENERATOR_PUBLIC_HEADERS
-  ${COMMON_INCLUDES}
   Edges.h
   GeometricPrimitive.h
   Icosphere.h
@@ -22,7 +21,6 @@ set(NLGENERATOR_HEADERS
 )
 
 set(NLGENERATOR_SOURCES
-  ${COMMON_SOURCES}
   Edges.cpp
   GeometricPrimitive.cpp
   Icosphere.cpp
@@ -32,4 +30,15 @@ set(NLGENERATOR_SOURCES
 )
 
 set(PROJECT_INCLUDE_NAME nlgenerator)
+
+set(NLGENERATOR_LINK_LIBRARIES
+  ${OPENGL_LIBRARIES} 
+  ${GLEW_LIBRARIES} 
+  ${GLUT_LIBRARIES} 
+  ${NSOL_LIBRARIES} 
+  ${ZEQ_LIBRARIES} 
+  ${BBPSDK_LIBRARIES} 
+  nlfem )
+  
+add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlgenerator )
