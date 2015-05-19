@@ -40,7 +40,7 @@ namespace neurolots
       glGenVertexArrays( 1, &vao_ );
       glBindVertexArray( vao_ );
 
-      _size = mesh.size( );
+      _size = ( unsigned int ) mesh.size( );
 
 
       vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );

@@ -18,6 +18,8 @@
 #include <iostream>
 #include <vector>
 
+#include <neurolots/api.h>
+
 
 namespace fem
 {
@@ -28,34 +30,67 @@ namespace fem
 
     public:
 
+      NEUROLOTS_API
       Tetrahedron( NodePtr node0_, NodePtr node1_, NodePtr node2_,
                    NodePtr node3_ );
+
+      NEUROLOTS_API
       ~Tetrahedron( void );
 
       //Getters
+      NEUROLOTS_API
       NodePtr Node0( void );
+
+      NEUROLOTS_API
       NodePtr Node1( void );
+
+      NEUROLOTS_API
       NodePtr Node2( void );
+
+      NEUROLOTS_API
       NodePtr Node3( void );
 
+      NEUROLOTS_API
       Eigen::MatrixXf B0( void );
+
+      NEUROLOTS_API
       Eigen::MatrixXf B1( void );
+
+      NEUROLOTS_API
       Eigen::MatrixXf B2( void );
+
+      NEUROLOTS_API
       Eigen::MatrixXf B3( void );
 
+      NEUROLOTS_API
       float Volume( void );
 
+      NEUROLOTS_API
       bool Face0( void );
+
+      NEUROLOTS_API
       bool Face1( void );
+
+      NEUROLOTS_API
       bool Face2( void );
+
+      NEUROLOTS_API
       bool Face3( void );
 
       // Setters
+      NEUROLOTS_API
       void B0( Eigen::MatrixXf b0_ );
+
+      NEUROLOTS_API
       void B1( Eigen::MatrixXf b1_ );
+
+      NEUROLOTS_API
       void B2( Eigen::MatrixXf b2_ );
+
+      NEUROLOTS_API
       void B3( Eigen::MatrixXf b3_ );
 
+      NEUROLOTS_API
       void Volume( float volume_ );
 
     private:
@@ -80,9 +115,13 @@ namespace fem
   {
     public:
 
+      NEUROLOTS_API
       Tetrahedra( void );
+
+      NEUROLOTS_API
       ~Tetrahedra( void );
 
+      NEUROLOTS_API
       static void FacesToVectors( std::vector< TetrahedronPtr >& tetrahedra,
                                   std::vector< NodePtr >& nodes,
                                   std::vector< float >& vertices,
@@ -90,6 +129,7 @@ namespace fem
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
+      NEUROLOTS_API
       static void ContornFacesToVectors(
                                   std::vector< TetrahedronPtr >& tetrahedra,
                                   std::vector< NodePtr >& nodes,

@@ -13,27 +13,42 @@
 #include <Node.h>
 #include <cfloat>
 
+#include <neurolots/api.h>
+
 namespace neurolots
 {
   class Quad
   {
     public:
 
+      NEUROLOTS_API
       Quad( fem::NodePtr node0_, fem::NodePtr node1_, fem::NodePtr node2_,
             fem::NodePtr node3_ );
+
+      NEUROLOTS_API
       ~Quad( void );
 
       //Getters
+      NEUROLOTS_API
       fem::NodePtr Node0( void );
+
+      NEUROLOTS_API
       fem::NodePtr Node1( void );
+
+      NEUROLOTS_API
       fem::NodePtr Node2( void );
+
+      NEUROLOTS_API
       fem::NodePtr Node3( void );
 
+      NEUROLOTS_API
       Eigen::Vector3f Center( void );
 
+      NEUROLOTS_API
       bool Free( void );
 
       //Setters
+      NEUROLOTS_API
       void Free( bool free_ );
 
     private:
@@ -56,9 +71,13 @@ namespace neurolots
   class Quads
   {
     public:
+      NEUROLOTS_API
       Quads( void );
+
+      NEUROLOTS_API
       ~Quads( void );
 
+      NEUROLOTS_API
       static void FacesToVectors( std::vector< QuadPtr >& quads,
                                   std::vector< fem::NodePtr >& nodes,
                                   std::vector< float >& vertices,
@@ -66,6 +85,7 @@ namespace neurolots
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
+      NEUROLOTS_API
       static QuadPtr NearerQuad( std::vector< QuadPtr >& quads,
                                  Eigen::Vector3f position );
 

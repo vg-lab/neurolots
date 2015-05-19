@@ -410,7 +410,7 @@ namespace fem
 
     }
 
-    _kMatrix.resizeNonZeros( _triplets.size( ));
+    _kMatrix.resizeNonZeros( int( _triplets.size( )));
     _kMatrix.setFromTriplets( _triplets.begin( ), _triplets.end( ));
 
     _triplets.clear( );

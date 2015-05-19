@@ -89,7 +89,7 @@ namespace neurolots
                                    fem::NodePtr node0, fem::NodePtr node1)
   {
     Eigen::Vector3f pos = ( node0->Pos( ) + node1->Pos( )) / 2.0f;
-    int id = nodes.size();
+    int id = int( nodes.size( ));
     bool contorn;
 
     if(( contorn = (node0->Contorn( ) && node1->Contorn( ))))

@@ -717,11 +717,11 @@ namespace neurolots
   void NeuronsCollection::_OnSelectionEvent( const zeq::Event& event_ )
   {
     std::vector<unsigned int> selected = zeq::hbp::deserializeSelectedIDs( event_ );
-    std::cout << "Neurons Selected" << std::endl;
+//    std::cout << "Neurons Selected" << std::endl;
     _selectedNeurons.clear();
     for( unsigned int i = 0; i < selected.size(); i ++)
     {
-      std::cout << selected[i] << std::endl;
+//      std::cout << selected[i] << std::endl;
       _selectedNeurons.insert( selected[i] );
     }
 

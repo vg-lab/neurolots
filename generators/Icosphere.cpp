@@ -204,7 +204,7 @@ namespace neurolots
       std::vector< fem::TetrahedronPtr > tets;
       std::vector< QuadPtr > quads;
 
-      unsigned int size = _tetrahedra.size( );
+      unsigned int size = ( unsigned int ) _tetrahedra.size( );
 
       for ( unsigned int k = 0; k < size; k++ )
       {

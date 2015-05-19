@@ -11,7 +11,7 @@ find_package(PkgConfig)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   find_package(nvidiaOpenGL)
   if ( NVIDIA_OPENGL_gl_LIBRARY )
-    set( CMAKE_EXE_LINKER_FLAGS "-L${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
+    set( CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
     message(STATUS "nVidia library used ["
       ${NVIDIA_OPENGL_gl_LIBRARY_PATH}
       "]")
@@ -85,7 +85,7 @@ if(GLUT_name)
   set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} GLUT")
   link_directories(${${GLUT_name}_LIBRARY_DIRS})
   if(NOT "${${GLUT_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
-    include_directories(BEFORE SYSTEM ${${GLUT_name}_INCLUDE_DIRS})
+    include_directories(BEFORE SYSTEM ${${GLUT_name}_INCLUDE_DIR})
   endif()
 endif()
 
