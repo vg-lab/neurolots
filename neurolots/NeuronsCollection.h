@@ -120,9 +120,11 @@ namespace neurolots
 
       bool _zeqConnection;
 
-      std::set<unsigned int> _selectedNeurons;
+
 
 #ifdef NEUROLOTS_WITH_ZEQ
+      std::set<unsigned int> _selectedNeurons;
+
       lunchbox::URI _uri;
       zeq::Subscriber* _subscriber;
 
