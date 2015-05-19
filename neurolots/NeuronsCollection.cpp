@@ -37,7 +37,7 @@ namespace neurolots
     Tng( 5.0f );
     MaxDist( 200.0f );
 
-    NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
+    NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
 
     std::string fName(file_name);
 
