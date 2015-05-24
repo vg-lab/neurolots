@@ -1,8 +1,14 @@
 //OpenGL
 #include <GL/glew.h>
+#ifdef Darwin
+#include <gl.h>
+#include <glu.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
+#endif
 
 //Eigen
 #include "Eigen/Dense"
