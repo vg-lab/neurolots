@@ -13,7 +13,9 @@ namespace neurolots
     , _ratio( ratio_ )
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
+#ifdef NEUROLOTS_WITH_ZEQ
     , _zeqConnection( false )
+#endif
   {
     _Position( Vector3f( x_, y_, z_ ));
     _Rotation( _RotationFromPY( pitch_, yaw_ ));

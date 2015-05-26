@@ -26,6 +26,7 @@ set(NEUROLOTS_SOURCES
 )
 
 include_directories( ../fem ../generators )
+
 set(NEUROLOTS_LINK_LIBRARIES 
   ${OPENGL_LIBRARIES} 
   ${GLEW_LIBRARIES} 
@@ -36,5 +37,9 @@ set(NEUROLOTS_LINK_LIBRARIES
   nlfem 
   nlgenerator
 )
+
+if (APPLE)
+  set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" )
+endif( )
 
 common_application( neurolots )

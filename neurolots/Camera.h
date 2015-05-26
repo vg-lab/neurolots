@@ -96,8 +96,9 @@ namespace neurolots
       std::vector<float> _projVec;
       std::vector<float> _viewVec;
 
-      bool _zeqConnection;
 #ifdef NEUROLOTS_WITH_ZEQ
+
+      bool _zeqConnection;
 
       lunchbox::URI _uri;
       zeq::Publisher* _publisher;
