@@ -34,8 +34,8 @@ bool mode = true;
 
 unsigned int frameCount = 0;
 
-Camera * camera;
-NeuronsCollection * neuronsCollection;
+Camera* camera;
+NeuronsCollection* neuronsCollection;
 
 void usageMessage()
 {
@@ -91,7 +91,7 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
       }
       break;
     case 'c':
-      camera->Position( Eigen::Vector3f(0.0f, 0.0f, 100.0f ));
+      camera->Position( Eigen::Vector3f( 0.0f, 0.0f, 100.0f ));
       camera->Rotation( 0.0f, 0.0f );
       break;
     case 'w':
@@ -188,7 +188,7 @@ void timerFunc( int value )
 {
   if( 0 != value )
   {
-    char * tmpString = new char[ 512 + strlen(WINDOW_TITLE_PREFIX )];
+    char* tmpString = new char[ 512 + strlen( WINDOW_TITLE_PREFIX )];
 
     sprintf( tmpString, "%s: %d FPS", WINDOW_TITLE_PREFIX, frameCount );
 
@@ -200,7 +200,7 @@ void timerFunc( int value )
   glutTimerFunc( 1000, timerFunc, 1 );
 }
 
-int main( int argc, char * argv[ ])
+int main( int argc, char* argv[ ])
 {
   if( argc < 2 )
   {
@@ -225,24 +225,20 @@ int main( int argc, char * argv[ ])
 
   glewExperimental = GL_TRUE;
   glewInit( );
-//  neuronsCollection = new NeuronsCollection( argv[1],
-//                                             "/home/jjgarcia/shaders/quads",
-//                                             "/home/jjgarcia/shaders/triangles",
-//                                             camera );
 
-  char * file_name = argv[1];
+  std::string fileName( argv[ 1 ]);
 
 #ifdef NEUROLOTS_WITH_ZEQ
-  char * uri = nullptr;
+  std::string uri = nullptr;
   bool connection = false;
 
   for( int i = 2; i < argc; i++ )
   {
-    if( std::strcmp( argv[i], "-zeq" ) == 0 )
+    if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
     {
       if( ++i < argc )
       {
-        uri = argv[i];
+        uri = std::string( argv[ i ]);
         connection = true;
       }
     }
@@ -251,19 +247,18 @@ int main( int argc, char * argv[ ])
   if ( connection )
   {
     camera = new Camera( uri );
-    neuronsCollection = new NeuronsCollection( uri, file_name, camera );
+    neuronsCollection = new NeuronsCollection( uri, fileName, camera );
   }
   else
   {
     camera = new Camera( );
-    neuronsCollection = new NeuronsCollection( file_name, camera );
+    neuronsCollection = new NeuronsCollection( fileName, camera );
   }
 #else
   std::cerr << "ZEQ not supported" << std::endl;
   camera = new Camera( );
-  neuronsCollection = new NeuronsCollection( file_name, camera );
+  neuronsCollection = new NeuronsCollection( fileName, camera );
 #endif
-
 
   sceneInit( );
 

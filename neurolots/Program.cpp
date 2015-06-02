@@ -1,14 +1,12 @@
 #include "Program.h"
 
-#include <cstring>
-#include <string>
-
-
+#include <iostream>
+#include <fstream>
 
 namespace neurolots
 {
 
-  Program::Program( TProgram type_, const char * path_ )
+  Program::Program( TProgram type_, std::string& path_ )
     : _type( type_ )
     , id_( 0 )
     , inVertex_( -1 )
@@ -38,10 +36,10 @@ namespace neurolots
   {
   }
 
-  GLuint Program::LoadShader( const char *fileName, GLenum type_ )
+  GLuint Program::_LoadShader( std::string& fileName_, GLenum type_ )
   {
     std::ifstream file;
-    file.open( fileName, std::ios::in );
+    file.open( fileName_.c_str( ), std::ios::in );
     if( !file )
       return 0;
 
@@ -89,34 +87,29 @@ namespace neurolots
     return shader;
   }
 
-  void Program::ShaderInit( void )
+  void Program::_ShaderInit( void )
   {
 
     id_ = glCreateProgram( );
 
-    char* vname;
-    char* tcname;
-    char* tename;
-    char* fname;
-
-    std::string localPath;
+    std::string vname;
+    std::string tcname;
+    std::string tename;
+    std::string fname;
 
     switch ( _type )
     {
       case LINES:
-        localPath = std::string ( _path ) + std::string( "/vshader.glsl" );
-        vname = new char [localPath.length()+1];
-        std::strcpy( vname, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
-        fname = new char [localPath.length()+1];
-        std::strcpy( fname, localPath.c_str( ));
+        vname = _path;
+        vname.append( "/vshader.glsl" );
+        fname = _path;
+        fname.append( "/fshader.glsl" );
 
         std::cout << vname << std::endl;
         std::cout << fname << std::endl;
 
-        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
-        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+        vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+        fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
 
         glAttachShader( id_, vshader_ );
         glAttachShader( id_, fshader_ );
@@ -125,21 +118,14 @@ namespace neurolots
         break;
 
       case TRIANGLES:
-        localPath = std::string ( _path ) + std::string( "/vshader.glsl" );
-        vname = new char [localPath.length()+1];
-        std::strcpy( vname, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/tcshader.glsl" );
-        tcname = new char [localPath.length()+1];
-        std::strcpy( tcname, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/teshader.glsl" );
-        tename = new char [localPath.length()+1];
-        std::strcpy( tename, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
-        fname = new char [localPath.length()+1];
-        std::strcpy( fname, localPath.c_str( ));
+        vname = _path;
+        vname.append( "/vshader.glsl" );
+        tcname = _path;
+        tcname.append( "/tcshader.glsl" );
+        tename = _path;
+        tename.append( "/teshader.glsl" );
+        fname = _path;
+        fname.append( "/fshader.glsl" );
 
         std::cout << "Triangles shaders: " << std::endl;
         std::cout << "\t" << vname << std::endl;
@@ -147,10 +133,10 @@ namespace neurolots
         std::cout << "\t" << tename << std::endl;
         std::cout << "\t" << fname << std::endl;
 
-        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
-        tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-        teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+        vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+        tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+        teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+        fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
 
         glAttachShader( id_, vshader_ );
         glAttachShader( id_, tcshader_ );
@@ -162,21 +148,14 @@ namespace neurolots
         break;
 
       case QUADS:
-        localPath = std::string ( _path ) + std::string( "/vshader.glsl" );
-        vname = new char [localPath.length()+1];
-        std::strcpy( vname, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/tcshader.glsl" );
-        tcname = new char [localPath.length()+1];
-        std::strcpy( tcname, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/teshader.glsl" );
-        tename = new char [localPath.length()+1];
-        std::strcpy( tename, localPath.c_str( ));
-
-        localPath = std::string ( _path ) + std::string( "/fshader.glsl" );
-        fname = new char [localPath.length()+1];
-        std::strcpy( fname, localPath.c_str( ));
+        vname = _path;
+        vname.append( "/vshader.glsl" );
+        tcname = _path;
+        tcname.append( "/tcshader.glsl" );
+        tename = _path;
+        tename.append( "/teshader.glsl" );
+        fname = _path;
+        fname.append( "/fshader.glsl" );
 
         std::cout << "Quads shaders: " << std::endl;
         std::cout << "\t" << vname << std::endl;
@@ -185,10 +164,10 @@ namespace neurolots
         std::cout << "\t" << fname << std::endl;
 
         //comopilacion de shaders
-        vshader_ = LoadShader( vname, GL_VERTEX_SHADER );
-        tcshader_ = LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-        teshader_ = LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-        fshader_ = LoadShader( fname, GL_FRAGMENT_SHADER );
+        vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+        tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+        teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+        fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
 
         glAttachShader( id_, vshader_ );
         glAttachShader( id_, tcshader_ );
@@ -211,7 +190,7 @@ namespace neurolots
       GLint logLen;
       glGetProgramiv( id_, GL_INFO_LOG_LENGTH, &logLen );
 
-      char * logString = new char[logLen];
+      char * logString = new char[ logLen ];
       glGetProgramInfoLog( id_, logLen, NULL, logString );
       std::cout << "Error: " << logString << std::endl;
       delete logString;
@@ -265,22 +244,22 @@ namespace neurolots
 
   void Program::Init( void )
   {
-    ShaderInit( );
+    _ShaderInit( );
   }
 
   void Program::lod( float _lod )
   {
-    lod_=_lod;
+    lod_ = _lod;
   }
 
   void Program::tng( float _tng )
   {
-    tng_=_tng;
+    tng_ = _tng;
   }
 
   void Program::maxDist( float _maxDist )
   {
-    maxDist_=_maxDist;
+    maxDist_ = _maxDist;
   }
 
   Program::TProgram Program::type( void )
