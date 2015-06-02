@@ -113,7 +113,7 @@ namespace neurolots
 #ifdef NEUROLOTS_WITH_ZEQ
 
   NeuronsCollection::NeuronsCollection( std::string& uri_,
-      std::string fileName,
+      std::string& fileName,
       Camera* camera_ )
     : _camera( camera_ )
     , _cont( 0 )

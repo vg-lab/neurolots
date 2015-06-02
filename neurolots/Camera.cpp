@@ -23,7 +23,7 @@ namespace neurolots
   }
 
 #ifdef NEUROLOTS_WITH_ZEQ
-  Camera::Camera( const char * uri_, float fov_, float ratio_, float nearPlane_,
+  Camera::Camera( std::string& uri_, float fov_, float ratio_, float nearPlane_,
       float farPlane_, float x_, float y_, float z_, float yaw_, float pitch_ )
     : _fov( fov_ )
     , _ratio( ratio_ )

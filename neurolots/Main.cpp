@@ -229,7 +229,7 @@ int main( int argc, char* argv[ ])
   std::string fileName( argv[ 1 ]);
 
 #ifdef NEUROLOTS_WITH_ZEQ
-  std::string uri = nullptr;
+  std::string uri;
   bool connection = false;
 
   for( int i = 2; i < argc; i++ )

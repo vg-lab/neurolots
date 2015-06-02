@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 #ifdef NEUROLOTS_WITH_ZEQ
 #include <zeq/zeq.h>
@@ -40,7 +41,7 @@ namespace neurolots
         float y_ = 0.0f, float z_ = 100.0f, float yaw_ = 0.0f,
         float pitch_ = 0.0f );
 #ifdef NEUROLOTS_WITH_ZEQ
-      Camera( const char * uri_, float fov_ = 45.0f,
+      Camera( std::string& uri_, float fov_ = 45.0f,
         float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
         float farPlane_ = 10000.0f, float x_ = 0.0f, float y_ = 0.0f,
         float z_ = 100.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
