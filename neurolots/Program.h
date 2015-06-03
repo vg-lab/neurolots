@@ -34,7 +34,7 @@ namespace neurolots
         QUADS,
       } TProgram;
 
-      Program( TProgram type_, std::string& path_ );
+      Program( TProgram type_, const std::string& path_ );
       ~Program( void );
 
       void Init( void );
@@ -70,7 +70,7 @@ namespace neurolots
 
     private:
 
-      GLuint _LoadShader( std::string& fileName_, GLenum type_ );
+      GLuint _LoadShader( const std::string& fileName_, GLenum type_ );
       void _ShaderInit( void );
 
       TProgram _type;
@@ -100,7 +100,7 @@ namespace neurolots
       float lod_;
       float tng_;
 
-      std::string _path;
+      const std::string _path;
   };
 
 }// end namespace neurolots

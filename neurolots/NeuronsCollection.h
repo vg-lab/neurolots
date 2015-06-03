@@ -47,11 +47,11 @@ namespace neurolots
 
     public:
 
-      NeuronsCollection( std::string& fileName, Camera* camera_ );
+      NeuronsCollection( const std::string& fileName, Camera* camera_ );
 
 #ifdef NEUROLOTS_WITH_ZEQ
 
-      NeuronsCollection( std::string& uri_, std::string& filName,
+      NeuronsCollection( const std::string& uri_, const std::string& filName,
           Camera* camera_ );
 
 #endif

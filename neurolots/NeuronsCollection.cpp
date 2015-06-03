@@ -5,7 +5,7 @@
 namespace neurolots
 {
 
-  NeuronsCollection::NeuronsCollection( std::string& fileName,
+  NeuronsCollection::NeuronsCollection( const std::string& fileName,
                                         Camera* camera_ )
     : _camera( camera_ )
     , _cont( 0 )
@@ -112,9 +112,8 @@ namespace neurolots
 
 #ifdef NEUROLOTS_WITH_ZEQ
 
-  NeuronsCollection::NeuronsCollection( std::string& uri_,
-      std::string& fileName,
-      Camera* camera_ )
+  NeuronsCollection::NeuronsCollection( const std::string& uri_,
+      const std::string& fileName, Camera* camera_ )
     : _camera( camera_ )
     , _cont( 0 )
   {

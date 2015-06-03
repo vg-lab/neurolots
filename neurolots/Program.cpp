@@ -6,7 +6,7 @@
 namespace neurolots
 {
 
-  Program::Program( TProgram type_, std::string& path_ )
+  Program::Program( TProgram type_, const std::string& path_ )
     : _type( type_ )
     , id_( 0 )
     , inVertex_( -1 )
@@ -36,7 +36,7 @@ namespace neurolots
   {
   }
 
-  GLuint Program::_LoadShader( std::string& fileName_, GLenum type_ )
+  GLuint Program::_LoadShader( const std::string& fileName_, GLenum type_ )
   {
     std::ifstream file;
     file.open( fileName_.c_str( ), std::ios::in );
