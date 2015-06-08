@@ -23,11 +23,7 @@
 #include <GL/freeglut.h>
 #endif
 
-#include <iostream>
-#include <fstream>
-
-
-
+#include <string>
 
 namespace neurolots
 {
@@ -44,7 +40,7 @@ namespace neurolots
         QUADS,
       } TProgram;
 
-      Program( TProgram type_, const char * path_ );
+      Program( TProgram type_, const std::string& path_ );
       ~Program( void );
 
       void Init( void );
@@ -80,8 +76,8 @@ namespace neurolots
 
     private:
 
-      GLuint LoadShader( const char * fileName, GLenum type );
-      void ShaderInit( void );
+      GLuint _LoadShader( const std::string& fileName_, GLenum type_ );
+      void _ShaderInit( void );
 
       TProgram _type;
 
@@ -110,7 +106,7 @@ namespace neurolots
       float lod_;
       float tng_;
 
-      const char * _path;
+      std::string _path;
   };
 
 }// end namespace neurolots

@@ -21,6 +21,8 @@
 
 #include <iostream>
 
+#define WINDOW_TITLE_PREFIX "NeuroLoTs"
+
 using Eigen::Vector3d;
 using namespace std;
 using namespace neurolots;
@@ -36,10 +38,10 @@ int m_x, m_y;
 
 bool mode = true;
 
-int cont = 0;
+unsigned int frameCount = 0;
 
-Camera * camera;
-NeuronsCollection * neuronsCollection;
+Camera* camera;
+NeuronsCollection* neuronsCollection;
 
 void usageMessage()
 {
@@ -65,6 +67,7 @@ void sceneInit( void )
 
 void paintFunc(void)
 {
+  frameCount ++;
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   neuronsCollection->Paint( );
@@ -94,7 +97,7 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
       }
       break;
     case 'c':
-      camera->Position( Eigen::Vector3f(0.0f, 0.0f, 100.0f ));
+      camera->Position( Eigen::Vector3f( 0.0f, 0.0f, 100.0f ));
       camera->Rotation( 0.0f, 0.0f );
       break;
     case 'w':
@@ -187,7 +190,23 @@ void resizeFunc( int w, int h )
   glViewport( 0, 0, w, h );
 }
 
-int main( int argc, char * argv[ ])
+void timerFunc( int value )
+{
+  if( 0 != value )
+  {
+    char* tmpString = new char[ 512 + strlen( WINDOW_TITLE_PREFIX )];
+
+    sprintf( tmpString, "%s: %d FPS", WINDOW_TITLE_PREFIX, frameCount );
+
+    glutSetWindowTitle( tmpString );
+    free( tmpString );
+  }
+
+  frameCount = 0;
+  glutTimerFunc( 1000, timerFunc, 1 );
+}
+
+int main( int argc, char* argv[ ])
 {
   if( argc < 2 )
   {
@@ -200,7 +219,7 @@ int main( int argc, char * argv[ ])
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
   glutInitWindowPosition( 0, 0 );
   glutInitWindowSize( 600, 600 );
-  glutCreateWindow( "NeuroLOT" );
+  glutCreateWindow( WINDOW_TITLE_PREFIX );
 
   glutDisplayFunc( paintFunc );
   glutKeyboardFunc( keyboardFunc );
@@ -208,39 +227,44 @@ int main( int argc, char * argv[ ])
   glutMotionFunc( mouseMoveFunc );
   glutIdleFunc( idleFunc );
   glutReshapeFunc( resizeFunc );
+  glutTimerFunc( 0, timerFunc, 0);
 
   glewExperimental = GL_TRUE;
   glewInit( );
 
-  camera = new Camera( );
+  std::string fileName( argv[ 1 ]);
 
+#ifdef NEUROLOTS_WITH_ZEQ
+  std::string uri;
+  bool connection = false;
 
   for( int i = 2; i < argc; i++ )
   {
-    if( std::strcmp( argv[i], "-zeq" ) == 0 )
+    if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
     {
-#ifdef NEUROLOTS_WITH_ZEQ
       if( ++i < argc )
       {
-        camera = new Camera( argv[i] );
+        uri = std::string( argv[ i ]);
+        connection = true;
       }
-#else
-      std::cerr << "Error: Zeq support not built-in" << std::endl;
-#endif
     }
   }
 
-
-  neuronsCollection = new NeuronsCollection( argv[1],
-                                           "/home/jjgarcia/shaders/quads",
-                                           "/home/jjgarcia/shaders/triangles",
-                                           camera );
-  neuronsCollection->NeuritesColor( Eigen::Vector3f( 0.3f, 0.5f, 0.7f ));
-  neuronsCollection->SomaColor( Eigen::Vector3f( 0.7f, 0.5f, 0.3f ));
-  neuronsCollection->NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
-  neuronsCollection->PaintNeurites( false );
-
-
+  if ( connection )
+  {
+    camera = new Camera( uri );
+    neuronsCollection = new NeuronsCollection( uri, fileName, camera );
+  }
+  else
+  {
+    camera = new Camera( );
+    neuronsCollection = new NeuronsCollection( fileName, camera );
+  }
+#else
+  std::cerr << "ZEQ not supported" << std::endl;
+  camera = new Camera( );
+  neuronsCollection = new NeuronsCollection( fileName, camera );
+#endif
 
   sceneInit( );
 
