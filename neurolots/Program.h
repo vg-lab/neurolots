@@ -100,7 +100,7 @@ namespace neurolots
       float lod_;
       float tng_;
 
-      const std::string _path;
+      std::string _path;
   };
 
 }// end namespace neurolots
