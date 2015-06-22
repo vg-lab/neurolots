@@ -1,10 +1,3 @@
-# add_library( generators SHARED GeometricPrimitive.cpp NeuronMeshGenerator.cpp 
-#              VectorizedNode.cpp Edges.cpp Icosphere.cpp Quad.cpp )
-
-# target_link_libraries(generators  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} 
-#                                  ${GLEW_LIBRARIES} ${NSOL_LIBRARIES})
-
-
 set(NLGENERATOR_LINK_LIBRARIES nlfem)
 include_directories( ../fem )
 
@@ -32,13 +25,14 @@ set(NLGENERATOR_SOURCES
 set(PROJECT_INCLUDE_NAME nlgenerator)
 
 set(NLGENERATOR_LINK_LIBRARIES
-  ${OPENGL_LIBRARIES} 
-  ${GLEW_LIBRARIES} 
-  ${GLUT_LIBRARIES} 
-  ${NSOL_LIBRARIES} 
-  ${ZEQ_LIBRARIES} 
-  ${BBPSDK_LIBRARIES} 
+  ${OPENGL_LIBRARIES}
+  ${GLEW_LIBRARIES}
+  ${GLUT_LIBRARIES}
+  ${NSOL_LIBRARIES}
+  ${ZEQ_LIBRARIES}
+  ${BBPSDK_LIBRARIES}
   nlfem )
-  
+
+set(PROJECT_INCLUDE_NAME neurolots/nlgenerator)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlgenerator )

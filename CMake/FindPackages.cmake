@@ -39,7 +39,7 @@ if(OpenGL_name)
   if(NOT "${${OpenGL_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
     if (APPLE)
       include_directories(BEFORE SYSTEM ${${OpenGL_name}_INCLUDE_DIR}/Headers)
-    elseif( ) 
+    elseif( )
       include_directories(BEFORE SYSTEM ${${OpenGL_name}_INCLUDE_DIR})
     endif( )
   endif()
@@ -171,7 +171,7 @@ endif( )
 #########################################################
 # FIND Bbpsdk
 #########################################################
-if(NEUROLOTS_WITH_BBPSDK)  
+if(NEUROLOTS_WITH_BBPSDK)
   find_package(BBPSDK)
   if(BBPSDK_FOUND)
     set(BBPSDK_name BBPSDK)
@@ -268,4 +268,3 @@ if(FIND_PACKAGES_FOUND)
     message(STATUS "Configured ${PROJECT_NAME} with ${CMAKE_BUILD_TYPE}${FIND_PACKAGES_FOUND}")
   endif()
 endif()
-
