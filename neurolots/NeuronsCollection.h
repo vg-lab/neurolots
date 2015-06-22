@@ -27,7 +27,7 @@
 
 #include <zeq/zeq.h>
 #include <zeq/hbp/hbp.h>
-#include <lunchbox/uri.h>
+#include <servus/uri.h>
 
 #include <pthread.h>
 #include <mutex>
@@ -127,7 +127,7 @@ namespace neurolots
 
 #ifdef NEUROLOTS_WITH_ZEQ
 
-      lunchbox::URI _uri;
+      servus::URI _uri;
       zeq::Subscriber* _subscriber;
 
       pthread_t _subscriberThread;
