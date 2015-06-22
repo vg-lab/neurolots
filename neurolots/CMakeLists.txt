@@ -14,7 +14,6 @@ set(NEUROLOTS_HEADERS
 )
 
 set(NEUROLOTS_SOURCES
-  ${COMMON_SOURCES}
   Camera.cpp
   Main.cpp
   Morphologies.cpp

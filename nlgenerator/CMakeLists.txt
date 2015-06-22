@@ -1,4 +1,3 @@
-set(NLGENERATOR_LINK_LIBRARIES nlfem)
 include_directories( ../fem )
 
 set(NLGENERATOR_PUBLIC_HEADERS
