@@ -29,8 +29,8 @@ include(FindPackages)
 
 set(CMAKE_BUILD_TYPE Release)
 
-add_subdirectory( fem )
-add_subdirectory( generators )
+add_subdirectory( nlfem )
+add_subdirectory( nlgenerator )
 add_subdirectory( neurolots )
 
 include(CPackConfig)

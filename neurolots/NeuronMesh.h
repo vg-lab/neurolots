@@ -25,8 +25,8 @@
 //Neurolots
 #include "Program.h"
 #include "Camera.h"
-#include <NeuronMeshGenerator.h>
-#include <Icosphere.h>
+#include "../nlgenerator/NeuronMeshGenerator.h"
+#include "../nlgenerator/Icosphere.h"
 
 //Eigen
 #include <Eigen/Dense>

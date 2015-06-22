@@ -13,9 +13,9 @@
 //Eigen
 #include <Eigen/Dense>
 
-#include <Node.h>
-#include <Tetrahedron.h>
-#include <Fem.h>
+#include "../nlfem/Node.h"
+#include "../nlfem/Tetrahedron.h"
+#include "../nlfem/Fem.h"
 
 #include "Edges.h"
 #include "Quad.h"
