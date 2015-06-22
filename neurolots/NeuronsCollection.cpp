@@ -117,7 +117,7 @@ namespace neurolots
     : _camera( camera_ )
     , _cont( 0 )
   {
-    _uri = lunchbox::URI( uri_ );
+    servus::URI uri( uri_ );
     _selectedNeurons.clear( );
 
     std::string neurolotsShadersPath( getenv( "NEUROLOTS_SHADERS_PATH" ));
@@ -216,7 +216,7 @@ namespace neurolots
     _Init( );
     PaintNeurites( false );
 
-    _subscriber = new zeq::Subscriber( _uri );
+    _subscriber = new zeq::Subscriber( uri );
 
     _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
       boost::bind( &NeuronsCollection::_OnSelectionEvent , this, _1 ));

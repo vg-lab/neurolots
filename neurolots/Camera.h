@@ -21,7 +21,7 @@
 #ifdef NEUROLOTS_WITH_ZEQ
 #include <zeq/zeq.h>
 #include <zeq/hbp/hbp.h>
-#include <lunchbox/uri.h>
+#include <servus/uri.h>
 
 #include <pthread.h>
 #include <mutex>
@@ -101,7 +101,7 @@ namespace neurolots
 
       bool _zeqConnection;
 
-      lunchbox::URI _uri;
+      servus::URI _uri;
       zeq::Publisher* _publisher;
       zeq::Subscriber* _subscriber;
 
