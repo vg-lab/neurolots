@@ -116,8 +116,9 @@ namespace neurolots
       const std::string& fileName, Camera* camera_ )
     : _camera( camera_ )
     , _cont( 0 )
+    , _uri( servus::URI( uri_ ))
   {
-    _uri = lunchbox::URI( uri_ );
+
     _selectedNeurons.clear( );
 
     std::string neurolotsShadersPath( getenv( "NEUROLOTS_SHADERS_PATH" ));

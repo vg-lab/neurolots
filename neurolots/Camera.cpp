@@ -33,7 +33,7 @@ namespace neurolots
     , _farPlane( farPlane_ )
     , _zeqConnection( true )
   {
-    _uri = lunchbox::URI(uri_);
+    _uri = servus::URI(uri_);
 
     _Position( Vector3f( x_, y_, z_ ));
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
