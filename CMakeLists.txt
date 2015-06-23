@@ -18,11 +18,8 @@ set(VERSION_MINOR "0")
 set(VERSION_PATCH "1")
 set(VERSION_ABI 1)
 
-
-
 set(COMMON_PROJECT_DOMAIN gmrv.es)
 set(NEUROLOTS_DESCRIPTION "NeuroLOTs")
-#set(NEUROLOTS_DEPENDENT_LIBRARIES )
 
 option(NEUROLOTS_WITH_ZEQ "NEUROLOTS_WITH_ZEQ" ON)
 option(NEUROLOTS_WITH_BBPSDK "NEUROLOTS_WITH_BBPSDK" ON)
@@ -32,13 +29,9 @@ include(FindPackages)
 
 set(CMAKE_BUILD_TYPE Release)
 
-add_subdirectory( fem )
-add_subdirectory( generators )
+add_subdirectory( nlfem )
+add_subdirectory( nlgenerator )
 add_subdirectory( neurolots )
 
 include(CPackConfig)
 include(DoxygenRule)
-
-
-# install(FILES README.md DESTINATION doc )
-

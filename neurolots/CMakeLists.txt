@@ -1,3 +1,8 @@
+set(NEUROLOTS_PUBLIC_HEADERS
+  ${COMMON_INCLUDES}
+)
+
+install( FILES ${COMMON_INCLUDES} DESTINATION include/neurolots COMPONENT dev )
 
 set(NEUROLOTS_HEADERS
   Camera.h
@@ -5,7 +10,7 @@ set(NEUROLOTS_HEADERS
   NeuronMesh.h
   NeuronMorphology.h
   NeuronsCollection.h
-  Program.h 
+  Program.h
 )
 
 set(NEUROLOTS_SOURCES
@@ -20,14 +25,14 @@ set(NEUROLOTS_SOURCES
 
 include_directories( ../fem ../generators )
 
-set(NEUROLOTS_LINK_LIBRARIES 
-  ${OPENGL_LIBRARIES} 
-  ${GLEW_LIBRARIES} 
-  ${GLUT_LIBRARIES} 
-  ${NSOL_LIBRARIES} 
-  ${ZEQ_LIBRARIES} 
-  ${BBPSDK_LIBRARIES} 
-  nlfem 
+set(NEUROLOTS_LINK_LIBRARIES
+  ${OPENGL_LIBRARIES}
+  ${GLEW_LIBRARIES}
+  ${GLUT_LIBRARIES}
+  ${NSOL_LIBRARIES}
+  ${ZEQ_LIBRARIES}
+  ${BBPSDK_LIBRARIES}
+  nlfem
   nlgenerator
 )
 

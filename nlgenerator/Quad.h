@@ -10,7 +10,7 @@
 #ifndef __NEUROLOTS_QUAD__
 #define __NEUROLOTS_QUAD__
 
-#include <Node.h>
+#include "../nlfem/Node.h"
 #include <cfloat>
 
 #include <neurolots/api.h>
