@@ -73,19 +73,18 @@ namespace neurolots
 
 #ifdef NEUROLOTS_WITH_BBPSDK
 
-      nsol::BBPSDKReaderTemplated< nsol::Node,
-                                   nsol::Segment,
-                                   nsol::Section,
-                                   nsol::Dendrite,
-                                   nsol::Axon,
-                                   nsol::Soma,
-                                   NeuronMorphology,
-                                   nsol::Neuron,
-                                   nsol::MiniColumn,
-                                   nsol::Column > bbpsdkReader;
-
       try{
-      bbpsdkReader.readFromBlueConfig( _columns, fileName );
+        _dataSet.openBlueConfig< nsol::Node,
+                                 nsol::Segment,
+                                 nsol::Section,
+                                 nsol::Dendrite,
+                                 nsol::Axon,
+                                 nsol::Soma,
+                                 NeuronMorphology,
+                                 nsol::Neuron,
+                                 nsol::MiniColumn,
+                                 nsol::Column >( fileName );
+        _columns = _dataSet.columns();
       }
       catch( ... )
       {
@@ -181,19 +180,20 @@ namespace neurolots
 
  #ifdef NEUROLOTS_WITH_BBPSDK
 
-      nsol::BBPSDKReaderTemplated< nsol::Node,
-                                   nsol::Segment,
-                                   nsol::Section,
-                                   nsol::Dendrite,
-                                   nsol::Axon,
-                                   nsol::Soma,
-                                   NeuronMorphology,
-                                   nsol::Neuron,
-                                   nsol::MiniColumn,
-                                   nsol::Column > bbpsdkReader;
+
 
       try{
-        bbpsdkReader.readFromBlueConfig( _columns, fileName );
+        _dataSet.openBlueConfig< nsol::Node,
+                                 nsol::Segment,
+                                 nsol::Section,
+                                 nsol::Dendrite,
+                                 nsol::Axon,
+                                 nsol::Soma,
+                                 NeuronMorphology,
+                                 nsol::Neuron,
+                                 nsol::MiniColumn,
+                                 nsol::Column >( fileName );
+        _columns = _dataSet.columns();
       }
       catch( ... )
       {

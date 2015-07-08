@@ -16,6 +16,7 @@
 #include "Camera.h"
 
 #include <nsol/nsol.h>
+#include <nsol/DataSet.h>
 
 #include <Eigen/Dense>
 
@@ -118,6 +119,7 @@ namespace neurolots
       std::vector< float > _somaColor;
 
       nsol::Columns _columns;
+      nsol::DataSet _dataSet;
 
 
 
