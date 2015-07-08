@@ -87,7 +87,7 @@ namespace neurolots
       try{
       bbpsdkReader.readFromBlueConfig( _columns, fileName );
       }
-      catch( int e )
+      catch( ... )
       {
         std::cerr << "Error: can't load file: " << fileName << std::endl;
         exit(-1);
@@ -195,7 +195,7 @@ namespace neurolots
       try{
         bbpsdkReader.readFromBlueConfig( _columns, fileName );
       }
-      catch( int e )
+      catch( ... )
       {
         std::cerr << "Error: can't load file: " << fileName << std::endl;
         exit( -1 );
