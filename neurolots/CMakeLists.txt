@@ -11,6 +11,7 @@ set(NEUROLOTS_HEADERS
   NeuronMorphology.h
   NeuronsCollection.h
   Program.h
+  Neuron.h
 )
 
 set(NEUROLOTS_SOURCES
@@ -21,6 +22,7 @@ set(NEUROLOTS_SOURCES
   NeuronMorphology.cpp
   NeuronsCollection.cpp
   Program.cpp
+  Neuron.cpp
 )
 
 include_directories( ../fem ../generators )

@@ -10,8 +10,7 @@
 #ifndef __NEUROLOTS_NEURONS_COLLECTION__
 #define __NEUROLOTS_NEURONS_COLLECTION__
 
-#include "NeuronMorphology.h"
-#include "NeuronMesh.h"
+
 #include "Program.h"
 #include "Camera.h"
 
@@ -84,11 +83,8 @@ namespace neurolots
       void Tng( float tng_ );
       void MaxDist( float maxDist_ );
 
-      void NeuritesColor( Eigen::Vector3f neuritesColor_ );
-      void SomaColor( Eigen::Vector3f somaColor_ );
-
       void NeuronColor( Eigen::Vector3f neuronColor_ );
-
+      void SelectedNeuronColor( Eigen::Vector3f selectedNeuronColor_ );
 
 
     private:
@@ -99,9 +95,13 @@ namespace neurolots
 
       bool _IsSelected( nsol::NeuronPtr neuron_ );
 
+      void _DefaultCamera( void );
+
 #ifdef NEUROLOTS_WITH_ZEQ
 
+      void _OnFocusEvent( const zeq::Event& event_ );
       void _OnSelectionEvent( const zeq::Event& event_ );
+      void _OnSelectionFocusEvent( const zeq::Event& event_ );
       static void* _Subscriber( void* collection_ );
 
 #endif
@@ -114,10 +114,10 @@ namespace neurolots
       float _tng;
       float _maxDist;
 
-      std::vector< float > _neuritesColor;
-      std::vector< float > _somaColor;
+      std::vector< float > _neuronColor;
+      std::vector< float > _selectedNeuronColor;
 
-     nsol::Columns _columns;
+      nsol::Columns _columns;
 
       unsigned int _cont;
 
@@ -133,7 +133,8 @@ namespace neurolots
       pthread_t _subscriberThread;
 
 #endif
-
+      Eigen::Vector3f _defaultPivot;
+      float _defaultRadius;
   };
 
 } // end namespace neurolots
