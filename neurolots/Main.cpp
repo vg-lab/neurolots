@@ -97,7 +97,8 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
       }
       break;
     case 'c':
-      camera->Position( Eigen::Vector3f( 0.0f, 0.0f, 100.0f ));
+      camera->Pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+      camera->Radius( 1000.0f );
       camera->Rotation( 0.0f, 0.0f );
       break;
     case 'w':
@@ -153,11 +154,11 @@ void mouseFunc( int boton, int state, int _x, int _y )
   }
   if ( boton == 3 && state == GLUT_DOWN )
   {
-    camera->LocalDisplace( Eigen::Vector3f( 0.0f, 0.0f, -10.0f ));
+    camera->Radius( camera->Radius( ) / 1.1f );
   }
   if ( boton == 4 && state == GLUT_DOWN )
   {
-    camera->LocalDisplace( Eigen::Vector3f( 0.0f, 0.0f, 10.0f ));
+    camera->Radius( camera->Radius( ) * 1.1f );
   }
 }
 
@@ -171,9 +172,6 @@ void mouseMoveFunc( int _x, int _y )
   }
   if( translation )
   {
-    camera->LocalDisplace( Eigen::Vector3f(( m_x - _x ) * 0.1,
-                                           ( _y - m_y ) * 0.1,
-                                           0.0f ));
     m_x = _x;
     m_y = _y;
   }

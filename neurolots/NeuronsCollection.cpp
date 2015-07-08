@@ -65,10 +65,8 @@ namespace neurolots
       nsol::ColumnPtr column = new nsol::Column();
       column->addMiniColumn( miniColumn );
 
-      _colums.clear( );
-
-      _colums.insert( std::map< const  unsigned int , nsol::ColumnPtr >
-                   ::value_type( 0 , column ));
+      _columns.clear( );
+      _columns.push_back( column );
     }
     else
     {
@@ -87,7 +85,7 @@ namespace neurolots
                                    nsol::Column > bbpsdkReader;
 
       try{
-      _colums = bbpsdkReader.readExperiment( fileName, 0 );
+      bbpsdkReader.readFromBlueConfig( _columns, fileName );
       }
       catch( int e )
       {
@@ -174,10 +172,9 @@ namespace neurolots
       nsol::ColumnPtr column = new nsol::Column( );
       column->addMiniColumn( miniColumn );
 
-      _colums.clear( );
+      _columns.clear( );
 
-      _colums.insert( std::map< const unsigned int , nsol::ColumnPtr >
-        ::value_type( 0 , column ));
+      _columns.push_back( column );
     }
     else
     {
@@ -196,7 +193,7 @@ namespace neurolots
                                    nsol::Column > bbpsdkReader;
 
       try{
-        _colums = bbpsdkReader.readExperiment( fileName, 0 );
+        bbpsdkReader.readFromBlueConfig( _columns, fileName );
       }
       catch( int e )
       {
@@ -257,9 +254,9 @@ namespace neurolots
                   _camera->Position( ));
 
 
-    for( unsigned int i = 0; i < _colums.size( ); i++ )
+    for( unsigned int i = 0; i < _columns.size( ); i++ )
     {
-      miniColumns = _colums[ i ]->miniColumns( );
+      miniColumns = _columns[ i ]->miniColumns( );
       for( unsigned int j = 0; j < miniColumns.size( ); j++ )
       {
         neurons = miniColumns[ j ]->neurons( );
@@ -348,7 +345,7 @@ namespace neurolots
 
   ColumnsPtr NeuronsCollection::Columns( void )
   {
-    return &_colums;
+    return &_columns;
   }
 
 #ifdef NEUROLOTS_WITH_ZEQ
@@ -371,9 +368,9 @@ namespace neurolots
     NeuronMeshPtr neuronMesh;
 
 
-    for( unsigned int i = 0; i < _colums.size( ); i++ )
+    for( unsigned int i = 0; i < _columns.size( ); i++ )
     {
-      miniColumns = _colums[ i ]->miniColumns( );
+      miniColumns = _columns[ i ]->miniColumns( );
       for( unsigned int j = 0; j < miniColumns.size( ); j++ )
       {
         neurons = miniColumns[ j ]->neurons( );
@@ -399,9 +396,9 @@ namespace neurolots
     NeuronMeshPtr neuronMesh;
 
 
-    for( unsigned int i = 0; i < _colums.size( ); i++ )
+    for( unsigned int i = 0; i < _columns.size( ); i++ )
     {
-      miniColumns = _colums[ i ]->miniColumns( );
+      miniColumns = _columns[ i ]->miniColumns( );
       for( unsigned int j = 0; j < miniColumns.size( ); j++ )
       {
         neurons = miniColumns[ j ]->neurons( );
@@ -504,9 +501,9 @@ namespace neurolots
       NeuronMeshPtr neuronMesh;
 
 
-      for( unsigned int i = 0; i < _colums.size( ); i++ )
+      for( unsigned int i = 0; i < _columns.size( ); i++ )
       {
-        miniColumns = _colums[ i ]->miniColumns( );
+        miniColumns = _columns[ i ]->miniColumns( );
         for( unsigned int j = 0; j < miniColumns.size( ); j++ )
         {
           neurons = miniColumns[ j ]->neurons( );
@@ -529,9 +526,9 @@ namespace neurolots
     nsol::NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
-    for( unsigned int i = 0; i < _colums.size( ); i++ )
+    for( unsigned int i = 0; i < _columns.size( ); i++ )
     {
-      colum = _colums[ i ];
+      colum = _columns[ i ];
       for( unsigned int j = 0; j < colum->miniColumns( ).size( ); j++ )
       {
         miniColum = colum->miniColumns( )[ j ];

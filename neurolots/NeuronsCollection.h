@@ -40,7 +40,7 @@
 namespace neurolots
 {
 
-  typedef std::map<unsigned int, nsol::ColumnPtr>* ColumnsPtr;
+  typedef nsol::Columns* ColumnsPtr;
 
   class NeuronsCollection
   {
@@ -117,7 +117,7 @@ namespace neurolots
       std::vector< float > _neuritesColor;
       std::vector< float > _somaColor;
 
-      std::map<unsigned int, nsol::ColumnPtr> _colums;
+     nsol::Columns _columns;
 
       unsigned int _cont;
 
