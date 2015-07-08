@@ -1,41 +1,56 @@
 #include "Camera.h"
 
-using Eigen::Vector3f;
-using Eigen::Matrix3f;
-using Eigen::Matrix4f;
+#include <cmath>
 
 namespace neurolots
 {
 
   Camera::Camera( float fov_, float ratio_, float nearPlane_, float farPlane_,
-      float x_, float y_, float z_, float yaw_, float pitch_ )
-    : _fov( fov_ )
-    , _ratio( ratio_ )
+      Eigen::Vector3f pivot_, float radius_, float yaw_, float pitch_ )
+    : _ratio( ratio_ )
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
-#ifdef NEUROLOTS_WITH_ZEQ
-    , _zeqConnection( false )
-#endif
+    , _pivot( pivot_ )
+    , _radius( radius_ )
+    , _isAniming( false )
+    , _firstStep( false )
+    , _speedPivot( 1.0f / 60 )
+    , _speedRadius( 1.0f / 60 )
+    , _animDuration( 2.0f )
   {
-    _Position( Vector3f( x_, y_, z_ ));
-    _Rotation( _RotationFromPY( pitch_, yaw_ ));
+    _fov = fov_ * ( M_PI / 360.0f );
+    _f = 1.0f / tan( _fov );
 
+    _previusTime = std::clock( );
+
+    _Rotation( _RotationFromPY( pitch_, yaw_ ));
     _BuildProjectionMatrix( );
     _BuildViewMatrix( );
   }
 
 #ifdef NEUROLOTS_WITH_ZEQ
-  Camera::Camera( const std::string& uri_, float fov_, float ratio_, float nearPlane_,
-      float farPlane_, float x_, float y_, float z_, float yaw_, float pitch_ )
-    : _fov( fov_ )
-    , _ratio( ratio_ )
+  Camera::Camera( const std::string& uri_, float fov_, float ratio_,
+      float nearPlane_, float farPlane_, Eigen::Vector3f pivot_, float radius_,
+      float yaw_, float pitch_ )
+    : _ratio( ratio_ )
     , _nearPlane( nearPlane_ )
     , _farPlane( farPlane_ )
+    , _pivot( pivot_ )
+    , _radius( radius_ )
     , _zeqConnection( true )
+    , _isAniming( false )
+    , _firstStep( false )
+    , _speedPivot( 1.0f / 60 )
+    , _speedRadius( 1.0f / 60 )
+    , _animDuration( 2.0f )
   {
+    _fov = fov_ * ( M_PI / 360.0f );
+    _f = 1.0f / tan( _fov );
+
     _uri = servus::URI(uri_);
 
-    _Position( Vector3f( x_, y_, z_ ));
+    _previusTime = std::clock( );
+
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
 
     _publisher = new zeq::Publisher( _uri );
@@ -57,48 +72,93 @@ namespace neurolots
 
   // PUBLIC
 
-  void Camera::LocalDisplace( Eigen::Vector3f displace_ )
+  void Camera::LocalRotation( float yaw_, float pitch_ )
   {
-    Vector3f localX, localY, localZ;
-
-    Eigen::Matrix3f rotT = _rotation.transpose();
-
-    localX = rotT * Vector3f::UnitX();
-    localY = rotT * Vector3f::UnitY();
-    localZ = rotT * Vector3f::UnitZ();
-
-    _Position( _position + displace_.x() * localX + displace_.y() * localY +
-                 displace_.z() * localZ );
-
+    _Rotation( _RotationFromPY( yaw_, pitch_) * _rotation );
     _BuildViewMatrix( );
   }
 
-  void Camera::LocalRotation( float yaw_, float pitch_ )
+  void Camera::Anim( void )
   {
-    _Rotation(  _RotationFromPY( yaw_, pitch_ ) * _rotation );
-    _BuildViewMatrix( );
+    if ( _isAniming )
+    {
+      float dt = ( std::clock( ) - _previusTime ) / (double) CLOCKS_PER_SEC;
+
+      Eigen::Vector3f actualPivot = _pivot;
+      Eigen::Vector3f diffPivot = _targetPivot - actualPivot;
+
+      float actualRadius = _radius;
+      float diffRadius = _targetRadius - actualRadius;
+
+      if ( _firstStep )
+      {
+        _speedPivot = diffPivot.norm( ) / _animDuration;
+        _speedRadius = abs( diffRadius ) / _animDuration;
+        _firstStep = false;
+      }
+
+      float distancePivot = dt * _speedPivot;
+      float distanceRadius = dt * _speedRadius;
+
+      bool pivotInPlace = false;
+      bool radiusInPlace = false;
+
+      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))
+      {
+        _pivot = _targetPivot;
+        _BuildViewMatrix( );
+      }
+      else
+      {
+        _pivot = actualPivot + diffPivot.normalized() * distancePivot;
+        _BuildViewMatrix( );
+      }
+
+      if (( radiusInPlace = ( abs( diffRadius ) <= distanceRadius )))
+      {
+        _radius = _targetRadius;
+        _BuildViewMatrix( );
+      }
+      else
+      {
+        _radius = actualRadius + diffRadius / abs( diffRadius ) *
+            distanceRadius;
+        _BuildViewMatrix( );
+      }
+      _isAniming = !( pivotInPlace && radiusInPlace );
+    }
+    _previusTime = std::clock( );
   }
 
   // GETTERS
 
-  float * Camera::ProjectionMatrix( void )
+  float Camera::Fov( void )
+  {
+    return _fov;
+  }
+
+  Eigen::Vector3f Camera::Pivot( void )
+  {
+    return _pivot;
+  }
+
+  float Camera::Radius( void )
+  {
+    return _radius;
+  }
+
+  float* Camera::ProjectionMatrix( void )
   {
     return _projVec.data( );
   }
 
-  float *  Camera::ViewMatrix( void )
+  float* Camera::ViewMatrix( void )
   {
     return _viewVec.data( );
   }
 
-  float * Camera::Position(void)
+  float* Camera::Position( void )
   {
-    _positionVec.resize(3);
-
-    _positionVec[0] = _position.x( );
-    _positionVec[1] = _position.y( );
-    _positionVec[2] = _position.z( );
-
     return _positionVec.data( );
   }
 
@@ -109,6 +169,7 @@ namespace neurolots
   }
 #endif
 
+
   // SETTERS
 
   void Camera::Ratio( float ratio_ )
@@ -117,23 +178,67 @@ namespace neurolots
     _BuildProjectionMatrix( );
   }
 
-  void Camera::Position( Eigen::Vector3f position_ )
+  void Camera::Pivot( Eigen::Vector3f pivot_ )
   {
-    _Position( position_ );
-    _BuildViewMatrix();
+    if ( !_isAniming )
+    {
+      _pivot = pivot_;
+      _BuildViewMatrix( );
+    }
+  }
+
+  void Camera::Radius( float radius_ )
+  {
+    if ( !_isAniming )
+    {
+      _radius = radius_;
+      _BuildViewMatrix( );
+    }
   }
 
   void Camera::Rotation( float yaw_, float pitch_ )
   {
-    _Rotation( _RotationFromPY( yaw_, pitch_ ));
+    if ( !_isAniming )
+    {
+      _Rotation( _RotationFromPY( yaw_, pitch_ ));
+      _BuildViewMatrix( );
+    }
   }
 
+  void Camera::TargetPivot( Eigen::Vector3f targetPivot_ )
+  {
+    _isAniming = true;
+    _firstStep = true;
+    _targetPivot = targetPivot_;
+  }
+
+  void Camera::TargetRadius( float targetRadius_ )
+  {
+    _isAniming = true;
+    _firstStep = true;
+    _targetRadius = targetRadius_;
+  }
+
+  void Camera::TargetPivotRadius( Eigen::Vector3f targetPivot_,
+      float targetRadius_ )
+  {
+    TargetPivot( targetPivot_ );
+    TargetRadius( targetRadius_ );
+  }
+
+  void Camera::AnimDuration( float animDuration_ )
+  {
+    _animDuration = animDuration_;
+  }
+
+
   // PRIVATE
+
 #ifndef NEUROLOTS_WITH_ZEQ
 
-  void Camera::_Position( Eigen::Vector3f position_ )
+  void Camera::_PositionVectorized( std::vector<float>& positionVec_ )
   {
-    _position = position_;
+    _positionVec = positionVec_;
   }
 
   void Camera::_Rotation( Eigen::Matrix3f rotation_ )
@@ -148,10 +253,10 @@ namespace neurolots
 
 #else
 
-  void Camera::_Position( Eigen::Vector3f position_ )
+  void Camera::_PositionVectorized( std::vector<float>& positionVec_ )
   {
     _positionMutex.lock( );
-    _position = position_;
+    _positionVec = positionVec_;
     _positionMutex.unlock( );
   }
 
@@ -171,12 +276,8 @@ namespace neurolots
 
 #endif
 
-
-
   void Camera::_BuildProjectionMatrix( void )
   {
-    _f = 1.0f / tan (_fov * ( 3.141599f / 360.0f ));
-
     _projVec.resize(16);
 
     // row 1
@@ -203,7 +304,18 @@ namespace neurolots
 
   void Camera::_BuildViewMatrix( void )
   {
-    Vector3f desp = _rotation * -_position;
+    Eigen::Vector3f position = _rotation.transpose( ) *
+    Eigen::Vector3f( 0.0f, 0.0f, 1.0f ) * _radius + _pivot;
+
+    Eigen::Vector3f pivot = _rotation * _pivot;
+
+    std::vector<float> positionVec;
+    positionVec.resize( 3 );
+    positionVec[ 0 ] =  position.x( );
+    positionVec[ 1 ] =  position.y( );
+    positionVec[ 2 ] =  position.z( );
+
+    _PositionVectorized( positionVec );
 
     std::vector<float> viewVec(16);
 
@@ -223,9 +335,9 @@ namespace neurolots
     viewVec[10] = _rotation( 2, 2 );
     viewVec[11] = .0f;
     // row 4
-    viewVec[12] = desp.x( );
-    viewVec[13] = desp.y( );
-    viewVec[14] = desp.z( );
+    viewVec[12] = - pivot.x( );
+    viewVec[13] = - pivot.y( );
+    viewVec[14] = - pivot.z( ) - _radius;
     viewVec[15] = 1.0f;
 #ifdef NEUROLOTS_WITH_ZEQ
     if ( _zeqConnection )
@@ -248,12 +360,15 @@ namespace neurolots
            viewMatrixVec[1], viewMatrixVec[5], viewMatrixVec[9],
            viewMatrixVec[2], viewMatrixVec[6], viewMatrixVec[10];
 
-    _Rotation( rot );
-
     Eigen::Vector3f pos = - rot.inverse() * Eigen::Vector3f( viewMatrixVec[12],
                           viewMatrixVec[13], viewMatrixVec[14] );
+    std::vector<float> posVec;
+    posVec.resize( 3 );
+    posVec[ 0 ] = pos.x( );
+    posVec[ 1 ] = pos.y( );
+    posVec[ 2 ] = pos.z( );
 
-    _Position( pos );
+    _PositionVectorized( posVec );
   }
 
   void* Camera::_Subscriber( void* camera_ )
@@ -268,30 +383,31 @@ namespace neurolots
 
     pthread_exit( NULL );
   }
+
 #endif
 
   Eigen::Matrix3f Camera::_RotationFromPY( float yaw_, float pitch_ )
   {
-    Matrix3f rot;
-    Matrix3f rYaw;
-    Matrix3f rPitch;
+    Eigen::Matrix3f rot;
+    Eigen::Matrix3f rYaw;
+    Eigen::Matrix3f rPitch;
 
+    float sinYaw, cosYaw, sinPitch, cosPitch;
 
-    float sy, cy, sp, cp;
-    sy = sin( yaw_ );
-    cy = cos( yaw_ );
-    sp = sin( pitch_ );
-    cp = cos( pitch_ );
+    sinYaw = sin( yaw_ );
+    cosYaw = cos( yaw_ );
+    sinPitch = sin( pitch_ );
+    cosPitch = cos( pitch_ );
 
-    rYaw << cy, 0.0f, sy,
-      0.0f, 1.0f, 0.0f,
-      -sy, 0.0f, cy;
+    rYaw << cosYaw, 0.0f, sinYaw,
+            0.0f,   1.0f, 0.0f,
+            -sinYaw, 0.0f, cosYaw;
 
-    rPitch << 1.0f, 0.0f, 0.0f,
-      0.0f, cp, -sp,
-      0.0f, sp, cp;
+    rPitch << 1.0f, 0.0f,     0.0f,
+              0.0f, cosPitch, -sinPitch,
+              0.0f, sinPitch, cosPitch;
 
-    rot= rPitch * rYaw;
+    rot = rPitch * rYaw;
     return rot;
   }
 
