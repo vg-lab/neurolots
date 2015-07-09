@@ -8,7 +8,11 @@ namespace neurolots
   NeuronsCollection::NeuronsCollection( const std::string& fileName,
                                         Camera* camera_ )
     : _camera( camera_ )
+    , _dataSet( nsol::DataSet( ))
     , _cont( 0 )
+#ifdef NEUROLOTS_WITH_ZEQ
+    , _zeqConnection( false )
+#endif
   {
     _selectedNeurons.clear( );
 
@@ -112,7 +116,9 @@ namespace neurolots
   NeuronsCollection::NeuronsCollection( const std::string& uri_,
       const std::string& fileName, Camera* camera_ )
     : _camera( camera_ )
+    , _dataSet( nsol::DataSet( ))
     , _cont( 0 )
+    , _zeqConnection( true )
     , _uri( servus::URI( uri_ ))
   {
 

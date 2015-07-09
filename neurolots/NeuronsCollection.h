@@ -125,11 +125,12 @@ namespace neurolots
 
       unsigned int _cont;
 
-      bool _zeqConnection;
+
 
       std::set<unsigned int> _selectedNeurons;
 
 #ifdef NEUROLOTS_WITH_ZEQ
+      bool _zeqConnection;
 
       servus::URI _uri;
       zeq::Subscriber* _subscriber;
