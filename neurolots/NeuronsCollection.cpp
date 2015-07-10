@@ -48,29 +48,16 @@ namespace neurolots
     if ( !(fName.length() < 5 ||
          fName.compare( fName.length( ) - 3, 3, "swc" )))
     {
-      nsol::SwcReaderTemplated< nsol::Node,
-                                nsol::Segment,
-                                nsol::Section,
-                                nsol::Dendrite,
-                                nsol::Axon,
-                                nsol::Soma,
-                                NeuronMorphology,
-                                nsol::Neuron > swcReader;
+      _dataSet.addNeuron< nsol::Node,
+                          nsol::Segment,
+                          nsol::Section,
+                          nsol::Dendrite,
+                          nsol::Axon,
+                          nsol::Soma,
+                          NeuronMorphology,
+                          nsol::Neuron >( fileName, 1 );
 
-      nsol::NeuronPtr neuron = swcReader.readNeuron( fileName );
-      if(neuron == nullptr)
-      {
-        std::cerr << "Error: Swc file doesn't exits" << std::endl;
-        exit( -1 );
-      }
-
-      nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
-      miniColumn->addNeuron( neuron );
-      nsol::ColumnPtr column = new nsol::Column();
-      column->addMiniColumn( miniColumn );
-
-      _columns.clear( );
-      _columns.push_back( column );
+      _columns = _dataSet.columns( );
     }
     else
     {
@@ -88,7 +75,7 @@ namespace neurolots
                                  nsol::Neuron,
                                  nsol::MiniColumn,
                                  nsol::Column >( fileName );
-        _columns = _dataSet.columns();
+        _columns = _dataSet.columns( );
       }
       catch( ... )
       {
@@ -156,30 +143,16 @@ namespace neurolots
     if ( !( fName.length() < 5 ||
       fName.compare( fName.length( ) - 3, 3, "swc" )))
     {
-      nsol::SwcReaderTemplated< nsol::Node,
-                                nsol::Segment,
-                                nsol::Section,
-                                nsol::Dendrite,
-                                nsol::Axon,
-                                nsol::Soma,
-                                NeuronMorphology,
-                                nsol::Neuron > swcReader;
+      _dataSet.addNeuron< nsol::Node,
+                          nsol::Segment,
+                          nsol::Section,
+                          nsol::Dendrite,
+                          nsol::Axon,
+                          nsol::Soma,
+                          NeuronMorphology,
+                          nsol::Neuron >( fileName, 1 );
 
-      nsol::NeuronPtr neuron = swcReader.readNeuron( fileName );
-      if( neuron == nullptr )
-      {
-        std::cerr << "Error: Swc file doesn't exits" << std::endl;
-        exit( -1 );
-      }
-
-      nsol::MiniColumnPtr miniColumn = new nsol::MiniColumn( );
-      miniColumn->addNeuron( neuron );
-      nsol::ColumnPtr column = new nsol::Column( );
-      column->addMiniColumn( miniColumn );
-
-      _columns.clear( );
-
-      _columns.push_back( column );
+      _columns = _dataSet.columns( );
     }
     else
     {
