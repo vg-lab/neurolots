@@ -118,7 +118,6 @@ namespace neurolots
       std::vector< float > _neuritesColor;
       std::vector< float > _somaColor;
 
-      nsol::Columns _columns;
       nsol::DataSet _dataSet;
 
 

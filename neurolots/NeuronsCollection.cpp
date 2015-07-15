@@ -56,8 +56,26 @@ namespace neurolots
                           nsol::Soma,
                           NeuronMorphology,
                           nsol::Neuron >( fileName, 1 );
-
-      _columns = _dataSet.columns( );
+    }
+    else if( !(fName.length() < 5 ||
+        fName.compare( fName.length( ) - 3, 3, "xml" )))
+    {
+      try
+      {
+        _dataSet.loadScene< nsol::Node,
+                            nsol::Segment,
+                            nsol::Section,
+                            nsol::Dendrite,
+                            nsol::Axon,
+                            nsol::Soma,
+                            NeuronMorphology,
+                            nsol::Neuron >( fileName );
+      }
+      catch( ... )
+      {
+        std::cerr << "Error: can't load file: " << fileName << std::endl;
+        exit(-1);
+      }
     }
     else
     {
@@ -75,7 +93,6 @@ namespace neurolots
                                  nsol::Neuron,
                                  nsol::MiniColumn,
                                  nsol::Column >( fileName );
-        _columns = _dataSet.columns( );
       }
       catch( ... )
       {
@@ -151,8 +168,26 @@ namespace neurolots
                           nsol::Soma,
                           NeuronMorphology,
                           nsol::Neuron >( fileName, 1 );
-
-      _columns = _dataSet.columns( );
+    }
+    else if( !(fName.length() < 5 ||
+        fName.compare( fName.length( ) - 3, 3, "xml" )))
+    {
+      try
+      {
+        _dataSet.loadScene< nsol::Node,
+                            nsol::Segment,
+                            nsol::Section,
+                            nsol::Dendrite,
+                            nsol::Axon,
+                            nsol::Soma,
+                            NeuronMorphology,
+                            nsol::Neuron >( fileName );
+      }
+      catch( ... )
+      {
+        std::cerr << "Error: can't load file: " << fileName << std::endl;
+        exit(-1);
+      }
     }
     else
     {
@@ -172,7 +207,6 @@ namespace neurolots
                                  nsol::Neuron,
                                  nsol::MiniColumn,
                                  nsol::Column >( fileName );
-        _columns = _dataSet.columns();
       }
       catch( ... )
       {
@@ -233,9 +267,9 @@ namespace neurolots
                   _camera->Position( ));
 
 
-    for( unsigned int i = 0; i < _columns.size( ); i++ )
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
     {
-      miniColumns = _columns[ i ]->miniColumns( );
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
       for( unsigned int j = 0; j < miniColumns.size( ); j++ )
       {
         neurons = miniColumns[ j ]->neurons( );
@@ -324,7 +358,7 @@ namespace neurolots
 
   ColumnsPtr NeuronsCollection::Columns( void )
   {
-    return &_columns;
+    return &_dataSet.columns( );
   }
 
 #ifdef NEUROLOTS_WITH_ZEQ
@@ -347,9 +381,9 @@ namespace neurolots
     NeuronMeshPtr neuronMesh;
 
 
-    for( unsigned int i = 0; i < _columns.size( ); i++ )
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
     {
-      miniColumns = _columns[ i ]->miniColumns( );
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
       for( unsigned int j = 0; j < miniColumns.size( ); j++ )
       {
         neurons = miniColumns[ j ]->neurons( );
@@ -375,9 +409,9 @@ namespace neurolots
     NeuronMeshPtr neuronMesh;
 
 
-    for( unsigned int i = 0; i < _columns.size( ); i++ )
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
     {
-      miniColumns = _columns[ i ]->miniColumns( );
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
       for( unsigned int j = 0; j < miniColumns.size( ); j++ )
       {
         neurons = miniColumns[ j ]->neurons( );
@@ -480,9 +514,9 @@ namespace neurolots
       NeuronMeshPtr neuronMesh;
 
 
-      for( unsigned int i = 0; i < _columns.size( ); i++ )
+      for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
       {
-        miniColumns = _columns[ i ]->miniColumns( );
+        miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
         for( unsigned int j = 0; j < miniColumns.size( ); j++ )
         {
           neurons = miniColumns[ j ]->neurons( );
@@ -505,9 +539,9 @@ namespace neurolots
     nsol::NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
-    for( unsigned int i = 0; i < _columns.size( ); i++ )
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
     {
-      colum = _columns[ i ];
+      colum = _dataSet.columns( )[ i ];
       for( unsigned int j = 0; j < colum->miniColumns( ).size( ); j++ )
       {
         miniColum = colum->miniColumns( )[ j ];
