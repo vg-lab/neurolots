@@ -118,6 +118,8 @@ namespace neurolots
       Eigen::Vector3f _targetPivot;
       float _targetRadius;
 
+
+
 #ifdef NEUROLOTS_WITH_ZEQ
       bool _zeqConnection;
 

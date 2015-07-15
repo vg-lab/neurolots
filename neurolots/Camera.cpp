@@ -12,10 +12,13 @@ namespace neurolots
     , _farPlane( farPlane_ )
     , _pivot( pivot_ )
     , _radius( radius_ )
+#ifdef NEUROLOTS_WITH_ZEQ
+    , _zeqConnection( false )
+#endif
     , _isAniming( false )
     , _firstStep( false )
-    , _speedPivot( 1.0f / 60 )
-    , _speedRadius( 1.0f / 60 )
+    , _speedPivot( 1.0f / 60.0f )
+    , _speedRadius( 1.0f / 60.0f )
     , _animDuration( 2.0f )
   {
     _fov = fov_ * ( M_PI / 360.0f );

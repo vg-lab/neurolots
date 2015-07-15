@@ -15,6 +15,7 @@
 #include "Camera.h"
 
 #include <nsol/nsol.h>
+#include <nsol/DataSet.h>
 
 #include <Eigen/Dense>
 
@@ -117,15 +118,17 @@ namespace neurolots
       std::vector< float > _neuronColor;
       std::vector< float > _selectedNeuronColor;
 
-      nsol::Columns _columns;
+
+      nsol::DataSet _dataSet;
 
       unsigned int _cont;
 
-      bool _zeqConnection;
+
 
       std::set<unsigned int> _selectedNeurons;
 
 #ifdef NEUROLOTS_WITH_ZEQ
+      bool _zeqConnection;
 
       servus::URI _uri;
       zeq::Subscriber* _subscriber;
