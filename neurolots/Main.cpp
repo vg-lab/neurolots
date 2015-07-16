@@ -19,7 +19,13 @@
 #include "NeuronMesh.h"
 #include "NeuronsCollection.h"
 
+
 #include <iostream>
+
+#ifdef NEUROLOTS_WITH_DEFLECT
+#include <deflect/deflect.h>
+#endif
+
 
 #define WINDOW_TITLE_PREFIX "NeuroLoTs"
 
@@ -42,6 +48,142 @@ unsigned int frameCount = 0;
 
 Camera* camera;
 NeuronsCollection* neuronsCollection;
+
+#ifdef NEUROLOTS_WITH_DEFLECT
+
+deflect::Stream* deflectStream;
+
+bool deflectCompressImage = true;
+unsigned int deflectCompressionQuality = 75;
+
+void handleStreamingError(const char* errorMessage)
+{
+    std::cerr << errorMessage << std::endl;
+}
+
+void startStreaming(const char* deflectHostName = "NeuroLOTs",
+                    const char* deflectHostAddress = "localhost")
+{
+  if( deflectStream )
+      return;
+
+  deflectStream = new deflect::Stream( deflectHostName,
+                                        deflectHostAddress);
+  if (!deflectStream->isConnected())
+  {
+      handleStreamingError("Could not connect to host!");
+      return;
+  }
+  deflectStream->registerForEvents();
+
+}
+
+void stopStreaming( void )
+{
+  delete deflectStream;
+  deflectStream = nullptr;
+}
+
+void processDeflectEvents( void )
+{
+  if( !deflectStream->isRegisteredForEvents( ))
+    return;
+
+  deflect::Event lastEvent;
+
+  if ( deflectStream->hasEvent( ))
+  std::cout << "------------------------------------------" << std::endl;
+
+  unsigned int windowWidth = glutGet( GLUT_WINDOW_WIDTH ),
+               windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
+
+  while( deflectStream->hasEvent( ))
+  {
+
+    const deflect::Event& wallEvent = deflectStream->getEvent();
+
+    float mouseX = wallEvent.mouseX * windowWidth;
+    float mouseY = wallEvent.mouseY * windowHeight;
+
+    switch (wallEvent.type)
+    {
+      case deflect::Event::EVT_PRESS:
+        rotation = true;
+        m_x = mouseX;
+        m_y = mouseY;
+        break;
+
+      case deflect::Event::EVT_RELEASE:
+        rotation = false;
+        break;
+      case deflect::Event::EVT_MOVE:
+        if( rotation )
+          {
+            camera->LocalRotation( -( m_x - mouseX ) * 0.01,
+                                   -( m_y - mouseY ) * 0.01 );
+            m_x = mouseX;
+            m_y = mouseY;
+          }
+        break;
+      case deflect::Event::EVT_WHEEL:
+
+        if (wallEvent.dy < 0)
+          camera->Radius( camera->Radius( ) / 1.1f );
+        else
+          camera->Radius( camera->Radius( ) * 1.1f );
+        break;
+
+      default:
+        break;
+
+
+    }
+
+  }
+}
+
+
+void sendDeflectFrameImage( bool compress = true,
+                            unsigned int compressedQuality = 75 )
+{
+
+  // Grab the frame from OpenGL
+  const int windowWidth = glutGet( GLUT_WINDOW_WIDTH );
+  const int windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
+
+  const size_t imageSize = windowWidth * windowHeight * 4;
+  unsigned char* imageData = new unsigned char[imageSize];
+  glReadPixels( 0, 0, windowWidth, windowHeight, GL_RGBA, GL_UNSIGNED_BYTE,
+                (GLvoid*)imageData );
+
+  // Send the frame through the stream
+  deflect::ImageWrapper deflectImage( (const void*)imageData, windowWidth,
+                                      windowHeight, deflect::RGBA );
+  deflectImage.compressionPolicy = compress ?
+                  deflect::COMPRESSION_ON : deflect::COMPRESSION_OFF;
+  deflectImage.compressionQuality = compressedQuality;
+  deflect::ImageWrapper::swapYAxis( (void*)imageData, windowWidth,
+                                    windowHeight, 4 );
+  const bool success = deflectStream->send( deflectImage );
+  deflectStream->finishFrame();
+
+  if ( !success )
+  {
+      handleStreamingError("Streaming failure, connection closed.");
+      return;
+  }
+
+  delete [] imageData;
+}
+
+
+void updateStreaming( void )
+{
+  processDeflectEvents( );
+  sendDeflectFrameImage( );
+}
+
+#endif
 
 void usageMessage()
 {
@@ -71,6 +213,10 @@ void paintFunc(void)
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   neuronsCollection->Paint( );
+
+#ifdef NEUROLOTS_WITH_DEFLECT
+  updateStreaming();
+#endif
 
   glUseProgram( 0 );
   glFlush( );
@@ -262,6 +408,10 @@ int main( int argc, char* argv[ ])
   std::cerr << "ZEQ not supported" << std::endl;
   camera = new Camera( );
   neuronsCollection = new NeuronsCollection( fileName, camera );
+#endif
+
+#ifdef NEUROLOTS_WITH_DEFLECT
+  startStreaming();
 #endif
 
   sceneInit( );
