@@ -60,6 +60,7 @@ namespace neurolots
     else if( !(fName.length() < 5 ||
         fName.compare( fName.length( ) - 3, 3, "xml" )))
     {
+#ifdef NSOL_WITH_QT5CORE
       try
       {
         _dataSet.loadScene< nsol::Node,
@@ -76,6 +77,12 @@ namespace neurolots
         std::cerr << "Error: can't load file: " << fileName << std::endl;
         exit(-1);
       }
+#else
+
+      std::cerr << "Error: Load xml scene support not built-in" << std::endl;
+      exit( -1 );
+
+#endif
     }
     else
     {
@@ -172,6 +179,7 @@ namespace neurolots
     else if( !(fName.length() < 5 ||
         fName.compare( fName.length( ) - 3, 3, "xml" )))
     {
+#ifdef NSOL_WITH_QT5CORE
       try
       {
         _dataSet.loadScene< nsol::Node,
@@ -188,6 +196,12 @@ namespace neurolots
         std::cerr << "Error: can't load file: " << fileName << std::endl;
         exit(-1);
       }
+#else
+
+      std::cerr << "Error: Load xml scene support not built-in" << std::endl;
+      exit( -1 );
+
+#endif
     }
     else
     {
