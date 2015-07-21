@@ -7,6 +7,10 @@
 #include <cfloat>
 #include <iostream>
 
+#ifdef NEUROLOTS_WITH_GMRVZEQ
+#include <gmrvzeq/gmrvzeq.h>
+#endif
+
 namespace neurolots
 {
 
@@ -239,7 +243,12 @@ namespace neurolots
     _subscriber = new zeq::Subscriber( _uri );
 
     _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
-      boost::bind( &NeuronsCollection::_OnSelectionFocusEvent , this, _1 ));
+        boost::bind( &NeuronsCollection::_OnSelectionEvent , this, _1 ));
+
+#ifdef NEUROLOTS_WITH_GMRVZEQ
+    _subscriber->registerHandler( zeq::gmrv::EVENT_FOCUSEDIDS,
+        boost::bind( &NeuronsCollection::_OnFocusEvent , this, _1 ));
+#endif
 
     pthread_create( &_subscriberThread, NULL, _Subscriber, this );
   }
