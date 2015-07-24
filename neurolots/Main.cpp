@@ -58,7 +58,7 @@ unsigned int deflectCompressionQuality = 75;
 
 void handleStreamingError(const char* errorMessage)
 {
-    std::cerr << errorMessage << std::endl;
+    std::cerr << errorMessage <<  std::endl;
 }
 
 void startStreaming(const char* deflectHostName = "NeuroLOTs",
@@ -192,6 +192,7 @@ void usageMessage()
             << "neurolots" << " "
             << "(-bc blue_config_path | -swc swc_file_list) "
             << "-zeq uri"
+            << "-pw host"
             << std::endl << std::endl;
   exit(-1);
 }
@@ -411,7 +412,21 @@ int main( int argc, char* argv[ ])
 #endif
 
 #ifdef NEUROLOTS_WITH_DEFLECT
-  startStreaming();
+
+  std::string deflectHost ("localhost");
+
+  for( int i = 2; i < argc; i++ )
+    {
+      if( std::strcmp( argv[ i ], "-pw" ) == 0 )
+      {
+        if( ++i < argc )
+        {
+          deflectHost = std::string( argv[ i ]);
+        }
+      }
+    }
+
+  startStreaming("NeuroLOTs", deflectHost.c_str());
 #endif
 
   sceneInit( );
