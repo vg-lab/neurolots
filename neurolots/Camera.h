@@ -17,6 +17,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <ctime>
 
 #ifdef NEUROLOTS_WITH_ZEQ
 #include <zeq/zeq.h>
@@ -37,22 +38,29 @@ namespace neurolots
     public:
 
       Camera( float fov_ = 45.0f, float ratio_ = ((float)16)/9,
-        float nearPlane_ = 0.1f, float farPlane_ = 10000.0f, float x_ = 0.0f,
-        float y_ = 0.0f, float z_ = 100.0f, float yaw_ = 0.0f,
-        float pitch_ = 0.0f );
+        float nearPlane_ = 0.1f, float farPlane_ = 10000.0f,
+        Eigen::Vector3f pivot_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
+        float radius_ = 1000.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
+
 #ifdef NEUROLOTS_WITH_ZEQ
       Camera( const std::string& uri_, float fov_ = 45.0f,
-        float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
-        float farPlane_ = 10000.0f, float x_ = 0.0f, float y_ = 0.0f,
-        float z_ = 100.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
+          float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
+          float farPlane_ = 10000.0f,
+          Eigen::Vector3f pivot_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
+          float radius_ = 1000.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
 #endif
 
       ~Camera(void);
 
-      void LocalDisplace( Eigen::Vector3f displace_ );
       void LocalRotation( float yaw_, float pitch_ );
+      void Anim( void );
 
       // GETTERS
+
+      float Fov( void );
+
+      Eigen::Vector3f Pivot( void );
+      float Radius( void );
 
       float* ProjectionMatrix( void );
       float* ViewMatrix( void );
@@ -65,12 +73,20 @@ namespace neurolots
       // SETTERS
 
       void Ratio( float ratio_ );
-      void Position( Eigen::Vector3f position_ );
+      void Pivot( Eigen::Vector3f pivot_ );
+      void Radius( float radius_ );
       void Rotation( float yaw_, float pitch_ );
+
+      void TargetPivot( Eigen::Vector3f targetPivot_ );
+      void TargetRadius( float targetRadius_ );
+      void TargetPivotRadius( Eigen::Vector3f targetPivot_,
+          float targetRadius_ );
+
+      void AnimDuration( float animDuration_ );
 
     private:
 
-      void _Position( Eigen::Vector3f position_ );
+      void _PositionVectorized( std::vector<float>& positionVec_ );
       void _Rotation( Eigen::Matrix3f rotation_ );
       void _ViewMatrixVectorized( std::vector<float>& viewVec_ );
 
@@ -90,15 +106,21 @@ namespace neurolots
       float _nearPlane;
       float _farPlane;
 
-      Eigen::Vector3f _position;
+      Eigen::Vector3f _pivot;
+      float _radius;
+
       Eigen::Matrix3f _rotation;
 
       std::vector<float> _positionVec;
       std::vector<float> _projVec;
       std::vector<float> _viewVec;
 
-#ifdef NEUROLOTS_WITH_ZEQ
+      Eigen::Vector3f _targetPivot;
+      float _targetRadius;
 
+
+
+#ifdef NEUROLOTS_WITH_ZEQ
       bool _zeqConnection;
 
       servus::URI _uri;
@@ -111,6 +133,14 @@ namespace neurolots
 
       pthread_t _subscriberThread;
 #endif
+
+      bool _isAniming;
+      bool _firstStep;
+      float _speedPivot;
+      float _speedRadius;
+      float _animDuration;
+
+      std::clock_t _previusTime;
   };
 
 

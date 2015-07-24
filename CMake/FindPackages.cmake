@@ -167,6 +167,33 @@ if(NEUROLOTS_WITH_ZEQ)
   endif( )
 endif( )
 
+#########################################################
+# FIND GMRVZeq
+#########################################################
+if (NEUROLOTS_WITH_ZEQ)
+  if(NEUROLOTS_WITH_ZEQ)
+    find_package(gmrvzeq)
+    if(GMRVZEQ_FOUND)
+      set(gmrvzeq_name GMRVZEQ)
+      set(gmrvzeq_FOUND TRUE)
+    elseif(gmrvzeq_FOUND)
+      set(gmrvzeq_name gmrvzeq)
+      set(GMRVZEQ_FOUND TRUE)
+    endif( )
+    if(gmrvzeq_name)
+      list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_WITH_GMRVZEQ)
+      if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
+        list(APPEND NEUROSCHEME_DEPENDENT_LIBRARIES gmrvzeq)
+      endif( )
+      set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} gmrvzeq")
+      link_directories(${${gmrvzeq_name}_LIBRARY_DIRS})
+      if(NOT "${${gmrvzeq_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
+        include_directories(BEFORE SYSTEM ${${gmrvzeq_name}_INCLUDE_DIRS})
+      endif( )
+    endif( )
+  endif( )
+endif( )
+
 
 #########################################################
 # FIND Bbpsdk

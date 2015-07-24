@@ -24,7 +24,7 @@ namespace neurolots
                                                            file_name )
   {
     SwcReader r;
-    return r.readFile(file_name);
+    return r.readMorphology(file_name);
   }
 
   void NeuronMeshGenerator::GenerateStructure( NeuronMorphologyPtr morpho,
