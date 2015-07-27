@@ -220,6 +220,31 @@ if(NEUROLOTS_WITH_BBPSDK)
   endif()
 endif( )
 
+#########################################################
+# FIND Deflect
+#########################################################
+if(NEUROLOTS_WITH_DEFLECT)
+  find_package(Deflect)
+  if(DEFLECT_FOUND)
+    set(Deflect_name DEFLECT)
+    set(Deflect_FOUND TRUE)
+  elseif(Deflect_FOUND)
+    set(Deflect_name Deflect)
+    set(DEFLECT_FOUND TRUE)
+  endif( )
+  if(Deflect_name)
+    list(APPEND FIND_PACKAGES_DEFINES NEUROLOTS_WITH_DEFLECT)
+    if(NOT COMMON_LIBRARY_TYPE MATCHES "SHARED")
+      list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
+    endif( )
+    set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} Deflect")
+    link_directories(${${Deflect_name}_LIBRARY_DIRS})
+    if(NOT "${${Deflect_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
+      include_directories(BEFORE SYSTEM ${${Deflect_name}_INCLUDE_DIRS})
+    endif( )
+  endif( )
+endif( )
+
 
 
 # Write defines.h and options.cmake
