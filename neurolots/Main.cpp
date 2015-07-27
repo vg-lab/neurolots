@@ -194,7 +194,7 @@ void usageMessage()
   std::cerr << std::endl
             << "Usage: "
             << "neurolots" << " "
-            << "(-bc blue_config_path | -swc swc_file_list) "
+            << " file ( blue_config_path | swc_file_path ) "
             << "-zeq uri"
             << "-pw host"
             << std::endl << std::endl;
