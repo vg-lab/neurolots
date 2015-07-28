@@ -132,9 +132,9 @@ void processDeflectEvents( void )
       case deflect::Event::EVT_WHEEL:
 
         if (wallEvent.dy < 0)
-          camera->Radius( camera->Radius( ) / 1.1f );
-        else
           camera->Radius( camera->Radius( ) * 1.1f );
+        else
+          camera->Radius( camera->Radius( ) / 1.1f );
         break;
 
       default:
