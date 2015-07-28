@@ -51,6 +51,8 @@ NeuronsCollection* neuronsCollection;
 
 #ifdef NEUROLOTS_WITH_DEFLECT
 
+bool deflectConnect = false;
+
 deflect::Stream* deflectStream;
 
 bool deflectCompressImage = true;
@@ -72,8 +74,10 @@ void startStreaming(const char* deflectHostName = "NeuroLOTs",
   if (!deflectStream->isConnected())
   {
       handleStreamingError("Could not connect to host!");
+      deflectConnect = false;
       return;
   }
+  deflectConnect = true;
   deflectStream->registerForEvents();
 
 }
@@ -128,9 +132,9 @@ void processDeflectEvents( void )
       case deflect::Event::EVT_WHEEL:
 
         if (wallEvent.dy < 0)
-          camera->Radius( camera->Radius( ) / 1.1f );
-        else
           camera->Radius( camera->Radius( ) * 1.1f );
+        else
+          camera->Radius( camera->Radius( ) / 1.1f );
         break;
 
       default:
@@ -190,7 +194,7 @@ void usageMessage()
   std::cerr << std::endl
             << "Usage: "
             << "neurolots" << " "
-            << "(-bc blue_config_path | -swc swc_file_list) "
+            << " file ( blue_config_path | swc_file_path ) "
             << "-zeq uri"
             << "-pw host"
             << std::endl << std::endl;
@@ -217,7 +221,8 @@ void paintFunc(void)
   neuronsCollection->Paint( );
 
 #ifdef NEUROLOTS_WITH_DEFLECT
-  updateStreaming();
+  if( deflectConnect )
+    updateStreaming();
 #endif
 
   glUseProgram( 0 );
@@ -380,55 +385,43 @@ int main( int argc, char* argv[ ])
 
   std::string fileName( argv[ 1 ]);
 
-#ifdef NEUROLOTS_WITH_ZEQ
-  std::string uri;
-  bool connection = false;
+  camera = nullptr;
+  neuronsCollection = nullptr;
 
   for( int i = 2; i < argc; i++ )
   {
     if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
     {
+#ifdef NEUROLOTS_WITH_ZEQ
       if( ++i < argc )
       {
-        uri = std::string( argv[ i ]);
-        connection = true;
+        std::string uri( argv[ i ]);
+        camera = new Camera( uri );
+        neuronsCollection = new NeuronsCollection( uri, fileName, camera );
       }
-    }
-  }
-
-  if ( connection )
-  {
-    camera = new Camera( uri );
-    neuronsCollection = new NeuronsCollection( uri, fileName, camera );
-  }
-  else
-  {
-    camera = new Camera( );
-    neuronsCollection = new NeuronsCollection( fileName, camera );
-  }
 #else
-  std::cerr << "ZEQ not supported" << std::endl;
-  camera = new Camera( );
-  neuronsCollection = new NeuronsCollection( fileName, camera );
+      std::cerr << "Zeq not supported " << std::endl;
 #endif
-
-#ifdef NEUROLOTS_WITH_DEFLECT
-
-  std::string deflectHost ("localhost");
-
-  for( int i = 2; i < argc; i++ )
-    {
-      if( std::strcmp( argv[ i ], "-pw" ) == 0 )
-      {
-        if( ++i < argc )
-        {
-          deflectHost = std::string( argv[ i ]);
-        }
-      }
     }
+    if( std::strcmp( argv[ i ], "-pw" ) == 0 )
+    {
+#ifdef NEUROLOTS_WITH_DEFLECT
+      if( ++i < argc )
+      {
+        std::string deflectHost = std::string( argv[ i ]);
 
-  startStreaming("NeuroLOTs", deflectHost.c_str());
+        startStreaming("NeuroLOTs", deflectHost.c_str());
+      }
+#else
+      std::cerr << "Deflect not supported " << std::endl;
 #endif
+    }
+  }
+
+  if ( !camera )
+    camera = new Camera( );
+  if ( !neuronsCollection )
+    neuronsCollection = new NeuronsCollection( fileName, camera );
 
   sceneInit( );
 
