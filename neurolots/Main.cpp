@@ -52,6 +52,7 @@ NeuronsCollection* neuronsCollection;
 #ifdef NEUROLOTS_WITH_DEFLECT
 
 bool deflectConnect = false;
+std::string deflectHost;
 
 deflect::Stream* deflectStream;
 
@@ -66,20 +67,18 @@ void handleStreamingError(const char* errorMessage)
 void startStreaming(const char* deflectHostName = "NeuroLOTs",
                     const char* deflectHostAddress = "localhost")
 {
-  if( deflectStream )
-      return;
+  if ( deflectStream )
+    return;
 
   deflectStream = new deflect::Stream( deflectHostName,
                                         deflectHostAddress);
   if (!deflectStream->isConnected())
   {
-      handleStreamingError("Could not connect to host!");
-      deflectConnect = false;
+      delete deflectStream;
+      deflectStream = nullptr;
       return;
   }
-  deflectConnect = true;
   deflectStream->registerForEvents();
-
 }
 
 void stopStreaming( void )
@@ -90,13 +89,13 @@ void stopStreaming( void )
 
 void processDeflectEvents( void )
 {
+  if( !deflectStream )
+    return;
+
   if( !deflectStream->isRegisteredForEvents( ))
     return;
 
   deflect::Event lastEvent;
-
-  if ( deflectStream->hasEvent( ))
-  std::cout << "------------------------------------------" << std::endl;
 
   unsigned int windowWidth = glutGet( GLUT_WINDOW_WIDTH ),
                windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
@@ -139,10 +138,7 @@ void processDeflectEvents( void )
 
       default:
         break;
-
-
     }
-
   }
 }
 
@@ -150,6 +146,9 @@ void processDeflectEvents( void )
 void sendDeflectFrameImage( bool compress = true,
                             unsigned int compressedQuality = 75 )
 {
+
+  if( !deflectStream )
+    return;
 
   // Grab the frame from OpenGL
   const int windowWidth = glutGet( GLUT_WINDOW_WIDTH );
@@ -174,6 +173,8 @@ void sendDeflectFrameImage( bool compress = true,
   if ( !success )
   {
       handleStreamingError("Streaming failure, connection closed.");
+      delete deflectStream;
+      deflectStream = nullptr;
       return;
   }
 
@@ -272,14 +273,12 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
     case 'f':
       neuronsCollection->AddMaxDist( -1 );
       break;
-    case 'o':
-      paintSoma = !paintSoma;
-      neuronsCollection->PaintSoma( paintSoma );
-      break;
+#ifdef NEUROLOTS_WITH_DEFLECT
     case 'p':
-      paintNeurites = !paintNeurites;
-      neuronsCollection->PaintNeurites( paintNeurites );
+      if ( deflectConnect && !deflectStream )
+        startStreaming("NeuroLOTs", deflectHost.c_str());
       break;
+#endif
   }
 }
 
@@ -408,8 +407,8 @@ int main( int argc, char* argv[ ])
 #ifdef NEUROLOTS_WITH_DEFLECT
       if( ++i < argc )
       {
-        std::string deflectHost = std::string( argv[ i ]);
-
+        deflectHost = std::string( argv[ i ]);
+        deflectConnect = true;
         startStreaming("NeuroLOTs", deflectHost.c_str());
       }
 #else
