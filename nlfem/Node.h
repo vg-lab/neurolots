@@ -16,7 +16,7 @@
 #include <iostream>
 #include <vector>
 
-#include <neurolots/api.h>
+#include <neurolots/nlfem/api.h>
 
 
 namespace fem
@@ -28,74 +28,74 @@ namespace fem
 
     public:
 
-      NEUROLOTS_API
+      NLFEM_API
       Node( Eigen::Vector3f pos0_, unsigned int id_, bool contorn_ = false );
 
-      NEUROLOTS_API
+      NLFEM_API
      ~Node( void );
 
       //Getters
-      NEUROLOTS_API
+      NLFEM_API
       unsigned int Id( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       unsigned int Id2( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       Eigen::Vector3f Pos0( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       Eigen::Vector3f U( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       Eigen::Vector3f Pos( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       Eigen::Vector3f Force( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       Eigen::Vector3f Center( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       Eigen::Vector3f Tangent( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       bool Fixed( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       bool Contorn( void );
 
       //Setters
-      NEUROLOTS_API
+      NLFEM_API
       void Id( unsigned int );
 
       void Id2( unsigned int );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Pos0( Eigen::Vector3f );
 
-      NEUROLOTS_API
+      NLFEM_API
       void U( Eigen::Vector3f );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Pos( Eigen::Vector3f );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Force( Eigen::Vector3f );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Center( Eigen::Vector3f );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Tangent( Eigen::Vector3f );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Fixed( bool );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Contorn( bool );
 
-      NEUROLOTS_API
+      NLFEM_API
       void AddCenter( Eigen::Vector3f add );
 
 
@@ -120,25 +120,25 @@ namespace fem
   class Nodes
   {
     public:
-      NEUROLOTS_API
+      NLFEM_API
       Nodes( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       ~Nodes( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       static void NodesToVectors( std::vector< NodePtr >& nodes,
                                  std::vector< float >& vertices,
                                  std::vector< float >& centers,
                                  std::vector< float >& tagents );
 
-      NEUROLOTS_API
+      NLFEM_API
       static void ContornNodesToVectors( std::vector< NodePtr >& nodes,
                                          std::vector< float >& vertices,
                                          std::vector< float >& centers,
                                          std::vector< float >& tagents );
 
-      NEUROLOTS_API
+      NLFEM_API
       static void ContornIds( std::vector< NodePtr >& nodes );
 
 

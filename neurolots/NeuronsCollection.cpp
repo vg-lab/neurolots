@@ -7,7 +7,7 @@
 #include <cfloat>
 #include <iostream>
 
-#ifdef NEUROLOTS_WITH_GMRVZEQ
+#ifdef NEUROLOTS_USE_GMRVZEQ
 #include <gmrvzeq/gmrvzeq.h>
 #endif
 
@@ -19,7 +19,7 @@ namespace neurolots
     : _camera( camera_ )
     , _dataSet( nsol::DataSet( ))
     , _cont( 0 )
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
   {
@@ -90,7 +90,7 @@ namespace neurolots
     else
     {
 
-#ifdef NEUROLOTS_WITH_BBPSDK
+#ifdef NSOL_USE_BBPSDK
       try{
         _dataSet.openBlueConfig< nsol::Node,
                                  nsol::Segment,
@@ -127,7 +127,7 @@ namespace neurolots
 
   }
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
   NeuronsCollection::NeuronsCollection( const std::string& uri_,
       const std::string& fileName, Camera* camera_ )
     : _camera( camera_ )
@@ -204,7 +204,7 @@ namespace neurolots
     else
     {
 
- #ifdef NEUROLOTS_WITH_BBPSDK
+ #ifdef NSOL_USE_BBPSDK
       try{
         _dataSet.openBlueConfig< nsol::Node,
                                  nsol::Segment,
@@ -245,7 +245,7 @@ namespace neurolots
     _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
         boost::bind( &NeuronsCollection::_OnSelectionEvent , this, _1 ));
 
-#ifdef NEUROLOTS_WITH_GMRVZEQ
+#ifdef NEUROLOTS_USE_GMRVZEQ
     _subscriber->registerHandler( zeq::gmrv::EVENT_FOCUSEDIDS,
         boost::bind( &NeuronsCollection::_OnFocusEvent , this, _1 ));
 #endif
@@ -306,7 +306,7 @@ namespace neurolots
             }
           }
           neuronMesh->PaintSoma( true );
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
 
           if( _IsSelected( neuron ) )
@@ -404,7 +404,7 @@ namespace neurolots
     return &_dataSet.columns( );
   }
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
   zeq::Subscriber* NeuronsCollection::Subscriber( void )
   {
@@ -643,7 +643,7 @@ namespace neurolots
     std::cout << "radius: " << radius << std::endl;
   }
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
   void NeuronsCollection::_OnFocusEvent( const zeq::Event& event_ )
   {

@@ -21,8 +21,6 @@ set(NLGENERATOR_SOURCES
   VectorizedNode.cpp
 )
 
-set(PROJECT_INCLUDE_NAME nlgenerator)
-
 set(NLGENERATOR_LINK_LIBRARIES
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
@@ -30,8 +28,10 @@ set(NLGENERATOR_LINK_LIBRARIES
   ${NSOL_LIBRARIES}
   ${ZEQ_LIBRARIES}
   ${BBPSDK_LIBRARIES}
+  nsol
   nlfem )
 
-set(PROJECT_INCLUDE_NAME neurolots/nlgenerator)
+set(NLGENERATOR_INCLUDE_NAME neurolots/nlgenerator)
+set(NLGENERATOR_NAMESPACE nlgenerator)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlgenerator )

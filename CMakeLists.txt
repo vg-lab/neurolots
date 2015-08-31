@@ -29,13 +29,12 @@ set(COMMON_PROJECT_DOMAIN gmrv.es)
 set(NEUROLOTS_DESCRIPTION "NeuroLOTs")
 
 option(NEUROLOTS_WITH_ZEQ "NEUROLOTS_WITH_ZEQ" ON)
-option(NEUROLOTS_WITH_BBPSDK "NEUROLOTS_WITH_BBPSDK" ON)
 option(NEUROLOTS_WITH_DEFLECT "NEUROLOTS_WITH_DEFLECT" ON)
 
-common_package(OpenGL REQUIRED)
-common_package(GLEW REQUIRED)
-common_package(GLUT REQUIRED)
-common_package(Eigen3 REQUIRED)
+common_package(OpenGL REQUIRED SYSTEM)
+common_package(GLEW REQUIRED SYSTEM)
+common_package(GLUT REQUIRED SYSTEM)
+common_package(Eigen3 REQUIRED SYSTEM)
 
 common_package(nsol REQUIRED)
 list(APPEND NSOL_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol)
@@ -49,6 +48,10 @@ if(NEUROLOTS_WITH_DEFLECT)
   common_package(Deflect)
   list(APPEND NSOL_DEPENDENT_LIBRARIES Deflect)
 endif( )
+
+common_package_post()
+
+set(PROJECT_INCLUDE_NAME neurolots)
 
 add_subdirectory( nlfem )
 add_subdirectory( nlgenerator )
