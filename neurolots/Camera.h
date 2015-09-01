@@ -19,7 +19,7 @@
 #include <string>
 #include <ctime>
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 #include <zeq/zeq.h>
 #include <zeq/hbp/hbp.h>
 #include <servus/uri.h>
@@ -42,7 +42,7 @@ namespace neurolots
         Eigen::Vector3f pivot_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
         float radius_ = 1000.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
       Camera( const std::string& uri_, float fov_ = 45.0f,
           float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
           float farPlane_ = 10000.0f,
@@ -66,7 +66,7 @@ namespace neurolots
       float* ViewMatrix( void );
       float* Position( void );
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
       zeq::Subscriber* Subscriber( void );
 #endif
 
@@ -93,7 +93,7 @@ namespace neurolots
       void _BuildProjectionMatrix( void );
       void _BuildViewMatrix( void );
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
       void _OnCameraEvent( const zeq::Event& event_ );
       static void* _Subscriber( void* camera_ );
 #endif
@@ -120,7 +120,7 @@ namespace neurolots
 
 
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
       bool _zeqConnection;
 
       servus::URI _uri;

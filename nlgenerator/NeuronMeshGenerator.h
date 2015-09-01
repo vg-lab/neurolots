@@ -20,7 +20,7 @@
 #include "VectorizedNode.h"
 #include "Icosphere.h"
 
-#include <neurolots/api.h>
+#include <neurolots/nlgenerator/api.h>
 
 namespace neurolots
 {
@@ -32,50 +32,50 @@ namespace neurolots
 
     public:
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       NeuronMeshGenerator( void );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       ~NeuronMeshGenerator( void );
 
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static nsol::NeuronMorphologyPtr ReadMorphology( const char * file_name );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateStructure( nsol::NeuronMorphologyPtr morpho,
                                      std::vector< float > & vertices,
                                      std::vector< unsigned int> & mesh );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateStructure( nsol::NeuronMorphologyPtr morpho,
                                      std::vector< VectorizedNodePtr > & vNodes,
                                      std::vector< float > & vertices,
                                      std::vector< unsigned int> & mesh );
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateStructure( std::vector< VectorizedNodePtr > & vNodes,
                                      std::vector< float > & vertices,
                                      std::vector< unsigned int> & mesh );
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateMeshQuads( nsol::NeuronMorphologyPtr morpho,
                                 std::vector< float >& vertices,
                                 std::vector< float >& centers,
                                 std::vector< float >& tangents,
                                 std::vector< unsigned int >& mesh,
                                 unsigned int& somaEnd);
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateMeshQuads( std::vector< VectorizedNodePtr >& vNodes,
                                      std::vector< float >& vertices,
                                      std::vector< float >& centers,
                                      std::vector< float >& tangents,
                                      std::vector< unsigned int >& mesh );
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateMeshTriangles( nsol::NeuronMorphologyPtr morpho,
                                       std::vector< float >& vertices,
                                       std::vector< float >& centers,
                                       std::vector< float >& tangents,
                                       std::vector< unsigned int >& mesh );
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateMeshTriangles(
                                       std::vector< VectorizedNodePtr > & vNodes,
                                       std::vector< float >& vertices,
@@ -83,14 +83,14 @@ namespace neurolots
                                       std::vector< float >& tangents,
                                       std::vector< unsigned int >& mesh );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateSomaTriangles( nsol::SomaPtr soma,
                                  std::vector< VectorizedNodePtr > & firstNodes,
                                  std::vector< float >& vertices,
                                  std::vector< float >& centers,
                                  std::vector< float >& tangents,
                                  std::vector< unsigned int >& mesh );
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void GenerateSomaQuads( nsol::SomaPtr soma,
                                  std::vector< VectorizedNodePtr > & firstNodes,
                                  std::vector< float >& vertices,
@@ -98,19 +98,19 @@ namespace neurolots
                                  std::vector< float >& tangents,
                                  std::vector< unsigned int >& mesh );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
                                    std::vector< VectorizedNodePtr >& vNodes );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
                                    std::vector< VectorizedNodePtr >& vNodes,
                                    std::vector< VectorizedNodePtr >& firstNodes);
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void CalculateTangents( std::vector< VectorizedNodePtr >& vNodes );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       static void CalculateGeometry( std::vector< VectorizedNodePtr >& vNodes,
                                      std::vector< float >& vertices,
                                      std::vector< float >& centers,

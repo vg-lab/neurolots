@@ -23,7 +23,7 @@
 
 #include <set>
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
 #include <zeq/zeq.h>
 #include <zeq/hbp/hbp.h>
@@ -49,7 +49,7 @@ namespace neurolots
 
       NeuronsCollection( const std::string& fileName, Camera* camera_ );
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
       NeuronsCollection( const std::string& uri_, const std::string& filName,
           Camera* camera_ );
@@ -69,7 +69,7 @@ namespace neurolots
 
       ColumnsPtr Columns( void );
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
       zeq::Subscriber* Subscriber( void );
 
@@ -98,7 +98,7 @@ namespace neurolots
 
       void _DefaultCamera( void );
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
 
       void _OnFocusEvent( const zeq::Event& event_ );
       void _OnSelectionEvent( const zeq::Event& event_ );
@@ -127,7 +127,7 @@ namespace neurolots
 
       std::set<unsigned int> _selectedNeurons;
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
       bool _zeqConnection;
 
       servus::URI _uri;

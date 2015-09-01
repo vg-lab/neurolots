@@ -24,7 +24,7 @@
 #include <iostream>
 #include <vector>
 
-#include <neurolots/api.h>
+#include <neurolots/nlgenerator/api.h>
 
 namespace neurolots
 {
@@ -35,22 +35,22 @@ namespace neurolots
 
     public:
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       Icosphere( Eigen::Vector3f center_, float radius_, unsigned int level  );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       ~Icosphere( void );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       void CalculateSoma( std::vector< VectorizedNodePtr >& firstNodes );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       void PassTrianglesToVector( std::vector< float >& vertices,
                                   std::vector< float >& centers,
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       void PassContornTrianglesToVector(
                                   std::vector< VectorizedNodePtr >& firstNodes,
                                   std::vector< float >& vertices,
@@ -58,7 +58,7 @@ namespace neurolots
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
-      NEUROLOTS_API
+      NLGENERATOR_API
       void PassQuadsToVector( std::vector< float >& vertices,
                                std::vector< float >& centers,
                                std::vector< float >& tangents,

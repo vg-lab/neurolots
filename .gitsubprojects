@@ -1,0 +1,2 @@
+# -*- mode: cmake -*-
+git_subproject(nsol ssh://git@gitlab.gmrv.es/nsviz/nsol.git master)

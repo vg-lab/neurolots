@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#ifdef NEUROLOTS_WITH_DEFLECT
+#ifdef NEUROLOTS_USE_DEFLECT
 #include <deflect/deflect.h>
 #endif
 
@@ -49,7 +49,7 @@ unsigned int frameCount = 0;
 Camera* camera;
 NeuronsCollection* neuronsCollection;
 
-#ifdef NEUROLOTS_WITH_DEFLECT
+#ifdef NEUROLOTS_USE_DEFLECT
 
 bool deflectConnect = false;
 std::string deflectHost;
@@ -221,7 +221,7 @@ void paintFunc(void)
   camera->Anim( );
   neuronsCollection->Paint( );
 
-#ifdef NEUROLOTS_WITH_DEFLECT
+#ifdef NEUROLOTS_USE_DEFLECT
   if( deflectConnect )
     updateStreaming();
 #endif
@@ -273,7 +273,7 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
     case 'f':
       neuronsCollection->AddMaxDist( -1 );
       break;
-#ifdef NEUROLOTS_WITH_DEFLECT
+#ifdef NEUROLOTS_USE_DEFLECT
     case 'p':
       if ( deflectConnect && !deflectStream )
         startStreaming("NeuroLOTs", deflectHost.c_str());
@@ -391,7 +391,7 @@ int main( int argc, char* argv[ ])
   {
     if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
     {
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
       if( ++i < argc )
       {
         std::string uri( argv[ i ]);
@@ -404,7 +404,7 @@ int main( int argc, char* argv[ ])
     }
     if( std::strcmp( argv[ i ], "-pw" ) == 0 )
     {
-#ifdef NEUROLOTS_WITH_DEFLECT
+#ifdef NEUROLOTS_USE_DEFLECT
       if( ++i < argc )
       {
         deflectHost = std::string( argv[ i ]);

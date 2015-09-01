@@ -12,7 +12,7 @@ namespace neurolots
     , _farPlane( farPlane_ )
     , _pivot( pivot_ )
     , _radius( radius_ )
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
     , _isAniming( false )
@@ -31,7 +31,7 @@ namespace neurolots
     _BuildViewMatrix( );
   }
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
   Camera::Camera( const std::string& uri_, float fov_, float ratio_,
       float nearPlane_, float farPlane_, Eigen::Vector3f pivot_, float radius_,
       float yaw_, float pitch_ )
@@ -165,7 +165,7 @@ namespace neurolots
     return _positionVec.data( );
   }
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
   zeq::Subscriber* Camera::Subscriber( void )
   {
     return _subscriber;
@@ -237,7 +237,7 @@ namespace neurolots
 
   // PRIVATE
 
-#ifndef NEUROLOTS_WITH_ZEQ
+#ifndef NEUROLOTS_USE_ZEQ
 
   void Camera::_PositionVectorized( std::vector<float>& positionVec_ )
   {
@@ -342,7 +342,7 @@ namespace neurolots
     viewVec[13] = - pivot.y( );
     viewVec[14] = - pivot.z( ) - _radius;
     viewVec[15] = 1.0f;
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
     if ( _zeqConnection )
     {
       _publisher->publish( zeq::hbp::serializeCamera( viewVec ));
@@ -352,7 +352,7 @@ namespace neurolots
     _ViewMatrixVectorized( viewVec );
   }
 
-#ifdef NEUROLOTS_WITH_ZEQ
+#ifdef NEUROLOTS_USE_ZEQ
   void Camera::_OnCameraEvent( const zeq::Event& event_ )
   {
     std::vector<float> viewMatrixVec = zeq::hbp::deserializeCamera( event_ );

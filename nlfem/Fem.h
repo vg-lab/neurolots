@@ -16,7 +16,7 @@
 #include <iostream>
 #include <cstdio>
 
-#include <neurolots/api.h>
+#include <neurolots/nlfem/api.h>
 
 #include "Node.h"
 #include "Tetrahedron.h"
@@ -29,15 +29,15 @@ namespace fem
   {
     public:
 
-      NEUROLOTS_API
+      NLFEM_API
       Fem( std::vector< NodePtr > nodes_,
           std::vector< TetrahedronPtr > tetrahedra_,
            double v_ = 0.3, double E_ = 1 );
 
-      NEUROLOTS_API
+      NLFEM_API
       ~Fem( void );
 
-      NEUROLOTS_API
+      NLFEM_API
       void Solve( void );
 
     private:
