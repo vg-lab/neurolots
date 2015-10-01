@@ -20,103 +20,7 @@ namespace neurolots
 
 // PUBLIC METHODS
 
-  NeuronMorphologyPtr NeuronMeshGenerator::ReadMorphology( const char *
-                                                           file_name )
-  {
-    SwcReader r;
-    return r.readMorphology(file_name);
-  }
-
-  void NeuronMeshGenerator::GenerateStructure( NeuronMorphologyPtr morpho,
-                                               vector< float > & vertices,
-                                               vector< unsigned int > & mesh )
-  {
-    vector< unsigned int >ids;
-    ids.resize( _MaxId( morpho ));
-    vertices.clear( );
-    mesh.clear( );
-
-    Neurites neurites = morpho->neurites( );
-    NodePtr node = morpho->soma( )->nodes( )[0];
-
-    ids[ node->id()-1 ] = 0;
-
-    Vec3f pos = node->point( );
-    vertices.push_back( pos.x( ));
-    vertices.push_back( pos.y( ));
-    vertices.push_back( pos.z( ));
-
-    for( unsigned int i = 0; i < neurites.size( ); i++ )
-    {
-      SectionPtr section = neurites[i]->firstSection( );
-      _GenerateStructure(section, vertices, mesh, ids);
-    }
-
-  }
-
-  void NeuronMeshGenerator::GenerateStructure( NeuronMorphologyPtr morpho,
-                                      std::vector< VectorizedNodePtr > & vNodes,
-                                      vector< float > & vertices,
-                                      vector< unsigned int > & mesh )
-  {
-    vertices.clear( );
-    mesh.clear( );
-
-    Neurites neurites = morpho->neurites( );
-    NodePtr node = morpho->soma( )->nodes( )[0];
-
-    VectorizedNodePtr vNode = vNodes[ node->id() - 1 ];
-
-    Eigen::Vector3f pos = vNode->Position( );
-
-    vNode->Primitive( new GeometricPrimitive( int( vertices.size( )) / 3 ));
-
-    vertices.push_back( pos.x( ));
-    vertices.push_back( pos.y( ));
-    vertices.push_back( pos.z( ));
-
-
-
-    for( unsigned int i = 0; i < neurites.size( ); i++ )
-    {
-      SectionPtr section = neurites[i]->firstSection( );
-      _GenerateStructure(section, vNodes,vertices, mesh);
-    }
-  }
-
-  void NeuronMeshGenerator::GenerateStructure(
-                                        vector< VectorizedNodePtr > & vNodes,
-                                        vector< float > & vertices,
-                                        vector< unsigned int > & mesh )
-    {
-      vertices.clear( );
-      mesh.clear( );
-
-      for( unsigned int i=0; i < vNodes.size( ); i++ )
-      {
-
-        VectorizedNodePtr vNode = vNodes[i];
-
-        int id1 = int( vertices.size( )) / 3;
-
-        vNode->Primitive( new GeometricPrimitive( id1 ));
-        Eigen::Vector3f pos = vNode->Position( );
-        vertices.push_back( pos.x( ));
-        vertices.push_back( pos.y( ));
-        vertices.push_back( pos.z( ));
-
-
-        if( vNode->Father() != nullptr )
-        {
-          int id0 = vNode->Father()->Primitive()->A() ;
-          mesh.push_back( id0 );
-          mesh.push_back( id1 );
-        }
-
-      }
-    }
-
-  void NeuronMeshGenerator::GenerateMeshQuads( NeuronMorphologyPtr morpho,
+  void NeuronMeshGenerator::GenerateMeshQuads( nsol::NeuronMorphologyPtr morpho,
                                           vector< float > & vertices,
                                           vector< float > & centers,
                                           vector< float > & tangents,
@@ -159,94 +63,6 @@ namespace neurolots
     }
   }
 
-  void NeuronMeshGenerator::GenerateMeshQuads(
-                                        vector< VectorizedNodePtr > & vNodes,
-                                        vector< float > & vertices,
-                                        vector< float > & centers,
-                                        vector< float > & tangents,
-                                        vector< unsigned int > & mesh )
-  {
-    vertices.clear( );
-    centers.clear( );
-    tangents.clear( );
-    mesh.clear( );
-
-    CalculateTangents( vNodes );
-    CalculateGeometry( vNodes, vertices, centers, tangents);
-
-    for ( unsigned int i = 0; i < vNodes.size(); i++ )
-    {
-      VectorizedNodePtr vNode = vNodes[i];
-      if( vNode->Father( ) != nullptr )
-      {
-        _CreateQuadPipe( vNode->Father( )->Primitive( ), vNode->Primitive(), mesh );
-        if( vNode->Childs( ).size( ) == 0 )
-        {
-          mesh.push_back( vNode->Primitive( )->A( ));
-          mesh.push_back( vNode->Primitive( )->B( ));
-          mesh.push_back( vNode->Primitive( )->D( ));
-          mesh.push_back( vNode->Primitive( )->C( ));
-        }
-      }
-    }
-  }
-
-  void NeuronMeshGenerator::GenerateMeshTriangles( NeuronMorphologyPtr morpho,
-                                           vector< float > & vertices,
-                                           vector< float > & centers,
-                                           std::vector< float >& tangents,
-                                           vector< unsigned int > & mesh)
-   {
-     vertices.clear( );
-     centers.clear( );
-     tangents.clear( );
-     mesh.clear( );
-
-     std::vector< VectorizedNodePtr > vNodes;
-     std::vector< VectorizedNodePtr > firstNodes;
-
-     VectorizeMorpho( morpho, vNodes, firstNodes );
-
-     GenerateSomaTriangles( morpho->soma( ), firstNodes, vertices, centers,
-                            tangents, mesh  );
-
-     CalculateTangents( vNodes );
-     CalculateGeometry( vNodes, vertices, centers, tangents);
-
-     for ( unsigned int i = 0; i < vNodes.size(); i++ )
-     {
-       VectorizedNodePtr vNode = vNodes[i];
-       if( vNode->Father( ) != nullptr )
-       {
-         _CreateTrianglePipe( vNode->Father( )->Primitive( ),
-                              vNode->Primitive(), mesh );
-       }
-     }
-   }
-
-  void NeuronMeshGenerator::GenerateMeshTriangles(
-                                          vector< VectorizedNodePtr > & vNodes,
-                                          vector< float > & vertices,
-                                          vector< float > & centers,
-                                          std::vector< float >& tangents,
-                                          vector< unsigned int > & mesh)
-    {
-      CalculateTangents( vNodes );
-      CalculateGeometry( vNodes, vertices, centers, tangents);
-
-      for ( unsigned int i = 0; i < vNodes.size(); i++ )
-      {
-        VectorizedNodePtr vNode = vNodes[i];
-        if( vNode->Father( ) != nullptr )
-        {
-          _CreateTrianglePipe( vNode->Father( )->Primitive( ),
-                               vNode->Primitive(), mesh );
-        }
-//        _CreateSphereTriangles(pos,radius,vertices,centers,mesh);//BORRAR
-      }
-
-  }
-
   void NeuronMeshGenerator::GenerateSomaTriangles( nsol::SomaPtr soma,
                                  std::vector< VectorizedNodePtr > & firstNodes,
                                  std::vector< float >& vertices,
@@ -278,69 +94,7 @@ namespace neurolots
                                       mesh );
   }
 
-  void NeuronMeshGenerator::GenerateSomaQuads( nsol::SomaPtr soma,
-   		                 std::vector< VectorizedNodePtr > & /* firstNodes */,
-                                 std::vector< float >& vertices,
-                                 std::vector< float >& centers,
-                                 std::vector< float >& tangents,
-                                 std::vector< unsigned int >& mesh )
-    {
-      Vec3f c = soma->center( );
-      Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
-
-      Nodes nodes = soma->nodes( );
-      float radius = 0.0f;
-      for( unsigned int i = 0; i < nodes.size(); i++ )
-      {
-        radius += (nodes[i]->point() - c).norm();
-      }
-      radius /= nodes.size( );
-
-      if( radius == 0.0f )
-      {
-        radius = soma->maxRadius( );
-      }
-
-      Icosphere ico( center, radius, 3 );
-      ico.PassQuadsToVector( vertices, centers, tangents, mesh );
-    }
-
-  void NeuronMeshGenerator::VectorizeMorpho( NeuronMorphologyPtr morpho,
-                                           vector< VectorizedNodePtr > & vNodes)
-  {
-    vNodes.clear( );
-    Neurites neurites = morpho->neurites( );
-
-    for( unsigned int i = 0; i < neurites.size( ); i++ )
-    {
-      SectionPtr section = neurites[i]->firstSection( );
-
-
-      //////////////////////////////////////////////////////
-      ///Hack Delete when nsol loaders are rigth
-      section->firstSegment( section->firstSegment( )->next( ) );
-      //////////////////////////////////////////////////////
-
-      VectorizedNodePtr vNode = new VectorizedNode( );
-      NodePtr node = section->firstSegment( )->begin( );
-      Vec3f pos = node->point( );
-      vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
-      vNode->Radius( node->radius( ));
-      vNode->Id( int( vNodes.size( )));
-
-//      std::cout << "Nodo " << node->id() << "\nPosicion: " << node->point().x()
-//                << " " << node->point().y() << " " << node->point().z()
-//                << std::endl;
-
-
-
-      vNodes.push_back( vNode );
-
-      _VectorizeMorpho(section, vNodes, vNode);
-    }
-  }
-
-  void NeuronMeshGenerator::VectorizeMorpho( NeuronMorphologyPtr morpho,
+  void NeuronMeshGenerator::VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
                                        vector< VectorizedNodePtr >& vNodes,
                                        vector< VectorizedNodePtr >& firstNodes )
   {
@@ -352,13 +106,9 @@ namespace neurolots
     {
       SectionPtr section = neurites[i]->firstSection( );
 
-      //////////////////////////////////////////////////////
-      ///Hack Delete when nsol loaders are rigth
-      section->firstSegment( section->firstSegment( )->next( ) );
-      //////////////////////////////////////////////////////
 
       VectorizedNodePtr vNode = new VectorizedNode( );
-      NodePtr node = section->firstSegment( )->begin( );
+      NodePtr node = section->firstNode( );
       Vec3f pos = node->point( );
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
       vNode->Radius( node->radius( ));
@@ -543,154 +293,19 @@ namespace neurolots
 
 // PRIVATE METHODS
 
-  void NeuronMeshGenerator::_GenerateStructure( nsol::SectionPtr section,
-                                                vector< float > & vertices,
-                                                vector< unsigned int > & mesh,
-                                                vector< unsigned int > & ids )
-  {
-    SegmentPtr segment = section->firstSegment( );
-
-    while( segment != nullptr)
-    {
-      int id0 = ids[ segment->begin( )->id( )-1 ];
-      int id1 = int( vertices.size( ) ) / 3;
-
-      NodePtr node = segment->end( );
-
-      ids[ node->id( )-1 ] = id1;
-
-      Vec3f pos = node->point( );
-      vertices.push_back( pos.x( ));
-      vertices.push_back( pos.y( ));
-      vertices.push_back( pos.z( ));
-
-      mesh.push_back( id0 );
-      mesh.push_back( id1 );
-
-      segment = segment->next();
-    }
-
-    Sections childs = section->children();
-    for( unsigned int i = 0; i < childs.size(); i++ )
-    {
-      _GenerateStructure( childs[i], vertices, mesh, ids );
-
-    }
-
-  }
-
-  void NeuronMeshGenerator::_GenerateStructure( nsol::SectionPtr section,
-                                           vector< VectorizedNodePtr > & vNodes,
-                                           vector< float > & vertices,
-                                           vector< unsigned int > & mesh )
-    {
-      SegmentPtr segment = section->firstSegment( );
-
-      while( segment != nullptr)
-      {
-        int id0 = vNodes[ segment->begin()->id( ) - 1 ]->Primitive( )->A();
-
-        int id1 = int( vertices.size( ) ) / 3;
-
-        NodePtr node = segment->end( );
-
-        VectorizedNodePtr vNode = vNodes[ node->id() - 1 ];
-
-        Eigen::Vector3f pos = vNode->Position( );
-
-        vNode->Primitive( new GeometricPrimitive( id1 ));
-
-        vertices.push_back( pos.x( ));
-        vertices.push_back( pos.y( ));
-        vertices.push_back( pos.z( ));
-
-        mesh.push_back( id0 );
-        mesh.push_back( id1 );
-
-        segment = segment->next();
-      }
-
-      Sections childs = section->children();
-      for( unsigned int i = 0; i < childs.size(); i++ )
-      {
-        _GenerateStructure( childs[i], vNodes, vertices, mesh );
-
-      }
-
-    }
-
-  void NeuronMeshGenerator::_GenerateMeshQuads( SectionPtr section,
-                                           vector< float > & vertices,
-                                           vector< float > & centers,
-                                           vector< float > & tangents,
-                                           vector< unsigned int > & mesh )
-  {
-    SegmentPtr segment = section->firstSegment( );
-
-    while( segment != nullptr)
-    {
-      NodePtr node = segment->end( );
-
-      Eigen::Vector3f v( node->point( ).x( ),
-                         node->point( ).y( ),
-                         node->point( ).z( ));
-      float radius = node->radius( );
-      _CreateSphereQuads( v, radius, vertices, centers, tangents, mesh );
-
-     segment = segment->next();
-     }
-
-     Sections childs = section->children();
-     for( unsigned int i = 0; i < childs.size(); i++ )
-     {
-       _GenerateMeshQuads( childs[i], vertices, centers, tangents, mesh );
-     }
-  }
-
-  void NeuronMeshGenerator::_GenerateMeshTriangles( SectionPtr section,
-                                             vector< float > & vertices,
-                                             vector< float > & centers,
-                                             vector< float >& tangents,
-                                             vector< unsigned int > & mesh )
-    {
-      SegmentPtr segment = section->firstSegment( );
-
-      while( segment != nullptr)
-      {
-        NodePtr node = segment->end( );
-
-        Eigen::Vector3f v( node->point( ).x( ),
-                           node->point( ).y( ),
-                           node->point( ).z( ));
-        float radius = node->radius( );
-        _CreateSphereTriangles( v, radius, vertices, centers, tangents, mesh );
-
-       segment = segment->next();
-       }
-
-       Sections childs = section->children();
-       for( unsigned int i = 0; i < childs.size(); i++ )
-       {
-         _GenerateMeshTriangles( childs[i], vertices, centers, tangents, mesh );
-       }
-    }
-
   void NeuronMeshGenerator::_VectorizeMorpho( SectionPtr section,
                                           vector< VectorizedNodePtr > & vNodes,
                                           VectorizedNodePtr vFatherNode )
   {
-    SegmentPtr segment = section->firstSegment( );
+    VectorizedNodePtr vNode;
+    NodePtr node;
+    Vec3f pos;
 
-    while( segment != nullptr)
+    for( unsigned int i = 0; i < section->middleNodes( ).size( ); i++ )
     {
-      VectorizedNodePtr vNode = new VectorizedNode( );
-
-      NodePtr node = segment->end( );
-      Vec3f pos = node->point( );
-
-//      std::cout << "Nodo " << node->id() << "\nPosicion: " << node->point().x()
-//                      << " " << node->point().y() << " " << node->point().z()
-//                      << std::endl;
+      vNode = new VectorizedNode( );
+      node = section->middleNodes( )[i];
+      pos = node->point( );
 
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
       vNode->Radius( node->radius( ));
@@ -700,19 +315,32 @@ namespace neurolots
 
       vFatherNode->AddChild( vNode );
       vFatherNode = vNode;
-      segment = segment->next();
+    }
+
+    if( section->lastNode( ))
+    {
+      vNode = new VectorizedNode( );
+      node = section->lastNode( );
+      pos = node->point( );
+
+      vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
+      vNode->Radius( node->radius( ));
+      vNode->Id( int( vNodes.size( )));
+      vNode->Father( vFatherNode);
+      vNodes.push_back( vNode );
+
+      vFatherNode->AddChild( vNode );
+      vFatherNode = vNode;
     }
 
     Sections childSections = section->children();
     for( unsigned int i = 0; i < childSections.size(); i++ )
     {
-
       _VectorizeMorpho( childSections[i], vNodes, vFatherNode );
-
     }
   }
 
-  unsigned int NeuronMeshGenerator::_NumNodes( NeuronMorphologyPtr morpho )
+  unsigned int NeuronMeshGenerator::_NumNodes( nsol::NeuronMorphologyPtr morpho )
   {
     unsigned int numNodes = 0;
     Neurites neurites = morpho->neurites( );
@@ -728,17 +356,9 @@ namespace neurolots
 
   unsigned int NeuronMeshGenerator::_NumNodes( nsol::SectionPtr section )
   {
-      unsigned int numNodes = 0;
-      SegmentPtr segment = section->firstSegment( );
-
-      while( segment != nullptr)
-      {
-        numNodes++;
-        segment = segment->next();
-      }
+      unsigned int numNodes = section->middleNodes( ).size( ) + 2;
 
       Sections childs = section->children();
-
       for( unsigned int i = 0; i < childs.size(); i++ )
       {
         numNodes += _NumNodes( childs[i] );
@@ -767,14 +387,18 @@ namespace neurolots
   unsigned int NeuronMeshGenerator::_MaxId( nsol::SectionPtr section )
   {
       unsigned int maxId = 0;
-      SegmentPtr segment = section->firstSegment( );
 
-      while( segment != nullptr)
+
+      if( section->firstNode()->id( ) > section->lastNode()->id( ))
+        maxId = section->firstNode( )->id( );
+      else
+        maxId = section->lastNode( )->id( );
+
+      for( unsigned int i = 0; i < section->middleNodes( ).size( ); i++ )
       {
-        unsigned int id = segment->end( )->id( );
-        if( id > maxId )
+        unsigned int id = section->middleNodes( )[i]->id( );
+        if ( id > maxId )
           maxId = id;
-        segment = segment->next();
       }
 
       Sections childs = section->children();
@@ -787,162 +411,6 @@ namespace neurolots
       }
 
       return maxId;
-  }
-
-  void NeuronMeshGenerator::_CreateSphereQuads( Eigen::Vector3f center,
-                                           float radius,
-                                           vector< float > & vertices,
-                                           vector< float > & centers,
-                                           vector< float > & tangents,
-                                           vector< unsigned int > & mesh )
-  {
-
-    Eigen::Vector3f aux = center + Eigen::Vector3f( 0.0, 0.0, radius );
-    int id0 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( 0.0, 0.0, -radius );
-    int id1 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( radius, 0.0, 0.0 );
-    int id2 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( -radius, 0.0, 0.0 );
-    int id3 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( 0.0, radius, 0.0 );
-    int id4 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( 0.0, -radius, 0.0 );
-    int id5 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    for( int i = 0; i < 6; i++ )
-    {
-      centers.push_back( center.x( ));
-      centers.push_back( center.y( ));
-      centers.push_back( center.z( ));
-
-      tangents.push_back( 0.0f );
-      tangents.push_back( 0.0f );
-      tangents.push_back( 0.0f );
-    }
-
-    mesh.push_back(id4); mesh.push_back(id0); mesh.push_back(id2);
-    mesh.push_back(id5);
-
-    mesh.push_back(id4); mesh.push_back(id3); mesh.push_back(id0);
-    mesh.push_back(id5);
-
-    mesh.push_back(id4); mesh.push_back(id1); mesh.push_back(id3);
-    mesh.push_back(id5);
-
-    mesh.push_back(id4); mesh.push_back(id2); mesh.push_back(id1);
-    mesh.push_back(id5);
-
-
-  }
-
-  void NeuronMeshGenerator::_CreateSphereTriangles( Eigen::Vector3f center,
-                                                float radius,
-                                                vector< float > & vertices,
-                                                vector< float > & centers,
-                                                vector< float >& tangents,
-                                                vector< unsigned int > & mesh )
-  {
-
-    Eigen::Vector3f aux = center + Eigen::Vector3f( 0.0, 0.0, radius );
-    int id0 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( 0.0, 0.0, -radius );
-    int id1 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( radius, 0.0, 0.0 );
-    int id2 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( -radius, 0.0, 0.0 );
-    int id3 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( 0.0, radius, 0.0 );
-    int id4 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    aux = center + Eigen::Vector3f( 0.0, -radius, 0.0 );
-    int id5 = int( vertices.size( ) ) / 3;
-    vertices.push_back( aux.x( )); vertices.push_back( aux.y( )); vertices.push_back( aux.z( ));
-
-    for( int i = 0; i < 6; i++ )
-    {
-      centers.push_back( center.x( ));
-      centers.push_back( center.y( ));
-      centers.push_back( center.z( ));
-
-      tangents.push_back( 0.0f );
-      tangents.push_back( 0.0f );
-      tangents.push_back( 0.0f );
-    }
-
-    mesh.push_back(id4); mesh.push_back(id0); mesh.push_back(id2);
-    mesh.push_back(id5); mesh.push_back(id2); mesh.push_back(id0);
-
-    mesh.push_back(id4); mesh.push_back(id3); mesh.push_back(id0);
-    mesh.push_back(id5); mesh.push_back(id0); mesh.push_back(id3);
-
-    mesh.push_back(id4); mesh.push_back(id1); mesh.push_back(id3);
-    mesh.push_back(id5); mesh.push_back(id3); mesh.push_back(id1);
-
-    mesh.push_back(id4); mesh.push_back(id2); mesh.push_back(id1);
-    mesh.push_back(id5); mesh.push_back(id1); mesh.push_back(id2);
-
-  }
-
-  void NeuronMeshGenerator::_CreateTrianglePipe( GeometricPrimitivePtr geom0,
-                           GeometricPrimitivePtr geom1,
-                           vector< unsigned int > & mesh )
-  {
-    //AB
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom1->A() );
-
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom1->B() );
-    mesh.push_back( geom1->A() );
-
-    //BC
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom1->B() );
-
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom1->C() );
-    mesh.push_back( geom1->B() );
-
-    //CD
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom1->C() );
-
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom1->D() );
-    mesh.push_back( geom1->C() );
-
-    //DA
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom1->D() );
-
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom1->A() );
-    mesh.push_back( geom1->D() );
   }
 
   void NeuronMeshGenerator::_CreateQuadPipe( GeometricPrimitivePtr geom0,

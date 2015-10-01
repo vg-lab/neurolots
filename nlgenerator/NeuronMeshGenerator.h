@@ -38,24 +38,6 @@ namespace neurolots
       NLGENERATOR_API
       ~NeuronMeshGenerator( void );
 
-
-      NLGENERATOR_API
-      static nsol::NeuronMorphologyPtr ReadMorphology( const char * file_name );
-
-      NLGENERATOR_API
-      static void GenerateStructure( nsol::NeuronMorphologyPtr morpho,
-                                     std::vector< float > & vertices,
-                                     std::vector< unsigned int> & mesh );
-
-      NLGENERATOR_API
-      static void GenerateStructure( nsol::NeuronMorphologyPtr morpho,
-                                     std::vector< VectorizedNodePtr > & vNodes,
-                                     std::vector< float > & vertices,
-                                     std::vector< unsigned int> & mesh );
-      NLGENERATOR_API
-      static void GenerateStructure( std::vector< VectorizedNodePtr > & vNodes,
-                                     std::vector< float > & vertices,
-                                     std::vector< unsigned int> & mesh );
       NLGENERATOR_API
       static void GenerateMeshQuads( nsol::NeuronMorphologyPtr morpho,
                                 std::vector< float >& vertices,
@@ -63,25 +45,6 @@ namespace neurolots
                                 std::vector< float >& tangents,
                                 std::vector< unsigned int >& mesh,
                                 unsigned int& somaEnd);
-      NLGENERATOR_API
-      static void GenerateMeshQuads( std::vector< VectorizedNodePtr >& vNodes,
-                                     std::vector< float >& vertices,
-                                     std::vector< float >& centers,
-                                     std::vector< float >& tangents,
-                                     std::vector< unsigned int >& mesh );
-      NLGENERATOR_API
-      static void GenerateMeshTriangles( nsol::NeuronMorphologyPtr morpho,
-                                      std::vector< float >& vertices,
-                                      std::vector< float >& centers,
-                                      std::vector< float >& tangents,
-                                      std::vector< unsigned int >& mesh );
-      NLGENERATOR_API
-      static void GenerateMeshTriangles(
-                                      std::vector< VectorizedNodePtr > & vNodes,
-                                      std::vector< float >& vertices,
-                                      std::vector< float >& centers,
-                                      std::vector< float >& tangents,
-                                      std::vector< unsigned int >& mesh );
 
       NLGENERATOR_API
       static void GenerateSomaTriangles( nsol::SomaPtr soma,
@@ -90,17 +53,6 @@ namespace neurolots
                                  std::vector< float >& centers,
                                  std::vector< float >& tangents,
                                  std::vector< unsigned int >& mesh );
-      NLGENERATOR_API
-      static void GenerateSomaQuads( nsol::SomaPtr soma,
-                                 std::vector< VectorizedNodePtr > & firstNodes,
-                                 std::vector< float >& vertices,
-                                 std::vector< float >& centers,
-                                 std::vector< float >& tangents,
-                                 std::vector< unsigned int >& mesh );
-
-      NLGENERATOR_API
-      static void VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
-                                   std::vector< VectorizedNodePtr >& vNodes );
 
       NLGENERATOR_API
       static void VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
@@ -118,25 +70,6 @@ namespace neurolots
 
     private:
 
-      static void _GenerateStructure( nsol::SectionPtr section,
-                                      std::vector< float > & vertices,
-                                      std::vector< unsigned int > & mesh,
-                                      std::vector< unsigned int > & ids);
-      static void _GenerateStructure( nsol::SectionPtr section,
-                                     std::vector< VectorizedNodePtr > & vNodes,
-                                     std::vector< float > & vertices,
-                                     std::vector< unsigned int> & mesh );
-      static void _GenerateMeshQuads( nsol::SectionPtr section,
-                                 std::vector< float > & vertices,
-                                 std::vector< float > & centers,
-                                 std::vector< float > & tangents,
-                                 std::vector< unsigned int > & mesh);
-      static void _GenerateMeshTriangles( nsol::SectionPtr section,
-                                       std::vector< float > & vertices,
-                                       std::vector< float > & centers,
-                                       std::vector< float >& tangents,
-                                       std::vector< unsigned int > & mesh);
-
       static void _VectorizeMorpho( nsol::SectionPtr section,
                                     std::vector< VectorizedNodePtr > & vNodes,
                                     VectorizedNodePtr vFatherNode );
@@ -147,20 +80,6 @@ namespace neurolots
       static unsigned int _MaxId( nsol::NeuronMorphologyPtr morpho );
       static unsigned int _MaxId( nsol::SectionPtr section );
 
-      static void _CreateSphereQuads( Eigen::Vector3f center, float radius,
-                                 std::vector< float > & vertices,
-                                 std::vector< float > & centers,
-                                 std::vector< float > & tangents,
-                                 std::vector< unsigned int > & mesh );
-
-      static void _CreateSphereTriangles( Eigen::Vector3f center, float radius,
-                                       std::vector< float > & vertices,
-                                       std::vector< float > & centers,
-                                       std::vector< float >& tangents,
-                                       std::vector< unsigned int > & mesh );
-      static void _CreateTrianglePipe( GeometricPrimitivePtr geom0,
-                               GeometricPrimitivePtr geom1,
-                               std::vector< unsigned int > & mesh );
 
       static void _CreateQuadPipe( GeometricPrimitivePtr geom0,
                                      GeometricPrimitivePtr geom1,
