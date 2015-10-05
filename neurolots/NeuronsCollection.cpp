@@ -14,8 +14,7 @@
 namespace neurolots
 {
 
-  NeuronsCollection::NeuronsCollection( const std::string& fileName,
-                                        Camera* camera_ )
+  NeuronsCollection::NeuronsCollection( Camera* camera_ )
     : _camera( camera_ )
     , _dataSet( nsol::DataSet( ))
     , _cont( 0 )
@@ -52,155 +51,20 @@ namespace neurolots
 
     NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
     SelectedNeuronColor( Eigen::Vector3f( 0.7f, 0.5f, 0.0f ));
+  }
 
-    std::string fName = fileName;
-
-    if ( !(fName.length() < 5 ||
-         fName.compare( fName.length( ) - 3, 3, "swc" )))
-    {
-      _dataSet.addNeuron< nsol::Node,
-                          nsol::Section,
-                          nsol::Dendrite,
-                          nsol::Axon,
-                          nsol::Soma,
-                          NeuronMorphology,
-                          Neuron >( fileName, 1 );
-    }
-    else if( !(fName.length() < 5 ||
-        fName.compare( fName.length( ) - 3, 3, "xml" )))
-    {
-      try
-      {
-        _dataSet.loadScene< nsol::Node,
-                            nsol::Section,
-                            nsol::Dendrite,
-                            nsol::Axon,
-                            nsol::Soma,
-                            NeuronMorphology,
-                            Neuron >( fileName );
-      }
-      catch( ... )
-      {
-        std::cerr << "Error: can't load file: " << fileName << std::endl;
-        exit(-1);
-      }
-    }
-    else
-    {
-
-#ifdef NSOL_USE_BBPSDK
-      try{
-        _dataSet.openBlueConfig< nsol::Node,
-                                 nsol::Section,
-                                 nsol::Dendrite,
-                                 nsol::Axon,
-                                 nsol::Soma,
-                                 NeuronMorphology,
-                                 Neuron,
-                                 nsol::MiniColumn,
-                                 nsol::Column >( fileName );
-      }
-      catch( ... )
-      {
-        std::cerr << "Error: can't load file: " << fileName << std::endl;
-        exit(-1);
-      }
-
-#else
-
-      std::cerr << "Error: Bbpsdk support not built-in" << std::endl;
-      exit( -1 );
-
-#endif
-
-    }
-
-    _GenerateMeshes( );
-    _Init( );
-
-    _DefaultCamera( );
-    _camera->Pivot( _defaultPivot );
-    _camera->Radius( _defaultRadius );
+  NeuronsCollection::~NeuronsCollection( void )
+  {
 
   }
 
-#ifdef NEUROLOTS_USE_ZEQ
-  NeuronsCollection::NeuronsCollection( const std::string& uri_,
-      const std::string& fileName, Camera* camera_ )
-    : _camera( camera_ )
-    , _dataSet( nsol::DataSet( ))
-    , _cont( 0 )
-    , _zeqConnection( true )
-    , _uri( servus::URI( uri_ ))
+  // PUBLIC
+
+  void NeuronsCollection::loadBlueConfig( const std::string& BlueConfig_,
+                                          const std::string& target_ )
   {
-
-    _selectedNeurons.clear( );
-
-    std::string neurolotsShadersPath( getenv( "NEUROLOTS_SHADERS_PATH" ));
-    if( neurolotsShadersPath.data( ) == NULL )
-    {
-      std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
-                << std::endl;
-      exit(-1);
-    }
-
-    std::string quadsPath = neurolotsShadersPath;
-    quadsPath.append( "/quads" );
-
-    std::string trianglesPath = neurolotsShadersPath;
-    trianglesPath.append( "/triangles" );
-
-    _programQuads = new Program( Program::QUADS, quadsPath );
-
-    _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
-
-    _programQuads->Init( );
-    _programTriangles->Init( );
-
-    Lod( 3.0f );
-    Tng( 5.0f );
-    MaxDist( 200.0f );
-
-    NeuronColor( Eigen::Vector3f( 0.0, 0.5, 0.7 ));
-    SelectedNeuronColor( Eigen::Vector3f( 0.7f, 0.5f, 0.0f ));
-
-    std::string fName = fileName;
-
-    if ( !( fName.length() < 5 ||
-      fName.compare( fName.length( ) - 3, 3, "swc" )))
-    {
-      _dataSet.addNeuron< nsol::Node,
-                          nsol::Section,
-                          nsol::Dendrite,
-                          nsol::Axon,
-                          nsol::Soma,
-                          NeuronMorphology,
-                          Neuron >( fileName, 1 );
-    }
-    else if( !(fName.length() < 5 ||
-        fName.compare( fName.length( ) - 3, 3, "xml" )))
-    {
-      try
-      {
-        _dataSet.loadScene< nsol::Node,
-                            nsol::Section,
-                            nsol::Dendrite,
-                            nsol::Axon,
-                            nsol::Soma,
-                            NeuronMorphology,
-                            Neuron >( fileName );
-      }
-      catch( ... )
-      {
-        std::cerr << "Error: can't load file: " << fileName << std::endl;
-        exit(-1);
-      }
-    }
-    else
-    {
-
- #ifdef NSOL_USE_BBPSDK
-      try{
+#ifdef NSOL_USE_BBPSDK
+    try{
         _dataSet.openBlueConfig< nsol::Node,
                                  nsol::Section,
                                  nsol::Dendrite,
@@ -209,31 +73,66 @@ namespace neurolots
                                  NeuronMorphology,
                                  Neuron,
                                  nsol::MiniColumn,
-                                 nsol::Column >( fileName );
+                                 nsol::Column >( BlueConfig_,
+                                            nsol::MORPHOLOGY | nsol::HIERARCHY,
+                                            target_ );
+        _GenerateMeshes( );
+        _Init( );
+
+        _DefaultCamera( );
+        _camera->Pivot( _defaultPivot );
+        _camera->Radius( _defaultRadius );
       }
       catch( ... )
       {
-        std::cerr << "Error: can't load file: " << fileName << std::endl;
-        exit( -1 );
+        std::cerr << "Error: can't load file: " << BlueConfig_ << std::endl;
+        exit(-1);
       }
-
- #else
-
-      std::cerr << "Error: Bbpsdk support not built-in" << std::endl;
-      exit( -1 );
-
+#else
+    std::cerr << "Error: Bbpsdk support not built-in" << std::endl;
+    exit( -1 );
 #endif
+  }
 
-    }
-
+  void NeuronsCollection::loadSwc( const std::string& swcFile_ )
+  {
+    _dataSet.addNeuron< nsol::Node,
+                        nsol::Section,
+                        nsol::Dendrite,
+                        nsol::Axon,
+                        nsol::Soma,
+                        NeuronMorphology,
+                        Neuron >( swcFile_, 1 );
     _GenerateMeshes( );
     _Init( );
 
     _DefaultCamera( );
     _camera->Pivot( _defaultPivot );
     _camera->Radius( _defaultRadius );
+  }
 
+  void NeuronsCollection::loadScene( const std::string& xmlFile_ )
+  {
+     _dataSet.loadScene< nsol::Node,
+                         nsol::Section,
+                         nsol::Dendrite,
+                         nsol::Axon,
+                         nsol::Soma,
+                         NeuronMorphology,
+                         Neuron >( xmlFile_ );
+     _GenerateMeshes( );
+     _Init( );
 
+     _DefaultCamera( );
+     _camera->Pivot( _defaultPivot );
+     _camera->Radius( _defaultRadius );
+  }
+
+  void NeuronsCollection::setZeqUri( const std::string& uri_ )
+  {
+#ifdef NEUROLOTS_USE_ZEQ
+    _zeqConnection = true;
+    _uri =  servus::URI( uri_ );
     _subscriber = new zeq::Subscriber( _uri );
 
     _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
@@ -243,18 +142,9 @@ namespace neurolots
     _subscriber->registerHandler( zeq::gmrv::EVENT_FOCUSEDIDS,
         boost::bind( &NeuronsCollection::_OnFocusEvent , this, _1 ));
 #endif
-
     pthread_create( &_subscriberThread, NULL, _Subscriber, this );
-  }
-
 #endif
-
-  NeuronsCollection::~NeuronsCollection( void )
-  {
-
   }
-
-  // PUBLIC
 
   void NeuronsCollection::Paint( void )
   {
@@ -288,7 +178,8 @@ namespace neurolots
         for( unsigned int k = 0; k < neurons.size( ); k++ )
         {
           neuron = neurons[ k ];
-          neuronMesh = (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
+          neuronMesh =
+            (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
           std::vector< float > tMatrix;
           tMatrix.resize( 16 );
           for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
@@ -302,28 +193,41 @@ namespace neurolots
           neuronMesh->PaintSoma( true );
 #ifdef NEUROLOTS_USE_ZEQ
 
-
-          if( _IsSelected( neuron ) )
+          if( _zeqConnection )
           {
-            glUseProgram( _programQuads->id( ));
-            glUniform3fv( _programQuads->uColor( ), 1,
-                _selectedNeuronColor.data( ));
+            if( _IsSelected( neuron ) )
+            {
+              glUseProgram( _programQuads->id( ));
+              glUniform3fv( _programQuads->uColor( ), 1,
+                            _selectedNeuronColor.data( ));
 
-            glUseProgram( _programTriangles->id( ));
-            glUniform3fv( _programTriangles->uColor( ), 1,
-                _selectedNeuronColor.data( ));
-            neuronMesh->PaintNeurites( true );
+              glUseProgram( _programTriangles->id( ));
+              glUniform3fv( _programTriangles->uColor( ), 1,
+                            _selectedNeuronColor.data( ));
+              neuronMesh->PaintNeurites( true );
+            }
+            else
+            {
+              glUseProgram( _programQuads->id( ));
+              glUniform3fv( _programQuads->uColor( ), 1,
+                            _neuronColor.data( ));
+
+              glUseProgram( _programTriangles->id( ));
+              glUniform3fv( _programTriangles->uColor( ), 1,
+                            _neuronColor.data( ));
+              neuronMesh->PaintNeurites( false );
+            }
           }
           else
           {
             glUseProgram( _programQuads->id( ));
             glUniform3fv( _programQuads->uColor( ), 1,
-                _neuronColor.data( ));
+                          _neuronColor.data( ));
 
             glUseProgram( _programTriangles->id( ));
             glUniform3fv( _programTriangles->uColor( ), 1,
-                _neuronColor.data( ));
-            neuronMesh->PaintNeurites( false );
+                          _neuronColor.data( ));
+            neuronMesh->PaintNeurites( true );
           }
 #else
           glUseProgram( _programQuads->id( ));
@@ -333,7 +237,7 @@ namespace neurolots
           glUseProgram( _programTriangles->id( ));
           glUniform3fv( _programTriangles->uColor( ), 1,
                           _neuronColor.data( ));
-          neuronMesh->PaintNeurites( false );
+          neuronMesh->PaintNeurites( true );
 
 #endif
 
@@ -407,63 +311,7 @@ namespace neurolots
 
 #endif
 
-  // SETTERS
-
-  void NeuronsCollection::PaintSoma( bool paintSoma )
-  {
-    nsol::MiniColumns miniColumns;
-    nsol::NeuronPtr neuron;
-    nsol::Neurons neurons;
-    NeuronMorphologyPtr morpho;
-    NeuronMeshPtr neuronMesh;
-
-
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
-    {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          neuron = neurons[ k ];
-          morpho = ( NeuronMorphologyPtr )neuron->morphology( );
-          neuronMesh = morpho->NeuronMesh( );
-
-          neuronMesh->PaintSoma( paintSoma );
-
-        }
-      }
-    }
-  }
-
-  void NeuronsCollection::PaintNeurites( bool paintNeurites )
-  {
-    nsol::MiniColumns miniColumns;
-    nsol::NeuronPtr neuron;
-    nsol::Neurons neurons;
-    NeuronMorphologyPtr morpho;
-    NeuronMeshPtr neuronMesh;
-
-
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
-    {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          neuron = neurons[ k ];
-          morpho = ( NeuronMorphologyPtr )neuron->morphology( );
-          neuronMesh = morpho->NeuronMesh( );
-
-          neuronMesh->PaintNeurites( paintNeurites );
-
-        }
-      }
-    }
-  }
+  // SETTER
 
   void NeuronsCollection::Lod( float lod_ )
   {

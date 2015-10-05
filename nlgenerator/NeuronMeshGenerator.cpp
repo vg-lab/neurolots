@@ -350,7 +350,7 @@ namespace neurolots
 
   unsigned int NeuronMeshGenerator::_NumNodes( nsol::SectionPtr section )
   {
-      unsigned int numNodes = section->middleNodes( ).size( ) + 2;
+    unsigned int numNodes = ( unsigned int )section->middleNodes( ).size( ) + 2;
 
       Sections childs = section->children();
       for( unsigned int i = 0; i < childs.size(); i++ )
