@@ -449,11 +449,14 @@ int main( int argc, char* argv[ ])
     }
   }
 
+#ifdef NEUROLOTS_USE_ZEQ
   if ( uri )
     camera = new Camera( *uri );
   else
     camera = new Camera( );
-
+#else
+  camera = new Camera( );
+#endif
   neuronsCollection = new NeuronsCollection( camera );
 
   if( uri )
