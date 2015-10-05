@@ -114,12 +114,6 @@ namespace neurolots
       vNode->Radius( node->radius( ));
       vNode->Id( int( vNodes.size( )));
 
-//      std::cout << "Nodo " << node->id() << "\nPosicion: " << node->point().x()
-//                << " " << node->point().y() << " " << node->point().z()
-//                << std::endl;
-
-
-
       vNodes.push_back( vNode );
       firstNodes.push_back( vNode );
 

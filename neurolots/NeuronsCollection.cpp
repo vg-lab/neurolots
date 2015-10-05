@@ -59,7 +59,6 @@ namespace neurolots
          fName.compare( fName.length( ) - 3, 3, "swc" )))
     {
       _dataSet.addNeuron< nsol::Node,
-                          nsol::Segment,
                           nsol::Section,
                           nsol::Dendrite,
                           nsol::Axon,
@@ -73,7 +72,6 @@ namespace neurolots
       try
       {
         _dataSet.loadScene< nsol::Node,
-                            nsol::Segment,
                             nsol::Section,
                             nsol::Dendrite,
                             nsol::Axon,
@@ -93,7 +91,6 @@ namespace neurolots
 #ifdef NSOL_USE_BBPSDK
       try{
         _dataSet.openBlueConfig< nsol::Node,
-                                 nsol::Segment,
                                  nsol::Section,
                                  nsol::Dendrite,
                                  nsol::Axon,
@@ -173,7 +170,6 @@ namespace neurolots
       fName.compare( fName.length( ) - 3, 3, "swc" )))
     {
       _dataSet.addNeuron< nsol::Node,
-                          nsol::Segment,
                           nsol::Section,
                           nsol::Dendrite,
                           nsol::Axon,
@@ -187,7 +183,6 @@ namespace neurolots
       try
       {
         _dataSet.loadScene< nsol::Node,
-                            nsol::Segment,
                             nsol::Section,
                             nsol::Dendrite,
                             nsol::Axon,
@@ -207,7 +202,6 @@ namespace neurolots
  #ifdef NSOL_USE_BBPSDK
       try{
         _dataSet.openBlueConfig< nsol::Node,
-                                 nsol::Segment,
                                  nsol::Section,
                                  nsol::Dendrite,
                                  nsol::Axon,
