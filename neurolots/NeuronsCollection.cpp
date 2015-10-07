@@ -60,8 +60,15 @@ namespace neurolots
 
   // PUBLIC
 
-  void NeuronsCollection::loadBlueConfig( const std::string& BlueConfig_,
-                                          const std::string& target_ )
+  void NeuronsCollection::loadBlueConfig(
+#ifdef NSOL_USE_BBPSDK
+                                          const std::string& BlueConfig_,
+                                          const std::string& target_
+#else
+                                          const std::string& /*BlueConfig_*/,
+                                          const std::string& /*target_*/
+#endif
+    )
   {
 #ifdef NSOL_USE_BBPSDK
     try{
@@ -128,7 +135,11 @@ namespace neurolots
      _camera->Radius( _defaultRadius );
   }
 
-  void NeuronsCollection::setZeqUri( const std::string& uri_ )
+  void NeuronsCollection::setZeqUri( const std::string&
+#ifdef NEUROLOTS_USE_ZEQ
+                                     uri_
+#endif
+    )
   {
 #ifdef NEUROLOTS_USE_ZEQ
     _zeqConnection = true;
