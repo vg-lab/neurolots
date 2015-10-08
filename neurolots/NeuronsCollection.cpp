@@ -62,10 +62,10 @@ namespace neurolots
 
   void NeuronsCollection::loadBlueConfig(
 #ifdef NSOL_USE_BBPSDK
-                                          const std::string& BlueConfig_,
+                                          const std::string& blueConfig_,
                                           const std::string& target_
 #else
-                                          const std::string& /*BlueConfig_*/,
+                                          const std::string& /*blueConfig_*/,
                                           const std::string& /*target_*/
 #endif
     )
@@ -80,7 +80,7 @@ namespace neurolots
                                  NeuronMorphology,
                                  Neuron,
                                  nsol::MiniColumn,
-                                 nsol::Column >( BlueConfig_,
+                                 nsol::Column >( blueConfig_,
                                             nsol::MORPHOLOGY | nsol::HIERARCHY,
                                             target_ );
         _GenerateMeshes( );
@@ -92,7 +92,7 @@ namespace neurolots
       }
       catch( ... )
       {
-        std::cerr << "Error: can't load file: " << BlueConfig_ << std::endl;
+        std::cerr << "Error: can't load file: " << blueConfig_ << std::endl;
         exit(-1);
       }
 #else

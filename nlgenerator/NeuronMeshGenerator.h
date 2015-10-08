@@ -39,25 +39,28 @@ namespace neurolots
       ~NeuronMeshGenerator( void );
 
       NLGENERATOR_API
-      static void GenerateMeshQuads( nsol::NeuronMorphologyPtr morpho,
-                                std::vector< float >& vertices,
-                                std::vector< float >& centers,
-                                std::vector< float >& tangents,
-                                std::vector< unsigned int >& mesh,
-                                unsigned int& somaEnd);
+      static void GenerateMeshQuads(
+        nsol::NeuronMorphologyPtr morpho,
+        std::vector< float >& vertices,
+        std::vector< float >& centers,
+        std::vector< float >& tangents,
+        std::vector< unsigned int >& mesh,
+        unsigned int& somaEnd);
 
       NLGENERATOR_API
-      static void GenerateSomaTriangles( nsol::SomaPtr soma,
-                                 std::vector< VectorizedNodePtr > & firstNodes,
-                                 std::vector< float >& vertices,
-                                 std::vector< float >& centers,
-                                 std::vector< float >& tangents,
-                                 std::vector< unsigned int >& mesh );
+      static void GenerateSomaTriangles(
+        nsol::SomaPtr soma,
+        std::vector< VectorizedNodePtr > & firstNodes,
+        std::vector< float >& vertices,
+        std::vector< float >& centers,
+        std::vector< float >& tangents,
+        std::vector< unsigned int >& mesh );
 
       NLGENERATOR_API
-      static void VectorizeMorpho( nsol::NeuronMorphologyPtr morpho,
-                                   std::vector< VectorizedNodePtr >& vNodes,
-                                   std::vector< VectorizedNodePtr >& firstNodes);
+      static void VectorizeMorphology( 
+        nsol::NeuronMorphologyPtr morpho,
+        std::vector< VectorizedNodePtr >& vNodes,
+        std::vector< VectorizedNodePtr >& firstNodes);
 
       NLGENERATOR_API
       static void CalculateTangents( std::vector< VectorizedNodePtr >& vNodes );
@@ -70,9 +73,10 @@ namespace neurolots
 
     private:
 
-      static void _VectorizeMorpho( nsol::SectionPtr section,
-                                    std::vector< VectorizedNodePtr > & vNodes,
-                                    VectorizedNodePtr vFatherNode );
+      static void _VectorizeMorphology( 
+        nsol::SectionPtr section,
+        std::vector< VectorizedNodePtr > & vNodes,
+        VectorizedNodePtr vFatherNode );
 
       static unsigned int _NumNodes( nsol::NeuronMorphologyPtr morpho );
       static unsigned int _NumNodes( nsol::SectionPtr section );
@@ -82,8 +86,8 @@ namespace neurolots
 
 
       static void _CreateQuadPipe( GeometricPrimitivePtr geom0,
-                                     GeometricPrimitivePtr geom1,
-                                     std::vector< unsigned int > & mesh );
+                                   GeometricPrimitivePtr geom1,
+                                   std::vector< unsigned int > & mesh );
 
 
   };

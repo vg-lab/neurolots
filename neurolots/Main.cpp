@@ -385,11 +385,11 @@ int main( int argc, char* argv[ ])
   camera = nullptr;
   neuronsCollection = nullptr;
 
-  std::string* BlueConfig = nullptr;
-  std::string* swcFile= nullptr;
-  std::string* sceneFile =nullptr;
-  std::string* uri = nullptr;
-  std::string* target = new std::string( "" );
+  std::string blueConfig;
+  std::string swcFile;
+  std::string sceneFile;
+  std::string uri;
+  std::string target = std::string( "" );
 
 
 
@@ -400,7 +400,7 @@ int main( int argc, char* argv[ ])
 #ifdef NEUROLOTS_USE_ZEQ
       if( ++i < argc )
       {
-        uri = new std::string( argv[ i ]);
+        uri = std::string( argv[ i ]);
       }
 #else
       std::cerr << "Zeq not supported " << std::endl;
@@ -408,30 +408,30 @@ int main( int argc, char* argv[ ])
     }
     if( std::strcmp( argv[ i ], "-bc" ) == 0 )
     {
-      if(++i < argc )
+      if( ++i < argc )
       {
-        BlueConfig = new std::string( argv[ i ]);
+        blueConfig = std::string( argv[ i ]);
       }
     }
     if( std::strcmp( argv[ i ], "-swc" ) == 0 )
     {
-      if(++i < argc )
+      if( ++i < argc )
       {
-        swcFile = new std::string( argv[ i ]);
+        swcFile = std::string( argv[ i ]);
       }
     }
     if( std::strcmp( argv[ i ], "-xml" ) == 0 )
     {
-      if(++i < argc )
+      if( ++i < argc )
       {
-        sceneFile = new std::string( argv[ i ]);
+        sceneFile = std::string( argv[ i ]);
       }
     }
     if( std::strcmp( argv[ i ], "-target" ) == 0 )
     {
       if(++i < argc )
       {
-        target = new std::string( argv[ i ]);
+        target = std::string( argv[ i ]);
       }
     }
     if( std::strcmp( argv[ i ], "-pw" ) == 0 )
@@ -450,8 +450,8 @@ int main( int argc, char* argv[ ])
   }
 
 #ifdef NEUROLOTS_USE_ZEQ
-  if ( uri )
-    camera = new Camera( *uri );
+  if ( !uri.empty( ))
+    camera = new Camera( uri );
   else
     camera = new Camera( );
 #else
@@ -459,15 +459,15 @@ int main( int argc, char* argv[ ])
 #endif
   neuronsCollection = new NeuronsCollection( camera );
 
-  if( uri )
-    neuronsCollection->setZeqUri( *uri );
+  if( !uri.empty( ))
+    neuronsCollection->setZeqUri( uri );
 
-  if( BlueConfig )
-    neuronsCollection->loadBlueConfig( *BlueConfig, *target );
-  else if( swcFile )
-    neuronsCollection->loadSwc( *swcFile );
-  else if ( sceneFile )
-    neuronsCollection->loadScene( *sceneFile );
+  if( !blueConfig.empty( ))
+    neuronsCollection->loadBlueConfig( blueConfig, target );
+  else if( !swcFile.empty( ))
+    neuronsCollection->loadSwc( swcFile );
+  else if ( !sceneFile.empty( ))
+    neuronsCollection->loadScene( sceneFile );
 
   sceneInit( );
 

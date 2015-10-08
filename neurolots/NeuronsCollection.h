@@ -51,7 +51,7 @@ namespace neurolots
 
     ~NeuronsCollection( void );
 
-    void loadBlueConfig( const std::string& BlueConfig_,
+    void loadBlueConfig( const std::string& blueConfig_,
                          const std::string& target_ = std::string( "" ));
 
     void loadSwc( const std::string& swcFile_ );
