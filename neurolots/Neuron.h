@@ -25,7 +25,8 @@ namespace neurolots
               const unsigned int gid_ = 0,
               const nsol::Matrix4_4f transform_ = nsol::Matrix4_4f::IDENTITY,
               const nsol::MiniColumnPtr miniColum_ = nullptr,
-              const TNeuronType type_ = PYRAMIDAL );
+              const TMorphologicalType morphologicalType_ = nsol::Neuron::UNDEFINED,
+              const TFunctionalType functionalType_ = nsol::Neuron::UNDEFINED_FUNCTIONAL_TYPE );
       ~Neuron( void );
 
 

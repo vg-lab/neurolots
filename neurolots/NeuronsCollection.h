@@ -45,99 +45,93 @@ namespace neurolots
   class NeuronsCollection
   {
 
-    public:
+  public:
 
-      NeuronsCollection( const std::string& fileName, Camera* camera_ );
+    NeuronsCollection( Camera* camera_ );
+
+    ~NeuronsCollection( void );
+
+    void loadBlueConfig( const std::string& blueConfig_,
+                         const std::string& target_ = std::string( "" ));
+
+    void loadSwc( const std::string& swcFile_ );
+
+    void loadScene( const std::string& xmlFile_ );
+
+    void setZeqUri( const std::string& uri_ );
+
+    void Paint( void );
+
+    void AddLod( float AddLod );
+    void AddTng( float AddTng );
+    void AddMaxDist( float AddMaxDist );
+
+    //Getters
+
+    ColumnsPtr Columns( void );
 
 #ifdef NEUROLOTS_USE_ZEQ
 
-      NeuronsCollection( const std::string& uri_, const std::string& filName,
-          Camera* camera_ );
+    zeq::Subscriber* Subscriber( void );
 
 #endif
 
-      ~NeuronsCollection( void );
+    //Setters
 
+    void Lod( float lod_ );
+    void Tng( float tng_ );
+    void MaxDist( float maxDist_ );
 
-      void Paint( void );
-
-      void AddLod( float AddLod );
-      void AddTng( float AddTng );
-      void AddMaxDist( float AddMaxDist );
-
-      //Getters
-
-      ColumnsPtr Columns( void );
-
-#ifdef NEUROLOTS_USE_ZEQ
-
-      zeq::Subscriber* Subscriber( void );
-
-#endif
-
-      //Setters
-
-      void PaintSoma( bool paintSoma );
-      void PaintNeurites( bool paintNeurites);
-
-      void Lod( float lod_ );
-      void Tng( float tng_ );
-      void MaxDist( float maxDist_ );
-
-      void NeuronColor( Eigen::Vector3f neuronColor_ );
-      void SelectedNeuronColor( Eigen::Vector3f selectedNeuronColor_ );
+    void NeuronColor( Eigen::Vector3f neuronColor_ );
+    void SelectedNeuronColor( Eigen::Vector3f selectedNeuronColor_ );
 
 
     private:
 
-      void _Init( void );
+    void _Init( void );
 
-      void _GenerateMeshes( void );
+    void _GenerateMeshes( void );
 
-      bool _IsSelected( nsol::NeuronPtr neuron_ );
+    bool _IsSelected( nsol::NeuronPtr neuron_ );
 
-      void _DefaultCamera( void );
+    void _DefaultCamera( void );
 
 #ifdef NEUROLOTS_USE_ZEQ
 
-      void _OnFocusEvent( const zeq::Event& event_ );
-      void _OnSelectionEvent( const zeq::Event& event_ );
-      void _OnSelectionFocusEvent( const zeq::Event& event_ );
-      static void* _Subscriber( void* collection_ );
+    void _OnFocusEvent( const zeq::Event& event_ );
+    void _OnSelectionEvent( const zeq::Event& event_ );
+    void _OnSelectionFocusEvent( const zeq::Event& event_ );
+    static void* _Subscriber( void* collection_ );
 
 #endif
 
-      Program* _programTriangles;
-      Program* _programQuads;
-      Camera* _camera;
+    Program* _programTriangles;
+    Program* _programQuads;
+    Camera* _camera;
 
-      float _lod;
-      float _tng;
-      float _maxDist;
+    float _lod;
+    float _tng;
+    float _maxDist;
 
-      std::vector< float > _neuronColor;
-      std::vector< float > _selectedNeuronColor;
+    std::vector< float > _neuronColor;
+    std::vector< float > _selectedNeuronColor;
 
+    nsol::DataSet _dataSet;
+    unsigned int _cont;
 
-      nsol::DataSet _dataSet;
-
-      unsigned int _cont;
-
-
-
-      std::set<unsigned int> _selectedNeurons;
+    std::set<unsigned int> _selectedNeurons;
 
 #ifdef NEUROLOTS_USE_ZEQ
-      bool _zeqConnection;
+    bool _zeqConnection;
 
-      servus::URI _uri;
-      zeq::Subscriber* _subscriber;
+    servus::URI _uri;
+    zeq::Subscriber* _subscriber;
 
-      pthread_t _subscriberThread;
-
+    pthread_t _subscriberThread;
 #endif
-      Eigen::Vector3f _defaultPivot;
-      float _defaultRadius;
+
+    Eigen::Vector3f _defaultPivot;
+    float _defaultRadius;
   };
 
 } // end namespace neurolots

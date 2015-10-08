@@ -382,25 +382,57 @@ int main( int argc, char* argv[ ])
   glewExperimental = GL_TRUE;
   glewInit( );
 
-  std::string fileName( argv[ 1 ]);
-
   camera = nullptr;
   neuronsCollection = nullptr;
 
-  for( int i = 2; i < argc; i++ )
+  std::string blueConfig;
+  std::string swcFile;
+  std::string sceneFile;
+  std::string uri;
+  std::string target = std::string( "" );
+
+
+
+  for( int i = 1; i < argc; i++ )
   {
     if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
     {
 #ifdef NEUROLOTS_USE_ZEQ
       if( ++i < argc )
       {
-        std::string uri( argv[ i ]);
-        camera = new Camera( uri );
-        neuronsCollection = new NeuronsCollection( uri, fileName, camera );
+        uri = std::string( argv[ i ]);
       }
 #else
       std::cerr << "Zeq not supported " << std::endl;
 #endif
+    }
+    if( std::strcmp( argv[ i ], "-bc" ) == 0 )
+    {
+      if( ++i < argc )
+      {
+        blueConfig = std::string( argv[ i ]);
+      }
+    }
+    if( std::strcmp( argv[ i ], "-swc" ) == 0 )
+    {
+      if( ++i < argc )
+      {
+        swcFile = std::string( argv[ i ]);
+      }
+    }
+    if( std::strcmp( argv[ i ], "-xml" ) == 0 )
+    {
+      if( ++i < argc )
+      {
+        sceneFile = std::string( argv[ i ]);
+      }
+    }
+    if( std::strcmp( argv[ i ], "-target" ) == 0 )
+    {
+      if(++i < argc )
+      {
+        target = std::string( argv[ i ]);
+      }
     }
     if( std::strcmp( argv[ i ], "-pw" ) == 0 )
     {
@@ -417,10 +449,25 @@ int main( int argc, char* argv[ ])
     }
   }
 
-  if ( !camera )
+#ifdef NEUROLOTS_USE_ZEQ
+  if ( !uri.empty( ))
+    camera = new Camera( uri );
+  else
     camera = new Camera( );
-  if ( !neuronsCollection )
-    neuronsCollection = new NeuronsCollection( fileName, camera );
+#else
+  camera = new Camera( );
+#endif
+  neuronsCollection = new NeuronsCollection( camera );
+
+  if( !uri.empty( ))
+    neuronsCollection->setZeqUri( uri );
+
+  if( !blueConfig.empty( ))
+    neuronsCollection->loadBlueConfig( blueConfig, target );
+  else if( !swcFile.empty( ))
+    neuronsCollection->loadSwc( swcFile );
+  else if ( !sceneFile.empty( ))
+    neuronsCollection->loadScene( sceneFile );
 
   sceneInit( );
 

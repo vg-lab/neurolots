@@ -10,9 +10,10 @@ namespace neurolots
                   const unsigned int gid_,
                   const nsol::Matrix4_4f transform_,
                   const nsol::MiniColumnPtr miniColum_,
-                  const TNeuronType type_ )
+                  const TMorphologicalType morphologicalType_,
+                  const TFunctionalType functionalType_ )
     : nsol::Neuron( neuronMorphology_, layer_, gid_, transform_, miniColum_,
-        type_ )
+        morphologicalType_, functionalType_ )
   {
     _boundingBox.xMax = FLT_MIN;
     _boundingBox.xMin = FLT_MAX;
