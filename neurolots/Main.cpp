@@ -52,6 +52,11 @@ unsigned int frameCount = 0;
 Camera* camera;
 NeuronsCollection* neuronsCollection;
 
+bool atLeastTwo( bool a, bool b, bool c )
+{
+  return a ^ b ? c : a;
+}
+
 #ifdef NEUROLOTS_USE_DEFLECT
 
 bool deflectConnect = false;
@@ -62,11 +67,6 @@ deflect::Stream* deflectStream;
 bool deflectCompressImage = true;
 unsigned int deflectCompressionQuality = 75;
 
-
-bool atLeastTwo( bool a, bool b, bool c )
-{
-  return a ^ b ? c : a;
-}
 
 void handleStreamingError(const char* errorMessage)
 {
@@ -468,6 +468,7 @@ int main( int argc, char* argv[ ])
       }
 #else
       std::cerr << "Zeq not supported " << std::endl;
+      return -1;
 #endif
     }
     if( std::strcmp( argv[ i ], "-bc" ) == 0 )
@@ -523,8 +524,8 @@ int main( int argc, char* argv[ ])
         usageMessage( argv[0] );
 
 #else
-      ++i;
       std::cerr << "Deflect not supported " << std::endl;
+      return -1;
 #endif
     }
   }
@@ -547,6 +548,12 @@ int main( int argc, char* argv[ ])
                    !sceneFile.empty( )))
   {
     std::cerr << "Error: -swc, -xml and -bc options are exclusive" << std::endl;
+    usageMessage( argv[0] );
+  }
+
+  if ( blueConfig.empty( ) & swcFile.empty( ) & sceneFile.empty( ))
+  {
+    std::cerr << "Error: no -swc, -xml and -bc options selected" << std::endl;
     usageMessage( argv[0] );
   }
 
