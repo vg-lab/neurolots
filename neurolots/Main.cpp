@@ -11,7 +11,7 @@
 #endif
 
 //Eigen
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 //Neurolots
 #include "Camera.h"
@@ -19,6 +19,9 @@
 #include "NeuronMesh.h"
 #include "NeuronsCollection.h"
 
+
+#include <neurolots/nlfem/version.h>
+#include <neurolots/nlgenerator/version.h>
 
 #include <iostream>
 
@@ -49,6 +52,11 @@ unsigned int frameCount = 0;
 Camera* camera;
 NeuronsCollection* neuronsCollection;
 
+bool atLeastTwo( bool a, bool b, bool c )
+{
+  return a ^ b ? c : a;
+}
+
 #ifdef NEUROLOTS_USE_DEFLECT
 
 bool deflectConnect = false;
@@ -58,6 +66,7 @@ deflect::Stream* deflectStream;
 
 bool deflectCompressImage = true;
 unsigned int deflectCompressionQuality = 75;
+
 
 void handleStreamingError(const char* errorMessage)
 {
@@ -190,17 +199,66 @@ void updateStreaming( void )
 
 #endif
 
-void usageMessage()
+void usageMessage( char* programName )
 {
   std::cerr << std::endl
             << "Usage: "
-            << "neurolots" << " "
-            << " file ( blue_config_path | swc_file_path ) "
-            << "-zeq uri"
-            << "-pw host"
+            << programName << "\t"
+            << "( -bc file_name [ -target target_name ] | " << std::endl
+            << "\t\t\t  -swc swc_file | -xml scene_file ) " << std::endl
+            << "\t\t\t[ -zeq uri ] "
+            << "[ -pw host ]"
             << std::endl << std::endl;
   exit(-1);
 }
+
+void dumpVersion( void )
+{
+
+  std::cerr << std::endl
+            << "neurolots "
+            << nlgenerator::Version::getMajor( ) << "."
+            << nlgenerator::Version::getMinor( ) << "."
+            << nlgenerator::Version::getPatch( )
+            << " (" << nlgenerator::Version::getRevision( ) << ")"
+            << std::endl << std::endl;
+
+  std::cerr << "BBPSDK support built-in: ";
+  #ifdef NSOL_USE_BBPSDK
+  std::cerr << "\tyes";
+  #else
+  std::cerr << "\tno";
+  #endif
+  std::cerr << std::endl;
+
+  std::cerr << "zeq support built-in: ";
+  #ifdef NEUROLOTS_USE_ZEQ
+  std::cerr << "\t\tyes";
+  #else
+  std::cerr << "\t\tno";
+  #endif
+  std::cerr << std::endl;
+
+  std::cerr << "GmrvZeq support built-in: ";
+  #ifdef NEUROLOTS_USE_GMRVZEQ
+  std::cerr << "\tyes";
+  #else
+  std::cerr << "\tno";
+  #endif
+  std::cerr << std::endl;
+
+  std::cerr << "Deflect support built-in: ";
+  #ifdef NEUROLOTS_USE_DEFLECT
+  std::cerr << "\tyes";
+  #else
+  std::cerr << "\tno";
+  #endif
+  std::cerr << std::endl;
+
+  std::cerr << std::endl;
+
+}
+
 
 void sceneInit( void )
 {
@@ -360,7 +418,7 @@ int main( int argc, char* argv[ ])
 {
   if( argc < 2 )
   {
-    usageMessage( );
+    usageMessage( argv[0] );
   }
 
   glutInit( &argc, argv );
@@ -395,6 +453,12 @@ int main( int argc, char* argv[ ])
 
   for( int i = 1; i < argc; i++ )
   {
+    if ( std::strcmp( argv[i], "--version" ) == 0 )
+    {
+      dumpVersion( );
+      return 0;
+    }
+
     if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
     {
 #ifdef NEUROLOTS_USE_ZEQ
@@ -404,6 +468,7 @@ int main( int argc, char* argv[ ])
       }
 #else
       std::cerr << "Zeq not supported " << std::endl;
+      return -1;
 #endif
     }
     if( std::strcmp( argv[ i ], "-bc" ) == 0 )
@@ -412,6 +477,9 @@ int main( int argc, char* argv[ ])
       {
         blueConfig = std::string( argv[ i ]);
       }
+      else
+        usageMessage( argv[0] );
+
     }
     if( std::strcmp( argv[ i ], "-swc" ) == 0 )
     {
@@ -419,6 +487,9 @@ int main( int argc, char* argv[ ])
       {
         swcFile = std::string( argv[ i ]);
       }
+      else
+        usageMessage( argv[0] );
+
     }
     if( std::strcmp( argv[ i ], "-xml" ) == 0 )
     {
@@ -426,6 +497,9 @@ int main( int argc, char* argv[ ])
       {
         sceneFile = std::string( argv[ i ]);
       }
+      else
+        usageMessage( argv[0] );
+
     }
     if( std::strcmp( argv[ i ], "-target" ) == 0 )
     {
@@ -433,6 +507,9 @@ int main( int argc, char* argv[ ])
       {
         target = std::string( argv[ i ]);
       }
+      else
+        usageMessage( argv[0] );
+
     }
     if( std::strcmp( argv[ i ], "-pw" ) == 0 )
     {
@@ -443,8 +520,12 @@ int main( int argc, char* argv[ ])
         deflectConnect = true;
         startStreaming("NeuroLOTs", deflectHost.c_str());
       }
+      else
+        usageMessage( argv[0] );
+
 #else
       std::cerr << "Deflect not supported " << std::endl;
+      return -1;
 #endif
     }
   }
@@ -461,6 +542,21 @@ int main( int argc, char* argv[ ])
 
   if( !uri.empty( ))
     neuronsCollection->setZeqUri( uri );
+
+  if ( atLeastTwo( !blueConfig.empty( ),
+                   !swcFile.empty( ),
+                   !sceneFile.empty( )))
+  {
+    std::cerr << "Error: -swc, -xml and -bc options are exclusive" << std::endl;
+    usageMessage( argv[0] );
+  }
+
+  if ( blueConfig.empty( ) & swcFile.empty( ) & sceneFile.empty( ))
+  {
+    std::cerr << "Error: no -swc, -xml and -bc options selected" << std::endl;
+    usageMessage( argv[0] );
+  }
+
 
   if( !blueConfig.empty( ))
     neuronsCollection->loadBlueConfig( blueConfig, target );

@@ -24,13 +24,16 @@ namespace neurolots
   {
     _selectedNeurons.clear( );
 
-    std::string neurolotsShadersPath( getenv( "NEUROLOTS_SHADERS_PATH" ));
-    if( neurolotsShadersPath.data( ) == NULL )
+    std::string neurolotsShadersPath;
+
+    if ( getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
     {
       std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
                 << std::endl;
       exit(-1);
     }
+    else
+      neurolotsShadersPath = std::string( getenv( "NEUROLOTS_SHADERS_PATH" ));
 
     std::string quadsPath = neurolotsShadersPath;
     quadsPath.append( "/quads" );
