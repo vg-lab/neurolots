@@ -1,4 +1,4 @@
-include_directories( ../nlfem ../nlgenerator )
+include_directories( ../nlgenerator )
 
 set(NLRENDER_PUBLIC_HEADERS
   Camera.h
@@ -29,9 +29,7 @@ set(NLRENDER_LINK_LIBRARIES
   ${GLUT_LIBRARIES}
   ${NSOL_LIBRARIES}
   ${ZEQ_LIBRARIES}
-  ${BBPSDK_LIBRARIES}
   nsol
-  nlfem
   nlgenerator
 )
 
