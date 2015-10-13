@@ -14,14 +14,12 @@
 #include <Eigen/Dense>
 
 //Neurolots
-#include "Camera.h"
-#include "Program.h"
-#include "NeuronMesh.h"
-#include "NeuronsCollection.h"
-
-
 #include <neurolots/nlfem/version.h>
 #include <neurolots/nlgenerator/version.h>
+#include <neurolots/nlrender/version.h>
+
+#include "../nlrender/Camera.h"
+#include "../nlrender/NeuronsCollection.h"
 
 #include <iostream>
 
@@ -35,7 +33,6 @@
 using Eigen::Vector3d;
 using namespace std;
 using namespace neurolots;
-
 
 bool rotation = false;
 bool translation = false;

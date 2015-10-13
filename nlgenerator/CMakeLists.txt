@@ -1,4 +1,4 @@
-include_directories( ../fem )
+include_directories( ../nlfem )
 
 set(NLGENERATOR_PUBLIC_HEADERS
   Edges.h

@@ -35,7 +35,7 @@
 
 #endif
 
-
+#include <neurolots/nlrender/api.h>
 
 namespace neurolots
 {
@@ -47,42 +47,63 @@ namespace neurolots
 
   public:
 
+    NLRENDER_API
     NeuronsCollection( Camera* camera_ );
 
+    NLRENDER_API
     ~NeuronsCollection( void );
 
+    NLRENDER_API
     void loadBlueConfig( const std::string& blueConfig_,
                          const std::string& target_ = std::string( "" ));
 
+    NLRENDER_API
     void loadSwc( const std::string& swcFile_ );
 
+    NLRENDER_API
     void loadScene( const std::string& xmlFile_ );
 
+    NLRENDER_API
     void setZeqUri( const std::string& uri_ );
 
+    NLRENDER_API
     void Paint( void );
 
+    NLRENDER_API
     void AddLod( float AddLod );
+
+    NLRENDER_API
     void AddTng( float AddTng );
+
+    NLRENDER_API
     void AddMaxDist( float AddMaxDist );
 
     //Getters
-
+    NLRENDER_API
     ColumnsPtr Columns( void );
 
 #ifdef NEUROLOTS_USE_ZEQ
 
+    NLRENDER_API
     zeq::Subscriber* Subscriber( void );
 
 #endif
 
     //Setters
 
+    NLRENDER_API
     void Lod( float lod_ );
+
+    NLRENDER_API
     void Tng( float tng_ );
+
+    NLRENDER_API
     void MaxDist( float maxDist_ );
 
+    NLRENDER_API
     void NeuronColor( Eigen::Vector3f neuronColor_ );
+
+    NLRENDER_API
     void SelectedNeuronColor( Eigen::Vector3f selectedNeuronColor_ );
 
 

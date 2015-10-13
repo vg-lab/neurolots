@@ -5,24 +5,10 @@ set(NEUROLOTS_PUBLIC_HEADERS
 install( FILES ${COMMON_INCLUDES} DESTINATION include/neurolots COMPONENT dev )
 
 set(NEUROLOTS_HEADERS
-  Camera.h
-  Morphologies.h
-  NeuronMesh.h
-  NeuronMorphology.h
-  NeuronsCollection.h
-  Program.h
-  Neuron.h
 )
 
 set(NEUROLOTS_SOURCES
-  Camera.cpp
   Main.cpp
-  Morphologies.cpp
-  NeuronMesh.cpp
-  NeuronMorphology.cpp
-  NeuronsCollection.cpp
-  Program.cpp
-  Neuron.cpp
 )
 
 include_directories( ../fem ../generators )
@@ -34,6 +20,7 @@ set(NEUROLOTS_LINK_LIBRARIES
   nsol
   nlfem
   nlgenerator
+  nlrender
 )
 
 if (ZEQ_FOUND)
