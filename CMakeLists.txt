@@ -64,6 +64,7 @@ set(PROJECT_INCLUDE_NAME neurolots)
 
 add_subdirectory( nlfem )
 add_subdirectory( nlgenerator )
+add_subdirectory( nlrender )
 add_subdirectory( neurolots )
 
 include(CPackConfig)

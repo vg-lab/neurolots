@@ -1,4 +1,4 @@
-include_directories( ../fem )
+include_directories( ../nlfem )
 
 set(NLGENERATOR_PUBLIC_HEADERS
   Edges.h
@@ -22,12 +22,6 @@ set(NLGENERATOR_SOURCES
 )
 
 set(NLGENERATOR_LINK_LIBRARIES
-  ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES}
-  ${GLUT_LIBRARIES}
-  ${NSOL_LIBRARIES}
-  ${ZEQ_LIBRARIES}
-  ${BBPSDK_LIBRARIES}
   nsol
   nlfem )
 

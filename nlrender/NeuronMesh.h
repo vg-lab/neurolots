@@ -38,6 +38,7 @@
 #include <vector>
 #include <map>
 
+#include <neurolots/nlrender/api.h>
 
 namespace neurolots
 {
@@ -46,42 +47,54 @@ namespace neurolots
   class NeuronMesh
   {
 
-    public:
+  public:
 
-      NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
+    NLRENDER_API
+    NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
                   Program * programTriangles_, Program * programQuads_,
                   Camera * _camera );
-      ~NeuronMesh( void );
 
-      void Init( void );
-      void Paint( void );
+    NLRENDER_API
+    ~NeuronMesh( void );
 
-      //Getters
-      bool PaintSoma( void );
-      bool PaintNeurites( void );
+    NLRENDER_API
+    void Init( void );
 
-      //Setters
-      void PaintSoma( bool paintSoma_ );
-      void PaintNeurites( bool paintNeurites_ );
+    NLRENDER_API
+    void Paint( void );
 
-    private:
+    //Getters
+    NLRENDER_API
+    bool PaintSoma( void );
 
-      nsol::NeuronMorphologyPtr _morpho;
+    NLRENDER_API
+    bool PaintNeurites( void );
 
-      Program * _programTriangles;
-      Program * _programQuads;
-      Camera * camera_;
+    //Setters
+    NLRENDER_API
+    void PaintSoma( bool paintSoma_ );
 
-      GLuint vao_;
-      GLuint * vbo_;
+    NLRENDER_API
+    void PaintNeurites( bool paintNeurites_ );
 
-      unsigned int _size;
-      unsigned int _somaEnd;
+  private:
 
-      bool _isInit;
+    nsol::NeuronMorphologyPtr _morpho;
 
-      bool _paintSoma;
-      bool _paintNeurites;
+    Program * _programTriangles;
+    Program * _programQuads;
+    Camera * camera_;
+
+    GLuint vao_;
+    GLuint * vbo_;
+
+    unsigned int _size;
+    unsigned int _somaEnd;
+
+    bool _isInit;
+
+    bool _paintSoma;
+    bool _paintNeurites;
   };
 
   typedef NeuronMesh * NeuronMeshPtr;
