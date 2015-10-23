@@ -58,6 +58,10 @@ if(NEUROLOTS_WITH_DEFLECT)
   list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
 endif( )
 
+common_package(Qt5Core 5.4 SYSTEM )
+common_package(Qt5Widgets 5.4 SYSTEM )
+common_package(Qt5OpenGL 5.4 SYSTEM )
+
 common_package_post()
 
 set(PROJECT_INCLUDE_NAME neurolots)
@@ -66,6 +70,7 @@ add_subdirectory( nlfem )
 add_subdirectory( nlgenerator )
 add_subdirectory( nlrender )
 add_subdirectory( neurolots )
+add_subdirectory( qneurolots )
 
 include(CPackConfig)
 include(DoxygenRule)

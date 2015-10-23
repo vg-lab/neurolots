@@ -1,7 +1,9 @@
 #include "Program.h"
+#include "Config.h"
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 namespace neurolots
 {
@@ -89,7 +91,11 @@ namespace neurolots
 
   void Program::_ShaderInit( void )
   {
-
+    if ( !neurolots::nlrender::Config::isInitialized( ))
+    {
+      throw std::runtime_error( "nlrender has not been initialized" );
+      return;
+    }
     id_ = glCreateProgram( );
 
     std::string vname;

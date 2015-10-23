@@ -12,7 +12,9 @@
 
 
 //OpenGL
+#ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
 #include <GL/glew.h>
+#endif
 #ifdef Darwin
 #include <gl.h>
 #include <glu.h>
