@@ -29,8 +29,8 @@ set(NLRENDER_LINK_LIBRARIES
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GLUT_LIBRARIES}
-  ${NSOL_LIBRARIES}
-  ${ZEQ_LIBRARIES}
+  zeq
+  zeqHBP
   nsol
   nlgenerator
 )

@@ -19,6 +19,8 @@
 #include <string>
 #include <ctime>
 
+#include <neurolots/nlrender/api.h>
+
 #ifdef NEUROLOTS_USE_ZEQ
 #include <zeq/zeq.h>
 #include <zeq/hbp/hbp.h>
@@ -29,7 +31,6 @@
 #include <boost/bind.hpp>
 #endif
 
-#include <neurolots/nlrender/api.h>
 
 namespace neurolots
 {
