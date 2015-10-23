@@ -9,12 +9,13 @@
 #ifndef __NLRENDER_CONFIG__
 #define __NLRENDER_CONFIG__
 
+#include <neurolots/nlrender/api.h>
 
 namespace neurolots
 {
   namespace nlrender
   {
-    class Config
+    class NLRENDER_API Config
     {
 
     public:
