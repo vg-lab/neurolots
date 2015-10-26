@@ -41,8 +41,8 @@ list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol)
 
 if(NEUROLOTS_WITH_ZEQ)
   common_package(zeq)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES zeq)
   if ( ZEQ_FOUND )
+    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES zeq)
     common_package(Threads REQUIRED)
     list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Threads)
   endif( )
@@ -50,17 +50,33 @@ endif( )
 
 if(NEUROLOTS_WITH_GMRVZEQ)
   common_package(gmrvzeq)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvzeq)
+  if ( GMRVZEQ_FOUND )
+    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvzeq)
+  endif( )
 endif( )
 
 if(NEUROLOTS_WITH_DEFLECT)
   common_package(Deflect)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
+  if (DEFLECT_FOUND)
+    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
+  endif( )
 endif( )
 
 common_package(Qt5Core 5.4 SYSTEM )
 common_package(Qt5Widgets 5.4 SYSTEM )
 common_package(Qt5OpenGL 5.4 SYSTEM )
+
+if (QT5CORE_FOUND)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Core)
+endif( )
+
+if (QT5WIDGETS_FOUND)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Widgets)
+endif( )
+
+if (QT5OPENGL_FOUND)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5OpenGL)
+endif( )
 
 common_package_post()
 
