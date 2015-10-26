@@ -11,7 +11,11 @@
 
 OpenGLWidget::OpenGLWidget( QWidget* parent_,
                             Qt::WindowFlags windowsFlags_,
-                            const std::string& zeqUri )
+                            const std::string&
+#ifdef NEUROLOTS_USE_ZEQ
+                            zeqUri
+#endif
+  )
   : QOpenGLWidget( parent_, windowsFlags_ )
   , _neuronsCollection( nullptr )
   , _frameCount( 0 )
@@ -23,12 +27,14 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   , _paint( false )
   , _currentClearColor( 20, 20, 20, 0 )
 {
+#ifdef NEUROLOTS_USE_ZEQ
   if ( zeqUri != "" )
   {
     std::cout << zeqUri << std::endl;
     _camera = new neurolots::Camera( zeqUri );
   }
   else
+#endif
     _camera = new neurolots::Camera( );
 
 }
