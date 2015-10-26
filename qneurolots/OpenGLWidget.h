@@ -3,6 +3,7 @@
 
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
+#include <QLabel>
 #include <chrono>
 
 #define NEUROLOTS_SKIP_GLEW_INCLUDE 1
@@ -48,8 +49,13 @@ public slots:
     _idleUpdate = !_idleUpdate;
     if ( _idleUpdate )
       update( );
+  }
 
-
+  void toggleShowFPS( void )
+  {
+    _showFps = !_showFps;
+    if ( _idleUpdate )
+      update( );
   }
 
   void changeClearColor( void );
@@ -65,6 +71,9 @@ protected:
   virtual void mouseReleaseEvent( QMouseEvent* event );
   virtual void wheelEvent( QWheelEvent* event );
   virtual void mouseMoveEvent( QMouseEvent* event );
+
+  QLabel _fpsLabel;
+  bool _showFps;
 
   neurolots::Camera* _camera;
   neurolots::NeuronsCollection* _neuronsCollection;

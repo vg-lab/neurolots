@@ -14,6 +14,7 @@ MainWindow::MainWindow( QWidget* parent_,
   _ui->setupUi( this );
 
   _ui->actionUpdateOnIdle->setChecked( updateOnIdle );
+  _ui->actionShowFPSOnIdleUpdate->setChecked( false );
 
 #ifdef NSOL_USE_BBPSDK
   _ui->actionOpenBlueConfig->setEnabled( true );
@@ -26,6 +27,9 @@ MainWindow::MainWindow( QWidget* parent_,
 #else
   _ui->actionOpenXMLScene->setEnabled( false );
 #endif
+
+
+//  connect( _ui->actionClose, SIGNAL( 
 
 }
 
@@ -46,12 +50,17 @@ void MainWindow::init( const std::string& zeqUri )
   connect( _ui->actionBackgroundColor, SIGNAL( triggered( )),
            _openGLWidget, SLOT( changeClearColor( )));
 
+  connect( _ui->actionShowFPSOnIdleUpdate, SIGNAL( triggered( )),
+           _openGLWidget, SLOT( toggleShowFPS( )));
+
   connect( _ui->actionOpenBlueConfig, SIGNAL( triggered( )),
-           this, SLOT( openBlueConfig( )));
+           this, SLOT( openBlueConfigThroughDialog( )));
 
   connect( _ui->actionOpenXMLScene, SIGNAL( triggered( )),
-           this, SLOT( openXMLScene( )));
+           this, SLOT( openXMLSceneThroughDialog( )));
 
+  connect( _ui->actionOpenSWCFile, SIGNAL( triggered( )),
+           this, SLOT( openSWCFileThroughDialog( )));
 
 }
 
@@ -66,8 +75,19 @@ void MainWindow::showStatusBarMessage ( const QString& message )
   _ui->statusbar->showMessage( message );
 }
 
+void MainWindow::openBlueConfig( const std::string& fileName,
+                                 const std::string& targetLabel )
+{
+#ifdef NSOL_USE_BBPSDK
 
-void MainWindow::openBlueConfig( void )
+  _openGLWidget->loadData( fileName,
+                           OpenGLWidget::TDataFileType::BlueConfig,
+                           targetLabel );
+#endif
+
+}
+
+void MainWindow::openBlueConfigThroughDialog( void )
 {
 #ifdef NSOL_USE_BBPSDK
 
@@ -89,10 +109,7 @@ void MainWindow::openBlueConfig( void )
       std::string targetLabel = text.toStdString( );
       _lastOpenedFileName = QFileInfo(path).path( );
       std::string fileName = path.toStdString( );
-
-      _openGLWidget->loadData( fileName,
-                               OpenGLWidget::TDataFileType::BlueConfig,
-                               targetLabel );
+      openBlueConfig( fileName, targetLabel );
     }
 
 
@@ -101,8 +118,14 @@ void MainWindow::openBlueConfig( void )
 
 }
 
+void MainWindow::openXMLScene( const std::string& fileName )
+{
+  _openGLWidget->loadData( fileName,
+    OpenGLWidget::TDataFileType::NsolScene );
+}
 
-void MainWindow::openXMLScene( void )
+
+void MainWindow::openXMLSceneThroughDialog( void )
 {
 #ifdef NSOL_USE_QT5CORE
   QString path = QFileDialog::getOpenFileName(
@@ -113,9 +136,31 @@ void MainWindow::openXMLScene( void )
   if ( path != QString( "" ))
   {
     std::string fileName = path.toStdString( );
-    _openGLWidget->loadData( fileName,
-                             OpenGLWidget::TDataFileType::NsolScene );
+    openXMLScene( fileName );
   }
 #endif
+
+}
+
+
+void MainWindow::openSWCFile( const std::string& fileName )
+{
+  _openGLWidget->loadData( fileName,
+    OpenGLWidget::TDataFileType::SWC );
+}
+
+
+void MainWindow::openSWCFileThroughDialog( void )
+{
+  QString path = QFileDialog::getOpenFileName(
+    this, tr( "Open Swc File" ), _lastOpenedFileName,
+    tr( "swc ( *.swc);; All files (*)" ), nullptr,
+    QFileDialog::DontUseNativeDialog );
+
+  if ( path != QString( "" ))
+  {
+    std::string fileName = path.toStdString( );
+    openSWCFile( fileName );
+  }
 
 }

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/resources.qrc">
+    <normaloff>:/icons/qneurolots.ico</normaloff>:/icons/qneurolots.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -29,6 +33,7 @@
     </property>
     <addaction name="actionOpenBlueConfig"/>
     <addaction name="actionOpenXMLScene"/>
+    <addaction name="actionOpenSWCFile"/>
     <addaction name="actionCloseData"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -44,6 +49,7 @@
      <string>Options</string>
     </property>
     <addaction name="actionUpdateOnIdle"/>
+    <addaction name="actionShowFPSOnIdleUpdate"/>
     <addaction name="actionBackgroundColor"/>
    </widget>
    <addaction name="menuFile"/>
@@ -63,6 +69,7 @@
    </attribute>
    <addaction name="actionOpenBlueConfig"/>
    <addaction name="actionOpenXMLScene"/>
+   <addaction name="actionOpenSWCFile"/>
    <addaction name="actionCloseData"/>
    <addaction name="separator"/>
    <addaction name="actionBackgroundColor"/>
@@ -125,6 +132,9 @@
    </property>
   </action>
   <action name="actionCloseData">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../qrc/resources.qrc">
      <normaloff>:/icons/close.png</normaloff>:/icons/close.png</iconset>
@@ -137,6 +147,38 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+C</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionOpenSWCFile">
+   <property name="icon">
+    <iconset resource="../qrc/resources.qrc">
+     <normaloff>:/icons/open_swc.png</normaloff>:/icons/open_swc.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open SWC</string>
+   </property>
+   <property name="toolTip">
+    <string>Open SWC</string>
+   </property>
+  </action>
+  <action name="actionShowFPSOnIdleUpdate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show FPS on idle update</string>
+   </property>
+   <property name="toolTip">
+    <string>Show FPS on idle update</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
    </property>
   </action>
  </widget>

@@ -19,10 +19,17 @@ public:
   void init( const std::string& zeqUri = "" );
   void showStatusBarMessage ( const QString& message );
 
+  void openBlueConfig( const std::string& fileName,
+                       const std::string& target);
+  void openXMLScene( const std::string& fileName );
+  void openSWCFile( const std::string& fileName );
+
+
 public slots:
 
-  void openBlueConfig( );
-  void openXMLScene( );
+  void openBlueConfigThroughDialog( void );
+  void openXMLSceneThroughDialog( void );
+  void openSWCFileThroughDialog( void );
 
 protected:
 

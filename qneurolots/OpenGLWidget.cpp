@@ -17,6 +17,8 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
 #endif
   )
   : QOpenGLWidget( parent_, windowsFlags_ )
+  , _fpsLabel( this )
+  , _showFps( false )
   , _neuronsCollection( nullptr )
   , _frameCount( 0 )
   , _mouseX( 0 )
@@ -37,6 +39,12 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
 #endif
     _camera = new neurolots::Camera( );
 
+  _fpsLabel.setStyleSheet(
+    "QLabel { background-color : #333;"
+    "color : white;"
+    "padding: 3px;"
+    "margin: 10px;"
+    " border-radius: 10px;}" );
 }
 
 
@@ -144,9 +152,16 @@ void OpenGLWidget::paintGL( void )
                                  float( FRAMES_PAINTED_TO_MEASURE_FPS ) /
                                  float( ellapsedMiliseconds ));
 
-      mainWindow->showStatusBarMessage(
-        QString::number( fps ) + QString( " FPS" ));
-
+      // mainWindow->showStatusBarMessage(
+      //   QString::number( fps ) + QString( " FPS" ));
+      if ( _showFps )
+      {
+        _fpsLabel.setVisible( true );
+        _fpsLabel.setText( QString::number( fps ) + QString( " FPS" ));
+        _fpsLabel.adjustSize( );
+      }
+      else
+        _fpsLabel.setVisible( false );
     }
 
   }
@@ -158,8 +173,7 @@ void OpenGLWidget::paintGL( void )
   }
   else
   {
-    MainWindow* mainWindow = dynamic_cast< MainWindow* >( parent( ));
-    mainWindow->showStatusBarMessage( QString( "Update on events" ));
+    _fpsLabel.setVisible( false );
   }
 
 }
