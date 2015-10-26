@@ -138,7 +138,6 @@ namespace neurolots
     std::vector< float > _selectedNeuronColor;
 
     nsol::DataSet _dataSet;
-    unsigned int _cont;
 
     std::set<unsigned int> _selectedNeurons;
 
