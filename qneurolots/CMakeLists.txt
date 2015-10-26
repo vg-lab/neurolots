@@ -113,6 +113,10 @@ if (DEFLECT_FOUND)
   list(APPEND QNEUROLOTS_LINK_LIBRARIES Deflect)
 endif()
 
+if ( MSVC )
+  add_definitions( -DQNEUROLOTS_STATIC )
+endif( )
+
 common_application( qneurolots )
 
 endif(QT5CORE_FOUND)
