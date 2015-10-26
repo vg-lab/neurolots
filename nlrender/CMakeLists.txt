@@ -29,11 +29,13 @@ set(NLRENDER_LINK_LIBRARIES
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GLUT_LIBRARIES}
-  zeq
-  zeqHBP
   nsol
   nlgenerator
 )
+
+if (ZEQ_FOUND)
+  set(NLRENDER_LINK_LIBRARIES ${NLRENDER_LINK_LIBRARIES} zeq zeqHBP)
+endif( )
 
 set(NLRENDER_INCLUDE_NAME neurolots/nlrender)
 set(NLRENDER_NAMESPACE nlrender)
