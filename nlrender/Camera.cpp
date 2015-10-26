@@ -96,7 +96,7 @@ namespace neurolots
       if ( _firstStep )
       {
         _speedPivot = diffPivot.norm( ) / _animDuration;
-        _speedRadius = abs( diffRadius ) / _animDuration;
+        _speedRadius = fabs( diffRadius ) / _animDuration;
         _firstStep = false;
       }
 
@@ -117,14 +117,14 @@ namespace neurolots
         _BuildViewMatrix( );
       }
 
-      if (( radiusInPlace = ( abs( diffRadius ) <= distanceRadius )))
+      if (( radiusInPlace = ( fabs( diffRadius ) <= distanceRadius )))
       {
         _radius = _targetRadius;
         _BuildViewMatrix( );
       }
       else
       {
-        _radius = actualRadius + diffRadius / abs( diffRadius ) *
+        _radius = actualRadius + diffRadius / fabs( diffRadius ) *
             distanceRadius;
         _BuildViewMatrix( );
       }
