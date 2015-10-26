@@ -6,12 +6,10 @@ namespace neurolots
 {
 
   NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
-                          Program * programTriangles_, Program * programQuads_,
-                          Camera * _camera )
+                          Program * programTriangles_, Program * programQuads_ )
     : _morpho( morpho_ )
     , _programTriangles( programTriangles_ )
     , _programQuads( programQuads_ )
-    , camera_( _camera )
     , _isInit( false )
     , _paintSoma( true )
     , _paintNeurites( true )

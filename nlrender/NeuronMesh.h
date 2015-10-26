@@ -26,7 +26,6 @@
 
 //Neurolots
 #include "Program.h"
-#include "Camera.h"
 #include "../nlgenerator/NeuronMeshGenerator.h"
 #include "../nlgenerator/Icosphere.h"
 
@@ -53,8 +52,7 @@ namespace neurolots
 
     NLRENDER_API
     NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
-                  Program * programTriangles_, Program * programQuads_,
-                  Camera * _camera );
+                  Program * programTriangles_, Program * programQuads_ );
 
     NLRENDER_API
     ~NeuronMesh( void );
@@ -85,7 +83,6 @@ namespace neurolots
 
     Program * _programTriangles;
     Program * _programQuads;
-    Camera * camera_;
 
     GLuint vao_;
     GLuint * vbo_;

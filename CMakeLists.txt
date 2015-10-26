@@ -35,7 +35,7 @@ option(NEUROLOTS_WITH_DEFLECT "NEUROLOTS_WITH_DEFLECT" ON)
 common_package(OpenGL REQUIRED SYSTEM)
 common_package(GLEW REQUIRED SYSTEM)
 common_package(GLUT REQUIRED SYSTEM)
-common_package(Eigen3 REQUIRED SYSTEM)
+common_package(Eigen3 REQUIRED)
 common_package(nsol REQUIRED)
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol)
 
