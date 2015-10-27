@@ -88,9 +88,9 @@ add_subdirectory( nlrender )
 add_subdirectory( neurolots )
 add_subdirectory( qneurolots )
 
-install(FILES ${CMAKE_BINARY_DIR}/include/neurolots/defines.h
+install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h
   DESTINATION include/neurolots )
-install(FILES ${CMAKE_BINARY_DIR}/include/neurolots/defines${SYSTEM}.h
+install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines${SYSTEM}.h
   DESTINATION include/neurolots )
 
 include(CPackConfig)
