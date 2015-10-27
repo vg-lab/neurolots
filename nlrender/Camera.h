@@ -82,6 +82,9 @@ namespace neurolots
     float* ViewMatrix( void );
 
     NLRENDER_API
+    float* ViewProjectionMatrix( void );
+
+    NLRENDER_API
     float* Position( void );
 
 #ifdef NEUROLOTS_USE_ZEQ
@@ -123,6 +126,7 @@ namespace neurolots
 
     void _BuildProjectionMatrix( void );
     void _BuildViewMatrix( void );
+    void _BuildViewProjectionMatrix( void );
 
 #ifdef NEUROLOTS_USE_ZEQ
     void _OnCameraEvent( const zeq::Event& event_ );
@@ -145,6 +149,7 @@ namespace neurolots
     std::vector<float> _positionVec;
     std::vector<float> _projVec;
     std::vector<float> _viewVec;
+    std::vector<float> _viewProjVec;
 
     Eigen::Vector3f _targetPivot;
     float _targetRadius;
