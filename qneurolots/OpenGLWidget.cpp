@@ -19,6 +19,7 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   : QOpenGLWidget( parent_, windowsFlags_ )
   , _fpsLabel( this )
   , _showFps( false )
+  , _wireframe( false )
   , _neuronsCollection( nullptr )
   , _frameCount( 0 )
   , _mouseX( 0 )
@@ -45,6 +46,10 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
     "padding: 3px;"
     "margin: 10px;"
     " border-radius: 10px;}" );
+
+  // This is needed to get key evends
+  this->setFocusPolicy( Qt::WheelFocus );
+
 }
 
 
@@ -257,6 +262,54 @@ void OpenGLWidget::wheelEvent( QWheelEvent* event_ )
 
 }
 
+
+
+void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
+{
+  makeCurrent( );
+
+  switch ( event_->key( ))
+  {
+  case Qt::Key_C:
+    _camera->Pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    _camera->Radius( 1000.0f );
+    _camera->Rotation( 0.0f, 0.0f );
+    update( );
+    break;
+
+  case Qt::Key_W:
+    _neuronsCollection->AddLod( 1.0f );
+    update( );
+    break;
+
+  case Qt::Key_S:
+    _neuronsCollection->AddLod( -1.0f );
+    update( );
+    break;
+
+  case Qt::Key_E:
+    _neuronsCollection->AddTng( 0.1f );
+    update( );
+    break;
+
+  case Qt::Key_D:
+    _neuronsCollection->AddTng( -0.1f );
+    update( );
+    break;
+
+  case Qt::Key_R:
+    _neuronsCollection->AddMaxDist( 1 );
+    update( );
+    break;
+
+  case Qt::Key_F:
+    _neuronsCollection->AddMaxDist( -1 );
+    update( );
+    break;
+  }
+}
+
+
 void OpenGLWidget::changeClearColor( void )
 {
   QColor color =
@@ -275,4 +328,40 @@ void OpenGLWidget::changeClearColor( void )
                   float( _currentClearColor.alpha( )) / 255.0f );
     update( );
   }
+}
+
+
+void OpenGLWidget::toggleUpdateOnIdle( void )
+{
+  _idleUpdate = !_idleUpdate;
+  if ( _idleUpdate )
+    update( );
+}
+
+void OpenGLWidget::toggleShowFPS( void )
+{
+  _showFps = !_showFps;
+  if ( _idleUpdate )
+    update( );
+}
+
+void OpenGLWidget::toggleWireframe( void )
+{
+  makeCurrent( );
+  _wireframe = !_wireframe;
+
+  if ( _wireframe )
+  {
+    glEnable( GL_POLYGON_OFFSET_LINE );
+    glPolygonOffset( -1, -1 );
+    glLineWidth( 1.5 );
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  }
+  else
+  {
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    glDisable( GL_POLYGON_OFFSET_LINE );
+  }
+
+  update( );
 }

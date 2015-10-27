@@ -44,21 +44,10 @@ public:
 
 public slots:
 
-  void toggleUpdateOnIdle( void )
-  {
-    _idleUpdate = !_idleUpdate;
-    if ( _idleUpdate )
-      update( );
-  }
-
-  void toggleShowFPS( void )
-  {
-    _showFps = !_showFps;
-    if ( _idleUpdate )
-      update( );
-  }
-
   void changeClearColor( void );
+  void toggleUpdateOnIdle( void );
+  void toggleShowFPS( void );
+  void toggleWireframe( void );
 
 
 protected:
@@ -71,9 +60,13 @@ protected:
   virtual void mouseReleaseEvent( QMouseEvent* event );
   virtual void wheelEvent( QWheelEvent* event );
   virtual void mouseMoveEvent( QMouseEvent* event );
+  virtual void keyPressEvent( QKeyEvent* event );
+
 
   QLabel _fpsLabel;
   bool _showFps;
+
+  bool _wireframe;
 
   neurolots::Camera* _camera;
   neurolots::NeuronsCollection* _neuronsCollection;

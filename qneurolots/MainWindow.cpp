@@ -29,7 +29,8 @@ MainWindow::MainWindow( QWidget* parent_,
 #endif
 
 
-//  connect( _ui->actionClose, SIGNAL( 
+  connect( _ui->actionQuit, SIGNAL( triggered( )),
+           QApplication::instance(), SLOT( quit( )));
 
 }
 
@@ -52,6 +53,9 @@ void MainWindow::init( const std::string& zeqUri )
 
   connect( _ui->actionShowFPSOnIdleUpdate, SIGNAL( triggered( )),
            _openGLWidget, SLOT( toggleShowFPS( )));
+
+  connect( _ui->actionWireframe, SIGNAL( triggered( )),
+           _openGLWidget, SLOT( toggleWireframe( )));
 
   connect( _ui->actionOpenBlueConfig, SIGNAL( triggered( )),
            this, SLOT( openBlueConfigThroughDialog( )));
@@ -78,12 +82,9 @@ void MainWindow::showStatusBarMessage ( const QString& message )
 void MainWindow::openBlueConfig( const std::string& fileName,
                                  const std::string& targetLabel )
 {
-#ifdef NSOL_USE_BBPSDK
-
   _openGLWidget->loadData( fileName,
                            OpenGLWidget::TDataFileType::BlueConfig,
                            targetLabel );
-#endif
 
 }
 
@@ -105,7 +106,6 @@ void MainWindow::openBlueConfigThroughDialog( void )
       "Column", &ok );
     if ( ok && !text.isEmpty( ))
     {
-
       std::string targetLabel = text.toStdString( );
       _lastOpenedFileName = QFileInfo(path).path( );
       std::string fileName = path.toStdString( );

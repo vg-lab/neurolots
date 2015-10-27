@@ -50,6 +50,7 @@
     </property>
     <addaction name="actionUpdateOnIdle"/>
     <addaction name="actionShowFPSOnIdleUpdate"/>
+    <addaction name="actionWireframe"/>
     <addaction name="actionBackgroundColor"/>
    </widget>
    <addaction name="menuFile"/>
@@ -70,8 +71,9 @@
    <addaction name="actionOpenBlueConfig"/>
    <addaction name="actionOpenXMLScene"/>
    <addaction name="actionOpenSWCFile"/>
-   <addaction name="actionCloseData"/>
    <addaction name="separator"/>
+   <addaction name="actionWireframe"/>
+   <addaction name="actionCloseData"/>
    <addaction name="actionBackgroundColor"/>
   </widget>
   <action name="actionQuit">
@@ -79,7 +81,7 @@
     <string>Quit</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+W</string>
+    <string>Ctrl+Shift+Q</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -97,6 +99,9 @@
    <property name="text">
     <string>Update on idle</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
   </action>
   <action name="actionBackgroundColor">
    <property name="icon">
@@ -105,6 +110,9 @@
    </property>
    <property name="text">
     <string>Background color</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionOpenBlueConfig">
@@ -118,6 +126,9 @@
    <property name="toolTip">
     <string>Open BlueConfig</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+B</string>
+   </property>
   </action>
   <action name="actionOpenXMLScene">
    <property name="icon">
@@ -129,6 +140,9 @@
    </property>
    <property name="toolTip">
     <string>Open XML Scene</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
    </property>
   </action>
   <action name="actionCloseData">
@@ -166,6 +180,9 @@
    <property name="toolTip">
     <string>Open SWC</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionShowFPSOnIdleUpdate">
    <property name="checkable">
@@ -178,7 +195,25 @@
     <string>Show FPS on idle update</string>
    </property>
    <property name="shortcut">
-    <string>F</string>
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionWireframe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qrc/resources.qrc">
+     <normaloff>:/icons/wireframe.png</normaloff>:/icons/wireframe.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show wireframe</string>
+   </property>
+   <property name="toolTip">
+    <string>Show wireframe</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>
