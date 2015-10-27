@@ -53,6 +53,13 @@ macro(_eigen3_check_version)
   endif(NOT EIGEN3_VERSION_OK)
 endmacro(_eigen3_check_version)
 
+# If include dir not set, try to get it from env
+if ( NOT EIGEN3_INCLUDE_DIR)
+  if ( NOT $ENV{EIGEN3_INCLUDE_DIR} STREQUAL "" )
+    set( EIGEN3_INCLUDE_DIR $ENV{EIGEN3_INCLUDE_DIR} )
+  endif( )
+endif( )
+
 if (EIGEN3_INCLUDE_DIR)
 
   # in cache already
