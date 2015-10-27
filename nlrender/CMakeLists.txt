@@ -37,6 +37,10 @@ if (ZEQ_FOUND)
   set(NLRENDER_LINK_LIBRARIES ${NLRENDER_LINK_LIBRARIES} zeq zeqHBP)
 endif( )
 
+if (GMRVZEQ_FOUND)
+  set(NLRENDER_LINK_LIBRARIES ${NLRENDER_LINK_LIBRARIES} gmrvzeq)
+endif( )
+
 set(NLRENDER_INCLUDE_NAME neurolots/nlrender)
 set(NLRENDER_NAMESPACE nlrender)
 add_definitions(-DNEUROLOTS_SHARED)
