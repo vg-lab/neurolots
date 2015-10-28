@@ -66,6 +66,7 @@ namespace neurolots
 
     _BuildProjectionMatrix( );
     _BuildViewMatrix( );
+    _BuildViewProjectionMatrix( );
   }
 #endif
 
@@ -79,6 +80,7 @@ namespace neurolots
   {
     _Rotation( _RotationFromPY( yaw_, pitch_) * _rotation );
     _BuildViewMatrix( );
+    _BuildViewProjectionMatrix( );
   }
 
   void Camera::Anim( void )
@@ -96,7 +98,7 @@ namespace neurolots
       if ( _firstStep )
       {
         _speedPivot = diffPivot.norm( ) / _animDuration;
-        _speedRadius = abs( diffRadius ) / _animDuration;
+        _speedRadius = fabs( diffRadius ) / _animDuration;
         _firstStep = false;
       }
 
@@ -106,28 +108,23 @@ namespace neurolots
       bool pivotInPlace = false;
       bool radiusInPlace = false;
 
-      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))
-      {
+      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))      
         _pivot = _targetPivot;
-        _BuildViewMatrix( );
-      }
       else
-      {
-        _pivot = actualPivot + diffPivot.normalized() * distancePivot;
-        _BuildViewMatrix( );
-      }
+        _pivot = actualPivot + diffPivot.normalized() * distancePivot;      
 
-      if (( radiusInPlace = ( abs( diffRadius ) <= distanceRadius )))
-      {
+      _BuildViewMatrix( );
+      _BuildViewProjectionMatrix( );
+
+      if (( radiusInPlace = ( fabs( diffRadius ) <= distanceRadius )))
         _radius = _targetRadius;
-        _BuildViewMatrix( );
-      }
       else
-      {
-        _radius = actualRadius + diffRadius / abs( diffRadius ) *
+        _radius = actualRadius + diffRadius / fabs( diffRadius ) *
             distanceRadius;
-        _BuildViewMatrix( );
-      }
+
+      _BuildViewMatrix( );
+      _BuildViewProjectionMatrix( );
+
       _isAniming = !( pivotInPlace && radiusInPlace );
     }
     _previusTime = std::clock( );
@@ -160,6 +157,11 @@ namespace neurolots
     return _viewVec.data( );
   }
 
+  float* Camera::ViewProjectionMatrix( void )
+  {
+    return _viewProjVec.data( );
+  }
+
   float* Camera::Position( void )
   {
     return _positionVec.data( );
@@ -179,6 +181,7 @@ namespace neurolots
   {
     _ratio = ratio_;
     _BuildProjectionMatrix( );
+    _BuildViewProjectionMatrix( );
   }
 
   void Camera::Pivot( Eigen::Vector3f pivot_ )
@@ -187,6 +190,7 @@ namespace neurolots
     {
       _pivot = pivot_;
       _BuildViewMatrix( );
+      _BuildViewProjectionMatrix( );
     }
   }
 
@@ -196,6 +200,7 @@ namespace neurolots
     {
       _radius = radius_;
       _BuildViewMatrix( );
+      _BuildViewProjectionMatrix( );
     }
   }
 
@@ -205,6 +210,7 @@ namespace neurolots
     {
       _Rotation( _RotationFromPY( yaw_, pitch_ ));
       _BuildViewMatrix( );
+      _BuildViewProjectionMatrix( );
     }
   }
 
@@ -350,6 +356,45 @@ namespace neurolots
     }
 #endif
     _ViewMatrixVectorized( viewVec );
+  }
+
+  void Camera::_BuildViewProjectionMatrix( void )
+  {
+    Eigen::Matrix4f v, p, vp;
+    v <<  _viewVec[0], _viewVec[4], _viewVec[8], _viewVec[12],
+           _viewVec[1], _viewVec[5], _viewVec[9], _viewVec[13],
+           _viewVec[2], _viewVec[6], _viewVec[10], _viewVec[14],
+           _viewVec[3], _viewVec[7], _viewVec[11], _viewVec[15];
+
+    p  <<  _projVec[0], _projVec[4], _projVec[8], _projVec[12],
+           _projVec[1], _projVec[5], _projVec[9], _projVec[13],
+           _projVec[2], _projVec[6], _projVec[10], _projVec[14],
+           _projVec[3], _projVec[7], _projVec[11], _projVec[15];
+
+    vp = p * v;
+
+    _viewProjVec.resize( 16 );
+
+    _viewProjVec[0] = vp( 0, 0 );
+    _viewProjVec[1] = vp( 1, 0 );
+    _viewProjVec[2] = vp( 2, 0 );
+    _viewProjVec[3] = vp( 3, 0 );
+
+    _viewProjVec[4] = vp( 0, 1 );
+    _viewProjVec[5] = vp( 1, 1 );
+    _viewProjVec[6] = vp( 2, 1 );
+    _viewProjVec[7] = vp( 3, 1 );
+
+    _viewProjVec[8] = vp( 0, 2 );
+    _viewProjVec[9] = vp( 1, 2 );
+    _viewProjVec[10] = vp( 2, 2 );
+    _viewProjVec[11] = vp( 3, 2 );
+
+    _viewProjVec[12] = vp( 0, 3 );
+    _viewProjVec[13] = vp( 1, 3 );
+    _viewProjVec[14] = vp( 2, 3 );
+    _viewProjVec[15] = vp( 3, 3 );
+
   }
 
 #ifdef NEUROLOTS_USE_ZEQ

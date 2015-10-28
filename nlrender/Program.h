@@ -12,7 +12,9 @@
 
 
 //OpenGL
+#ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
 #include <GL/glew.h>
+#endif
 #ifdef Darwin
 #include <gl.h>
 #include <glu.h>
@@ -140,7 +142,6 @@ namespace neurolots
     GLuint vshader_;
     GLuint teshader_;
     GLuint tcshader_;
-    GLuint gshader_;
     GLuint fshader_;
 
     GLint uProy_;

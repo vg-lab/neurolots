@@ -17,7 +17,6 @@ namespace neurolots
   NeuronsCollection::NeuronsCollection( Camera* camera_ )
     : _camera( camera_ )
     , _dataSet( nsol::DataSet( ))
-    , _cont( 0 )
 #ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
@@ -426,7 +425,7 @@ namespace neurolots
           if( !morpho->HasNeuronMesh( ) )
           {
             neuronMesh = new NeuronMesh( morpho, _programTriangles,
-                                         _programQuads, _camera );
+                                         _programQuads );
             morpho->NeuronMesh( neuronMesh );
           }
         }

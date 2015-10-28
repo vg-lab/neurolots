@@ -20,6 +20,7 @@
 
 #include "../nlrender/Camera.h"
 #include "../nlrender/NeuronsCollection.h"
+#include "../nlrender/Config.h"
 
 #include <iostream>
 
@@ -434,8 +435,7 @@ int main( int argc, char* argv[ ])
   glutReshapeFunc( resizeFunc );
   glutTimerFunc( 0, timerFunc, 0);
 
-  glewExperimental = GL_TRUE;
-  glewInit( );
+  neurolots::nlrender::Config::init( );
 
   camera = nullptr;
   neuronsCollection = nullptr;
