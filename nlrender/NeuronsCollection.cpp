@@ -65,14 +65,17 @@ namespace neurolots
   void NeuronsCollection::loadBlueConfig(
 #ifdef NSOL_USE_BBPSDK
                                           const std::string& blueConfig_,
-                                          const std::string& target_
+                                          const std::string& target_,
+                                          int loadFlags_
 #else
                                           const std::string& /*blueConfig_*/,
                                           const std::string& /*target_*/
+                                          int /*loadFlags_*/
 #endif
     )
   {
 #ifdef NSOL_USE_BBPSDK
+    loadFlags_ |= nsol::MORPHOLOGY | nsol::HIERARCHY;
     try{
         _dataSet.openBlueConfig< nsol::Node,
                                  nsol::Section,
@@ -83,7 +86,7 @@ namespace neurolots
                                  Neuron,
                                  nsol::MiniColumn,
                                  nsol::Column >( blueConfig_,
-                                            nsol::MORPHOLOGY | nsol::HIERARCHY,
+                                            loadFlags_,
                                             target_ );
         _GenerateMeshes( );
         _Init( );
@@ -264,6 +267,82 @@ namespace neurolots
 
           neuronMesh->Paint( );
 
+        }
+      }
+    }
+  }
+
+  void NeuronsCollection::PaintNeuron( const unsigned int id_,
+                                       const Eigen::Vector3f color_ )
+  {
+    nsol::MiniColumns miniColumns;
+    nsol::Neurons neurons;
+    nsol::NeuronPtr neuron;
+    NeuronMeshPtr neuronMesh;
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    {
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
+      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+      {
+        neurons = miniColumns[ j ]->neurons( );
+        for( unsigned int k = 0; k < neurons.size( ); k++ )
+        {
+          neuron = neurons[ k ];
+          if ( neuron->gid( ) == id_ )
+          {
+            neuronMesh =
+              (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
+            std::vector< float > tMatrix;
+            tMatrix.resize( 16 );
+            for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
+            {
+              for(int matrixCol = 0; matrixCol < 4; matrixCol++)
+              {
+                tMatrix[ matrixCol * 4 + matrixRow ] =
+                  neuron->transform( )[ matrixRow ][ matrixCol ];
+              }
+            }
+            neuronMesh->PaintSoma( true );
+            neuronMesh->PaintNeurites( true );
+
+            std::vector< float > color;
+            color.resize( 3 );
+            color[0] = color_.x( );
+            color[1] = color_.y( );
+            color[2] = color_.z( );
+
+
+            glUseProgram( _programQuads->id( ));
+            glUniform3fv( _programQuads->uColor( ), 1,
+                          color.data( ));
+
+            glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
+                                tMatrix.data( ));
+
+            glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
+                                _camera->ViewMatrix( ));
+            glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
+                                _camera->ProjectionMatrix( ));
+            glUniform3fv( _programQuads->uCameraPos( ), 1,
+                          _camera->Position( ));
+
+
+            glUseProgram( _programTriangles->id( ));
+            glUniform3fv( _programTriangles->uColor( ), 1,
+                          color.data( ));
+
+            glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
+                              tMatrix.data( ));
+
+            glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
+                                _camera->ViewMatrix());
+            glUniformMatrix4fv( _programTriangles->uProy( ), 1, GL_FALSE,
+                                _camera->ProjectionMatrix( ));
+            glUniform3fv( _programTriangles->uCameraPos( ), 1,
+                          _camera->Position( ));
+
+            neuronMesh->Paint( );
+          }
         }
       }
     }

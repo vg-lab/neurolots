@@ -55,7 +55,8 @@ namespace neurolots
 
     NLRENDER_API
     void loadBlueConfig( const std::string& blueConfig_,
-                         const std::string& target_ = std::string( "" ));
+                         const std::string& target_ = std::string( "" ),
+                         int loadFlags_ = nsol::MORPHOLOGY | nsol::HIERARCHY );
 
     NLRENDER_API
     void loadSwc( const std::string& swcFile_ );
@@ -68,6 +69,10 @@ namespace neurolots
 
     NLRENDER_API
     void Paint( void );
+
+    NLRENDER_API
+    void PaintNeuron( const unsigned int id_, const Eigen::Vector3f color_
+                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7 ) );
 
     NLRENDER_API
     void AddLod( float AddLod );
