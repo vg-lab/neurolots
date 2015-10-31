@@ -69,7 +69,7 @@ namespace neurolots
                                           int loadFlags_
 #else
                                           const std::string& /*blueConfig_*/,
-                                          const std::string& /*target_*/
+                                          const std::string& /*target_*/,
                                           int /*loadFlags_*/
 #endif
     )

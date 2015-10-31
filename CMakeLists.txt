@@ -56,7 +56,7 @@ if(NEUROLOTS_WITH_GMRVZEQ)
 endif( )
 
 if(NEUROLOTS_WITH_DEFLECT)
-  common_package(Deflect)
+  common_package(Deflect SYSTEM)
   if (DEFLECT_FOUND)
     list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
   endif( )
