@@ -49,7 +49,7 @@ OSX-RequiredDeps:
 OSX-OptionalDeps:
   script:
   - module load Qt-5.4
-  - export JAMBS_TARGETS="vmmlib;nsol;eigen;zeq;gmrvzeq;lunchbox;brion;bbpsdk;deflect"
+  - export JAMBS_TARGETS="vmmlib;nsol;eigen;zeq;gmrvzeq;lunchbox;brion;bbpsdk"
   - export CMAKE_EXTRA_ARGS="-DNEUROLOTS_WITH_ZEQ=ON -DNEUROLOTS_WITH_BBPSDK=ON"
   - bash .gitlab-ci.sh
   tags:
