@@ -72,7 +72,7 @@ namespace neurolots
 
     NLRENDER_API
     void PaintNeuron( const unsigned int id_, const Eigen::Vector3f color_
-                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7 ) );
+                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ) );
 
     NLRENDER_API
     void AddLod( float AddLod );
