@@ -20,12 +20,12 @@ namespace neurolots
 
 // PUBLIC METHODS
 
-  void NeuronMeshGenerator::GenerateMeshQuads( nsol::NeuronMorphologyPtr morpho,
-                                               vector< float > & vertices,
-                                               vector< float > & centers,
-                                               vector< float > & tangents,
-                                               vector< unsigned int > & mesh,
-                                               unsigned int& somaEnd )
+  void NeuronMeshGenerator::GenerateMesh( nsol::NeuronMorphologyPtr morpho,
+                                          vector< float > & vertices,
+                                          vector< float > & centers,
+                                          vector< float > & tangents,
+                                          vector< unsigned int > & mesh,
+                                          unsigned int& somaEnd )
   {
     vertices.clear( );
     centers.clear( );
@@ -37,8 +37,8 @@ namespace neurolots
 
     VectorizeMorphology( morpho, vNodes, firstNodes );
 
-    GenerateSomaTriangles( morpho->soma( ), firstNodes, vertices, centers,
-                           tangents, mesh  );
+    GenerateSoma( morpho->soma( ), firstNodes, vertices, centers,
+                           tangents, mesh );
 
     somaEnd = int( mesh.size( ));
 
@@ -63,7 +63,54 @@ namespace neurolots
     }
   }
 
-  void NeuronMeshGenerator::GenerateSomaTriangles(
+  void NeuronMeshGenerator::GenerateMesh( nsol::NeuronMorphologyPtr morpho,
+                                          float alphaRadius,
+                                          std::vector< float > alphaFirstNodes,
+                                          vector< float > & vertices,
+                                          vector< float > & centers,
+                                          vector< float > & tangents,
+                                          vector< unsigned int > & mesh,
+                                          unsigned int& somaEnd )
+  {
+    vertices.clear( );
+    centers.clear( );
+    tangents.clear( );
+    mesh.clear( );
+
+    std::vector< VectorizedNodePtr > vNodes;
+    std::vector< VectorizedNodePtr > firstNodes;
+
+    VectorizeMorphology( morpho, vNodes, firstNodes );
+
+
+
+    GenerateSoma( morpho->soma( ), alphaRadius, firstNodes, alphaFirstNodes,
+                  vertices, centers, tangents, mesh );
+
+    somaEnd = int( mesh.size( ));
+
+    CalculateTangents( vNodes );
+    CalculateGeometry( vNodes, vertices, centers, tangents);
+
+    for ( unsigned int i = 0; i < vNodes.size(); i++ )
+    {
+      VectorizedNodePtr vNode = vNodes[i];
+      if( vNode->Father( ) != nullptr )
+      {
+        _CreateQuadPipe( vNode->Father( )->Primitive( ),
+                             vNode->Primitive(), mesh );
+        if( vNode->Childs( ).size( ) == 0 )
+        {
+          mesh.push_back( vNode->Primitive( )->A( ));
+          mesh.push_back( vNode->Primitive( )->B( ));
+          mesh.push_back( vNode->Primitive( )->D( ));
+          mesh.push_back( vNode->Primitive( )->C( ));
+        }
+      }
+    }
+  }
+
+  void NeuronMeshGenerator::GenerateSoma(
     nsol::SomaPtr soma,
     std::vector< VectorizedNodePtr > & firstNodes,
     std::vector< float >& vertices,
@@ -75,16 +122,12 @@ namespace neurolots
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
 
     Nodes nodes = soma->nodes( );
-    float radius = 0.0f;
+    float radius = FLT_MAX;
     for( unsigned int i = 0; i < nodes.size(); i++ )
     {
-      radius += (nodes[i]->point() - c).norm();
-    }
-    radius /= nodes.size( );
-
-    if( radius == 0.0f )
-    {
-      radius = soma->maxRadius( );
+      float r = (nodes[i]->point() - c).norm();
+      if ( r < radius )
+        radius = r;
     }
 
     Icosphere ico( center, radius, 3 );
@@ -95,7 +138,48 @@ namespace neurolots
                                       mesh );
   }
 
-  void NeuronMeshGenerator::VectorizeMorphology( 
+
+  void NeuronMeshGenerator::GenerateSoma(
+    nsol::SomaPtr soma,
+    float alphaRadius,
+    std::vector< VectorizedNodePtr > & firstNodes,
+    std::vector< float > alphaFirstNodes,
+    std::vector< float >& vertices,
+    std::vector< float >& centers,
+    std::vector< float >& tangents,
+    std::vector< unsigned int >& mesh )
+  {
+    Vec3f c = soma->center( );
+    Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
+
+    Nodes nodes = soma->nodes( );
+    float radius = FLT_MAX;
+    for( unsigned int i = 0; i < nodes.size(); i++ )
+    {
+      float r = (nodes[i]->point() - c).norm();
+      if ( r < radius )
+        radius = r;
+    }
+    radius *= alphaRadius;
+    Icosphere ico( center, radius, 3 );
+
+    if ( firstNodes.size( ) == alphaFirstNodes.size( ))
+    {
+      for ( unsigned int i = 0; i < firstNodes.size( ); i++ )
+      {
+        Eigen::Vector3f exe = firstNodes[i]->Position( ) - center;
+        float module = exe.norm( ) - radius;
+        module *= alphaFirstNodes[1];
+        firstNodes[i]->Position( center + exe.normalized( ) *  module );
+      }
+    }
+    ico.CalculateSoma( firstNodes );
+
+    ico.PassContornTrianglesToVector( firstNodes, vertices, centers, tangents,
+                                      mesh );
+  }
+
+  void NeuronMeshGenerator::VectorizeMorphology(
     nsol::NeuronMorphologyPtr morpho,
     vector< VectorizedNodePtr >& vNodes,
     vector< VectorizedNodePtr >& firstNodes )

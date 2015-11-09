@@ -32,8 +32,8 @@ namespace neurolots
       std::vector< float > tangents;
       std::vector< unsigned int > mesh;
 
-      NeuronMeshGenerator::GenerateMeshQuads( _morpho, vertices, centers,
-                                                      tangents, mesh, _somaEnd );
+      NeuronMeshGenerator::GenerateMesh( _morpho, vertices, centers,
+                                         tangents, mesh, _somaEnd );
       // VAO Generation
       glGenVertexArrays( 1, &vao_ );
       glBindVertexArray( vao_ );
