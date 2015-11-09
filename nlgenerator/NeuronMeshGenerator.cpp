@@ -169,7 +169,7 @@ namespace neurolots
       {
         Eigen::Vector3f exe = firstNodes[i]->Position( ) - center;
         float module = exe.norm( ) - radius;
-        module *= alphaFirstNodes[1];
+        module = module * alphaFirstNodes[i] + radius;
         firstNodes[i]->Position( center + exe.normalized( ) *  module );
       }
     }
