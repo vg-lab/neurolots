@@ -61,6 +61,9 @@ namespace neurolots
     void Init( void );
 
     NLRENDER_API
+    void Reload( float alphaRadius_, std::vector< float > alphaNeurites_ );
+
+    NLRENDER_API
     void Paint( void );
 
     //Getters

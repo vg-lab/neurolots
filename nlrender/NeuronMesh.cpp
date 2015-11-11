@@ -89,6 +89,69 @@ namespace neurolots
     }
   }
 
+  void NeuronMesh::Reload( float alphaRadius_,
+                           std::vector< float > alphaNeurites_ )
+  {
+    glDeleteBuffers( 4, vbo_ );
+
+    std::vector< float > vertices;
+    std::vector< float > centers;
+    std::vector< float > tangents;
+    std::vector< unsigned int > mesh;
+
+    NeuronMeshGenerator::GenerateMesh( _morpho, alphaRadius_, alphaNeurites_,
+                                       vertices, centers, tangents, mesh,
+                                       _somaEnd );
+    // VAO Generation
+    glBindVertexArray( vao_ );
+
+    _size = ( unsigned int ) mesh.size( );
+
+    glGenBuffers(4,vbo_);
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
+                  vertices.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( _programTriangles->inVertex( ), 3, GL_FLOAT,
+                           GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( _programTriangles->inVertex() );
+    glVertexAttribPointer( _programQuads->inVertex( ), 3, GL_FLOAT,
+                           GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( _programQuads->inVertex() );
+
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
+                  centers.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( _programTriangles->inCenter( ), 3, GL_FLOAT,
+                           GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( _programTriangles->inCenter() );
+    glVertexAttribPointer( _programQuads->inCenter( ), 3, GL_FLOAT,
+                           GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( _programQuads->inCenter() );
+
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
+                  tangents.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( _programQuads->inTangent( ), 3, GL_FLOAT,
+                           GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( _programQuads->inTangent() );
+
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
+                  mesh.data( ), GL_STATIC_DRAW );
+
+
+    glBindVertexArray( 0 );
+
+    vertices.clear( );
+    centers.clear( );
+    tangents.clear( );
+    mesh.clear( );
+  }
+
   void NeuronMesh::Paint(void)
   {
 
