@@ -9,12 +9,12 @@ namespace neurolots
 {
   typedef struct
   {
-      float xMin;
-      float xMax;
-      float yMin;
-      float yMax;
-      float zMin;
-      float zMax;
+    float xMin;
+    float xMax;
+    float yMin;
+    float yMax;
+    float zMin;
+    float zMax;
   } TBoundingBox;
 
   class Neuron : public nsol::Neuron
@@ -39,18 +39,21 @@ namespace neurolots
     NLRENDER_API
     void Init( void );
 
+    NLRENDER_API
+    std::vector< float >& vecTransform( void );
+
     // GETTERS
     NLRENDER_API
     TBoundingBox BoundingBox( void );
 
     // SETTERS
 
-    private:
+  private:
 
-      void _CalculateBoundingBox( void );
+    void _CalculateBoundingBox( void );
 
-      TBoundingBox _boundingBox;
-
+    std::vector< float > _vecTransform;
+    TBoundingBox _boundingBox;
 
   };
 
@@ -59,4 +62,3 @@ namespace neurolots
 } // end namespace neurolots
 
 #endif // __NEUROLOTS_NEURON__
-

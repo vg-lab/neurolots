@@ -15,6 +15,17 @@ namespace neurolots
     : nsol::Neuron( neuronMorphology_, layer_, gid_, transform_, miniColum_,
         morphologicalType_, functionalType_ )
   {
+    _vecTransform.resize( 16 );
+
+    for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
+    {
+      for(int matrixCol = 0; matrixCol < 4; matrixCol++)
+      {
+        _vecTransform[ matrixCol * 4 + matrixRow ] =
+          _transform[ matrixRow ][ matrixCol ];
+      }
+    }
+
     _boundingBox.xMax = FLT_MIN;
     _boundingBox.xMin = FLT_MAX;
     _boundingBox.yMax = FLT_MIN;
@@ -32,6 +43,12 @@ namespace neurolots
   {
     _CalculateBoundingBox( );
   }
+
+  std::vector< float >&  Neuron::vecTransform( void )
+  {
+    return _vecTransform;
+  }
+
   // GETTERS
 
   TBoundingBox Neuron::BoundingBox( void )
@@ -49,8 +66,8 @@ namespace neurolots
     float radius = _morphology->soma( )->maxRadius( );
     nsol::Vec3f center = _morphology->soma( )->center( );
 
-    nsol::Vec4f position = _transform * nsol::Vec4f( center.x( ) , center.y( ), center.z( ),
-        1.0f );
+    nsol::Vec4f position = _transform * nsol::Vec4f( center.x( ) , center.y( ),
+                                                     center.z( ), 1.0f );
 
     _boundingBox.xMin = position.x( ) - radius;
     _boundingBox.xMax = position.x( ) + radius;
