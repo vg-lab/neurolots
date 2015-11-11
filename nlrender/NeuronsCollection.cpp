@@ -115,6 +115,7 @@ namespace neurolots
                         nsol::Soma,
                         NeuronMorphology,
                         Neuron >( swcFile_, 1 );
+
     _GenerateMeshes( );
     _Init( );
 
@@ -164,9 +165,10 @@ namespace neurolots
 
   void NeuronsCollection::Paint( void )
   {
+
     nsol::MiniColumns miniColumns;
     nsol::Neurons neurons;
-    nsol::NeuronPtr neuron;
+    NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
 
     glUseProgram( _programQuads->id( ));
@@ -193,19 +195,9 @@ namespace neurolots
         neurons = miniColumns[ j ]->neurons( );
         for( unsigned int k = 0; k < neurons.size( ); k++ )
         {
-          neuron = neurons[ k ];
+          neuron = ( NeuronPtr ) neurons[ k ];
           neuronMesh =
             (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
-          std::vector< float > tMatrix;
-          tMatrix.resize( 16 );
-          for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
-          {
-            for(int matrixCol = 0; matrixCol < 4; matrixCol++)
-            {
-              tMatrix[ matrixCol * 4 + matrixRow ] =
-                neuron->transform( )[ matrixRow ][ matrixCol ];
-            }
-          }
           neuronMesh->PaintSoma( true );
 #ifdef NEUROLOTS_USE_ZEQ
 
@@ -259,11 +251,11 @@ namespace neurolots
 
           glUseProgram( _programQuads->id( ));
           glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
-                              tMatrix.data( ));
+                              neuron->vecTransform( ).data( ));
 
           glUseProgram( _programTriangles->id( ));
           glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
-                              tMatrix.data( ));
+                              neuron->vecTransform( ).data( ));
 
           neuronMesh->Paint( );
 
@@ -277,7 +269,7 @@ namespace neurolots
   {
     nsol::MiniColumns miniColumns;
     nsol::Neurons neurons;
-    nsol::NeuronPtr neuron;
+    NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
     for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
     {
@@ -287,21 +279,11 @@ namespace neurolots
         neurons = miniColumns[ j ]->neurons( );
         for( unsigned int k = 0; k < neurons.size( ); k++ )
         {
-          neuron = neurons[ k ];
+          neuron = ( NeuronPtr ) neurons[ k ];
           if ( neuron->gid( ) == id_ )
           {
             neuronMesh =
               (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
-            std::vector< float > tMatrix;
-            tMatrix.resize( 16 );
-            for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
-            {
-              for(int matrixCol = 0; matrixCol < 4; matrixCol++)
-              {
-                tMatrix[ matrixCol * 4 + matrixRow ] =
-                  neuron->transform( )[ matrixRow ][ matrixCol ];
-              }
-            }
             neuronMesh->PaintSoma( true );
             neuronMesh->PaintNeurites( true );
 
@@ -317,7 +299,7 @@ namespace neurolots
                           color.data( ));
 
             glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
-                                tMatrix.data( ));
+                                neuron->vecTransform( ).data( ));
 
             glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
                                 _camera->ViewMatrix( ));
@@ -332,7 +314,7 @@ namespace neurolots
                           color.data( ));
 
             glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
-                              tMatrix.data( ));
+                              neuron->vecTransform( ).data( ));
 
             glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
                                 _camera->ViewMatrix());
