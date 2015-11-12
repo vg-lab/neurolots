@@ -30,6 +30,7 @@ public slots:
   void openBlueConfigThroughDialog( void );
   void openXMLSceneThroughDialog( void );
   void openSWCFileThroughDialog( void );
+  void showAbout( void );
 
 protected:
 
