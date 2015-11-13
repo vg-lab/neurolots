@@ -19,7 +19,7 @@ namespace neurolots
     , _firstStep( false )
     , _speedPivot( 1.0f / 60.0f )
     , _speedRadius( 1.0f / 60.0f )
-    , _animDuration( 2.0f )
+    , _animDuration( 0.5f )
   {
     _fov = fov_ * ( M_PI / 360.0f );
     _f = 1.0f / tan( _fov );
@@ -108,10 +108,10 @@ namespace neurolots
       bool pivotInPlace = false;
       bool radiusInPlace = false;
 
-      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))      
+      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))
         _pivot = _targetPivot;
       else
-        _pivot = actualPivot + diffPivot.normalized() * distancePivot;      
+        _pivot = actualPivot + diffPivot.normalized() * distancePivot;
 
       _BuildViewMatrix( );
       _BuildViewProjectionMatrix( );

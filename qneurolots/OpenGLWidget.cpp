@@ -29,6 +29,7 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   , _idleUpdate( true )
   , _paint( false )
   , _currentClearColor( 20, 20, 20, 0 )
+  , _neuron( nullptr )
 {
 #ifdef NEUROLOTS_USE_ZEQ
   if ( zeqUri != "" )
@@ -118,6 +119,7 @@ void OpenGLWidget::initializeGL( void )
   QOpenGLWidget::initializeGL( );
 
 }
+
 void OpenGLWidget::paintGL( void )
 {
 
@@ -128,7 +130,9 @@ void OpenGLWidget::paintGL( void )
   {
     _camera->Anim( );
 
-    if ( _neuronsCollection )
+    if ( _neuron )
+      _neuronsCollection->PaintNeuron( _neuron );
+    else if ( _neuronsCollection )
       _neuronsCollection->Paint( );
 
     glUseProgram( 0 );
@@ -309,6 +313,10 @@ void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
   }
 }
 
+void OpenGLWidget::home( void )
+{
+  neuron( -1 );
+}
 
 void OpenGLWidget::changeClearColor( void )
 {

@@ -48,10 +48,12 @@
     <property name="title">
      <string>Options</string>
     </property>
+    <addaction name="actionHome"/>
     <addaction name="actionUpdateOnIdle"/>
     <addaction name="actionShowFPSOnIdleUpdate"/>
     <addaction name="actionWireframe"/>
     <addaction name="actionBackgroundColor"/>
+    <addaction name="actionExtractMesh"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -68,6 +70,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionHome"/>
    <addaction name="actionOpenBlueConfig"/>
    <addaction name="actionOpenXMLScene"/>
    <addaction name="actionOpenSWCFile"/>
@@ -75,6 +78,7 @@
    <addaction name="actionWireframe"/>
    <addaction name="actionCloseData"/>
    <addaction name="actionBackgroundColor"/>
+   <addaction name="actionExtractMesh"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -87,6 +91,21 @@
   <action name="actionAbout">
    <property name="text">
     <string>About ...</string>
+   </property>
+  </action>
+  <action name="actionHome">
+    <property name="icon">
+    <iconset resource="../qrc/resources.qrc">
+     <normaloff>:/icons/open_bc.png</normaloff>:/icons/open_bc.png</iconset>
+   </property>
+   <property name="text">
+    <string>Home</string>
+   </property>
+   <property name="toolTip">
+    <string>Home</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
    </property>
   </action>
   <action name="actionUpdateOnIdle">
@@ -214,6 +233,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionExtractMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qrc/resources.qrc">
+     <normaloff>:/icons/wireframe.png</normaloff>:/icons/wireframe.png</iconset>
+   </property>
+   <property name="text">
+    <string>Extract mesh</string>
+   </property>
+   <property name="toolTip">
+    <string>Extract mesh</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>
