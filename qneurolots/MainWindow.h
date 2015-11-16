@@ -33,12 +33,16 @@ public:
 
 public slots:
 
+  void home( void );
   void openBlueConfigThroughDialog( void );
   void openXMLSceneThroughDialog( void );
   void openSWCFileThroughDialog( void );
 
   void updateExtractMeshDock( void );
   void onListClicked( QListWidgetItem *item );
+
+  void onActionGenerate( void );
+  void onActionGenerate( int value_ );
 
 protected:
 
@@ -57,6 +61,7 @@ private:
   QListWidget* _neuronList;
   QSlider* _radiusSlider;
   QVBoxLayout* _neuritesLayout;
-  QPushButton* _generateButton;
+  std::vector< QSlider* > _neuriteSliders;
+
   QPushButton* _extractButton;
 };

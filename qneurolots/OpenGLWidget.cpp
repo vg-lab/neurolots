@@ -313,10 +313,6 @@ void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
   }
 }
 
-void OpenGLWidget::home( void )
-{
-  neuron( -1 );
-}
 
 void OpenGLWidget::changeClearColor( void )
 {

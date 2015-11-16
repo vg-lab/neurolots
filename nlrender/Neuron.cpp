@@ -1,4 +1,5 @@
 #include "Neuron.h"
+#include "NeuronMorphology.h"
 
 #include <cfloat>
 
@@ -48,6 +49,13 @@ namespace neurolots
     return _vecTransform;
   }
 
+  void Neuron::regenerateMesh( float alphaRadius_,
+                         std::vector< float > alphaNeurites_ )
+    {
+      (( neurolots::NeuronMorphologyPtr ) _morphology )->NeuronMesh( )->
+        Reload( alphaRadius_, alphaNeurites_ );
+    }
+
   // GETTERS
 
   TBoundingBox Neuron::BoundingBox( void )
@@ -55,6 +63,10 @@ namespace neurolots
     return _boundingBox;
   }
 
+  unsigned int Neuron::numNeurites( void )
+  {
+    return _morphology->neurites( ).size( );
+  }
   // SETTERS
 
 

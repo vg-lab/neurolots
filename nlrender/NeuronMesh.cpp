@@ -92,8 +92,6 @@ namespace neurolots
   void NeuronMesh::Reload( float alphaRadius_,
                            std::vector< float > alphaNeurites_ )
   {
-    glDeleteBuffers( 4, vbo_ );
-
     std::vector< float > vertices;
     std::vector< float > centers;
     std::vector< float > tangents;
@@ -107,36 +105,19 @@ namespace neurolots
 
     _size = ( unsigned int ) mesh.size( );
 
-    glGenBuffers(4,vbo_);
-
     glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
                   vertices.data( ), GL_STATIC_DRAW );
-    glVertexAttribPointer( _programTriangles->inVertex( ), 3, GL_FLOAT,
-                           GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( _programTriangles->inVertex() );
-    glVertexAttribPointer( _programQuads->inVertex( ), 3, GL_FLOAT,
-                           GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( _programQuads->inVertex() );
 
 
     glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
                   centers.data( ), GL_STATIC_DRAW );
-    glVertexAttribPointer( _programTriangles->inCenter( ), 3, GL_FLOAT,
-                           GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( _programTriangles->inCenter() );
-    glVertexAttribPointer( _programQuads->inCenter( ), 3, GL_FLOAT,
-                           GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( _programQuads->inCenter() );
 
 
     glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
                   tangents.data( ), GL_STATIC_DRAW );
-    glVertexAttribPointer( _programQuads->inTangent( ), 3, GL_FLOAT,
-                           GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( _programQuads->inTangent() );
 
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);

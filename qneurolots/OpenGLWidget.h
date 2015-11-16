@@ -62,9 +62,32 @@ public:
     }
   }
 
+
+  unsigned int numNeurites( void )
+  {
+    if ( _neuron )
+    {
+      return _neuron->numNeurites( );
+    }
+    return 0;
+  }
+
+  void regenerateNeuron( float alphaRadius_,
+                         std::vector< float > alphaNeurites_ )
+  {
+    if ( _neuron )
+    {
+      _neuron->regenerateMesh( alphaRadius_, alphaNeurites_ );
+    }
+  }
+
+  void home( void )
+  {
+    neuron( -1 );
+  }
+
 public slots:
 
-  void home( void );
   void changeClearColor( void );
   void toggleUpdateOnIdle( void );
   void toggleShowFPS( void );
