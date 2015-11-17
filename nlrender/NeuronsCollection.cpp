@@ -40,11 +40,15 @@ namespace neurolots
     trianglesPath.append( "/triangles" );
 
     _programQuads = new Program( Program::QUADS, quadsPath );
-
+    _programQuadsFB = new Program( Program::QUADS_FB, quadsPath );
     _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
+    _programTrianglesFB = new Program( Program::TRIANGLES_FB, trianglesPath );
 
     _programQuads->Init();
-    _programTriangles->Init();
+    _programQuadsFB->Init( );
+    _programTriangles->Init( );
+    _programTrianglesFB->Init( );
+
 
     Lod( 3.0f );
     Tng( 5.0f );

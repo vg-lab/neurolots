@@ -17,6 +17,7 @@ namespace neurolots
     , vshader_( 0 )
     , teshader_( 0 )
     , tcshader_( 0 )
+    , gshader_( 0 )
     , fshader_( 0 )
     , uProy_( -1 )
     , uView_( -1 )
@@ -101,89 +102,151 @@ namespace neurolots
     std::string vname;
     std::string tcname;
     std::string tename;
+    std::string gname;
     std::string fname;
 
     switch ( _type )
     {
-      case LINES:
-        vname = _path;
-        vname.append( "/vshader.glsl" );
-        fname = _path;
-        fname.append( "/fshader.glsl" );
+    case LINES:
+      vname = _path;
+      vname.append( "/vshader.glsl" );
+      fname = _path;
+      fname.append( "/fshader.glsl" );
 
-        std::cout << vname << std::endl;
-        std::cout << fname << std::endl;
+      std::cout << vname << std::endl;
+      std::cout << fname << std::endl;
 
-        vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-        fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
+      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
 
-        glAttachShader( id_, vshader_ );
-        glAttachShader( id_, fshader_ );
+      glAttachShader( id_, vshader_ );
+      glAttachShader( id_, fshader_ );
 
-        glBindAttribLocation( id_, 0, "inVertex" );
-        break;
+      glBindAttribLocation( id_, 0, "inVertex" );
+      break;
 
-      case TRIANGLES:
-        vname = _path;
-        vname.append( "/vshader.glsl" );
-        tcname = _path;
-        tcname.append( "/tcshader.glsl" );
-        tename = _path;
-        tename.append( "/teshader.glsl" );
-        fname = _path;
-        fname.append( "/fshader.glsl" );
+    case TRIANGLES:
+      vname = _path;
+      vname.append( "/vshader.glsl" );
+      tcname = _path;
+      tcname.append( "/tcshader.glsl" );
+      tename = _path;
+      tename.append( "/teshader.glsl" );
+      fname = _path;
+      fname.append( "/fshader.glsl" );
 
-        std::cout << "Triangles shaders: " << std::endl;
-        std::cout << "\t" << vname << std::endl;
-        std::cout << "\t" << tcname << std::endl;
-        std::cout << "\t" << tename << std::endl;
-        std::cout << "\t" << fname << std::endl;
+      std::cout << "Triangles shaders: " << std::endl;
+      std::cout << "\t" << vname << std::endl;
+      std::cout << "\t" << tcname << std::endl;
+      std::cout << "\t" << tename << std::endl;
+      std::cout << "\t" << fname << std::endl;
 
-        vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-        tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-        teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-        fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
+      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
 
-        glAttachShader( id_, vshader_ );
-        glAttachShader( id_, tcshader_ );
-        glAttachShader( id_, teshader_ );
-        glAttachShader( id_, fshader_ );
+      glAttachShader( id_, vshader_ );
+      glAttachShader( id_, tcshader_ );
+      glAttachShader( id_, teshader_ );
+      glAttachShader( id_, fshader_ );
 
-        glBindAttribLocation( id_, 0, "inVertex" );
-        glBindAttribLocation( id_, 1, "inCenter" );
-        break;
+      glBindAttribLocation( id_, 0, "inVertex" );
+      glBindAttribLocation( id_, 1, "inCenter" );
+      break;
 
-      case QUADS:
-        vname = _path;
-        vname.append( "/vshader.glsl" );
-        tcname = _path;
-        tcname.append( "/tcshader.glsl" );
-        tename = _path;
-        tename.append( "/teshader.glsl" );
-        fname = _path;
-        fname.append( "/fshader.glsl" );
+    case TRIANGLES_FB:
+      vname = _path;
+      vname.append( "/vshader.glsl" );
+      tcname = _path;
+      tcname.append( "/tcshader.glsl" );
+      tename = _path;
+      tename.append( "/teshader.glsl" );
+      gname = _path;
+      gname.append( "/gshader.glsl" );
 
-        std::cout << "Quads shaders: " << std::endl;
-        std::cout << "\t" << vname << std::endl;
-        std::cout << "\t" << tcname << std::endl;
-        std::cout << "\t" << tename << std::endl;
-        std::cout << "\t" << fname << std::endl;
+      std::cout << "Triangles shaders: " << std::endl;
+      std::cout << "\t" << vname << std::endl;
+      std::cout << "\t" << tcname << std::endl;
+      std::cout << "\t" << tename << std::endl;
+      std::cout << "\t" << gname << std::endl;
 
-        //comopilacion de shaders
-        vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-        tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-        teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-        fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
+      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+      gshader_ = _LoadShader( fname, GL_GEOMETRY_SHADER );
 
-        glAttachShader( id_, vshader_ );
-        glAttachShader( id_, tcshader_ );
-        glAttachShader( id_, teshader_ );
-        glAttachShader( id_, fshader_ );
+      glAttachShader( id_, vshader_ );
+      glAttachShader( id_, tcshader_ );
+      glAttachShader( id_, teshader_ );
+      glAttachShader( id_, gshader_ );
 
-        glBindAttribLocation( id_, 0, "inVertex" );
-        glBindAttribLocation( id_, 1, "inCenter" );
-        glBindAttribLocation( id_, 2, "inTangent" );
-        break;
+      glBindAttribLocation( id_, 0, "inVertex" );
+      glBindAttribLocation( id_, 1, "inCenter" );
+      break;
+
+    case QUADS:
+      vname = _path;
+      vname.append( "/vshader.glsl" );
+      tcname = _path;
+      tcname.append( "/tcshader.glsl" );
+      tename = _path;
+      tename.append( "/teshader.glsl" );
+      fname = _path;
+      fname.append( "/fshader.glsl" );
+
+      std::cout << "Quads shaders: " << std::endl;
+      std::cout << "\t" << vname << std::endl;
+      std::cout << "\t" << tcname << std::endl;
+      std::cout << "\t" << tename << std::endl;
+      std::cout << "\t" << fname << std::endl;
+
+      //comopilacion de shaders
+      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
+
+      glAttachShader( id_, vshader_ );
+      glAttachShader( id_, tcshader_ );
+      glAttachShader( id_, teshader_ );
+      glAttachShader( id_, fshader_ );
+
+      glBindAttribLocation( id_, 0, "inVertex" );
+      glBindAttribLocation( id_, 1, "inCenter" );
+      glBindAttribLocation( id_, 2, "inTangent" );
+      break;
+    case QUADS_FB:
+      vname = _path;
+      vname.append( "/vshader.glsl" );
+      tcname = _path;
+      tcname.append( "/tcshader.glsl" );
+      tename = _path;
+      tename.append( "/teshader.glsl" );
+      gname = _path;
+      gname.append( "/gshader.glsl" );
+
+      std::cout << "Quads shaders: " << std::endl;
+      std::cout << "\t" << vname << std::endl;
+      std::cout << "\t" << tcname << std::endl;
+      std::cout << "\t" << tename << std::endl;
+      std::cout << "\t" << gname << std::endl;
+
+      //comopilacion de shaders
+      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
+      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
+      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
+      gshader_ = _LoadShader( gname, GL_GEOMETRY_SHADER );
+
+      glAttachShader( id_, vshader_ );
+      glAttachShader( id_, tcshader_ );
+      glAttachShader( id_, teshader_ );
+      glAttachShader( id_, gshader_ );
+
+      glBindAttribLocation( id_, 0, "inVertex" );
+      glBindAttribLocation( id_, 1, "inCenter" );
+      glBindAttribLocation( id_, 2, "inTangent" );
+      break;
 
     }
 
@@ -208,43 +271,73 @@ namespace neurolots
 
     switch ( _type )
     {
-      case LINES:
-        uProy_ = glGetUniformLocation( id_, "proy" );
-        uView_ = glGetUniformLocation( id_, "view" );
-        uModel_ = glGetUniformLocation( id_, "model" );
-        uColor_ = glGetUniformLocation( id_, "color" );
-        inVertex_ = glGetAttribLocation( id_, "inVertex" );
-        break;
+    case LINES:
+      uProy_ = glGetUniformLocation( id_, "proy" );
+      uView_ = glGetUniformLocation( id_, "view" );
+      uModel_ = glGetUniformLocation( id_, "model" );
+      uColor_ = glGetUniformLocation( id_, "color" );
+      inVertex_ = glGetAttribLocation( id_, "inVertex" );
+      break;
 
-      case TRIANGLES:
-        uProy_ = glGetUniformLocation( id_, "proy" );
-        uView_ = glGetUniformLocation( id_, "view" );
-        uModel_ = glGetUniformLocation( id_, "model" );
-        uColor_ = glGetUniformLocation( id_, "color" );
-        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
-        uLod_ = glGetUniformLocation( id_, "lod" );
-        uTng_ = glGetUniformLocation( id_, "tng" );
-        uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
-        //Atributos de entrada a shaders
-        inVertex_ = glGetAttribLocation( id_, "inVertex" );
-        inCenter_ = glGetAttribLocation( id_, "inCenter" );
-        break;
+    case TRIANGLES:
+      uProy_ = glGetUniformLocation( id_, "proy" );
+      uView_ = glGetUniformLocation( id_, "view" );
+      uModel_ = glGetUniformLocation( id_, "model" );
+      uColor_ = glGetUniformLocation( id_, "color" );
+      uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+      uLod_ = glGetUniformLocation( id_, "lod" );
+      uTng_ = glGetUniformLocation( id_, "tng" );
+      uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+      //Atributos de entrada a shaders
+      inVertex_ = glGetAttribLocation( id_, "inVertex" );
+      inCenter_ = glGetAttribLocation( id_, "inCenter" );
+      break;
 
-      case QUADS:
-        //Variables uniform
-        uProy_ = glGetUniformLocation( id_, "proy" );
-        uView_ = glGetUniformLocation( id_, "view" );
-        uModel_ = glGetUniformLocation( id_, "model" );
-        uColor_ = glGetUniformLocation( id_, "color" );
-        uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
-        uLod_ = glGetUniformLocation( id_, "lod" );
-        uTng_ = glGetUniformLocation( id_, "tng" );
-        uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
-        //Atributos de entrada a shaders
-        inVertex_ = glGetAttribLocation( id_, "inVertex" );
-        inCenter_ = glGetAttribLocation( id_, "inCenter" );
-        inTangent_ = glGetAttribLocation( id_, "inTangent" );
-        break;
+    case TRIANGLES_FB:
+      uProy_ = glGetUniformLocation( id_, "proy" );
+      uView_ = glGetUniformLocation( id_, "view" );
+      uModel_ = glGetUniformLocation( id_, "model" );
+      uColor_ = glGetUniformLocation( id_, "color" );
+      uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+      uLod_ = glGetUniformLocation( id_, "lod" );
+      uTng_ = glGetUniformLocation( id_, "tng" );
+      uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+      //Atributos de entrada a shaders
+      inVertex_ = glGetAttribLocation( id_, "inVertex" );
+      inCenter_ = glGetAttribLocation( id_, "inCenter" );
+      break;
+
+    case QUADS:
+      //Variables uniform
+      uProy_ = glGetUniformLocation( id_, "proy" );
+      uView_ = glGetUniformLocation( id_, "view" );
+      uModel_ = glGetUniformLocation( id_, "model" );
+      uColor_ = glGetUniformLocation( id_, "color" );
+      uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+      uLod_ = glGetUniformLocation( id_, "lod" );
+      uTng_ = glGetUniformLocation( id_, "tng" );
+      uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+      //Atributos de entrada a shaders
+      inVertex_ = glGetAttribLocation( id_, "inVertex" );
+      inCenter_ = glGetAttribLocation( id_, "inCenter" );
+      inTangent_ = glGetAttribLocation( id_, "inTangent" );
+      break;
+
+    case QUADS_FB:
+      //Variables uniform
+      uProy_ = glGetUniformLocation( id_, "proy" );
+      uView_ = glGetUniformLocation( id_, "view" );
+      uModel_ = glGetUniformLocation( id_, "model" );
+      uColor_ = glGetUniformLocation( id_, "color" );
+      uCameraPos_ = glGetUniformLocation( id_, "cameraPos" );
+      uLod_ = glGetUniformLocation( id_, "lod" );
+      uTng_ = glGetUniformLocation( id_, "tng" );
+      uMaxDist_ = glGetUniformLocation( id_, "maxDist" );
+      //Atributos de entrada a shaders
+      inVertex_ = glGetAttribLocation( id_, "inVertex" );
+      inCenter_ = glGetAttribLocation( id_, "inCenter" );
+      inTangent_ = glGetAttribLocation( id_, "inTangent" );
+      break;
     }
   }
 

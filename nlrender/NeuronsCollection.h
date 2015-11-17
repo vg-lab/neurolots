@@ -152,6 +152,10 @@ namespace neurolots
 
     Program* _programTriangles;
     Program* _programQuads;
+
+    Program* _programTrianglesFB;
+    Program* _programQuadsFB;
+
     Camera* _camera;
 
     float _lod;

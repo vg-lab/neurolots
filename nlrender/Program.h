@@ -42,6 +42,8 @@ namespace neurolots
       LINES = 0,
       TRIANGLES,
       QUADS,
+      TRIANGLES_FB,
+      QUADS_FB
     } TProgram;
 
     NLRENDER_API
@@ -142,6 +144,7 @@ namespace neurolots
     GLuint vshader_;
     GLuint teshader_;
     GLuint tcshader_;
+    GLuint gshader_;
     GLuint fshader_;
 
     GLint uProy_;
