@@ -169,6 +169,7 @@ namespace neurolots
     nsol::Neurons neurons;
     NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
+    NeuronMorphologyPtr morphology;
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
@@ -194,9 +195,10 @@ namespace neurolots
         neurons = miniColumns[ j ]->neurons( );
         for( unsigned int k = 0; k < neurons.size( ); k++ )
         {
-          neuron = ( NeuronPtr ) neurons[ k ];
-          neuronMesh =
-            (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
+          neuron = dynamic_cast< NeuronPtr >( neurons[ k ] );
+          morphology = ( dynamic_cast< NeuronMorphologyPtr >
+                         ( neuron->morphology( )));
+          neuronMesh = morphology->NeuronMesh( );
           neuronMesh->PaintSoma( true );
 #ifdef NEUROLOTS_USE_ZEQ
 
@@ -263,8 +265,8 @@ namespace neurolots
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const unsigned int id_,
-                                       const Eigen::Vector3f color_ )
+  void NeuronsCollection::PaintNeuron( const unsigned int& id_,
+                                       const Eigen::Vector3f& color_ )
   {
     nsol::MiniColumns miniColumns;
     nsol::Neurons neurons;
@@ -329,8 +331,8 @@ namespace neurolots
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const NeuronPtr neuron,
-                                       const Eigen::Vector3f color_ )
+  void NeuronsCollection::PaintNeuron( const NeuronPtr& neuron,
+                                       const Eigen::Vector3f& color_ )
   {
     NeuronMeshPtr neuronMesh;
     if ( !neuron )
@@ -380,9 +382,9 @@ namespace neurolots
     neuronMesh->Paint( );
   }
 
-  void NeuronsCollection::AddLod( float AddLod_ )
+  void NeuronsCollection::AddLod( const float& addLod_ )
   {
-    _lod += AddLod_;
+    _lod += addLod_;
     if ( _lod < 1.0f )
       _lod = 1.0f;
 
@@ -393,9 +395,9 @@ namespace neurolots
     glUniform1fv( _programTriangles->uLod( ), 1, &_lod );
   }
 
-  void NeuronsCollection::AddTng( float AddTng_ )
+  void NeuronsCollection::AddTng( const float& addTng_ )
   {
-    _tng += AddTng_;
+    _tng += addTng_;
     if ( _tng < 0.0f )
       _tng = 0.0f;
 
@@ -406,9 +408,9 @@ namespace neurolots
     glUniform1fv( _programTriangles->uTng( ), 1, &_tng );
   }
 
-  void NeuronsCollection::AddMaxDist( float AddMaxDist_ )
+  void NeuronsCollection::AddMaxDist( const float& addMaxDist_ )
   {
-    _maxDist += AddMaxDist_;
+    _maxDist += addMaxDist_;
     if( _maxDist < 2 )
       _maxDist = 2;
 

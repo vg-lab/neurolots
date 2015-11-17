@@ -20,12 +20,13 @@ namespace neurolots
 
 // PUBLIC METHODS
 
-  void NeuronMeshGenerator::GenerateMesh( nsol::NeuronMorphologyPtr morpho,
-                                          vector< float > & vertices,
-                                          vector< float > & centers,
-                                          vector< float > & tangents,
-                                          vector< unsigned int > & mesh,
-                                          unsigned int& somaEnd )
+  void NeuronMeshGenerator::GenerateMesh(
+    const nsol::NeuronMorphologyPtr& morpho,
+    vector< float > & vertices,
+    vector< float > & centers,
+    vector< float > & tangents,
+    vector< unsigned int > & mesh,
+    unsigned int& somaEnd )
   {
     vertices.clear( );
     centers.clear( );
@@ -63,14 +64,15 @@ namespace neurolots
     }
   }
 
-  void NeuronMeshGenerator::GenerateMesh( nsol::NeuronMorphologyPtr morpho,
-                                          float alphaRadius,
-                                          std::vector< float > alphaFirstNodes,
-                                          vector< float > & vertices,
-                                          vector< float > & centers,
-                                          vector< float > & tangents,
-                                          vector< unsigned int > & mesh,
-                                          unsigned int& somaEnd )
+  void NeuronMeshGenerator::GenerateMesh(
+    const nsol::NeuronMorphologyPtr& morpho,
+    const float& alphaRadius,
+    const std::vector< float >& alphaFirstNodes,
+    vector< float >& vertices,
+    vector< float >& centers,
+    vector< float >& tangents,
+    vector< unsigned int >& mesh,
+    unsigned int& somaEnd )
   {
     vertices.clear( );
     centers.clear( );
@@ -111,8 +113,8 @@ namespace neurolots
   }
 
   void NeuronMeshGenerator::GenerateSoma(
-    nsol::SomaPtr soma,
-    std::vector< VectorizedNodePtr > & firstNodes,
+    const nsol::SomaPtr& soma,
+    std::vector< VectorizedNodePtr >& firstNodes,
     std::vector< float >& vertices,
     std::vector< float >& centers,
     std::vector< float >& tangents,
@@ -122,8 +124,8 @@ namespace neurolots
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
 
     Nodes nodes = soma->nodes( );
-    float radius = FLT_MAX;
-    for( unsigned int i = 0; i < nodes.size(); i++ )
+    float radius = std::numeric_limits< float >::max( );
+    for( unsigned int i = 0; i < ( unsigned int ) nodes.size(); i++ )
     {
       float r = (nodes[i]->point() - c).norm();
       if ( r < radius )
@@ -134,16 +136,16 @@ namespace neurolots
 
     ico.CalculateSoma( firstNodes );
 
-    ico.PassContornTrianglesToVector( firstNodes, vertices, centers, tangents,
+    ico.TrianglesToVector( firstNodes, vertices, centers, tangents,
                                       mesh );
   }
 
 
   void NeuronMeshGenerator::GenerateSoma(
-    nsol::SomaPtr soma,
-    float alphaRadius,
+    const nsol::SomaPtr& soma,
+    const float& alphaRadius,
     std::vector< VectorizedNodePtr > & firstNodes,
-    std::vector< float > alphaFirstNodes,
+    const std::vector< float >& alphaFirstNodes,
     std::vector< float >& vertices,
     std::vector< float >& centers,
     std::vector< float >& tangents,
@@ -175,12 +177,12 @@ namespace neurolots
     }
     ico.CalculateSoma( firstNodes );
 
-    ico.PassContornTrianglesToVector( firstNodes, vertices, centers, tangents,
+    ico.TrianglesToVector( firstNodes, vertices, centers, tangents,
                                       mesh );
   }
 
   void NeuronMeshGenerator::VectorizeMorphology(
-    nsol::NeuronMorphologyPtr morpho,
+    const nsol::NeuronMorphologyPtr& morpho,
     vector< VectorizedNodePtr >& vNodes,
     vector< VectorizedNodePtr >& firstNodes )
   {
@@ -223,7 +225,7 @@ namespace neurolots
         if ( childNodes.size( ) == 0 ) // End node
         {
           vNodeFather = vNode->Father() ;
-          tangent = ( vNode->Position( ) 
+          tangent = ( vNode->Position( )
                       - vNodeFather->Position( )).normalized( );
         }
         else //Bifurcation and normal node
@@ -365,9 +367,9 @@ namespace neurolots
 
 // PRIVATE METHODS
 
-  void NeuronMeshGenerator::_VectorizeMorphology( 
-    SectionPtr section,
-    vector< VectorizedNodePtr > & vNodes,
+  void NeuronMeshGenerator::_VectorizeMorphology(
+    const SectionPtr& section,
+    vector< VectorizedNodePtr >& vNodes,
     VectorizedNodePtr vFatherNode )
   {
     VectorizedNodePtr vNode;
@@ -413,8 +415,8 @@ namespace neurolots
     }
   }
 
-  unsigned int NeuronMeshGenerator::_NumNodes( 
-    nsol::NeuronMorphologyPtr morpho )
+  unsigned int NeuronMeshGenerator::_NumNodes(
+    const nsol::NeuronMorphologyPtr& morpho )
   {
     unsigned int numNodes = 0;
     Neurites neurites = morpho->neurites( );
@@ -428,7 +430,7 @@ namespace neurolots
     return numNodes;
   }
 
-  unsigned int NeuronMeshGenerator::_NumNodes( nsol::SectionPtr section )
+  unsigned int NeuronMeshGenerator::_NumNodes( const nsol::SectionPtr& section )
   {
     unsigned int numNodes = ( unsigned int )section->middleNodes( ).size( ) + 2;
 
@@ -442,7 +444,8 @@ namespace neurolots
       return numNodes;
   }
 
-  unsigned int NeuronMeshGenerator::_MaxId( nsol::NeuronMorphologyPtr morpho )
+  unsigned int NeuronMeshGenerator::_MaxId(
+    const nsol::NeuronMorphologyPtr& morpho )
   {
     unsigned int maxId = 0;
     Neurites neurites = morpho->neurites( );
@@ -458,7 +461,7 @@ namespace neurolots
     return maxId;
   }
 
-  unsigned int NeuronMeshGenerator::_MaxId( nsol::SectionPtr section )
+  unsigned int NeuronMeshGenerator::_MaxId( const nsol::SectionPtr& section )
   {
       unsigned int maxId = 0;
 
@@ -487,9 +490,9 @@ namespace neurolots
       return maxId;
   }
 
-  void NeuronMeshGenerator::_CreateQuadPipe( GeometricPrimitivePtr geom0,
-                                             GeometricPrimitivePtr geom1,
-                                             vector< unsigned int > & mesh )
+  void NeuronMeshGenerator::_CreateQuadPipe( const GeometricPrimitivePtr& geom0,
+                                             const GeometricPrimitivePtr& geom1,
+                                             vector< unsigned int >& mesh )
   {
     //AB
     mesh.push_back( geom0->A() );

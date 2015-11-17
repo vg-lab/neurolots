@@ -72,21 +72,21 @@ namespace neurolots
     void Paint( void );
 
     NLRENDER_API
-    void PaintNeuron( const unsigned int id_, const Eigen::Vector3f color_
+    void PaintNeuron( const unsigned int& id_, const Eigen::Vector3f& color_
                       = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
 
     NLRENDER_API
-    void PaintNeuron( const NeuronPtr neuron, const Eigen::Vector3f color_
+    void PaintNeuron( const NeuronPtr& neuron, const Eigen::Vector3f& color_
                       = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
 
     NLRENDER_API
-    void AddLod( float AddLod );
+    void AddLod( const float& addLod_ );
 
     NLRENDER_API
-    void AddTng( float AddTng );
+    void AddTng( const float& addTng_ );
 
     NLRENDER_API
-    void AddMaxDist( float AddMaxDist );
+    void AddMaxDist( const float& addMaxDist_ );
 
     NLRENDER_API
     void focusOnNeuron( unsigned int id );

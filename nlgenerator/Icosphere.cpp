@@ -168,7 +168,7 @@ namespace neurolots
     _CalculateContornCenters( );
   }
 
-  void Icosphere::PassTrianglesToVector( std::vector< float >& vertices,
+  void Icosphere::TrianglesToVector( std::vector< float >& vertices,
                                 std::vector< float >& centers,
                                 std::vector< float >& tangents,
                                 std::vector< unsigned int >& mesh )
@@ -177,17 +177,17 @@ namespace neurolots
                                      tangents, mesh );
   }
 
-  void Icosphere::PassContornTrianglesToVector(
-  			          std::vector< VectorizedNodePtr >& /* firstNodes */,
-                                  std::vector< float >& vertices,
-                                  std::vector< float >& centers,
-                                  std::vector< float >& tangents,
-                                  std::vector< unsigned int >& mesh )
+  void Icosphere::TrianglesToVector(
+    std::vector< VectorizedNodePtr >& /* firstNodes */,
+    std::vector< float >& vertices,
+    std::vector< float >& centers,
+    std::vector< float >& tangents,
+    std::vector< unsigned int >& mesh )
   {
     Quads::FacesToVectors( _quads, _nodes, vertices, centers, tangents, mesh );
   }
 
-  void Icosphere::PassQuadsToVector( std::vector< float >& vertices,
+  void Icosphere::QuadsToVector( std::vector< float >& vertices,
                                       std::vector< float >& centers,
                                       std::vector< float >& tangents,
                                       std::vector< unsigned int >& mesh )

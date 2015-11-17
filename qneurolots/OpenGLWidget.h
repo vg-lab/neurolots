@@ -67,7 +67,7 @@ public:
   {
     if ( _neuron )
     {
-      return _neuron->numNeurites( );
+      return ( unsigned int ) _neuron->morphology( )->neurites( ).size( );
     }
     return 0;
   }
