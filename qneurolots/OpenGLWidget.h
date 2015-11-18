@@ -4,6 +4,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 #include <QLabel>
+#include <QTimer>
 #include <chrono>
 
 #define NEUROLOTS_SKIP_GLEW_INCLUDE 1
@@ -67,7 +68,7 @@ public:
   {
     if ( _neuron )
     {
-      return _neuron->numNeurites( );
+      return ( unsigned int ) _neuron->morphology( )->neurites( ).size( );
     }
     return 0;
   }
@@ -78,6 +79,7 @@ public:
     if ( _neuron )
     {
       _neuron->regenerateMesh( alphaRadius_, alphaNeurites_ );
+      update( );
     }
   }
 
@@ -92,6 +94,7 @@ public slots:
   void toggleUpdateOnIdle( void );
   void toggleShowFPS( void );
   void toggleWireframe( void );
+  void timerUpdate( void );
 
 
 protected:
@@ -126,7 +129,9 @@ protected:
 
   neurolots::NeuronPtr _neuron;
 
+  QTimer* _cameraTimer;
   std::chrono::time_point< std::chrono::system_clock > _then;
+
 
 };
 

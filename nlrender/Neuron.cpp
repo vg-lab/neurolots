@@ -33,9 +33,9 @@ namespace neurolots
   {
     _vecTransform.resize( 16 );
 
-    for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
+    for( int matrixRow = 0; matrixRow < 4; matrixRow++ )
     {
-      for(int matrixCol = 0; matrixCol < 4; matrixCol++)
+      for( int matrixCol = 0; matrixCol < 4; matrixCol++ )
       {
         _vecTransform[ matrixCol * 4 + matrixRow ] =
           _transform[ matrixRow ][ matrixCol ];
@@ -49,11 +49,11 @@ namespace neurolots
     return _vecTransform;
   }
 
-  void Neuron::regenerateMesh( float alphaRadius_,
-                         std::vector< float > alphaNeurites_ )
+  void Neuron::regenerateMesh( const float& alphaRadius_,
+                               const std::vector< float >& alphaNeurites_ )
     {
       (( neurolots::NeuronMorphologyPtr ) _morphology )->NeuronMesh( )->
-        Reload( alphaRadius_, alphaNeurites_ );
+        Regenerate( alphaRadius_, alphaNeurites_ );
     }
 
   // GETTERS
@@ -63,10 +63,6 @@ namespace neurolots
     return _boundingBox;
   }
 
-  unsigned int Neuron::numNeurites( void )
-  {
-    return _morphology->neurites( ).size( );
-  }
   // SETTERS
 
 

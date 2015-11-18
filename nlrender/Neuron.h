@@ -43,16 +43,14 @@ namespace neurolots
     std::vector< float >& vecTransform( void );
 
     NLRENDER_API
-    void regenerateMesh( float alphaRadius_,
-                         std::vector< float > alphaNeurites_ );
+    void regenerateMesh( const float& alphaRadius_,
+                         const std::vector< float >& alphaNeurites_ );
 
 
     // GETTERS
     NLRENDER_API
     TBoundingBox BoundingBox( void );
 
-    NLRENDER_API
-    unsigned int numNeurites( void );
     // SETTERS
 
   private:

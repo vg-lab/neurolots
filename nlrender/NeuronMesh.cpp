@@ -89,8 +89,8 @@ namespace neurolots
     }
   }
 
-  void NeuronMesh::Reload( float alphaRadius_,
-                           std::vector< float > alphaNeurites_ )
+  void NeuronMesh::Regenerate( const float& alphaRadius_,
+                               const std::vector< float >& alphaNeurites_ )
   {
     std::vector< float > vertices;
     std::vector< float > centers;
