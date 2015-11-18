@@ -41,6 +41,10 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
 #endif
     _camera = new neurolots::Camera( );
 
+  _cameraTimer = new QTimer( );
+  _cameraTimer->start(( 1.0f / 60.f ) * 100 );
+  connect( _cameraTimer, SIGNAL( timeout( )), this, SLOT( timerUpdate( )));
+
   _fpsLabel.setStyleSheet(
     "QLabel { background-color : #333;"
     "color : white;"
@@ -128,8 +132,6 @@ void OpenGLWidget::paintGL( void )
 
   if ( _paint )
   {
-    _camera->Anim( );
-
     if ( _neuron )
       _neuronsCollection->PaintNeuron( _neuron );
     else if ( _neuronsCollection )
@@ -368,4 +370,10 @@ void OpenGLWidget::toggleWireframe( void )
   }
 
   update( );
+}
+
+void OpenGLWidget::timerUpdate( void )
+{
+  if( _camera->Anim( ))
+    this->update( );
 }

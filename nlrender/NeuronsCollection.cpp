@@ -714,9 +714,9 @@ namespace neurolots
     _defaultPivot = center;
     _defaultRadius = radius;
 
-    std::cout << "pivot: " << center.x( ) << " " << center.y( ) << " "
-        << center.z( ) << std::endl;
-    std::cout << "radius: " << radius << std::endl;
+    // std::cout << "pivot: " << center.x( ) << " " << center.y( ) << " "
+    //     << center.z( ) << std::endl;
+    // std::cout << "radius: " << radius << std::endl;
   }
 
 #ifdef NEUROLOTS_USE_ZEQ
