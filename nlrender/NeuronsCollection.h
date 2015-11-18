@@ -104,6 +104,7 @@ namespace neurolots
     NLRENDER_API
     std::vector< unsigned int > neuronIDs( void );
 
+    NLRENDER_API
     NeuronPtr neuronById( unsigned int id );
 
 #ifdef NEUROLOTS_USE_ZEQ
