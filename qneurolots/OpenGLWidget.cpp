@@ -377,3 +377,8 @@ void OpenGLWidget::timerUpdate( void )
   if( _camera->Anim( ))
     this->update( );
 }
+
+void OpenGLWidget::extractMesh( void )
+{
+  _neuronsCollection->extractMesh( _neuron );
+}

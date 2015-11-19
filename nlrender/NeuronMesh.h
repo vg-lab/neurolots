@@ -51,8 +51,7 @@ namespace neurolots
   public:
 
     NLRENDER_API
-    NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
-                  Program * programTriangles_, Program * programQuads_ );
+    NeuronMesh( nsol::NeuronMorphologyPtr morpho_ );
 
     NLRENDER_API
     ~NeuronMesh( void );
@@ -65,28 +64,14 @@ namespace neurolots
                      const std::vector< float >& alphaNeurites_ );
 
     NLRENDER_API
-    void Paint( void );
-
-    //Getters
-    NLRENDER_API
-    bool PaintSoma( void );
+    void PaintSoma( void );
 
     NLRENDER_API
-    bool PaintNeurites( void );
-
-    //Setters
-    NLRENDER_API
-    void PaintSoma( bool paintSoma_ );
-
-    NLRENDER_API
-    void PaintNeurites( bool paintNeurites_ );
+    void PaintNeurites( void );
 
   private:
 
     nsol::NeuronMorphologyPtr _morpho;
-
-    Program * _programTriangles;
-    Program * _programQuads;
 
     GLuint vao_;
     GLuint * vbo_;
@@ -95,9 +80,6 @@ namespace neurolots
     unsigned int _somaEnd;
 
     bool _isInit;
-
-    bool _paintSoma;
-    bool _paintNeurites;
   };
 
   typedef NeuronMesh * NeuronMeshPtr;

@@ -97,6 +97,9 @@ namespace neurolots
     NLRENDER_API
     void focusAll( void );
 
+    NLRENDER_API
+    void extractMesh( NeuronPtr neuron_ );
+
     //Getters
     NLRENDER_API
     ColumnsPtr Columns( void );
@@ -156,6 +159,9 @@ namespace neurolots
 
     Program* _programTrianglesFB;
     Program* _programQuadsFB;
+
+    unsigned int _tfo;
+    std::vector< unsigned int > _tbos;
 
     Camera* _camera;
 

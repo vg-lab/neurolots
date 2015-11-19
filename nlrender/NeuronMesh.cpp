@@ -5,14 +5,9 @@ using namespace std;
 namespace neurolots
 {
 
-  NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
-                          Program * programTriangles_, Program * programQuads_ )
+  NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_ )
     : _morpho( morpho_ )
-    , _programTriangles( programTriangles_ )
-    , _programQuads( programQuads_ )
     , _isInit( false )
-    , _paintSoma( true )
-    , _paintNeurites( true )
   {
 
   }
@@ -23,8 +18,6 @@ namespace neurolots
 
   void NeuronMesh::Init( void )
   {
-
-
     if( !_isInit )
     {
       std::vector< float > vertices;
@@ -47,32 +40,20 @@ namespace neurolots
       glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
       glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
                     vertices.data( ), GL_STATIC_DRAW );
-      glVertexAttribPointer( _programTriangles->inVertex( ), 3, GL_FLOAT,
-                             GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( _programTriangles->inVertex() );
-      glVertexAttribPointer( _programQuads->inVertex( ), 3, GL_FLOAT,
-                             GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( _programQuads->inVertex() );
-
+      glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+      glEnableVertexAttribArray( 0 );
 
       glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
       glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
                     centers.data( ), GL_STATIC_DRAW );
-      glVertexAttribPointer( _programTriangles->inCenter( ), 3, GL_FLOAT,
-                             GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( _programTriangles->inCenter() );
-      glVertexAttribPointer( _programQuads->inCenter( ), 3, GL_FLOAT,
-                             GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( _programQuads->inCenter() );
-
+      glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+      glEnableVertexAttribArray( 1 );
 
       glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
       glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
                     tangents.data( ), GL_STATIC_DRAW );
-      glVertexAttribPointer( _programQuads->inTangent( ), 3, GL_FLOAT,
-                             GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( _programQuads->inTangent() );
-
+      glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+      glEnableVertexAttribArray( 2 );
 
       glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
       glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
@@ -133,50 +114,19 @@ namespace neurolots
     mesh.clear( );
   }
 
-  void NeuronMesh::Paint(void)
+  void NeuronMesh::PaintSoma( void )
   {
-
-
-
     glBindVertexArray(vao_);
+    glPatchParameteri( GL_PATCH_VERTICES, 3 );
+    glDrawElements( GL_PATCHES, _somaEnd, GL_UNSIGNED_INT, 0 );
+  }
 
-    if( _paintSoma )
-    {
-      glUseProgram( _programTriangles->id( ));
-
-      glPatchParameteri( GL_PATCH_VERTICES, 3 );
-      glDrawElements( GL_PATCHES, _somaEnd, GL_UNSIGNED_INT, 0 );
-    }
-
-    if( _paintNeurites )
-    {
-      glUseProgram( _programQuads->id( ));
-
-
-      glPatchParameteri( GL_PATCH_VERTICES, 4 );
-      glDrawElements( GL_PATCHES,  _size -_somaEnd, GL_UNSIGNED_INT,
+  void NeuronMesh::PaintNeurites( void )
+  {
+    glBindVertexArray(vao_);
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+    glDrawElements( GL_PATCHES,  _size -_somaEnd, GL_UNSIGNED_INT,
                  (void *) (_somaEnd * sizeof(unsigned int)));
-    }
-  }
-
-  bool NeuronMesh::PaintSoma( void )
-  {
-    return _paintSoma;
-  }
-
-  bool NeuronMesh::PaintNeurites( void )
-  {
-    return _paintNeurites;
-  }
-
-  void NeuronMesh::PaintSoma( bool paintSoma_ )
-  {
-    _paintSoma = paintSoma_;
-  }
-
-  void NeuronMesh::PaintNeurites( bool paintNeurites_ )
-  {
-    _paintNeurites = paintNeurites_;
   }
 
 } // end namespace neurolots

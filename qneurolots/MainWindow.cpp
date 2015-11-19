@@ -153,6 +153,9 @@ void MainWindow::init( const std::string& zeqUri )
 
   connect( _radiusSlider, SIGNAL( valueChanged( int )),
            this, SLOT( onActionGenerate( int )));
+
+  connect( _extractButton, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( extractMesh( )));
 }
 
 MainWindow::~MainWindow( void )

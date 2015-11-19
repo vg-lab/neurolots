@@ -41,8 +41,8 @@ namespace neurolots
     {
       LINES = 0,
       TRIANGLES,
-      QUADS,
       TRIANGLES_FB,
+      QUADS,
       QUADS_FB
     } TProgram;
 
@@ -55,79 +55,9 @@ namespace neurolots
     NLRENDER_API
     void Init( void );
 
-    //Setters
-    NLRENDER_API
-    void lod( float _lod );
-
-    NLRENDER_API
-    void tng( float _tng );
-
-    NLRENDER_API
-    void maxDist( float _maxDist );
-
-    //Getters
-    NLRENDER_API
-    TProgram type( void );
-
     NLRENDER_API
     GLuint id( void );
 
-    NLRENDER_API
-    GLint inVertex( void );
-
-    NLRENDER_API
-    GLint inCenter( void );
-
-    NLRENDER_API
-    GLint inTangent( void );
-
-    NLRENDER_API
-    GLuint vshader( void );
-
-    NLRENDER_API
-    GLuint teshader( void );
-
-    NLRENDER_API
-    GLuint tcshader( void );
-
-    NLRENDER_API
-    GLuint fshader( void );
-
-    NLRENDER_API
-    GLint uProy( void );
-
-    NLRENDER_API
-    GLint uView( void );
-
-    NLRENDER_API
-    GLint uModel( void );
-
-    NLRENDER_API
-    GLint uColor( void );
-
-    NLRENDER_API
-    GLint uCameraPos( void );
-
-    NLRENDER_API
-    GLint uDesp( void );
-
-    NLRENDER_API
-    GLint uLod( void );
-
-    NLRENDER_API
-    GLint uTng( void );
-
-    NLRENDER_API
-    GLint uMaxDist( void );
-
-    NLRENDER_API
-    float lod( void );
-
-    NLRENDER_API
-    float tng( void );
-
-    NLRENDER_API
-    float maxDist(void);
 
   private:
 
@@ -137,29 +67,12 @@ namespace neurolots
     TProgram _type;
 
     GLuint id_;
-    GLint inVertex_;
-    GLint inCenter_;
-    GLint inTangent_;
 
     GLuint vshader_;
     GLuint teshader_;
     GLuint tcshader_;
     GLuint gshader_;
     GLuint fshader_;
-
-    GLint uProy_;
-    GLint uView_;
-    GLint uModel_;
-    GLint uColor_;
-    GLint uCameraPos_;
-    GLint uDesp_;
-    GLint uLod_;
-    GLint uTng_;
-    GLint uMaxDist_;
-
-    float maxDist_;
-    float lod_;
-    float tng_;
 
     std::string _path;
   };
