@@ -165,7 +165,7 @@ namespace neurolots
     fem::Fem fem( _nodes, _tetrahedra );
     fem.Solve( );
 
-    _CalculateContornCenters( );
+    _CalculateCenters( );
   }
 
   void Icosphere::TrianglesToVector( std::vector< float >& vertices,
@@ -256,7 +256,7 @@ namespace neurolots
     }
   }
 
-  void Icosphere::_CalculateContornCenters( void )
+  void Icosphere::_CalculateCenters( void )
   {
     fem::NodePtr node;
     for ( unsigned int i = 0; i < _nodes.size( ); i++ )
