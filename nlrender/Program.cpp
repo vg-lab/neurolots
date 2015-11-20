@@ -157,29 +157,35 @@ namespace neurolots
 
     case TRIANGLES_FB:
       vname = _path;
-      vname.append( "/vshader.glsl" );
+      vname.append( "/feedback/vshader.glsl" );
       tcname = _path;
-      tcname.append( "/tcshader.glsl" );
+      tcname.append( "/feedback/tcshader.glsl" );
       tename = _path;
-      tename.append( "/teshader.glsl" );
+      tename.append( "/feedback/teshader.glsl" );
       gname = _path;
-      gname.append( "/gshader.glsl" );
+      gname.append( "/feedback/gshader.glsl" );
+      fname = _path;
+      fname.append( "/feedback/fshader.glsl" );
 
       std::cout << "Triangles shaders feedback: " << std::endl;
       std::cout << "\t" << vname << std::endl;
       std::cout << "\t" << tcname << std::endl;
       std::cout << "\t" << tename << std::endl;
       std::cout << "\t" << gname << std::endl;
+      std::cout << "\t" << fname << std::endl;
 
       vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
       tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
       teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
       gshader_ = _LoadShader( gname, GL_GEOMETRY_SHADER );
+      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
+
 
       glAttachShader( id_, vshader_ );
       glAttachShader( id_, tcshader_ );
       glAttachShader( id_, teshader_ );
       glAttachShader( id_, gshader_ );
+      glAttachShader( id_, fshader_ );
 
       glTransformFeedbackVaryings( id_, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
       break;
@@ -214,30 +220,35 @@ namespace neurolots
 
     case QUADS_FB:
       vname = _path;
-      vname.append( "/vshader.glsl" );
+      vname.append( "/feedback/vshader.glsl" );
       tcname = _path;
-      tcname.append( "/tcshader.glsl" );
+      tcname.append( "/feedback/tcshader.glsl" );
       tename = _path;
-      tename.append( "/teshader.glsl" );
+      tename.append( "/feedback/teshader.glsl" );
       gname = _path;
-      gname.append( "/gshader.glsl" );
+      gname.append( "/feedback/gshader.glsl" );
+      fname = _path;
+      fname.append( "/feedback/fshader.glsl" );
 
       std::cout << "Quads shaders feedback: " << std::endl;
       std::cout << "\t" << vname << std::endl;
       std::cout << "\t" << tcname << std::endl;
       std::cout << "\t" << tename << std::endl;
       std::cout << "\t" << gname << std::endl;
+      std::cout << "\t" << fname << std::endl;
 
       //comopilacion de shaders
       vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
       tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
       teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
       gshader_ = _LoadShader( gname, GL_GEOMETRY_SHADER );
+      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
 
       glAttachShader( id_, vshader_ );
       glAttachShader( id_, tcshader_ );
       glAttachShader( id_, teshader_ );
       glAttachShader( id_, gshader_ );
+      glAttachShader( id_, fshader_ );
 
       glTransformFeedbackVaryings( id_, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
       break;

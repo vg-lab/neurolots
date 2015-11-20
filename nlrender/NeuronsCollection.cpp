@@ -333,23 +333,41 @@ namespace neurolots
     color[1] = color_.y( );
     color[2] = color_.z( );
 
-    glUseProgram( _programQuads->id( ));
+    unsigned int query;
+    unsigned int numPrimitives;
+
+    glGenQueries( 1, &query );
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
+
+    glUseProgram( _programTrianglesFB->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniformMatrix4fv( 2, 1, GL_FALSE,
                         neuron->vecTransform( ).data( ));
     glUniform3fv( 3, 1, color.data( ));
     glUniform3fv( 4, 1,_camera->Position( ));
+    glUniform1fv( 5, 1, &_lod );
+    glUniform1fv( 6, 1, &_tng );
+    glUniform1fv( 7, 1, &_maxDist );
+    neuronMesh->PaintSoma( );
+
+    glUseProgram( _programQuadsFB->id( ));
+    glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+    glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+    glUniformMatrix4fv( 2, 1, GL_FALSE,
+                        neuron->vecTransform( ).data( ));
+    glUniform3fv( 3, 1, color.data( ));
+    glUniform3fv( 4, 1,_camera->Position( ));
+    glUniform1fv( 5, 1, &_lod );
+    glUniform1fv( 6, 1, &_tng );
+    glUniform1fv( 7, 1, &_maxDist );
     neuronMesh->PaintNeurites( );
 
-    glUseProgram( _programTriangles->id( ));
-    glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-    glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-    glUniformMatrix4fv( 2, 1, GL_FALSE,
-                        neuron->vecTransform( ).data( ));
-    glUniform3fv( 3, 1, color.data( ));
-    glUniform3fv( 4, 1,_camera->Position( ));
-    neuronMesh->PaintSoma( );
+    glEndQuery( GL_PRIMITIVES_GENERATED );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
+
+    std::cout << "Numero de primitivas generadas: " << numPrimitives
+              << std::endl;
   }
 
   void NeuronsCollection::AddLod( const float& addLod_ )
@@ -455,7 +473,6 @@ namespace neurolots
 
   void NeuronsCollection::extractMesh( NeuronPtr neuron_ )
   {
-    std::cout << "NeuronMesh extraction " << std::endl;
     NeuronMeshPtr neuronMesh;
     if ( !neuron_ )
       return;
@@ -464,55 +481,47 @@ namespace neurolots
     if( !neuronMesh )
       return;
 
-    // // Uniforms setup
-    // glUseProgram( _programQuadsFB->id( ));
-    // glUniformMatrix4fv( _programQuadsFB->uModel( ), 1, GL_FALSE,
-    //                     neuron_->vecTransform( ).data( ));
-    // glUniformMatrix4fv( _programQuadsFB->uView( ), 1, GL_FALSE,
-    //                     _camera->ViewMatrix( ));
-    // glUniformMatrix4fv( _programQuadsFB->uProy( ), 1, GL_FALSE,
-    //                     _camera->ProjectionMatrix( ));
-    // glUniform3fv( _programQuadsFB->uCameraPos( ), 1,
-    //               _camera->Position( ));
-    // glUniform1fv( _programQuadsFB->uLod( ), 1, &_lod );
-    // glUniform1fv( _programQuadsFB->uTng( ), 1, &_tng );
-    // glUniform1fv( _programQuadsFB->uMaxDist( ), 1, &_maxDist );
+    std::vector< float > color;
+    color.resize( 3 );
+    color[0] = 1.0f;
+    color[1] = 0.0f;
+    color[2] = 0.0f;
 
-    // glUseProgram( _programTrianglesFB->id( ));
-    // glUniformMatrix4fv( _programTrianglesFB->uModel( ), 1, GL_FALSE,
-    //                     neuron_->vecTransform( ).data( ));
-    // glUniformMatrix4fv( _programTrianglesFB->uView( ), 1, GL_FALSE,
-    //                     _camera->ViewMatrix());
-    // glUniformMatrix4fv( _programTrianglesFB->uProy( ), 1, GL_FALSE,
-    //                     _camera->ProjectionMatrix( ));
-    // glUniform3fv( _programTrianglesFB->uCameraPos( ), 1,
-    //               _camera->Position( ));
-    // glUniform1fv( _programTrianglesFB->uLod( ), 1, &_lod );
-    // glUniform1fv( _programTrianglesFB->uTng( ), 1, &_tng );
-    // glUniform1fv( _programTrianglesFB->uMaxDist( ), 1, &_maxDist );
+    unsigned int query;
+    unsigned int numPrimitives;
 
+    glGenQueries( 1, &query );
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
-    // //glEnable( GL_RASTERIZER_DISCARD );
+    glUseProgram( _programTrianglesFB->id( ));
+    glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+    glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+    glUniformMatrix4fv( 2, 1, GL_FALSE,
+                        neuron_->vecTransform( ).data( ));
+    glUniform3fv( 3, 1, color.data( ));
+    glUniform3fv( 4, 1,_camera->Position( ));
+    glUniform1fv( 5, 1, &_lod );
+    glUniform1fv( 6, 1, &_tng );
+    glUniform1fv( 7, 1, &_maxDist );
+    neuronMesh->PaintSoma( );
 
-    // // Query to know number of primitives generated
-    // unsigned int query;
-    // unsigned int numPrimitives;
+    glUseProgram( _programQuadsFB->id( ));
+    glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+    glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+    glUniformMatrix4fv( 2, 1, GL_FALSE,
+                        neuron_->vecTransform( ).data( ));
+    glUniform3fv( 3, 1, color.data( ));
+    glUniform3fv( 4, 1,_camera->Position( ));
+    glUniform1fv( 5, 1, &_lod );
+    glUniform1fv( 6, 1, &_tng );
+    glUniform1fv( 7, 1, &_maxDist );
+    neuronMesh->PaintNeurites( );
 
-    // glGenQueries( 1, &query );
-    // glBeginQuery( GL_PRIMITIVES_GENERATED, query );
+    glEndQuery( GL_PRIMITIVES_GENERATED );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
 
-    // glUseProgram( _programTrianglesFB->id( ));
-    // neuronMesh->RenderSoma( );
-
-    // glUseProgram( _programQuadsFB->id( ));
-    // neuronMesh->RenderNeurites( );
-
-    // glEndQuery( GL_PRIMITIVES_GENERATED );
-    // glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
-
-    // std::cout << "Numero de primitivas generadas: " << numPrimitives
-    //           << std::endl;
-
+    std::cout << "Numero de primitivas generadas: " << numPrimitives
+              << std::endl;
     // glDisable( GL_RASTERIZER_DISCARD );
   }
 
