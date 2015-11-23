@@ -92,7 +92,7 @@ namespace neurolots
     {
       auto duration = std::chrono::duration_cast< std::chrono::milliseconds >
         ( actualTime - _previusTime );
-      float dt = (( float ) duration.count( )) / 1000.0f;
+      float dt = (( float ) duration.count( )) * 0.001f;
 
       Eigen::Vector3f actualPivot = _pivot;
       Eigen::Vector3f diffPivot = _targetPivot - actualPivot;
