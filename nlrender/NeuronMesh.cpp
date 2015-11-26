@@ -129,6 +129,45 @@ namespace neurolots
                  (void *) (_somaEnd * sizeof(unsigned int)));
   }
 
+
+  void NeuronMesh::WriteOBJ( const std::string& fileName_, Vertices& vertices_,
+    Facets& facets_ )
+  {
+    ofstream outStream(fileName_.c_str());
+    if(!outStream.is_open())
+    {
+      std::cerr <<  fileName_ << ": Error creating the file" << std::endl;
+      return;
+    }
+
+    for ( unsigned int i = 0; i < ( unsigned int ) vertices_.size( ); i++ )
+    {
+      vertices_[i]->id( ) = i + 1;
+      outStream << "v " << vertices_[i]->position( ).x( ) << " "
+                << vertices_[i]->position( ).y( ) << " "
+                << vertices_[i]->position( ).z( ) << std::endl;
+    }
+    for( VertexPtr vertex: vertices_ )
+    {
+      outStream << "vn " << vertex->normal( ).x( ) << " "
+                << vertex->normal( ).y( ) << " "
+                << vertex->normal( ).z( ) << std::endl;
+    }
+    for( FacetPtr facet: facets_ )
+    {
+      outStream << "f " << facet->v0( )->id( ) << "//" <<  facet->v0( )->id( )
+                << " " << facet->v1( )->id( ) << "//" <<  facet->v1( )->id( )
+                << " " << facet->v2( )->id( ) << "//" <<  facet->v2( )->id( )
+                << std::endl;
+    }
+
+    outStream.close();
+    std::cout << "File " << fileName_ << " saved" << " with "
+              << vertices_.size() << " vertices and " << facets_.size()
+              << " facets." << std::endl;
+
+  }
+
 } // end namespace neurolots
 
 // EOF

@@ -28,6 +28,7 @@
 #include "Program.h"
 #include "../nlgenerator/NeuronMeshGenerator.h"
 #include "../nlgenerator/Icosphere.h"
+#include "../nlgeometry/Facet.h"
 
 //Eigen
 #include <Eigen/Dense>
@@ -68,6 +69,10 @@ namespace neurolots
 
     NLRENDER_API
     void PaintNeurites( void );
+
+    NLRENDER_API
+    void WriteOBJ( const std::string& fileName_, Vertices& vertices_,
+                   Facets& facets_ );
 
   private:
 

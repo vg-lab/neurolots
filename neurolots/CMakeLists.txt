@@ -22,6 +22,7 @@ ${OPENGL_LIBRARIES}
 ${GLEW_LIBRARIES}
 ${GLUT_LIBRARIES}
 nsol
+nlgeometry
 nlfem
 nlgenerator
 nlrender

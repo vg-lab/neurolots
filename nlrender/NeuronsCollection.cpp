@@ -10,6 +10,8 @@
 #include <gmrvzeq/gmrvzeq.h>
 #endif
 
+#include "../nlgeometry/SpatialHashTable.h"
+
 namespace neurolots
 {
 
@@ -69,8 +71,6 @@ namespace neurolots
     glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, _tbos[1] );
 
     glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
-
-
   }
 
   NeuronsCollection::~NeuronsCollection( void )
@@ -323,7 +323,8 @@ namespace neurolots
     if ( !neuron )
       return;
     neuronMesh =
-        (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
+      dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
+      ->NeuronMesh( );
     if( !neuronMesh )
       return;
 
@@ -333,13 +334,7 @@ namespace neurolots
     color[1] = color_.y( );
     color[2] = color_.z( );
 
-    unsigned int query;
-    unsigned int numPrimitives;
-
-    glGenQueries( 1, &query );
-    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
-
-    glUseProgram( _programTrianglesFB->id( ));
+    glUseProgram( _programTriangles->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniformMatrix4fv( 2, 1, GL_FALSE,
@@ -351,7 +346,7 @@ namespace neurolots
     glUniform1fv( 7, 1, &_maxDist );
     neuronMesh->PaintSoma( );
 
-    glUseProgram( _programQuadsFB->id( ));
+    glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniformMatrix4fv( 2, 1, GL_FALSE,
@@ -362,12 +357,6 @@ namespace neurolots
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
     neuronMesh->PaintNeurites( );
-
-    glEndQuery( GL_PRIMITIVES_GENERATED );
-    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
-
-    std::cout << "Numero de primitivas generadas: " << numPrimitives
-              << std::endl;
   }
 
   void NeuronsCollection::AddLod( const float& addLod_ )
@@ -477,52 +466,158 @@ namespace neurolots
     if ( !neuron_ )
       return;
     neuronMesh =
-        (( NeuronMorphologyPtr )neuron_->morphology( ))->NeuronMesh( );
+      dynamic_cast< NeuronMorphologyPtr >( neuron_->morphology( ))
+      ->NeuronMesh( );
     if( !neuronMesh )
       return;
-
-    std::vector< float > color;
-    color.resize( 3 );
-    color[0] = 1.0f;
-    color[1] = 0.0f;
-    color[2] = 0.0f;
-
-    unsigned int query;
-    unsigned int numPrimitives;
-
-    glGenQueries( 1, &query );
-    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
     glUseProgram( _programTrianglesFB->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniformMatrix4fv( 2, 1, GL_FALSE,
                         neuron_->vecTransform( ).data( ));
-    glUniform3fv( 3, 1, color.data( ));
     glUniform3fv( 4, 1,_camera->Position( ));
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
-    neuronMesh->PaintSoma( );
 
     glUseProgram( _programQuadsFB->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniformMatrix4fv( 2, 1, GL_FALSE,
                         neuron_->vecTransform( ).data( ));
-    glUniform3fv( 3, 1, color.data( ));
     glUniform3fv( 4, 1,_camera->Position( ));
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+    glDisable( GL_CULL_FACE );
+    glEnable( GL_RASTERIZER_DISCARD );
+
+    unsigned int query;
+    unsigned int numPrimitives;
+    unsigned int trianglesSize;
+    unsigned int quadsSize;
+    unsigned int size;
+
+    std::vector< float > _backVertices;
+    std::vector< float > _backNormals;
+
+    glGenQueries( 1, &query );
+
+// Triangles
+
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
+
+    glUseProgram( _programTrianglesFB->id( ));
+    neuronMesh->PaintSoma( );
+
+    glEndQuery( GL_PRIMITIVES_GENERATED );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
+
+    trianglesSize = numPrimitives * 9;
+
+// Transform feedback buffers allocate
+
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                  GL_STATIC_READ );
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                  GL_STATIC_READ );
+
+
+// Transform feedback
+    glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
+
+    glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
+    glBeginTransformFeedback( GL_TRIANGLES );
+
+    glUseProgram( _programTrianglesFB->id( ));
+    neuronMesh->PaintSoma( );
+
+    glEndTransformFeedback( );
+    glFlush( );
+
+    glEndQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
+
+    trianglesSize = numPrimitives * 9;
+
+    glBindVertexArray( 0 );
+    glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+
+// Gpu data dump to cpu
+    _backVertices.resize( trianglesSize );
+    _backNormals.resize( trianglesSize );
+
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+    glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                         _backVertices.data( ));
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+    glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                         _backNormals.data( ));
+
+// Quads
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
+
+    glUseProgram( _programQuadsFB->id( ));
     neuronMesh->PaintNeurites( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
     glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
 
-    std::cout << "Numero de primitivas generadas: " << numPrimitives
-              << std::endl;
-    // glDisable( GL_RASTERIZER_DISCARD );
+    quadsSize = numPrimitives * 9;
+
+// Transform feedback buffers allocate
+
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * quadsSize, nullptr,
+                  GL_STATIC_READ );
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * quadsSize, nullptr,
+                  GL_STATIC_READ );
+
+//Transform feedback
+    glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
+
+    glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
+    glBeginTransformFeedback( GL_TRIANGLES );
+
+    glUseProgram( _programQuadsFB->id( ));
+    neuronMesh->PaintNeurites( );
+
+    glEndTransformFeedback( );
+    glFlush( );
+
+    glEndQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
+
+    quadsSize = numPrimitives * 9;
+
+    glBindVertexArray( 0 );
+    glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+
+    glDisable( GL_RASTERIZER_DISCARD );
+
+// Gpu data dump to cpu
+    size = trianglesSize + quadsSize;
+    _backVertices.resize( size );
+    _backNormals.resize( size );
+
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+    glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * quadsSize,
+                        &_backVertices[trianglesSize] );
+    glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+    glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * quadsSize,
+                        &_backNormals[trianglesSize] );
+
+    Vertices vertices;
+    Facets facets;
+
+    _VectorToMesh( _backVertices, _backNormals, vertices, facets );
+
+    neuronMesh->WriteOBJ( std::string("out.obj"), vertices, facets );
+
   }
 
   // GETTERS
@@ -758,6 +853,54 @@ namespace neurolots
     // std::cout << "pivot: " << center.x( ) << " " << center.y( ) << " "
     //     << center.z( ) << std::endl;
     // std::cout << "radius: " << radius << std::endl;
+  }
+
+  void NeuronsCollection::_VectorToMesh( std::vector< float >& vecVertices_,
+                                         std::vector< float >& vecNormals_,
+                                         Vertices& vertices_, Facets& facets_ )
+  {
+    vertices_.clear( );
+    facets_.clear( );
+    Eigen::Vector3f position;
+    Eigen::Vector3f normal;
+
+    SpatialHashTable spht;
+
+    for ( unsigned int i = 0; i < ( unsigned int ) vecVertices_.size( ) / 9;
+          i++ )
+    {
+      position = Eigen::Vector3f( vecVertices_[i*9], vecVertices_[i*9+1],
+                                  vecVertices_[i*9+2] );
+      normal = Eigen::Vector3f( vecNormals_[i*9], vecNormals_[i*9+1],
+                                vecNormals_[i*9+2] );
+      VertexPtr v0 = new Vertex( position, normal );
+      v0 = spht.insert( v0 );
+
+      position = Eigen::Vector3f( vecVertices_[i*9+3], vecVertices_[i*9+4],
+                                  vecVertices_[i*9+5] );
+      normal = Eigen::Vector3f( vecNormals_[i*9+3], vecNormals_[i*9+4],
+                                vecNormals_[i*9+5] );
+      VertexPtr v1 = new Vertex( position, normal );
+      v1 = spht.insert( v1);
+
+      position = Eigen::Vector3f( vecVertices_[i*9+6], vecVertices_[i*9+7],
+                                  vecVertices_[i*9+8] );
+      normal = Eigen::Vector3f( vecNormals_[i*9+6], vecNormals_[i*9+7],
+                                vecNormals_[i*9+8] );
+      VertexPtr v2 = new Vertex( position, normal );
+      v2 = spht.insert( v2 );
+
+      if( v0 != v1 && v0!=v2 && v1!=v2 )
+      {
+        FacetPtr f = new Facet( v0, v1, v2 );
+        facets_.push_back( f );
+      }
+    }
+
+    spht.vertices( vertices_ );
+
+    vecVertices_.clear( );
+    vecNormals_.clear( );
   }
 
 #ifdef NEUROLOTS_USE_ZEQ

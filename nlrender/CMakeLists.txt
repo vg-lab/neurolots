@@ -1,4 +1,4 @@
-include_directories( ../nlgenerator )
+include_directories( ../nlgenerator ../nlgeometry )
 
 set(NLRENDER_PUBLIC_HEADERS
   Camera.h
@@ -30,6 +30,7 @@ set(NLRENDER_LINK_LIBRARIES
   ${GLEW_LIBRARIES}
   ${GLUT_LIBRARIES}
   nsol
+  nlgeometry
   nlgenerator
 )
 

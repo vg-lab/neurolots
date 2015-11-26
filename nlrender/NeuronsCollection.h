@@ -37,6 +37,7 @@
 
 #include <neurolots/nlrender/api.h>
 #include "Neuron.h"
+#include "../nlgeometry/Facet.h"
 
 namespace neurolots
 {
@@ -144,6 +145,10 @@ namespace neurolots
     bool _IsSelected( nsol::NeuronPtr neuron_ );
 
     void _DefaultCamera( void );
+
+    void _VectorToMesh( std::vector< float >& vecVertices_,
+                        std::vector< float >& vecNormals_,
+                        Vertices& vertices_, Facets& facets_ );
 
 #ifdef NEUROLOTS_USE_ZEQ
 
