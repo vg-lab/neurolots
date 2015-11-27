@@ -34,7 +34,7 @@ MainWindow::MainWindow( QWidget* parent_,
   connect( _ui->actionQuit, SIGNAL( triggered( )),
            QApplication::instance(), SLOT( quit( )));
 
-
+// Extraction dock
   _extractMeshDock = new QDockWidget( );
   this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
                        _extractMeshDock, Qt::Vertical );
@@ -44,7 +44,7 @@ MainWindow::MainWindow( QWidget* parent_,
   _extractMeshDock->setFeatures(QDockWidget::DockWidgetClosable |
                            QDockWidget::DockWidgetMovable |
                            QDockWidget::DockWidgetFloatable);
-  // _extractMeshDock->setWindowTitle( QString( "To define" ));
+  _extractMeshDock->setWindowTitle( QString( "Reconstruction" ));
   _extractMeshDock->setMinimumSize( 200, 200 );
 
   _extractMeshDock->close( );
@@ -52,15 +52,15 @@ MainWindow::MainWindow( QWidget* parent_,
   QWidget* newWidget = new QWidget( );
   _extractMeshDock->setWidget( newWidget );
 
-  QVBoxLayout* _dockLayout = new QVBoxLayout( );
-  _dockLayout->setAlignment( Qt::AlignTop );
-  newWidget->setLayout( _dockLayout );
+  QVBoxLayout* _meshDockLayout = new QVBoxLayout( );
+  _meshDockLayout->setAlignment( Qt::AlignTop );
+  newWidget->setLayout( _meshDockLayout );
 
   //Neurons group
   QGroupBox* _neuronsGroup = new QGroupBox( QString( "Select Neuron" ));
   QVBoxLayout* _neuronsLayout = new QVBoxLayout( );
   _neuronsGroup->setLayout( _neuronsLayout );
-  _dockLayout->addWidget( _neuronsGroup );
+  _meshDockLayout->addWidget( _neuronsGroup );
 
   _neuronList = new QListWidget( );
   _neuronsLayout->addWidget( new QLabel( QString( "Neurons" )));
@@ -70,7 +70,7 @@ MainWindow::MainWindow( QWidget* parent_,
   QGroupBox* _somaGroup = new QGroupBox( QString( "Soma reconstruction" ));
   QVBoxLayout* _somaGroupLayout = new QVBoxLayout( );
   _somaGroup->setLayout( _somaGroupLayout );
-  _dockLayout->addWidget( _somaGroup );
+  _meshDockLayout->addWidget( _somaGroup );
 
   _radiusSlider = new QSlider( Qt::Horizontal );
   _radiusSlider->setMinimum( 25 );
@@ -97,7 +97,7 @@ MainWindow::MainWindow( QWidget* parent_,
   QGroupBox* _extractionGroup = new QGroupBox( QString( "Mesh extraction" ));
   QVBoxLayout* _extractionLayout = new QVBoxLayout( );
   _extractionGroup->setLayout( _extractionLayout );
-  _dockLayout->addWidget( _extractionGroup );
+  _meshDockLayout->addWidget( _extractionGroup );
 
   _extractButton = new QPushButton( QString( "Extract" ));
   _extractionLayout->addWidget( _extractButton );
@@ -109,6 +109,35 @@ MainWindow::MainWindow( QWidget* parent_,
            _ui->actionExtractMesh, SLOT( setChecked( bool )));
   connect( _ui->actionExtractMesh, SIGNAL( triggered( )),
            this, SLOT( updateExtractMeshDock( )));
+
+// Configuration Dock
+
+  _configurationDock = new QDockWidget( );
+  this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
+                       _configurationDock, Qt::Vertical );
+  _configurationDock->setSizePolicy(QSizePolicy::MinimumExpanding,
+                             QSizePolicy::Expanding);
+
+  _configurationDock->setFeatures(QDockWidget::DockWidgetClosable |
+                           QDockWidget::DockWidgetMovable |
+                           QDockWidget::DockWidgetFloatable);
+  _configurationDock->setWindowTitle( QString( "Configuration" ));
+  _configurationDock->setMinimumSize( 200, 200 );
+
+  _configurationDock->close( );
+
+  newWidget = new QWidget( );
+  _configurationDock->setWidget( newWidget );
+
+  QVBoxLayout* _configDockLayout = new QVBoxLayout( );
+  _configDockLayout->setAlignment( Qt::AlignTop );
+  newWidget->setLayout( _configDockLayout );
+
+  connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),
+           _ui->actionConfiguration, SLOT( setChecked( bool )));
+  connect( _ui->actionConfiguration, SIGNAL( triggered( )),
+           this, SLOT( updateConfigurationDock( )));
+
 }
 
 void MainWindow::init( const std::string& zeqUri )
@@ -305,6 +334,14 @@ void MainWindow::updateExtractMeshDock( void )
     _extractMeshDock->show( );
   else
     _extractMeshDock->close( );
+}
+
+void MainWindow::updateConfigurationDock( void )
+{
+  if( _ui->actionConfiguration->isChecked( ))
+    _configurationDock->show( );
+  else
+    _configurationDock->close( );
 }
 
 void MainWindow::onListClicked( QListWidgetItem* item )

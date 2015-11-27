@@ -39,6 +39,7 @@ public slots:
   void openSWCFileThroughDialog( void );
 
   void updateExtractMeshDock( void );
+  void updateConfigurationDock( void );
   void onListClicked( QListWidgetItem *item );
 
   void onActionGenerate( void );
@@ -57,6 +58,7 @@ private:
   OpenGLWidget* _openGLWidget;
 
   QDockWidget* _extractMeshDock;
+  QDockWidget* _configurationDock;
 
   QListWidget* _neuronList;
   QSlider* _radiusSlider;
