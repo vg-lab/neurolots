@@ -57,7 +57,7 @@ namespace neurolots
     NLRENDER_API
     void loadBlueConfig( const std::string& blueConfig_,
                          const std::string& target_ = std::string( "" ),
-                         int loadFlags_ = nsol::MORPHOLOGY | nsol::HIERARCHY );
+                         int loadFlags_ = nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY );
 
     NLRENDER_API
     void loadSwc( const std::string& swcFile_ );
