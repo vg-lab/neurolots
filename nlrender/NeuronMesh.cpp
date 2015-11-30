@@ -32,8 +32,8 @@ namespace neurolots
       std::vector< float > tangents;
       std::vector< unsigned int > mesh;
 
-      NeuronMeshGenerator::GenerateMeshQuads( _morpho, vertices, centers,
-                                                      tangents, mesh, _somaEnd );
+      NeuronMeshGenerator::GenerateMesh( _morpho, vertices, centers,
+                                         tangents, mesh, _somaEnd );
       // VAO Generation
       glGenVertexArrays( 1, &vao_ );
       glBindVertexArray( vao_ );
@@ -87,6 +87,50 @@ namespace neurolots
       mesh.clear( );
       _isInit= true;
     }
+  }
+
+  void NeuronMesh::Regenerate( const float& alphaRadius_,
+                               const std::vector< float >& alphaNeurites_ )
+  {
+    std::vector< float > vertices;
+    std::vector< float > centers;
+    std::vector< float > tangents;
+    std::vector< unsigned int > mesh;
+
+    NeuronMeshGenerator::GenerateMesh( _morpho, alphaRadius_, alphaNeurites_,
+                                       vertices, centers, tangents, mesh,
+                                       _somaEnd );
+    // VAO Generation
+    glBindVertexArray( vao_ );
+
+    _size = ( unsigned int ) mesh.size( );
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
+                  vertices.data( ), GL_STATIC_DRAW );
+
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
+                  centers.data( ), GL_STATIC_DRAW );
+
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
+                  tangents.data( ), GL_STATIC_DRAW );
+
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
+                  mesh.data( ), GL_STATIC_DRAW );
+
+
+    glBindVertexArray( 0 );
+
+    vertices.clear( );
+    centers.clear( );
+    tangents.clear( );
+    mesh.clear( );
   }
 
   void NeuronMesh::Paint(void)
