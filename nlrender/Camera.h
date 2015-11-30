@@ -17,7 +17,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <ctime>
+#include <chrono>
 
 #include <neurolots/nlrender/api.h>
 
@@ -62,7 +62,7 @@ namespace neurolots
     void LocalRotation( float yaw_, float pitch_ );
 
     NLRENDER_API
-    void Anim( void );
+    bool Anim( void );
 
       // GETTERS
 
@@ -176,7 +176,7 @@ namespace neurolots
     float _speedRadius;
     float _animDuration;
 
-    std::clock_t _previusTime;
+    std::chrono::time_point< std::chrono::system_clock > _previusTime;
 
   };
 

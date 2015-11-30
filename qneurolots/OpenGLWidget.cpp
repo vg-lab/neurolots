@@ -29,6 +29,7 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   , _idleUpdate( true )
   , _paint( false )
   , _currentClearColor( 20, 20, 20, 0 )
+  , _neuron( nullptr )
 {
 #ifdef NEUROLOTS_USE_ZEQ
   if ( zeqUri != "" )
@@ -39,6 +40,10 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   else
 #endif
     _camera = new neurolots::Camera( );
+
+  _cameraTimer = new QTimer( );
+  _cameraTimer->start(( 1.0f / 60.f ) * 100 );
+  connect( _cameraTimer, SIGNAL( timeout( )), this, SLOT( timerUpdate( )));
 
   _fpsLabel.setStyleSheet(
     "QLabel { background-color : #333;"
@@ -118,6 +123,7 @@ void OpenGLWidget::initializeGL( void )
   QOpenGLWidget::initializeGL( );
 
 }
+
 void OpenGLWidget::paintGL( void )
 {
 
@@ -126,9 +132,9 @@ void OpenGLWidget::paintGL( void )
 
   if ( _paint )
   {
-    _camera->Anim( );
-
-    if ( _neuronsCollection )
+    if ( _neuron )
+      _neuronsCollection->PaintNeuron( _neuron );
+    else if ( _neuronsCollection )
       _neuronsCollection->Paint( );
 
     glUseProgram( 0 );
@@ -364,4 +370,10 @@ void OpenGLWidget::toggleWireframe( void )
   }
 
   update( );
+}
+
+void OpenGLWidget::timerUpdate( void )
+{
+  if( _camera->Anim( ))
+    this->update( );
 }

@@ -24,7 +24,7 @@ namespace neurolots
     _fov = fov_ * ( M_PI / 360.0f );
     _f = 1.0f / tan( _fov );
 
-    _previusTime = std::clock( );
+    _previusTime = std::chrono::system_clock::now( );
 
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
     _BuildProjectionMatrix( );
@@ -43,8 +43,8 @@ namespace neurolots
     , _zeqConnection( true )
     , _isAniming( false )
     , _firstStep( false )
-    , _speedPivot( 1.0f / 60 )
-    , _speedRadius( 1.0f / 60 )
+    , _speedPivot( 0.0f )
+    , _speedRadius( 0.0f )
     , _animDuration( 2.0f )
   {
     _fov = fov_ * ( M_PI / 360.0f );
@@ -52,7 +52,7 @@ namespace neurolots
 
     _uri = servus::URI(uri_);
 
-    _previusTime = std::clock( );
+    _previusTime = std::chrono::system_clock::now( );
 
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
 
@@ -83,11 +83,16 @@ namespace neurolots
     _BuildViewProjectionMatrix( );
   }
 
-  void Camera::Anim( void )
+  bool Camera::Anim( void )
   {
+    std::chrono::time_point< std::chrono::system_clock > actualTime =
+      std::chrono::system_clock::now( );
+
     if ( _isAniming )
     {
-      float dt = ( std::clock( ) - _previusTime ) / (double) CLOCKS_PER_SEC;
+      auto duration = std::chrono::duration_cast< std::chrono::milliseconds >
+        ( actualTime - _previusTime );
+      float dt = (( float ) duration.count( )) / 1000.0f;
 
       Eigen::Vector3f actualPivot = _pivot;
       Eigen::Vector3f diffPivot = _targetPivot - actualPivot;
@@ -108,10 +113,10 @@ namespace neurolots
       bool pivotInPlace = false;
       bool radiusInPlace = false;
 
-      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))      
+      if (( pivotInPlace = ( diffPivot.norm() <= distancePivot )))
         _pivot = _targetPivot;
       else
-        _pivot = actualPivot + diffPivot.normalized() * distancePivot;      
+        _pivot = actualPivot + diffPivot.normalized() * distancePivot;
 
       _BuildViewMatrix( );
       _BuildViewProjectionMatrix( );
@@ -126,8 +131,11 @@ namespace neurolots
       _BuildViewProjectionMatrix( );
 
       _isAniming = !( pivotInPlace && radiusInPlace );
+      _previusTime = actualTime;
+      return true;
     }
-    _previusTime = std::clock( );
+    _previusTime = actualTime;
+    return false;
   }
 
   // GETTERS

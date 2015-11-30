@@ -1,4 +1,5 @@
 #include "Neuron.h"
+#include "NeuronMorphology.h"
 
 #include <cfloat>
 
@@ -30,8 +31,31 @@ namespace neurolots
 
   void Neuron::Init( void )
   {
+    _vecTransform.resize( 16 );
+
+    for( int matrixRow = 0; matrixRow < 4; matrixRow++ )
+    {
+      for( int matrixCol = 0; matrixCol < 4; matrixCol++ )
+      {
+        _vecTransform[ matrixCol * 4 + matrixRow ] =
+          _transform[ matrixRow ][ matrixCol ];
+      }
+    }
     _CalculateBoundingBox( );
   }
+
+  std::vector< float >&  Neuron::vecTransform( void )
+  {
+    return _vecTransform;
+  }
+
+  void Neuron::regenerateMesh( const float& alphaRadius_,
+                               const std::vector< float >& alphaNeurites_ )
+    {
+      (( neurolots::NeuronMorphologyPtr ) _morphology )->NeuronMesh( )->
+        Regenerate( alphaRadius_, alphaNeurites_ );
+    }
+
   // GETTERS
 
   TBoundingBox Neuron::BoundingBox( void )
@@ -49,8 +73,8 @@ namespace neurolots
     float radius = _morphology->soma( )->maxRadius( );
     nsol::Vec3f center = _morphology->soma( )->center( );
 
-    nsol::Vec4f position = _transform * nsol::Vec4f( center.x( ) , center.y( ), center.z( ),
-        1.0f );
+    nsol::Vec4f position = _transform * nsol::Vec4f( center.x( ) , center.y( ),
+                                                     center.z( ), 1.0f );
 
     _boundingBox.xMin = position.x( ) - radius;
     _boundingBox.xMax = position.x( ) + radius;

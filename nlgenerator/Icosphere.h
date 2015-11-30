@@ -45,21 +45,20 @@ namespace neurolots
       void CalculateSoma( std::vector< VectorizedNodePtr >& firstNodes );
 
       NLGENERATOR_API
-      void PassTrianglesToVector( std::vector< float >& vertices,
+      void TrianglesToVector( std::vector< float >& vertices,
                                   std::vector< float >& centers,
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
       NLGENERATOR_API
-      void PassContornTrianglesToVector(
-                                  std::vector< VectorizedNodePtr >& firstNodes,
+      void TrianglesToVector( std::vector< VectorizedNodePtr >& firstNodes,
                                   std::vector< float >& vertices,
                                   std::vector< float >& centers,
                                   std::vector< float >& tangents,
                                   std::vector< unsigned int >& mesh );
 
       NLGENERATOR_API
-      void PassQuadsToVector( std::vector< float >& vertices,
+      void QuadsToVector( std::vector< float >& vertices,
                                std::vector< float >& centers,
                                std::vector< float >& tangents,
                                std::vector< unsigned int >& mesh );
