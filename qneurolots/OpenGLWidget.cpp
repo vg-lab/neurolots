@@ -388,3 +388,18 @@ void OpenGLWidget::extractMesh( void )
     glUseProgram( 0 );
   }
 }
+
+void OpenGLWidget::onLotValueChanged( int value_ )
+{
+  std::cout << "Lot " << value_ << std::endl;
+}
+
+void OpenGLWidget::onDistanceValueChanged( int value_ )
+{
+  std::cout << "Distance " << ( float ) value_ / 100.0f << std::endl;
+}
+
+void OpenGLWidget::onTangValueChanged( int value_ )
+{
+  std::cout << "Smooth " << ( float ) value_ / 50.0f << std::endl;
+}
