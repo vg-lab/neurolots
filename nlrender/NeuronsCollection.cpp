@@ -2,7 +2,6 @@
 
 #include "NeuronMorphology.h"
 #include "NeuronMesh.h"
-#include "Neuron.h"
 
 #include <cfloat>
 #include <iostream>
@@ -78,16 +77,16 @@ namespace neurolots
     loadFlags_ |= nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY;
     try{
         _dataSet.loadFromBlueConfig< nsol::Node,
-				     nsol::Section,
-				     nsol::Dendrite,
-				     nsol::Axon,
-				     nsol::Soma,
-				     NeuronMorphology,
-				     Neuron,
-				     nsol::MiniColumn,
-				     nsol::Column >( blueConfig_,
-						     loadFlags_,
-						     target_ );
+                                     nsol::Section,
+                                     nsol::Dendrite,
+                                     nsol::Axon,
+                                     nsol::Soma,
+                                     NeuronMorphology,
+                                     Neuron,
+                                     nsol::MiniColumn,
+                                     nsol::Column >( blueConfig_,
+                                                     loadFlags_,
+                                                     target_ );
         _GenerateMeshes( );
         _Init( );
 
@@ -109,12 +108,12 @@ namespace neurolots
   void NeuronsCollection::loadSwc( const std::string& swcFile_ )
   {
     _dataSet.loadNeuronFromSwc< nsol::Node,
-				nsol::Section,
-				nsol::Dendrite,
-				nsol::Axon,
-				nsol::Soma,
-				NeuronMorphology,
-				Neuron >( swcFile_, 1 );
+                                nsol::Section,
+                                nsol::Dendrite,
+                                nsol::Axon,
+                                nsol::Soma,
+                                NeuronMorphology,
+                                Neuron >( swcFile_, 1 );
     _GenerateMeshes( );
     _Init( );
 
@@ -164,10 +163,12 @@ namespace neurolots
 
   void NeuronsCollection::Paint( void )
   {
+
     nsol::MiniColumns miniColumns;
     nsol::Neurons neurons;
-    nsol::NeuronPtr neuron;
+    NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
+    NeuronMorphologyPtr morphology;
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
@@ -193,19 +194,10 @@ namespace neurolots
         neurons = miniColumns[ j ]->neurons( );
         for( unsigned int k = 0; k < neurons.size( ); k++ )
         {
-          neuron = neurons[ k ];
-          neuronMesh =
-            (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
-          std::vector< float > tMatrix;
-          tMatrix.resize( 16 );
-          for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
-          {
-            for(int matrixCol = 0; matrixCol < 4; matrixCol++)
-            {
-              tMatrix[ matrixCol * 4 + matrixRow ] =
-                neuron->transform( )[ matrixRow ][ matrixCol ];
-            }
-          }
+          neuron = dynamic_cast< NeuronPtr >( neurons[ k ] );
+          morphology = ( dynamic_cast< NeuronMorphologyPtr >
+                         ( neuron->morphology( )));
+          neuronMesh = morphology->NeuronMesh( );
           neuronMesh->PaintSoma( true );
 #ifdef NEUROLOTS_USE_ZEQ
 
@@ -259,11 +251,11 @@ namespace neurolots
 
           glUseProgram( _programQuads->id( ));
           glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
-                              tMatrix.data( ));
+                              neuron->vecTransform( ).data( ));
 
           glUseProgram( _programTriangles->id( ));
           glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
-                              tMatrix.data( ));
+                              neuron->vecTransform( ).data( ));
 
           neuronMesh->Paint( );
 
@@ -272,12 +264,12 @@ namespace neurolots
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const unsigned int id_,
-                                       const Eigen::Vector3f color_ )
+  void NeuronsCollection::PaintNeuron( const unsigned int& id_,
+                                       const Eigen::Vector3f& color_ )
   {
     nsol::MiniColumns miniColumns;
     nsol::Neurons neurons;
-    nsol::NeuronPtr neuron;
+    NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
     for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
     {
@@ -287,21 +279,11 @@ namespace neurolots
         neurons = miniColumns[ j ]->neurons( );
         for( unsigned int k = 0; k < neurons.size( ); k++ )
         {
-          neuron = neurons[ k ];
+          neuron = ( NeuronPtr ) neurons[ k ];
           if ( neuron->gid( ) == id_ )
           {
             neuronMesh =
               (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
-            std::vector< float > tMatrix;
-            tMatrix.resize( 16 );
-            for(int matrixRow = 0; matrixRow < 4; matrixRow++ )
-            {
-              for(int matrixCol = 0; matrixCol < 4; matrixCol++)
-              {
-                tMatrix[ matrixCol * 4 + matrixRow ] =
-                  neuron->transform( )[ matrixRow ][ matrixCol ];
-              }
-            }
             neuronMesh->PaintSoma( true );
             neuronMesh->PaintNeurites( true );
 
@@ -317,7 +299,7 @@ namespace neurolots
                           color.data( ));
 
             glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
-                                tMatrix.data( ));
+                                neuron->vecTransform( ).data( ));
 
             glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
                                 _camera->ViewMatrix( ));
@@ -332,7 +314,7 @@ namespace neurolots
                           color.data( ));
 
             glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
-                              tMatrix.data( ));
+                              neuron->vecTransform( ).data( ));
 
             glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
                                 _camera->ViewMatrix());
@@ -348,9 +330,60 @@ namespace neurolots
     }
   }
 
-  void NeuronsCollection::AddLod( float AddLod_ )
+  void NeuronsCollection::PaintNeuron( const NeuronPtr& neuron,
+                                       const Eigen::Vector3f& color_ )
   {
-    _lod += AddLod_;
+    NeuronMeshPtr neuronMesh;
+    if ( !neuron )
+      return;
+    neuronMesh =
+        (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
+    if( !neuronMesh )
+      return;
+
+    neuronMesh->PaintSoma( true );
+    neuronMesh->PaintNeurites( true );
+
+    std::vector< float > color;
+    color.resize( 3 );
+    color[0] = color_.x( );
+    color[1] = color_.y( );
+    color[2] = color_.z( );
+
+
+    glUseProgram( _programQuads->id( ));
+    glUniform3fv( _programQuads->uColor( ), 1,
+                  color.data( ));
+
+    glUniformMatrix4fv( _programQuads->uModel( ), 1, GL_FALSE,
+                        neuron->vecTransform( ).data( ));
+    glUniformMatrix4fv( _programQuads->uView( ), 1, GL_FALSE,
+                        _camera->ViewMatrix( ));
+    glUniformMatrix4fv( _programQuads->uProy( ), 1, GL_FALSE,
+                        _camera->ProjectionMatrix( ));
+    glUniform3fv( _programQuads->uCameraPos( ), 1,
+                  _camera->Position( ));
+
+
+    glUseProgram( _programTriangles->id( ));
+    glUniform3fv( _programTriangles->uColor( ), 1,
+                  color.data( ));
+
+    glUniformMatrix4fv( _programTriangles->uModel( ), 1, GL_FALSE,
+                        neuron->vecTransform( ).data( ));
+
+    glUniformMatrix4fv( _programTriangles->uView( ), 1, GL_FALSE,
+                        _camera->ViewMatrix());
+    glUniformMatrix4fv( _programTriangles->uProy( ), 1, GL_FALSE,
+                        _camera->ProjectionMatrix( ));
+    glUniform3fv( _programTriangles->uCameraPos( ), 1,
+                  _camera->Position( ));
+    neuronMesh->Paint( );
+  }
+
+  void NeuronsCollection::AddLod( const float& addLod_ )
+  {
+    _lod += addLod_;
     if ( _lod < 1.0f )
       _lod = 1.0f;
 
@@ -361,9 +394,9 @@ namespace neurolots
     glUniform1fv( _programTriangles->uLod( ), 1, &_lod );
   }
 
-  void NeuronsCollection::AddTng( float AddTng_ )
+  void NeuronsCollection::AddTng( const float& addTng_ )
   {
-    _tng += AddTng_;
+    _tng += addTng_;
     if ( _tng < 0.0f )
       _tng = 0.0f;
 
@@ -374,9 +407,9 @@ namespace neurolots
     glUniform1fv( _programTriangles->uTng( ), 1, &_tng );
   }
 
-  void NeuronsCollection::AddMaxDist( float AddMaxDist_ )
+  void NeuronsCollection::AddMaxDist( const float& addMaxDist_ )
   {
-    _maxDist += AddMaxDist_;
+    _maxDist += addMaxDist_;
     if( _maxDist < 2 )
       _maxDist = 2;
 
@@ -387,12 +420,120 @@ namespace neurolots
     glUniform1fv( _programTriangles->uMaxDist( ), 1, &_maxDist );
   }
 
+
+
+  void NeuronsCollection::focusOnNeuron( unsigned int id )
+  {
+    nsol::MiniColumns miniColumns;
+    nsol::Neurons neurons;
+    NeuronPtr neuron = nullptr;
+    bool found = false;
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    {
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
+      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+      {
+        neurons = miniColumns[ j ]->neurons( );
+        for( unsigned int k = 0; k < neurons.size( ); k++ )
+        {
+          if ( neurons[k]->gid( ) == id )
+          {
+            neuron = ( NeuronPtr ) neurons[ k ];
+            found = true;
+            break;
+          }
+        }
+        if ( found )
+          break;
+      }
+      if ( found )
+        break;
+    }
+
+    if( found )
+    {
+      TBoundingBox bb = neuron->BoundingBox( );
+      Eigen::Vector3f center = Eigen::Vector3f(( bb.xMin + bb.xMax ) / 2,
+                                               ( bb.yMin + bb.yMax ) / 2,
+                                               ( bb.zMin + bb.zMax ) / 2 );
+      Eigen::Vector3f corner( bb.xMin, bb.yMin, bb.zMin );
+
+      float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+      _camera->TargetPivotRadius( center, radius );
+    }
+  }
+
+  void NeuronsCollection::focusOnNeuron( NeuronPtr neuron_ )
+  {
+    if ( !neuron_ )
+      return;
+    TBoundingBox bb = neuron_->BoundingBox( );
+    Eigen::Vector3f center = Eigen::Vector3f(( bb.xMin + bb.xMax ) / 2,
+                                             ( bb.yMin + bb.yMax ) / 2,
+                                             ( bb.zMin + bb.zMax ) / 2 );
+    Eigen::Vector3f corner( bb.xMin, bb.yMin, bb.zMin );
+
+    float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+    _camera->TargetPivotRadius( center, radius );
+  }
+
+  void NeuronsCollection::focusAll( void )
+  {
+    _camera->TargetPivotRadius( _defaultPivot, _defaultRadius );
+  }
+
   // GETTERS
 
   ColumnsPtr NeuronsCollection::Columns( void )
   {
     return &_dataSet.columns( );
   }
+
+  std::vector< unsigned int > NeuronsCollection::neuronIDs( void )
+  {
+    std::vector< unsigned int > ids;
+    nsol::MiniColumns miniColumns;
+    nsol::Neurons neurons;
+
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    {
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
+      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+      {
+        neurons = miniColumns[ j ]->neurons( );
+        for( unsigned int k = 0; k < neurons.size( ); k++ )
+        {
+          ids.push_back( neurons[ k ]->gid( ));
+        }
+      }
+    }
+
+    return ids;
+  }
+
+  NeuronPtr NeuronsCollection::neuronById( unsigned int id )
+  {
+    nsol::MiniColumns miniColumns;
+    nsol::Neurons neurons;
+    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    {
+      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
+      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
+      {
+        neurons = miniColumns[ j ]->neurons( );
+        for( unsigned int k = 0; k < neurons.size( ); k++ )
+        {
+          if ( neurons[k]->gid( ) == id )
+          {
+            return ( NeuronPtr ) neurons[ k ];
+          }
+        }
+      }
+    }
+    return nullptr;
+  }
+
+
 
 #ifdef NEUROLOTS_USE_ZEQ
 
@@ -572,9 +713,9 @@ namespace neurolots
     _defaultPivot = center;
     _defaultRadius = radius;
 
-    std::cout << "pivot: " << center.x( ) << " " << center.y( ) << " "
-        << center.z( ) << std::endl;
-    std::cout << "radius: " << radius << std::endl;
+    // std::cout << "pivot: " << center.x( ) << " " << center.y( ) << " "
+    //     << center.z( ) << std::endl;
+    // std::cout << "radius: " << radius << std::endl;
   }
 
 #ifdef NEUROLOTS_USE_ZEQ

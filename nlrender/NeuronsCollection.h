@@ -36,6 +36,7 @@
 #endif
 
 #include <neurolots/nlrender/api.h>
+#include "Neuron.h"
 
 namespace neurolots
 {
@@ -71,21 +72,40 @@ namespace neurolots
     void Paint( void );
 
     NLRENDER_API
-    void PaintNeuron( const unsigned int id_, const Eigen::Vector3f color_
-                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ) );
+    void PaintNeuron( const unsigned int& id_, const Eigen::Vector3f& color_
+                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
 
     NLRENDER_API
-    void AddLod( float AddLod );
+    void PaintNeuron( const NeuronPtr& neuron, const Eigen::Vector3f& color_
+                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
 
     NLRENDER_API
-    void AddTng( float AddTng );
+    void AddLod( const float& addLod_ );
 
     NLRENDER_API
-    void AddMaxDist( float AddMaxDist );
+    void AddTng( const float& addTng_ );
+
+    NLRENDER_API
+    void AddMaxDist( const float& addMaxDist_ );
+
+    NLRENDER_API
+    void focusOnNeuron( unsigned int id );
+
+    NLRENDER_API
+    void focusOnNeuron( NeuronPtr neuron_ );
+
+    NLRENDER_API
+    void focusAll( void );
 
     //Getters
     NLRENDER_API
     ColumnsPtr Columns( void );
+
+    NLRENDER_API
+    std::vector< unsigned int > neuronIDs( void );
+
+    NLRENDER_API
+    NeuronPtr neuronById( unsigned int id );
 
 #ifdef NEUROLOTS_USE_ZEQ
 

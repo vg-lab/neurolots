@@ -4,11 +4,13 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 #include <QLabel>
+#include <QTimer>
 #include <chrono>
 
 #define NEUROLOTS_SKIP_GLEW_INCLUDE 1
 #include "../nlrender/Camera.h"
 #include "../nlrender/NeuronsCollection.h"
+#include "../nlrender/Neuron.h"
 
 class OpenGLWidget
   : public QOpenGLWidget
@@ -42,12 +44,57 @@ public:
     _idleUpdate = idleUpdate_;
   }
 
+  std::vector< unsigned int > neuronIDs( void )
+  {
+    return _neuronsCollection->neuronIDs( );
+  }
+
+  void neuron( int id_ )
+  {
+    if( id_ > -1 )
+    {
+      _neuron = _neuronsCollection->neuronById( id_ );
+      _neuronsCollection->focusOnNeuron( _neuron );
+    }
+    else
+    {
+      _neuron = nullptr;
+      _neuronsCollection->focusAll( );
+    }
+  }
+
+
+  unsigned int numNeurites( void )
+  {
+    if ( _neuron )
+    {
+      return ( unsigned int ) _neuron->morphology( )->neurites( ).size( );
+    }
+    return 0;
+  }
+
+  void regenerateNeuron( float alphaRadius_,
+                         std::vector< float > alphaNeurites_ )
+  {
+    if ( _neuron )
+    {
+      _neuron->regenerateMesh( alphaRadius_, alphaNeurites_ );
+      update( );
+    }
+  }
+
+  void home( void )
+  {
+    neuron( -1 );
+  }
+
 public slots:
 
   void changeClearColor( void );
   void toggleUpdateOnIdle( void );
   void toggleShowFPS( void );
   void toggleWireframe( void );
+  void timerUpdate( void );
 
 
 protected:
@@ -80,7 +127,11 @@ protected:
 
   QColor _currentClearColor;
 
+  neurolots::NeuronPtr _neuron;
+
+  QTimer* _cameraTimer;
   std::chrono::time_point< std::chrono::system_clock > _then;
+
 
 };
 
