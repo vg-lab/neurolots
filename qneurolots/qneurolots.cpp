@@ -5,7 +5,8 @@
 
 #include <qneurolots/version.h>
 
-void setFormat( void );
+void setFormat( int ctxOpenGLMajor, int ctxOpenGLMinor,
+                int ctxOpenGLSamples, int ctxOpenGLVSync );
 void usageMessage(  char* progName );
 void dumpVersion( void );
 bool atLeastTwo( bool a, bool b, bool c );
@@ -21,6 +22,13 @@ int main( int argc, char** argv )
   std::string target = std::string( "" );
   bool fullscreen = false, initWindowSize = false, initWindowMaximized = false;
   int initWindowWidth, initWindowHeight;
+
+
+  int ctxOpenGLMajor = DEFAULT_CONTEXT_OPENGL_MAJOR;
+  int ctxOpenGLMinor = DEFAULT_CONTEXT_OPENGL_MINOR;
+  int ctxOpenGLSamples = 0;
+  int ctxOpenGLVSync = 1;
+
 
   for( int i = 1; i < argc; i++ )
   {
@@ -107,12 +115,34 @@ int main( int argc, char** argv )
       initWindowHeight = atoi( argv[ ++i ] );
 
     }
+    if ( strcmp( argv[i], "--context-version" ) == 0 ||
+         strcmp( argv[i],"-cv") == 0 )
+    {
+      initWindowSize = true;
+      if ( i + 2 >= argc )
+        usageMessage( argv[0] );
+      ctxOpenGLMajor = atoi( argv[ ++i ] );
+      ctxOpenGLMinor = atoi( argv[ ++i ] );
 
+    }
+    if ( strcmp( argv[i], "--samples" ) == 0 ||
+         strcmp( argv[i],"-s") == 0 )
+    {
+      if ( i + 1 >= argc )
+        usageMessage( argv[0] );
+      ctxOpenGLSamples = atoi( argv[ ++i ] );
+
+    }
+    if ( strcmp( argv[i], "--no-vsync" ) == 0 ||
+         strcmp( argv[i],"-nvs") == 0 )
+    {
+      ctxOpenGLVSync = 0;
+    }
   }
 
 
-
-  setFormat( );
+  setFormat( ctxOpenGLMajor, ctxOpenGLMinor,
+             ctxOpenGLSamples, ctxOpenGLVSync );
   MainWindow mainWindow;
   mainWindow.setWindowTitle("QNeuroLOTs");
 
@@ -168,11 +198,25 @@ void usageMessage( char* progName )
             << std::endl
             << "\t[ -mw | --maximize-window ]"
             << std::endl
+            << "\t[ -s | --samples ] num_samples (1)"
+            << std::endl
+            << "\t[ -nvs | --no-vsync ] (2)"
+            << std::endl
+            << "\t[ -vs | --context-version ] major minor (3)"
+            << std::endl
             << "\t[ --version ]"
             << std::endl
             << "\t[ --help | -h ]"
             << std::endl << std::endl
-            << "* schema: for example hbp://"
+            << "\t(1) overwritten by env var CONTEXT_OPENGL_SAMPLES"
+            << std::endl
+            << "\t(2) overwritten by env var CONTEXT_OPENGL_VSYNC"
+            << std::endl
+            << "\t(3) overwritten by env var CONTEXT_OPENGL_MAJOR"
+            << std::endl
+            << "\t    overwritten by env var CONTEXT_OPENGL_MINOR"
+            << std::endl
+            << "\t(4) schema: for example hbp://"
             << std::endl << std::endl;
   exit(-1);
 }
@@ -225,12 +269,11 @@ void dumpVersion( void )
 }
 
 
-void setFormat( void )
+void setFormat( int ctxOpenGLMajor,
+                int ctxOpenGLMinor,
+                int ctxOpenGLSamples,
+                int ctxOpenGLVSync )
 {
-
-  int ctxOpenGLMajor = DEFAULT_CONTEXT_OPENGL_MAJOR;
-  int ctxOpenGLMinor = DEFAULT_CONTEXT_OPENGL_MINOR;
-  int ctxOpenGLSamples = 0;
 
   if ( std::getenv("CONTEXT_OPENGL_MAJOR"))
     ctxOpenGLMajor = std::stoi( std::getenv("CONTEXT_OPENGL_MAJOR"));
@@ -241,6 +284,9 @@ void setFormat( void )
   if ( std::getenv("CONTEXT_OPENGL_SAMPLES"))
     ctxOpenGLSamples = std::stoi( std::getenv("CONTEXT_OPENGL_SAMPLES"));
 
+  if ( std::getenv("CONTEXT_OPENGL_VSYNC"))
+    ctxOpenGLVSync = std::stoi( std::getenv("CONTEXT_OPENGL_VSYNC"));
+
   std::cerr << "Setting OpenGL context to "
             << ctxOpenGLMajor << "." << ctxOpenGLMinor << std::endl;
 
@@ -250,6 +296,8 @@ void setFormat( void )
 
   if ( ctxOpenGLSamples != 0 )
     format.setSamples( ctxOpenGLSamples );
+
+  format.setSwapInterval( ctxOpenGLVSync );
 
 
   QSurfaceFormat::setDefaultFormat( format );

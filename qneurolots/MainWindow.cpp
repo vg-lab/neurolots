@@ -1,10 +1,21 @@
 #include "ui_mainwindow.h"
 #include "MainWindow.h"
+#include <qneurolots/version.h>
+#ifdef NEUROLOTS_USE_GMRVZEQ
+#include <gmrvzeq/version.h>
+#endif
+#ifdef NEUROLOTS_USE_DEFLECT
+#include <deflect/version.h>
+#endif
+
+
 #include <QDebug>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QGroupBox>
 #include <QScrollArea>
+
 
 MainWindow::MainWindow( QWidget* parent_,
                         bool updateOnIdle )
@@ -34,6 +45,8 @@ MainWindow::MainWindow( QWidget* parent_,
   connect( _ui->actionQuit, SIGNAL( triggered( )),
            QApplication::instance(), SLOT( quit( )));
 
+  connect( _ui->actionAbout, SIGNAL(triggered( )),
+           this, SLOT( showAbout( )));
 
   _extractMeshDock = new QDockWidget( );
   this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
@@ -294,6 +307,82 @@ void MainWindow::openSWCFileThroughDialog( void )
     openSWCFile( fileName );
   }
 
+}
+
+
+void MainWindow::showAbout( void )
+{
+
+  QMessageBox::about(
+    this, tr( "About " ) + tr( "QNeurolots" ),
+    tr( "<p><BIG><b>" ) + tr( "QNeurolots" ) + tr( "</b></BIG><br><br>" ) +
+    tr( "version " ) +
+    tr( qneurolots::Version::getString( ).c_str( )) +
+    tr( " (" ) +
+    tr( std::to_string( qneurolots::Version::getRevision( )).c_str( )) +
+    tr( ")" ) +
+    tr( "<br><br>Using: " ) +
+    tr( "<ul>") +
+    tr( "<li>nsol " ) +
+    tr( nsol::Version::getString( ).c_str( )) +
+    tr( " (" ) +
+    tr( std::to_string( nsol::Version::getRevision( )).c_str( )) +
+    tr( ")</li> " ) +
+
+    tr( "<li>BBPSDK " ) +
+#ifdef NSOL_USE_BBPSDK
+    tr( bbp::Version::getString( ).c_str( )) +
+    tr( " (" ) +
+    tr( std::to_string( bbp::Version::getRevision( )).c_str( )) +
+    tr( ")" ) +
+#else
+    tr( "not built-in " ) +
+#endif
+    tr ( "</li> " ) +
+
+    tr( "<li>ZEQ " ) +
+#ifdef NEUROLOTS_USE_ZEQ
+    tr( zeq::Version::getString( ).c_str( )) +
+    tr( " (" ) +
+    tr( std::to_string( zeq::Version::getRevision( )).c_str( )) +
+    tr( ")" ) +
+#else
+    tr( "not built-in " ) +
+#endif
+    tr ( "</li> " ) +
+
+    tr( "<li>gmrvzeq " ) +
+#ifdef NEUROLOTS_USE_GMRVZEQ
+    tr( gmrvzeq::Version::getString( ).c_str( )) +
+    tr( " (" ) +
+    tr( std::to_string( gmrvzeq::Version::getRevision( )).c_str( )) +
+    tr( ")" ) +
+#else
+    tr( "not built-in " ) +
+#endif
+    tr ( "</li> " ) +
+
+    tr( "<li>Deflect " ) +
+#ifdef NEUROLOTS_USE_DEFLECT
+    tr( deflect::Version::getString( ).c_str( )) +
+    tr( " (" ) +
+    tr( std::to_string( deflect::Version::getRevision( )).c_str( )) +
+    tr( ")" ) +
+#else
+    tr( "not built-in " ) +
+#endif
+    tr ( "</li> " ) +
+
+    tr ( "</ul>" ) +
+    tr( "<br>GMRV - Universidad Rey Juan Carlos<br>"
+       "<a href=www.gmrv.es>www.gmrv.es</a><br>"
+       "<a href='mailto:gmrv@gmrv.es'>gmrv@gmrv.es</a><br><br>"
+       "<br>(C) 2015. Universidad Rey Juan Carlos<br><br>"
+       "<img src=':/icons/gmrv_grande.png' >&nbsp;&nbsp;&nbsp;&nbsp;"
+       "<img src=':/icons/logoURJC.png' ><br><br> "
+       "</p>"
+       "")
+    );
 }
 
 void MainWindow::updateExtractMeshDock( void )
