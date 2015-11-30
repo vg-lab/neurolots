@@ -93,19 +93,19 @@ namespace neurolots
     )
   {
 #ifdef NSOL_USE_BBPSDK
-    loadFlags_ |= nsol::MORPHOLOGY | nsol::HIERARCHY;
+    loadFlags_ |= nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY;
     try{
-        _dataSet.openBlueConfig< nsol::Node,
-                                 nsol::Section,
-                                 nsol::Dendrite,
-                                 nsol::Axon,
-                                 nsol::Soma,
-                                 NeuronMorphology,
-                                 Neuron,
-                                 nsol::MiniColumn,
-                                 nsol::Column >( blueConfig_,
-                                            loadFlags_,
-                                            target_ );
+        _dataSet.loadFromBlueConfig< nsol::Node,
+                                     nsol::Section,
+                                     nsol::Dendrite,
+                                     nsol::Axon,
+                                     nsol::Soma,
+                                     NeuronMorphology,
+                                     Neuron,
+                                     nsol::MiniColumn,
+                                     nsol::Column >( blueConfig_,
+                                                     loadFlags_,
+                                                     target_ );
         _GenerateMeshes( );
         _Init( );
 
@@ -126,14 +126,13 @@ namespace neurolots
 
   void NeuronsCollection::loadSwc( const std::string& swcFile_ )
   {
-    _dataSet.addNeuron< nsol::Node,
-                        nsol::Section,
-                        nsol::Dendrite,
-                        nsol::Axon,
-                        nsol::Soma,
-                        NeuronMorphology,
-                        Neuron >( swcFile_, 1 );
-
+    _dataSet.loadNeuronFromSwc< nsol::Node,
+                                nsol::Section,
+                                nsol::Dendrite,
+                                nsol::Axon,
+                                nsol::Soma,
+                                NeuronMorphology,
+                                Neuron >( swcFile_, 1 );
     _GenerateMeshes( );
     _Init( );
 
