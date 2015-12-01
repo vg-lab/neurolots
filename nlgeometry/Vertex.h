@@ -21,13 +21,21 @@ namespace neurolots
   {
   public:
 
+    NLGEOMETRY_API
     Vertex( Eigen::Vector3f position_, Eigen::Vector3f normal_ );
+
+    NLGEOMETRY_API
     ~Vertex( void );
 
     // GETTERS
 
+    NLGEOMETRY_API
     unsigned int& id( void );
+
+    NLGEOMETRY_API
     Eigen::Vector3f& position( void );
+
+    NLGEOMETRY_API
     Eigen::Vector3f& normal( void );
 
     //SETTERS

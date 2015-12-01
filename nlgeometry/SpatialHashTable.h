@@ -20,6 +20,7 @@ namespace neurolots
   {
   public:
 
+    NLGEOMETRY_API
     SpatialHashTable( unsigned int size_ = 1000,
                       float cellSize_ = 0.1f,
                       float tolerance_ = 0.00001f,
@@ -27,10 +28,13 @@ namespace neurolots
                       unsigned int prime2_ = 19349663,
                       unsigned int prime3_ = 83492791 );
 
+    NLGEOMETRY_API
     ~SpatialHashTable( void );
 
+    NLGEOMETRY_API
     VertexPtr insert( VertexPtr vertex_ );
 
+    NLGEOMETRY_API
     void vertices( Vertices& vertices_ );
 
   private:
