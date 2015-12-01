@@ -329,10 +329,6 @@ void keyboardFunc( unsigned char key, int /* _x */, int /* _y */ )
     case 'f':
       neuronsCollection->AddMaxDist( -1 );
       break;
-    case 'l':
-      NeuronPtr n = neuronsCollection->neuronById( 1 );
-      neuronsCollection->extractMesh( n );
-      break;
 #ifdef NEUROLOTS_USE_DEFLECT
     case 'p':
       if ( deflectConnect && !deflectStream )
