@@ -452,7 +452,7 @@ void MainWindow::_initExtractionDock( void )
 void MainWindow::_initConfigurationDock( void )
 {
   _configurationDock = new QDockWidget( );
-  this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
+  this->addDockWidget( Qt::DockWidgetAreas::enum_type::LeftDockWidgetArea,
                        _configurationDock, Qt::Vertical );
   _configurationDock->setSizePolicy(QSizePolicy::MinimumExpanding,
                              QSizePolicy::Expanding);
@@ -482,8 +482,8 @@ void MainWindow::_initConfigurationDock( void )
 
   _distanceSlider = new QSlider( Qt::Horizontal );
   _distanceSlider->setMinimum( 0 );
-  _distanceSlider->setMaximum( 100 );
-  _distanceSlider->setValue( 50 );
+  _distanceSlider->setMaximum( 1000 );
+  _distanceSlider->setValue( 100 );
   _configDockLayout->addWidget(
     new QLabel( QString( "Distance of tessellation" )));
   _configDockLayout->addWidget( _distanceSlider );

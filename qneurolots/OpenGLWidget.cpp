@@ -283,36 +283,6 @@ void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
     _camera->Rotation( 0.0f, 0.0f );
     update( );
     break;
-
-  case Qt::Key_W:
-    _neuronsCollection->AddLod( 1.0f );
-    update( );
-    break;
-
-  case Qt::Key_S:
-    _neuronsCollection->AddLod( -1.0f );
-    update( );
-    break;
-
-  case Qt::Key_E:
-    _neuronsCollection->AddTng( 0.1f );
-    update( );
-    break;
-
-  case Qt::Key_D:
-    _neuronsCollection->AddTng( -0.1f );
-    update( );
-    break;
-
-  case Qt::Key_R:
-    _neuronsCollection->AddMaxDist( 1 );
-    update( );
-    break;
-
-  case Qt::Key_F:
-    _neuronsCollection->AddMaxDist( -1 );
-    update( );
-    break;
   }
 }
 
@@ -391,15 +361,18 @@ void OpenGLWidget::extractMesh( void )
 
 void OpenGLWidget::onLotValueChanged( int value_ )
 {
-  std::cout << "Lot " << value_ << std::endl;
+  _neuronsCollection->lod( ( float ) value_ );
+  update( );
 }
 
 void OpenGLWidget::onDistanceValueChanged( int value_ )
 {
-  std::cout << "Distance " << ( float ) value_ / 100.0f << std::endl;
+  _neuronsCollection->maxDist(( float ) value_ / 1000.0f );
+  update( );
 }
 
 void OpenGLWidget::onTangValueChanged( int value_ )
 {
-  std::cout << "Smooth " << ( float ) value_ / 50.0f << std::endl;
+  _neuronsCollection->tng(( float ) value_ / 50.0f );
+  update( );
 }

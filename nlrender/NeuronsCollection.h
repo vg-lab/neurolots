@@ -58,7 +58,8 @@ namespace neurolots
     NLRENDER_API
     void loadBlueConfig( const std::string& blueConfig_,
                          const std::string& target_ = std::string( "" ),
-                         int loadFlags_ = nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY );
+                         int loadFlags_ = nsol::MORPHOLOGY
+                         | nsol::CORTICAL_HIERARCHY );
 
     NLRENDER_API
     void loadSwc( const std::string& swcFile_ );
@@ -79,15 +80,6 @@ namespace neurolots
     NLRENDER_API
     void PaintNeuron( const NeuronPtr& neuron, const Eigen::Vector3f& color_
                       = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
-
-    NLRENDER_API
-    void AddLod( const float& addLod_ );
-
-    NLRENDER_API
-    void AddTng( const float& addTng_ );
-
-    NLRENDER_API
-    void AddMaxDist( const float& addMaxDist_ );
 
     NLRENDER_API
     void focusOnNeuron( unsigned int id );
@@ -121,13 +113,13 @@ namespace neurolots
     //Setters
 
     NLRENDER_API
-    void Lod( float lod_ );
+    void lod( float lod_ );
 
     NLRENDER_API
-    void Tng( float tng_ );
+    void tng( float tng_ );
 
     NLRENDER_API
-    void MaxDist( float maxDist_ );
+    void maxDist( float maxDist_ );
 
     NLRENDER_API
     void NeuronColor( Eigen::Vector3f neuronColor_ );

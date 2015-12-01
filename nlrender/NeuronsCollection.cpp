@@ -17,7 +17,7 @@ namespace neurolots
 
   NeuronsCollection::NeuronsCollection( Camera* camera_ )
     : _camera( camera_ )
-    , _dataSet( nsol::DataSet( ))
+    , _dataSet( )
 #ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
@@ -51,10 +51,9 @@ namespace neurolots
     _programTriangles->Init( );
     _programTrianglesFB->Init( );
 
-
-    Lod( 3.0f );
-    Tng( 5.0f );
-    MaxDist( 200.0f );
+    lod( 3.0f );
+    tng( 0.5f );
+    maxDist( 0.1f );
 
     NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
     SelectedNeuronColor( Eigen::Vector3f( 0.7f, 0.5f, 0.0f ));
@@ -358,47 +357,6 @@ namespace neurolots
     neuronMesh->PaintNeurites( );
   }
 
-  void NeuronsCollection::AddLod( const float& addLod_ )
-  {
-    _lod += addLod_;
-    if ( _lod < 1.0f )
-      _lod = 1.0f;
-
-    glUseProgram( _programQuads->id( ));
-    glUniform1fv( 5, 1, &_lod );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniform1fv( 5, 1, &_lod );
-  }
-
-  void NeuronsCollection::AddTng( const float& addTng_ )
-  {
-    _tng += addTng_;
-    if ( _tng < 0.0f )
-      _tng = 0.0f;
-
-    glUseProgram( _programQuads->id( ));
-    glUniform1fv( 6, 1, &_tng );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniform1fv( 6, 1, &_tng );
-  }
-
-  void NeuronsCollection::AddMaxDist( const float& addMaxDist_ )
-  {
-    _maxDist += addMaxDist_;
-    if( _maxDist < 2 )
-      _maxDist = 2;
-
-    glUseProgram( _programQuads->id( ));
-    glUniform1fv( 7, 1, &_maxDist );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniform1fv( 7, 1, &_maxDist );
-  }
-
-
-
   void NeuronsCollection::focusOnNeuron( unsigned int id )
   {
     nsol::MiniColumns miniColumns;
@@ -683,7 +641,7 @@ namespace neurolots
 
   // SETTER
 
-  void NeuronsCollection::Lod( float lod_ )
+  void NeuronsCollection::lod( float lod_ )
   {
     _lod = lod_;
 
@@ -694,9 +652,14 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
   }
 
-  void NeuronsCollection::Tng( float tng_ )
+  void NeuronsCollection::tng( float tng_ )
   {
-    _tng = tng_;
+    if ( tng_ > 1.0 )
+      _tng = 10.f;
+    else if ( tng_ < 0.0f )
+      _tng = 0.0f;
+    else
+      _tng = tng_ * 10.0f;
 
     glUseProgram( _programQuads->id( ));
     glUniform1fv( 6, 1, &_tng );
@@ -705,9 +668,14 @@ namespace neurolots
     glUniform1fv( 6, 1, &_tng );
   }
 
-  void NeuronsCollection::MaxDist( float maxDist_ )
+  void NeuronsCollection::maxDist( float maxDist_ )
   {
-    _maxDist = maxDist_;
+    if ( maxDist_ > 1.0f )
+      _maxDist = _camera->FarPlane( );
+    else if ( maxDist_ < 0.0f )
+      _maxDist = 0.0f;
+    else
+      _maxDist = maxDist_ * _camera->FarPlane( );
 
     glUseProgram( _programQuads->id( ));
     glUniform1fv( 7, 1, &_maxDist );
