@@ -357,8 +357,9 @@ void MainWindow::_generateNeuritesLayout( void )
     _neuriteSlider->setMinimum(0);
     _neuriteSlider->setMaximum(200);
     _neuriteSlider->setValue(100);
-    _neuritesLayout->addWidget( new QLabel( QString( "Alpha neurite " ) +
-                                            QString::number( i )));
+    _neuritesLayout->addWidget( new QLabel( QString( "Neurite " ) +
+                                            QString::number( i ) +
+                                            QString( " factor" )));
 
     _neuritesLayout->addWidget( _neuriteSlider );
     _neuriteSliders.push_back( _neuriteSlider );
@@ -414,7 +415,7 @@ void MainWindow::_initExtractionDock( void )
   _radiusSlider->setMaximum( 100 );
   _radiusSlider->setValue( 100 );
 
-  _somaGroupLayout->addWidget( new QLabel( QString( "Alpha radius" )));
+  _somaGroupLayout->addWidget( new QLabel( QString( "Radius factor" )));
   _somaGroupLayout->addWidget( _radiusSlider );
 
   QScrollArea* _neuritesArea = new QScrollArea( );
@@ -493,7 +494,7 @@ void MainWindow::_initConfigurationDock( void )
   _tangSlider->setMaximum( 50 );
   _tangSlider->setValue( 25 );
   _configDockLayout->addWidget(
-    new QLabel( QString( "Smooth" )));
+    new QLabel( QString( "Tangent smoothing" )));
   _configDockLayout->addWidget( _tangSlider );
 
   connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),

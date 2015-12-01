@@ -9,5 +9,8 @@
     <file>open_xml.png</file>
     <file>open_bc.png</file>
     <file>colorpicker.png</file>
+    <file>reconstruction.png</file>
+    <file>home.png</file>
+    <file>settings.png</file>
   </qresource>
 </RCC>
