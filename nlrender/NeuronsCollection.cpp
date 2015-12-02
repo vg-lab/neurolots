@@ -28,24 +28,28 @@ namespace neurolots
 
     if ( getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
     {
-      std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
-                << std::endl;
-      exit(-1);
+      // std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
+      //           << std::endl;
+      _programQuads = new Program( Program::QUADS );
+      _programQuadsFB = new Program( Program::QUADS_FB );
+      _programTriangles = new Program( Program::TRIANGLES );
+      _programTrianglesFB = new Program( Program::TRIANGLES_FB );
     }
     else
+    {
       neurolotsShadersPath = std::string( getenv( "NEUROLOTS_SHADERS_PATH" ));
 
-    std::string quadsPath = neurolotsShadersPath;
-    quadsPath.append( "/quads" );
+      std::string quadsPath = neurolotsShadersPath;
+      quadsPath.append( "/quads" );
 
-    std::string trianglesPath = neurolotsShadersPath;
-    trianglesPath.append( "/triangles" );
+      std::string trianglesPath = neurolotsShadersPath;
+      trianglesPath.append( "/triangles" );
 
-    _programQuads = new Program( Program::QUADS, quadsPath );
-    _programQuadsFB = new Program( Program::QUADS_FB, quadsPath );
-    _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
-    _programTrianglesFB = new Program( Program::TRIANGLES_FB, trianglesPath );
-
+      _programQuads = new Program( Program::QUADS, quadsPath );
+      _programQuadsFB = new Program( Program::QUADS_FB, quadsPath );
+      _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
+      _programTrianglesFB = new Program( Program::TRIANGLES_FB, trianglesPath );
+    }
     _programQuads->Init();
     _programQuadsFB->Init( );
     _programTriangles->Init( );

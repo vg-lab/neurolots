@@ -5,6 +5,21 @@
 #include <fstream>
 #include <stdexcept>
 
+//OpenGL
+#ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
+#include <GL/glew.h>
+#endif
+#ifdef Darwin
+#include <gl.h>
+#include <glu.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/freeglut.h>
+#endif
+
+
 // Layout location
 
 // Attribs
@@ -30,218 +45,104 @@ namespace neurolots
   Program::Program( TProgram type_, const std::string& path_ )
     : _type( type_ )
     , id_( 0 )
-    , vshader_( 0 )
-    , teshader_( 0 )
-    , tcshader_( 0 )
-    , gshader_( 0 )
-    , fshader_( 0 )
+    , vshader_( nullptr )
+    , teshader_( nullptr )
+    , tcshader_( nullptr )
+    , gshader_( nullptr )
+    , fshader_( nullptr )
     , _path( path_ )
   {
   }
 
   Program::~Program( void )
   {
+
   }
 
-  GLuint Program::_LoadShader( const std::string& fileName_, GLenum type_ )
-  {
-    std::ifstream file;
-    file.open( fileName_.c_str( ), std::ios::in );
-    if( !file )
-      return 0;
-
-    //Calculo de la longitud del fichero
-    file.seekg( 0, std::ios::end );
-    unsigned int fileLen = file.tellg( );
-    file.seekg( std::ios::beg );
-    //Lectura del fichero
-    char *source=new char[ fileLen + 1 ];
-    int i = 0;
-    while( file.good( ))
-    {
-      source[ i ] = file.get( );
-      if( !file.eof( )) i++;
-      else fileLen = i;
-    }
-    source[ fileLen ] = '\0';
-    file.close( );
-
-    //Creacion y compilacion del Shader
-    GLuint shader;
-    shader = glCreateShader( type_ );
-    glShaderSource( shader, 1, ( const GLchar ** ) & source,
-                    ( const GLint* ) & fileLen );
-
-    glCompileShader( shader );
-    delete source;
-
-    //Comprobacion compilacion correcta
-    GLint compiled;
-    glGetShaderiv( shader, GL_COMPILE_STATUS, & compiled );
-    if( !compiled )
-    {
-      GLint logLen;
-      glGetShaderiv( shader, GL_INFO_LOG_LENGTH, & logLen );
-
-      char *logString = new char[ logLen ];
-      glGetShaderInfoLog( shader, logLen, NULL, logString );
-      std::cout << "Error: " << logString << std::endl;
-      delete logString;
-
-      glDeleteShader( shader );
-      return 0;
-    }
-    return shader;
-  }
-
-  void Program::_ShaderInit( void )
+  void Program::Init( void )
   {
     if ( !neurolots::nlrender::Config::isInitialized( ))
     {
       throw std::runtime_error( "nlrender has not been initialized" );
       return;
     }
+
     id_ = glCreateProgram( );
 
-    std::string vname;
-    std::string tcname;
-    std::string tename;
-    std::string gname;
-    std::string fname;
+    std::string vsource;
+    std::string tcsource;
+    std::string tesource;
+    std::string fsource;
+
     const char* fbVaryings[ ] = { "outValue0", "outValue1" };
 
-    switch ( _type )
+    if ( _path.size( ) > 0 )  // Shaders from NEUROLOTS_SHADERS_PATH
     {
-    case LINES:
-      vname = _path;
-      vname.append( "/vshader.glsl" );
-      fname = _path;
-      fname.append( "/fshader.glsl" );
+      vsource =  _LoadShader( std::string( _path + "/vshader.glsl" ));
+      tcsource = _LoadShader( std::string( _path + "/tcshader.glsl" ));
+      tesource = _LoadShader( std::string( _path + "/teshader.glsl" ));
 
-      std::cout << vname << std::endl;
-      std::cout << fname << std::endl;
-
-      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
-
-      glAttachShader( id_, vshader_ );
-      glAttachShader( id_, fshader_ );
-      break;
-
-    case TRIANGLES:
-      vname = _path;
-      vname.append( "/vshader.glsl" );
-      tcname = _path;
-      tcname.append( "/tcshader.glsl" );
-      tename = _path;
-      tename.append( "/teshader.glsl" );
-      fname = _path;
-      fname.append( "/fshader.glsl" );
-
-      std::cout << "Triangles shaders: " << std::endl;
-      std::cout << "\t" << vname << std::endl;
-      std::cout << "\t" << tcname << std::endl;
-      std::cout << "\t" << tename << std::endl;
-      std::cout << "\t" << fname << std::endl;
-
-      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
-
-      glAttachShader( id_, vshader_ );
-      glAttachShader( id_, tcshader_ );
-      glAttachShader( id_, teshader_ );
-      glAttachShader( id_, fshader_ );
-      break;
-
-    case TRIANGLES_FB:
-      vname = _path;
-      vname.append( "/feedback/vshader.glsl" );
-      tcname = _path;
-      tcname.append( "/feedback/tcshader.glsl" );
-      tename = _path;
-      tename.append( "/feedback/teshader.glsl" );
-      gname = _path;
-      gname.append( "/feedback/gshader.glsl" );
-
-      std::cout << "Triangles shaders feedback: " << std::endl;
-      std::cout << "\t" << vname << std::endl;
-      std::cout << "\t" << tcname << std::endl;
-      std::cout << "\t" << tename << std::endl;
-      std::cout << "\t" << gname << std::endl;
-
-      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-      gshader_ = _LoadShader( gname, GL_GEOMETRY_SHADER );
-
-      glAttachShader( id_, vshader_ );
-      glAttachShader( id_, tcshader_ );
-      glAttachShader( id_, teshader_ );
-      glAttachShader( id_, gshader_ );
-
-      glTransformFeedbackVaryings( id_, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
-      break;
-
-    case QUADS:
-      vname = _path;
-      vname.append( "/vshader.glsl" );
-      tcname = _path;
-      tcname.append( "/tcshader.glsl" );
-      tename = _path;
-      tename.append( "/teshader.glsl" );
-      fname = _path;
-      fname.append( "/fshader.glsl" );
-
-      std::cout << "Quads shaders: " << std::endl;
-      std::cout << "\t" << vname << std::endl;
-      std::cout << "\t" << tcname << std::endl;
-      std::cout << "\t" << tename << std::endl;
-      std::cout << "\t" << fname << std::endl;
-
-      //comopilacion de shaders
-      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-      fshader_ = _LoadShader( fname, GL_FRAGMENT_SHADER );
-
-      glAttachShader( id_, vshader_ );
-      glAttachShader( id_, tcshader_ );
-      glAttachShader( id_, teshader_ );
-      glAttachShader( id_, fshader_ );
-      break;
-
-    case QUADS_FB:
-      vname = _path;
-      vname.append( "/feedback/vshader.glsl" );
-      tcname = _path;
-      tcname.append( "/feedback/tcshader.glsl" );
-      tename = _path;
-      tename.append( "/feedback/teshader.glsl" );
-      gname = _path;
-      gname.append( "/feedback/gshader.glsl" );
-
-      std::cout << "Quads shaders feedback: " << std::endl;
-      std::cout << "\t" << vname << std::endl;
-      std::cout << "\t" << tcname << std::endl;
-      std::cout << "\t" << tename << std::endl;
-      std::cout << "\t" << gname << std::endl;
-
-      //comopilacion de shaders
-      vshader_ = _LoadShader( vname, GL_VERTEX_SHADER );
-      tcshader_ = _LoadShader( tcname, GL_TESS_CONTROL_SHADER );
-      teshader_ = _LoadShader( tename, GL_TESS_EVALUATION_SHADER );
-      gshader_ = _LoadShader( gname, GL_GEOMETRY_SHADER );
-
-      glAttachShader( id_, vshader_ );
-      glAttachShader( id_, tcshader_ );
-      glAttachShader( id_, teshader_ );
-      glAttachShader( id_, gshader_ );
-
-      glTransformFeedbackVaryings( id_, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
-      break;
+      if( _type == TRIANGLES || _type == QUADS )
+      {
+        fsource = _LoadShader( std::string( _path + "/fshader.glsl" ));
+      }
+      else
+      {
+        fsource = _LoadShader( std::string( _path + "/gshader.glsl" ));
+      }
     }
+    else // Sahders from source code
+    {
+      if( _type == TRIANGLES || _type == TRIANGLES_FB )
+      {
+        vsource = Shader::sourceCode( Shader::TRIANGLES_VERTEX );
+        tcsource = Shader::sourceCode( Shader::TRIANGLES_TESS_CONTROL );
+        tesource = Shader::sourceCode( Shader::TRIANGLES_TESS_EVALUATION );
+        if( _type == TRIANGLES )
+        {
+          fsource = Shader::sourceCode( Shader::TRIANGLES_FRAGMENT );
+        }
+        else
+        {
+          fsource = Shader::sourceCode( Shader::TRIANGLES_GEOMETRY );
+        }
+      }
+      else
+      {
+        vsource = Shader::sourceCode( Shader::QUADS_VERTEX );
+        tcsource = Shader::sourceCode( Shader::QUADS_TESS_CONTROL );
+        tesource = Shader::sourceCode( Shader::QUADS_TESS_EVALUATION );
+        if( _type == QUADS )
+        {
+          fsource = Shader::sourceCode( Shader::QUADS_FRAGMENT );
+        }
+        else
+        {
+          fsource = Shader::sourceCode( Shader::QUADS_GEOMETRY );
+        }
+      }
+    }
+
+    vshader_ = new Shader( GL_VERTEX_SHADER, vsource );
+    tcshader_ = new Shader( GL_TESS_CONTROL_SHADER, tcsource );
+    teshader_ = new Shader( GL_TESS_EVALUATION_SHADER, tesource );
+
+    if( _type == TRIANGLES || _type == QUADS )
+    {
+      fshader_ = new Shader( GL_FRAGMENT_SHADER, fsource );
+    }
+    else
+    {
+      fshader_ = new Shader( GL_GEOMETRY_SHADER, fsource );
+    }
+
+    glAttachShader( id_, vshader_->id( ));
+    glAttachShader( id_, tcshader_->id( ));
+    glAttachShader( id_, teshader_->id( ));
+    glAttachShader( id_, fshader_->id( ));
+
+    if( _type == TRIANGLES_FB || _type == QUADS_FB )
+      glTransformFeedbackVaryings( id_, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
 
     glLinkProgram( id_ );
     //Comprobacion de lincado
@@ -261,16 +162,32 @@ namespace neurolots
       id_ = 0;
       return;
     }
+
   }
 
-  void Program::Init( void )
-  {
-    _ShaderInit( );
-  }
-
-  GLuint Program::id( void )
+  unsigned int& Program::id( void )
   {
     return id_;
+  }
+
+  std::string Program::_LoadShader( const std::string& fileName_ )
+  {
+    std::string source;
+
+    std::ifstream file;
+    file.open( fileName_.c_str( ), std::ios::in );
+    if( !file )
+      return source;
+
+    std::string line;
+    while( std::getline( file, line ))
+    {
+      source.append( line );
+      source.append( "\n" );
+    }
+    file.close( );
+
+    return source;
   }
 
 } // end namespace neurolots
