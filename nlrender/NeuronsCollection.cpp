@@ -27,7 +27,7 @@ namespace neurolots
 
     std::string neurolotsShadersPath;
 
-    if ( true  )//getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
+    if ( getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
     {
       // std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
       //           << std::endl;
