@@ -22,7 +22,7 @@ namespace neurolots
   public:
 
     NLGEOMETRY_API
-    Vertex( Eigen::Vector3f position_, Eigen::Vector3f normal_ );
+    Vertex( const Eigen::Vector3f& position_, const Eigen::Vector3f& normal_ );
 
     NLGEOMETRY_API
     ~Vertex( void );

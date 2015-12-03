@@ -32,14 +32,14 @@ namespace neurolots
     ~SpatialHashTable( void );
 
     NLGEOMETRY_API
-    VertexPtr insert( VertexPtr vertex_ );
+    VertexPtr insert( const VertexPtr& vertex_ );
 
     NLGEOMETRY_API
-    void vertices( Vertices& vertices_ );
+    void vertices( Vertices& vertices_ ) const;
 
   private:
 
-    bool _equal( const VertexPtr v0, const VertexPtr v1 );
+    bool _equal( const VertexPtr v0, const VertexPtr v1 ) const;
 
     unsigned int _size;
     float _cellSize;

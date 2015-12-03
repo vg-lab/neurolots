@@ -21,7 +21,7 @@ namespace neurolots
   public:
 
     NLGEOMETRY_API
-    Facet( VertexPtr v0_, VertexPtr v1_, VertexPtr v2_ );
+    Facet( const VertexPtr& v0_, const VertexPtr& v1_, const VertexPtr& v2_ );
 
     NLGEOMETRY_API
     ~Facet( void );
@@ -35,6 +35,16 @@ namespace neurolots
 
     NLGEOMETRY_API
     VertexPtr& v2( void );
+
+    NLGEOMETRY_API
+    VertexPtr v0( void ) const;
+
+    NLGEOMETRY_API
+    VertexPtr v1( void ) const;
+
+    NLGEOMETRY_API
+    VertexPtr v2( void ) const;
+
 
     //SETTERS
 

@@ -5,10 +5,10 @@
 namespace neurolots
 {
   SpatialHashTable::SpatialHashTable( unsigned int size_ , float cellSize_,
-                                 float tolerance_,
-                                 unsigned int prime1_,
-                                 unsigned int prime2_,
-                                 unsigned int prime3_ )
+                                      float tolerance_,
+                                      unsigned int prime1_,
+                                      unsigned int prime2_,
+                                      unsigned int prime3_ )
     : _size( size_ )
     , _cellSize( cellSize_ )
     , _tolerance( tolerance_ )
@@ -24,7 +24,7 @@ namespace neurolots
 
   }
 
-  VertexPtr SpatialHashTable::insert( VertexPtr vertex_ )
+  VertexPtr SpatialHashTable::insert( const VertexPtr& vertex_ )
   {
     VertexPtr v = vertex_;
     unsigned int i = floor( v->position( ).x( ) / _cellSize );
@@ -54,13 +54,13 @@ namespace neurolots
     return v;
   }
 
-  void SpatialHashTable::vertices( Vertices& vertices_ )
+  void SpatialHashTable::vertices( Vertices& vertices_ ) const
   {
     vertices_.clear( );
     unsigned int id = 1;
-    for( Vertices list: _table )
+    for ( const Vertices& list: _table )
     {
-      for( VertexPtr vertex: list )
+      for ( const VertexPtr& vertex: list )
       {
         vertex->id( ) = id;
         id ++;
@@ -69,7 +69,7 @@ namespace neurolots
     }
   }
 
-  bool SpatialHashTable::_equal( VertexPtr v0, VertexPtr v1 )
+  bool SpatialHashTable::_equal( const VertexPtr v0, const VertexPtr v1 ) const
   {
     Eigen::Vector3f vpos = v1->position( ) +
       Eigen::Vector3f( _tolerance, _tolerance, _tolerance );
