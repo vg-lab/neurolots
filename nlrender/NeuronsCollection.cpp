@@ -21,12 +21,13 @@ namespace neurolots
 #ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
+    , _tessMethod( HOMOGENEOUS )
   {
     _selectedNeurons.clear( );
 
     std::string neurolotsShadersPath;
 
-    if ( getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
+    if ( true  )//getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
     {
       // std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
       //           << std::endl;
@@ -218,16 +219,19 @@ namespace neurolots
         {
           glUseProgram( _programQuads->id( ));
           glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
           neuronMesh->PaintNeurites( );
 
           glUseProgram( _programTriangles->id( ));
           glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
           neuronMesh->PaintSoma( );
         }
         else
         {
           glUseProgram( _programTriangles->id( ));
           glUniform3fv( 3, 1, _neuronColor.data( ));
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
           neuronMesh->PaintSoma( );
         }
       }
@@ -235,19 +239,23 @@ namespace neurolots
       {
         glUseProgram( _programQuads->id( ));
         glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
         neuronMesh->PaintNeurites( );
 
         glUseProgram( _programTriangles->id( ));
         glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
         neuronMesh->PaintSoma( );
       }
 #else
       glUseProgram( _programQuads->id( ));
       glUniform3fv( 3, 1, _neuronColor.data( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
       neuronMesh->PaintNeurites( );
 
       glUseProgram( _programTriangles->id( ));
       glUniform3fv( 3, 1, _neuronColor.data( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
       neuronMesh->PaintSoma( );
 #endif
     }
@@ -282,6 +290,7 @@ namespace neurolots
                           neuron->vecTransform( ).data( ));
       glUniform3fv( 3, 1, color.data( ));
       glUniform3fv( 4, 1,_camera->Position( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
       neuronMesh->PaintNeurites( );
 
       glUseProgram( _programTriangles->id( ));
@@ -291,6 +300,7 @@ namespace neurolots
                           neuron->vecTransform( ).data( ));
       glUniform3fv( 3, 1, color.data( ));
       glUniform3fv( 4, 1,_camera->Position( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
       neuronMesh->PaintSoma( );
     }
   }
@@ -323,6 +333,7 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintSoma( );
 
     glUseProgram( _programQuads->id( ));
@@ -335,6 +346,7 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintNeurites( );
   }
 
@@ -411,6 +423,7 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+
     glDisable( GL_CULL_FACE );
     glEnable( GL_RASTERIZER_DISCARD );
 
@@ -430,6 +443,7 @@ namespace neurolots
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
     glUseProgram( _programTrianglesFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintSoma( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
@@ -454,6 +468,7 @@ namespace neurolots
     glBeginTransformFeedback( GL_TRIANGLES );
 
     glUseProgram( _programTrianglesFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintSoma( );
 
     glEndTransformFeedback( );
@@ -482,6 +497,7 @@ namespace neurolots
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
     glUseProgram( _programQuadsFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintNeurites( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
@@ -505,6 +521,7 @@ namespace neurolots
     glBeginTransformFeedback( GL_TRIANGLES );
 
     glUseProgram( _programQuadsFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintNeurites( );
 
     glEndTransformFeedback( );
@@ -590,7 +607,10 @@ namespace neurolots
 
   void NeuronsCollection::lod( float lod_ )
   {
-    _lod = lod_;
+    if( lod_ < 1 )
+      _lod = 1;
+    else
+      _lod = lod_;
 
     glUseProgram( _programQuads->id( ));
     glUniform1fv( 5, 1, &_lod );

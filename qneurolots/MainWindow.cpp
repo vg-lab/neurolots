@@ -490,8 +490,8 @@ void MainWindow::_initConfigurationDock( void )
   tessParamsGroup->setLayout( vbox );
 
   _lotSlider = new QSlider( Qt::Horizontal );
-  _lotSlider->setMinimum( 0 );
-  _lotSlider->setMaximum( 40 );
+  _lotSlider->setMinimum( 1 );
+  _lotSlider->setMaximum( 10 );
   _lotSlider->setValue( 4 );
   vbox->addWidget(
     new QLabel( QString( "Level" )));
@@ -500,7 +500,7 @@ void MainWindow::_initConfigurationDock( void )
   _distanceSlider = new QSlider( Qt::Horizontal );
   _distanceSlider->setMinimum( 0 );
   _distanceSlider->setMaximum( 1000 );
-  _distanceSlider->setValue( 100 );
+  _distanceSlider->setValue( 10 );
   vbox->addWidget(
     new QLabel( QString( "Maximum Distance" )));
   vbox->addWidget( _distanceSlider );
@@ -508,7 +508,7 @@ void MainWindow::_initConfigurationDock( void )
   _tangSlider = new QSlider( Qt::Horizontal );
   _tangSlider->setMinimum( 0 );
   _tangSlider->setMaximum( 50 );
-  _tangSlider->setValue( 25 );
+  _tangSlider->setValue( 10 );
   vbox->addWidget(
     new QLabel( QString( "Tangent smoothing" )));
   vbox->addWidget( _tangSlider );

@@ -49,6 +49,12 @@ namespace neurolots
 
   public:
 
+    typedef enum
+    {
+      HOMOGENEOUS = 0,
+      LINEAR
+    }TTessMethod;
+
     NLRENDER_API
     NeuronsCollection( Camera* camera_ );
 
@@ -128,6 +134,11 @@ namespace neurolots
     NLRENDER_API
     void SelectedNeuronColor( Eigen::Vector3f selectedNeuronColor_ );
 
+    NLRENDER_API
+    void tessMethod( TTessMethod tessMethod_ )
+    {
+      _tessMethod = ( unsigned int ) tessMethod_;
+    }
 
     private:
 
@@ -185,6 +196,8 @@ namespace neurolots
 
     Eigen::Vector3f _defaultPivot;
     float _defaultRadius;
+
+    unsigned int _tessMethod;
   };
 
 } // end namespace neurolots

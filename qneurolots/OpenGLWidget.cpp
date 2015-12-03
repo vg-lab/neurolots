@@ -379,10 +379,12 @@ void OpenGLWidget::onTangValueChanged( int value_ )
 
 void OpenGLWidget::onHomogeneousClicked( void )
 {
-  std::cout << "Homogeneus" << std::endl;
+  _neuronsCollection->tessMethod( neurolots::NeuronsCollection::HOMOGENEOUS );
+  update( );
 }
 
 void OpenGLWidget::onLinearClicked( void )
 {
-  std::cout << "Linear" << std::endl;
+  _neuronsCollection->tessMethod( neurolots::NeuronsCollection::LINEAR );
+  update( );
 }

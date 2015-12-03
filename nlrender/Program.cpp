@@ -39,6 +39,8 @@
 // 6 Alpha Tangent Module float
 // 7 Maximun Distance float
 
+// 8 Tessellation dist rubroutine
+
 namespace neurolots
 {
 
