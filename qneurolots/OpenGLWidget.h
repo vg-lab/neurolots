@@ -95,6 +95,7 @@ public slots:
   void toggleShowFPS( void );
   void toggleWireframe( void );
   void timerUpdate( void );
+  void extractMesh( void );
 
 
 protected:

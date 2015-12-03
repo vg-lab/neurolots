@@ -67,7 +67,7 @@ namespace neurolots
     private:
 
       void _DivideSphere( unsigned int level );
-      void _CalculateContornCenters( void );
+      void _CalculateCenters( void );
 
       Eigen::Vector3f _center;
       float _radius;

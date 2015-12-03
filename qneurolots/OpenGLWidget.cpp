@@ -133,6 +133,7 @@ void OpenGLWidget::paintGL( void )
   if ( _paint )
   {
     if ( _neuron )
+      //_neuronsCollection->extractMesh( _neuron );
       _neuronsCollection->PaintNeuron( _neuron );
     else if ( _neuronsCollection )
       _neuronsCollection->Paint( );
@@ -376,4 +377,14 @@ void OpenGLWidget::timerUpdate( void )
 {
   if( _camera->Anim( ))
     this->update( );
+}
+
+void OpenGLWidget::extractMesh( void )
+{
+  if( _neuron )
+  {
+    this->makeCurrent( );
+    _neuronsCollection->extractMesh( _neuron );
+    glUseProgram( 0 );
+  }
 }

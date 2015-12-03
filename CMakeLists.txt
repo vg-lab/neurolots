@@ -82,6 +82,7 @@ common_package_post()
 
 set(PROJECT_INCLUDE_NAME neurolots)
 
+add_subdirectory( nlgeometry )
 add_subdirectory( nlfem )
 add_subdirectory( nlgenerator )
 add_subdirectory( nlrender )

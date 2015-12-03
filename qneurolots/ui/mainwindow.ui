@@ -54,6 +54,7 @@
     <addaction name="actionWireframe"/>
     <addaction name="actionBackgroundColor"/>
     <addaction name="actionExtractMesh"/>
+    <addaction name="actionConfiguration"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -79,6 +80,7 @@
    <addaction name="actionCloseData"/>
    <addaction name="actionBackgroundColor"/>
    <addaction name="actionExtractMesh"/>
+   <addaction name="actionConfiguration"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -251,6 +253,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionConfiguration">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qrc/resources.qrc">
+     <normaloff>:/icons/wireframe.png</normaloff>:/icons/wireframe.png</iconset>
+   </property>
+   <property name="text">
+    <string>Configuration</string>
+   </property>
+   <property name="toolTip">
+    <string>Configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

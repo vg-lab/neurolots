@@ -85,6 +85,7 @@ set(QNEUROLOTS_LINK_LIBRARIES
   Qt5::Widgets
   Qt5::OpenGL
   nsol
+  nlgeometry
   nlfem
   nlgenerator
   nlrender

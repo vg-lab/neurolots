@@ -37,6 +37,7 @@
 
 #include <neurolots/nlrender/api.h>
 #include "Neuron.h"
+#include "../nlgeometry/Facet.h"
 
 namespace neurolots
 {
@@ -57,7 +58,8 @@ namespace neurolots
     NLRENDER_API
     void loadBlueConfig( const std::string& blueConfig_,
                          const std::string& target_ = std::string( "" ),
-                         int loadFlags_ = nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY );
+                         int loadFlags_ = nsol::MORPHOLOGY |
+                         nsol::CORTICAL_HIERARCHY );
 
     NLRENDER_API
     void loadSwc( const std::string& swcFile_ );
@@ -96,6 +98,9 @@ namespace neurolots
 
     NLRENDER_API
     void focusAll( void );
+
+    NLRENDER_API
+    void extractMesh( NeuronPtr neuron_ );
 
     //Getters
     NLRENDER_API
@@ -142,6 +147,10 @@ namespace neurolots
 
     void _DefaultCamera( void );
 
+    void _VectorToMesh( const std::vector< float >& vecVertices_,
+                        const std::vector< float >& vecNormals_,
+                        Vertices& vertices_, Facets& facets_ ) const;
+
 #ifdef NEUROLOTS_USE_ZEQ
 
     void _OnFocusEvent( const zeq::Event& event_ );
@@ -153,6 +162,13 @@ namespace neurolots
 
     Program* _programTriangles;
     Program* _programQuads;
+
+    Program* _programTrianglesFB;
+    Program* _programQuadsFB;
+
+    unsigned int _tfo;
+    std::vector< unsigned int > _tbos;
+
     Camera* _camera;
 
     float _lod;

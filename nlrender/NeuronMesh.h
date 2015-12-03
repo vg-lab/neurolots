@@ -28,6 +28,7 @@
 #include "Program.h"
 #include "../nlgenerator/NeuronMeshGenerator.h"
 #include "../nlgenerator/Icosphere.h"
+#include "../nlgeometry/Facet.h"
 
 //Eigen
 #include <Eigen/Dense>
@@ -51,8 +52,7 @@ namespace neurolots
   public:
 
     NLRENDER_API
-    NeuronMesh( nsol::NeuronMorphologyPtr morpho_,
-                  Program * programTriangles_, Program * programQuads_ );
+    NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ );
 
     NLRENDER_API
     ~NeuronMesh( void );
@@ -65,28 +65,18 @@ namespace neurolots
                      const std::vector< float >& alphaNeurites_ );
 
     NLRENDER_API
-    void Paint( void );
-
-    //Getters
-    NLRENDER_API
-    bool PaintSoma( void );
+    void PaintSoma( void ) const;
 
     NLRENDER_API
-    bool PaintNeurites( void );
-
-    //Setters
-    NLRENDER_API
-    void PaintSoma( bool paintSoma_ );
+    void PaintNeurites( void ) const;
 
     NLRENDER_API
-    void PaintNeurites( bool paintNeurites_ );
+    void WriteOBJ( const std::string& fileName_, Vertices& vertices_,
+                   const Facets& facets_ ) const;
 
   private:
 
     nsol::NeuronMorphologyPtr _morpho;
-
-    Program * _programTriangles;
-    Program * _programQuads;
 
     GLuint vao_;
     GLuint * vbo_;
@@ -95,9 +85,6 @@ namespace neurolots
     unsigned int _somaEnd;
 
     bool _isInit;
-
-    bool _paintSoma;
-    bool _paintNeurites;
   };
 
   typedef NeuronMesh * NeuronMeshPtr;
