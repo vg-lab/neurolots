@@ -50,7 +50,7 @@ namespace neurolots
 
   void Shader::_compileShader( const std::string& source_ )
   {
-    int sourceLen = source_.size( ) + 1;
+    size_t sourceLen = source_.size( ) + 1;
     char* source = new char[ sourceLen ];
 
     std::copy( source_.begin( ), source_.end( ), source );
