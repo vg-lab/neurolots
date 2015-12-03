@@ -104,11 +104,24 @@ void MainWindow::init( const std::string& zeqUri )
   connect( _lotSlider, SIGNAL( valueChanged( int )),
            _openGLWidget, SLOT( onLotValueChanged( int )));
 
+  _lotSlider->valueChanged( _lotSlider->value( ));
+
   connect( _distanceSlider, SIGNAL( valueChanged( int )),
            _openGLWidget, SLOT( onDistanceValueChanged( int )));
 
+  _distanceSlider->valueChanged( _distanceSlider->value( ));
+
   connect( _tangSlider, SIGNAL( valueChanged( int )),
            _openGLWidget, SLOT( onTangValueChanged( int )));
+
+  _tangSlider->valueChanged( _tangSlider->value( ));
+
+  connect( _radioHomogeneous, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( onHomogeneousClicked( )));
+
+  connect( _radioLinear, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( onLinearClicked( )));
+  _radioLinear->clicked( );
 }
 
 
@@ -116,8 +129,6 @@ void MainWindow::showStatusBarMessage ( const QString& message )
 {
   _ui->statusbar->showMessage( message );
 }
-
-
 
 void MainWindow::openBlueConfig( const std::string& fileName,
                                  const std::string& targetLabel )
@@ -473,29 +484,48 @@ void MainWindow::_initConfigurationDock( void )
   _configDockLayout->setAlignment( Qt::AlignTop );
   newWidget->setLayout( _configDockLayout );
 
+  QGroupBox* tessParamsGroup = new QGroupBox( QString( "Tessellation params" ));
+  _configDockLayout->addWidget( tessParamsGroup );
+  QVBoxLayout* vbox = new QVBoxLayout;
+  tessParamsGroup->setLayout( vbox );
+
   _lotSlider = new QSlider( Qt::Horizontal );
   _lotSlider->setMinimum( 0 );
   _lotSlider->setMaximum( 40 );
-  _lotSlider->setValue( 10 );
-  _configDockLayout->addWidget(
-    new QLabel( QString( "Level of tessellation" )));
-  _configDockLayout->addWidget( _lotSlider );
+  _lotSlider->setValue( 4 );
+  vbox->addWidget(
+    new QLabel( QString( "Level" )));
+  vbox->addWidget( _lotSlider );
 
   _distanceSlider = new QSlider( Qt::Horizontal );
   _distanceSlider->setMinimum( 0 );
   _distanceSlider->setMaximum( 1000 );
   _distanceSlider->setValue( 100 );
-  _configDockLayout->addWidget(
-    new QLabel( QString( "Distance of tessellation" )));
-  _configDockLayout->addWidget( _distanceSlider );
+  vbox->addWidget(
+    new QLabel( QString( "Maximum Distance" )));
+  vbox->addWidget( _distanceSlider );
 
   _tangSlider = new QSlider( Qt::Horizontal );
   _tangSlider->setMinimum( 0 );
   _tangSlider->setMaximum( 50 );
   _tangSlider->setValue( 25 );
-  _configDockLayout->addWidget(
+  vbox->addWidget(
     new QLabel( QString( "Tangent smoothing" )));
-  _configDockLayout->addWidget( _tangSlider );
+  vbox->addWidget( _tangSlider );
+
+  // Radio Buttons Group
+
+  QGroupBox* tessMethodGroup = new QGroupBox( QString( "Tessellation method" ));
+  _configDockLayout->addWidget( tessMethodGroup );
+  vbox = new QVBoxLayout;
+  tessMethodGroup->setLayout( vbox );
+
+  _radioHomogeneous = new QRadioButton( QString( "Homogeneous" ));
+  vbox->addWidget( _radioHomogeneous );
+  _radioLinear = new QRadioButton( QString( "Linear" ));
+  vbox->addWidget( _radioLinear );
+
+  _radioLinear->setChecked( true );
 
   connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),
            _ui->actionConfiguration, SLOT( setChecked( bool )));

@@ -376,3 +376,13 @@ void OpenGLWidget::onTangValueChanged( int value_ )
   _neuronsCollection->tng(( float ) value_ / 50.0f );
   update( );
 }
+
+void OpenGLWidget::onHomogeneousClicked( void )
+{
+  std::cout << "Homogeneus" << std::endl;
+}
+
+void OpenGLWidget::onLinearClicked( void )
+{
+  std::cout << "Linear" << std::endl;
+}

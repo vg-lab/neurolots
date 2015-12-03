@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QRadioButton>
 
 namespace Ui
 {
@@ -71,4 +72,8 @@ private:
   QSlider* _lotSlider;
   QSlider* _distanceSlider;
   QSlider* _tangSlider;
+
+  QRadioButton* _radioHomogeneous;
+  QRadioButton* _radioLinear;
+
 };
