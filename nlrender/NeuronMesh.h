@@ -52,7 +52,7 @@ namespace neurolots
   public:
 
     NLRENDER_API
-    NeuronMesh( nsol::NeuronMorphologyPtr morpho_ );
+    NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ );
 
     NLRENDER_API
     ~NeuronMesh( void );
@@ -65,14 +65,14 @@ namespace neurolots
                      const std::vector< float >& alphaNeurites_ );
 
     NLRENDER_API
-    void PaintSoma( void );
+    void PaintSoma( void ) const;
 
     NLRENDER_API
-    void PaintNeurites( void );
+    void PaintNeurites( void ) const;
 
     NLRENDER_API
     void WriteOBJ( const std::string& fileName_, Vertices& vertices_,
-                   Facets& facets_ );
+                   const Facets& facets_ ) const;
 
   private:
 

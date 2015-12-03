@@ -5,7 +5,7 @@ using namespace std;
 namespace neurolots
 {
 
-  NeuronMesh::NeuronMesh( nsol::NeuronMorphologyPtr morpho_ )
+  NeuronMesh::NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ )
     : _morpho( morpho_ )
     , _isInit( false )
   {
@@ -114,14 +114,14 @@ namespace neurolots
     mesh.clear( );
   }
 
-  void NeuronMesh::PaintSoma( void )
+  void NeuronMesh::PaintSoma( void ) const
   {
     glBindVertexArray(vao_);
     glPatchParameteri( GL_PATCH_VERTICES, 3 );
     glDrawElements( GL_PATCHES, _somaEnd, GL_UNSIGNED_INT, 0 );
   }
 
-  void NeuronMesh::PaintNeurites( void )
+  void NeuronMesh::PaintNeurites( void ) const
   {
     glBindVertexArray(vao_);
     glPatchParameteri( GL_PATCH_VERTICES, 4 );
@@ -131,7 +131,7 @@ namespace neurolots
 
 
   void NeuronMesh::WriteOBJ( const std::string& fileName_, Vertices& vertices_,
-    Facets& facets_ )
+    const Facets& facets_ ) const
   {
     ofstream outStream(fileName_.c_str());
     if(!outStream.is_open())

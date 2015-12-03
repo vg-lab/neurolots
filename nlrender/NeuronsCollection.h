@@ -58,8 +58,9 @@ namespace neurolots
     NLRENDER_API
     void loadBlueConfig( const std::string& blueConfig_,
                          const std::string& target_ = std::string( "" ),
-                         int loadFlags_ = nsol::MORPHOLOGY
-                         | nsol::CORTICAL_HIERARCHY );
+
+                         int loadFlags_ = nsol::MORPHOLOGY |
+                         nsol::CORTICAL_HIERARCHY );
 
     NLRENDER_API
     void loadSwc( const std::string& swcFile_ );
@@ -138,9 +139,9 @@ namespace neurolots
 
     void _DefaultCamera( void );
 
-    void _VectorToMesh( std::vector< float >& vecVertices_,
-                        std::vector< float >& vecNormals_,
-                        Vertices& vertices_, Facets& facets_ );
+    void _VectorToMesh( const std::vector< float >& vecVertices_,
+                        const std::vector< float >& vecNormals_,
+                        Vertices& vertices_, Facets& facets_ ) const;
 
 #ifdef NEUROLOTS_USE_ZEQ
 

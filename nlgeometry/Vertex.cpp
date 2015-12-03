@@ -3,7 +3,8 @@
 namespace neurolots
 {
 
-  Vertex::Vertex(  Eigen::Vector3f position_, Eigen::Vector3f normal_ )
+  Vertex::Vertex(  const Eigen::Vector3f& position_,
+                   const Eigen::Vector3f& normal_ )
     : _id( 0 )
     , _position( position_ )
     , _normal( normal_ )

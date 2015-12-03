@@ -302,8 +302,8 @@ namespace neurolots
     if ( !neuron )
       return;
     neuronMesh =
-      dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
-      ->NeuronMesh( );
+      dynamic_cast< NeuronMorphologyPtr >(
+        neuron->morphology( ))->NeuronMesh( );
     if( !neuronMesh )
       return;
 
@@ -387,8 +387,8 @@ namespace neurolots
     if ( !neuron_ )
       return;
     neuronMesh =
-      dynamic_cast< NeuronMorphologyPtr >( neuron_->morphology( ))
-      ->NeuronMesh( );
+      dynamic_cast< NeuronMorphologyPtr >(
+        neuron_->morphology( ))->NeuronMesh( );
     if( !neuronMesh )
       return;
 
@@ -536,6 +536,9 @@ namespace neurolots
     Facets facets;
 
     _VectorToMesh( _backVertices, _backNormals, vertices, facets );
+
+    _backVertices.clear( );
+    _backNormals.clear( );
 
     neuronMesh->WriteOBJ( std::string("out.obj"), vertices, facets );
 
@@ -734,9 +737,10 @@ namespace neurolots
     // std::cout << "radius: " << radius << std::endl;
   }
 
-  void NeuronsCollection::_VectorToMesh( std::vector< float >& vecVertices_,
-                                         std::vector< float >& vecNormals_,
-                                         Vertices& vertices_, Facets& facets_ )
+  void NeuronsCollection::_VectorToMesh(
+    const std::vector< float >& vecVertices_,
+    const std::vector< float >& vecNormals_,
+    Vertices& vertices_, Facets& facets_ ) const
   {
     vertices_.clear( );
     facets_.clear( );
@@ -777,9 +781,6 @@ namespace neurolots
     }
 
     spht.vertices( vertices_ );
-
-    vecVertices_.clear( );
-    vecNormals_.clear( );
   }
 
 #ifdef NEUROLOTS_USE_ZEQ
