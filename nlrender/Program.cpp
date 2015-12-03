@@ -48,7 +48,6 @@ namespace neurolots
     , vshader_( nullptr )
     , teshader_( nullptr )
     , tcshader_( nullptr )
-    , gshader_( nullptr )
     , fshader_( nullptr )
     , _path( path_ )
   {
@@ -56,7 +55,6 @@ namespace neurolots
 
   Program::~Program( void )
   {
-
   }
 
   void Program::Init( void )

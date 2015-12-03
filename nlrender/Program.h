@@ -56,7 +56,6 @@ namespace neurolots
     ShaderPtr vshader_;
     ShaderPtr teshader_;
     ShaderPtr tcshader_;
-    ShaderPtr gshader_;
     ShaderPtr fshader_;
 
     std::string _path;
