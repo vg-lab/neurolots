@@ -1,0 +1,4 @@
+Copyright (c) 2015 Grupo de Modelado y Realidad Virtual (GMRV)
+                   Universidad Rey Juan Carlos (URJC)
+
+All rights reserved. Do not distribute without further notice.
