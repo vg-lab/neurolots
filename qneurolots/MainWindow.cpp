@@ -491,7 +491,7 @@ void MainWindow::_initConfigurationDock( void )
 
   _lotSlider = new QSlider( Qt::Horizontal );
   _lotSlider->setMinimum( 1 );
-  _lotSlider->setMaximum( 10 );
+  _lotSlider->setMaximum( 30 );
   _lotSlider->setValue( 4 );
   vbox->addWidget(
     new QLabel( QString( "Level" )));
