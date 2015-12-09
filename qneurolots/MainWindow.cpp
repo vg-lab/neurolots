@@ -156,9 +156,9 @@ void MainWindow::openSWCFile( const std::string& fileName )
 void MainWindow::updateNeuronList( void )
 {
   _neuronList->clear( );
-  std::vector< unsigned int > ids = _openGLWidget->neuronIDs( );
+  const std::vector< unsigned int >& ids = _openGLWidget->neuronIDs( );
 
-  for( auto id: ids )
+  for( const auto& id: ids )
   {
     _neuronList->addItem( QString::number( id ));
   }

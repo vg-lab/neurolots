@@ -199,9 +199,9 @@ namespace neurolots
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniform3fv( 4, 1, _camera->Position( ));
 
-    for ( auto ele: _dataSet.neurons( ))
+    for ( const auto& element: _dataSet.neurons( ))
     {
-      neuron = dynamic_cast< NeuronPtr >( ele.second );
+      neuron = dynamic_cast< NeuronPtr >( element.second );
       neuronMesh = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
         ->NeuronMesh( );
 
@@ -572,9 +572,9 @@ namespace neurolots
   {
     std::vector< unsigned int > ids;
 
-    for ( auto ele: _dataSet.neurons( ))
+    for ( const auto& element: _dataSet.neurons( ))
     {
-      ids.push_back( ele.second->gid( ));
+      ids.push_back( element.second->gid( ));
     }
 
     return ids;
@@ -675,9 +675,9 @@ namespace neurolots
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
 
-    for ( auto ele: _dataSet.neurons( ))
+    for ( auto& element: _dataSet.neurons( ))
     {
-      neuron = dynamic_cast< NeuronPtr >( ele.second );
+      neuron = dynamic_cast< NeuronPtr >( element.second );
       morpho =  dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ));
       neuronMesh = morpho->NeuronMesh( );
 
@@ -691,9 +691,10 @@ namespace neurolots
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
 
-    for( auto ele: _dataSet.neurons( ))
+    for( auto& element: _dataSet.neurons( ))
     {
-      morpho = dynamic_cast< NeuronMorphologyPtr >( ele.second->morphology( ));
+      morpho = dynamic_cast< NeuronMorphologyPtr >(
+        element.second->morphology( ));
       if( !morpho->HasNeuronMesh( ) )
       {
         neuronMesh = new NeuronMesh( morpho );
@@ -721,9 +722,9 @@ namespace neurolots
     boundingBox.zMin = FLT_MAX;
 
 
-    for ( auto ele: _dataSet.neurons( ))
+    for ( const auto& element: _dataSet.neurons( ))
     {
-      neuron = dynamic_cast< NeuronPtr >( ele.second );
+      neuron = dynamic_cast< NeuronPtr >( element.second );
       TBoundingBox box = neuron->BoundingBox( );
 
       if( box.xMax > boundingBox.xMax)
