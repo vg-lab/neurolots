@@ -71,8 +71,9 @@ namespace neurolots
     void PaintNeurites( void ) const;
 
     NLRENDER_API
-    void WriteOBJ( const std::string& fileName_, Vertices& vertices_,
-                   const Facets& facets_ ) const;
+    void WriteOBJ( const std::string& fileName_,
+                   nlgeometry::Vertices& vertices_,
+                   const nlgeometry::Facets& facets_ ) const;
 
   private:
 

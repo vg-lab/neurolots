@@ -549,8 +549,8 @@ namespace neurolots
     glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * quadsSize,
                         &_backNormals[trianglesSize] );
 
-    Vertices vertices;
-    Facets facets;
+    nlgeometry::Vertices vertices;
+    nlgeometry::Facets facets;
 
     _VectorToMesh( _backVertices, _backNormals, vertices, facets );
 
@@ -761,14 +761,15 @@ namespace neurolots
   void NeuronsCollection::_VectorToMesh(
     const std::vector< float >& vecVertices_,
     const std::vector< float >& vecNormals_,
-    Vertices& vertices_, Facets& facets_ ) const
+    nlgeometry::Vertices& vertices_,
+    nlgeometry::Facets& facets_ ) const
   {
     vertices_.clear( );
     facets_.clear( );
     Eigen::Vector3f position;
     Eigen::Vector3f normal;
 
-    SpatialHashTable spht;
+    nlgeometry::SpatialHashTable spht;
 
     for ( unsigned int i = 0; i < ( unsigned int ) vecVertices_.size( ) / 9;
           i++ )
@@ -777,26 +778,26 @@ namespace neurolots
                                   vecVertices_[i*9+2] );
       normal = Eigen::Vector3f( vecNormals_[i*9], vecNormals_[i*9+1],
                                 vecNormals_[i*9+2] );
-      VertexPtr v0 = new Vertex( position, normal );
+      nlgeometry::VertexPtr v0 = new nlgeometry::Vertex( position, normal );
       v0 = spht.insert( v0 );
 
       position = Eigen::Vector3f( vecVertices_[i*9+3], vecVertices_[i*9+4],
                                   vecVertices_[i*9+5] );
       normal = Eigen::Vector3f( vecNormals_[i*9+3], vecNormals_[i*9+4],
                                 vecNormals_[i*9+5] );
-      VertexPtr v1 = new Vertex( position, normal );
+      nlgeometry::VertexPtr v1 = new nlgeometry::Vertex( position, normal );
       v1 = spht.insert( v1);
 
       position = Eigen::Vector3f( vecVertices_[i*9+6], vecVertices_[i*9+7],
                                   vecVertices_[i*9+8] );
       normal = Eigen::Vector3f( vecNormals_[i*9+6], vecNormals_[i*9+7],
                                 vecNormals_[i*9+8] );
-      VertexPtr v2 = new Vertex( position, normal );
+      nlgeometry::VertexPtr v2 = new nlgeometry::Vertex( position, normal );
       v2 = spht.insert( v2 );
 
       if( v0 != v1 && v0!=v2 && v1!=v2 )
       {
-        FacetPtr f = new Facet( v0, v1, v2 );
+        nlgeometry::FacetPtr f = new nlgeometry::Facet( v0, v1, v2 );
         facets_.push_back( f );
       }
     }

@@ -152,7 +152,8 @@ namespace neurolots
 
     void _VectorToMesh( const std::vector< float >& vecVertices_,
                         const std::vector< float >& vecNormals_,
-                        Vertices& vertices_, Facets& facets_ ) const;
+                        nlgeometry::Vertices& vertices_,
+                        nlgeometry::Facets& facets_ ) const;
 
 #ifdef NEUROLOTS_USE_ZEQ
 

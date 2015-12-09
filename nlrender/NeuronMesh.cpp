@@ -130,8 +130,9 @@ namespace neurolots
   }
 
 
-  void NeuronMesh::WriteOBJ( const std::string& fileName_, Vertices& vertices_,
-    const Facets& facets_ ) const
+  void NeuronMesh::WriteOBJ( const std::string& fileName_,
+                             nlgeometry::Vertices& vertices_,
+                             const nlgeometry::Facets& facets_ ) const
   {
     ofstream outStream(fileName_.c_str());
     if(!outStream.is_open())
@@ -147,13 +148,13 @@ namespace neurolots
                 << vertices_[i]->position( ).y( ) << " "
                 << vertices_[i]->position( ).z( ) << std::endl;
     }
-    for( VertexPtr vertex: vertices_ )
+    for( nlgeometry::VertexPtr vertex: vertices_ )
     {
       outStream << "vn " << vertex->normal( ).x( ) << " "
                 << vertex->normal( ).y( ) << " "
                 << vertex->normal( ).z( ) << std::endl;
     }
-    for( FacetPtr facet: facets_ )
+    for( nlgeometry::FacetPtr facet: facets_ )
     {
       outStream << "f " << facet->v0( )->id( ) << "//" <<  facet->v0( )->id( )
                 << " " << facet->v1( )->id( ) << "//" <<  facet->v1( )->id( )
