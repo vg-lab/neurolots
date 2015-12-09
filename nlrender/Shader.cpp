@@ -1,3 +1,12 @@
+/**
+ * @file    Shader.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Shader.h"
 
 //OpenGL
@@ -16,7 +25,7 @@
 
 #include <iostream>
 
-namespace neurolots
+namespace nlrender
 {
 
   Shader::Shader( unsigned int type_, const std::string& source_ )
@@ -364,4 +373,4 @@ namespace neurolots
     return code;
   }
 
-} // end namespace neurolots
+} // end namespace nlrender

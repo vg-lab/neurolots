@@ -45,11 +45,11 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   if ( zeqUri != "" )
   {
     std::cout << zeqUri << std::endl;
-    _camera = new neurolots::Camera( zeqUri );
+    _camera = new nlrender::Camera( zeqUri );
   }
   else
 #endif
-    _camera = new neurolots::Camera( );
+    _camera = new nlrender::Camera( );
 
   _cameraTimer = new QTimer( );
   _cameraTimer->start(( 1.0f / 60.f ) * 100 );
@@ -77,7 +77,7 @@ void OpenGLWidget::createNeuronsCollection( void )
 {
   makeCurrent( );
   neurolots::nlrender::Config::init( );
-  _neuronsCollection = new neurolots::NeuronsCollection( _camera );
+  _neuronsCollection = new nlrender::NeuronsCollection( _camera );
 }
 
 void OpenGLWidget::loadData( const std::string& fileName,
@@ -389,12 +389,12 @@ void OpenGLWidget::onTangValueChanged( int value_ )
 
 void OpenGLWidget::onHomogeneousClicked( void )
 {
-  _neuronsCollection->tessMethod( neurolots::NeuronsCollection::HOMOGENEOUS );
+  _neuronsCollection->tessMethod( nlrender::NeuronsCollection::HOMOGENEOUS );
   update( );
 }
 
 void OpenGLWidget::onLinearClicked( void )
 {
-  _neuronsCollection->tessMethod( neurolots::NeuronsCollection::LINEAR );
+  _neuronsCollection->tessMethod( nlrender::NeuronsCollection::LINEAR );
   update( );
 }

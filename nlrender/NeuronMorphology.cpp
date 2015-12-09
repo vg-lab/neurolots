@@ -1,6 +1,15 @@
+/**
+ * @file    NeuronMorphology.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "NeuronMorphology.h"
 
-namespace neurolots
+namespace nlrender
 {
 
   NeuronMorphology::NeuronMorphology( nsol::SomaPtr soma_ )
@@ -34,7 +43,6 @@ namespace neurolots
 
 
 
-} // end namespace neurolots
+} // end namespace nlrender
 
 // EOF
-

@@ -1,21 +1,21 @@
 /**
- * @file    Tetrahedron.h
+ * @file    Quad.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_QUAD__
-#define __NEUROLOTS_QUAD__
+#ifndef __NLGENERATOR_QUAD__
+#define __NLGENERATOR_QUAD__
 
 #include "../nlfem/Node.h"
 #include <cfloat>
 
 #include <neurolots/nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
   class Quad
   {
@@ -91,8 +91,8 @@ namespace neurolots
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_QUAD__
+#endif // __NLGENERATOR_QUAD__
 
 // EOF

@@ -1,11 +1,13 @@
 /**
  * @file    Config.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>,
+ * Pablo Toharia <pablo.toharia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
+
 #ifndef __NLRENDER_CONFIG__
 #define __NLRENDER_CONFIG__
 

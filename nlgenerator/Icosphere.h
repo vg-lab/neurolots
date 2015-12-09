@@ -7,8 +7,8 @@
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_ICOSPHERE__
-#define __NEUROLOTS_ICOSPHERE__
+#ifndef __NLGENERATOR_ICOSPHERE__
+#define __NLGENERATOR_ICOSPHERE__
 
 //Eigen
 #include <Eigen/Dense>
@@ -26,7 +26,7 @@
 
 #include <neurolots/nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
 
 
@@ -78,8 +78,8 @@ namespace neurolots
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_ICOSPHERE__
+#endif // __NLGENERATOR_ICOSPHERE__
 
 //EOF

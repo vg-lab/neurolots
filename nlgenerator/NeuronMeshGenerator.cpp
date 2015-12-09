@@ -1,9 +1,18 @@
+/**
+ * @file    NeuronMeshGenerator.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "NeuronMeshGenerator.h"
 
 using namespace nsol;
 using namespace std;
 
-namespace neurolots
+namespace nlgenerator
 {
 
 //CONSTRUCTORS AND DESTRUCTORS
@@ -518,6 +527,6 @@ namespace neurolots
     mesh.push_back( geom1->D() );
     mesh.push_back( geom1->A() );
   }
-} // end namespace neurolots
+} // end namespace nlgenerator
 
 // EOF

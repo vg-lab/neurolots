@@ -1,6 +1,15 @@
+/**
+ * @file    Edges.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Edges.h"
 
-namespace neurolots
+namespace nlgenerator
 {
 
   Edge::Edge( unsigned int node_,
@@ -105,4 +114,4 @@ namespace neurolots
     return node;
   }
 
-}// end namespace neurolots
+}// end namespace nlgenerator

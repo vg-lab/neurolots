@@ -1,8 +1,17 @@
+/**
+ * @file    NeuronMesh.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "NeuronMesh.h"
 
 using namespace std;
 
-namespace neurolots
+namespace nlrender
 {
 
   NeuronMesh::NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ )
@@ -25,8 +34,9 @@ namespace neurolots
       std::vector< float > tangents;
       std::vector< unsigned int > mesh;
 
-      NeuronMeshGenerator::GenerateMesh( _morpho, vertices, centers,
-                                         tangents, mesh, _somaEnd );
+      nlgenerator::NeuronMeshGenerator::GenerateMesh( _morpho, vertices,
+                                                      centers, tangents,
+                                                      mesh, _somaEnd );
       // VAO Generation
       glGenVertexArrays( 1, &vao_ );
       glBindVertexArray( vao_ );
@@ -78,9 +88,11 @@ namespace neurolots
     std::vector< float > tangents;
     std::vector< unsigned int > mesh;
 
-    NeuronMeshGenerator::GenerateMesh( _morpho, alphaRadius_, alphaNeurites_,
-                                       vertices, centers, tangents, mesh,
-                                       _somaEnd );
+    nlgenerator::NeuronMeshGenerator::GenerateMesh( _morpho, alphaRadius_,
+                                                    alphaNeurites_,
+                                                    vertices, centers,
+                                                    tangents, mesh,
+                                                    _somaEnd );
     // VAO Generation
     glBindVertexArray( vao_ );
 
@@ -169,6 +181,6 @@ namespace neurolots
 
   }
 
-} // end namespace neurolots
+} // end namespace nlrender
 
 // EOF

@@ -1,3 +1,12 @@
+/**
+ * @file    NeuronsCollection.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "NeuronsCollection.h"
 
 #include "NeuronMorphology.h"
@@ -12,7 +21,7 @@
 
 #include "../nlgeometry/SpatialHashTable.h"
 
-namespace neurolots
+namespace nlrender
 {
 
   NeuronsCollection::NeuronsCollection( Camera* camera_ )

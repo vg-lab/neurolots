@@ -1,9 +1,18 @@
+/**
+ * @file    Neuron.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Neuron.h"
 #include "NeuronMorphology.h"
 
 #include <cfloat>
 
-namespace neurolots
+namespace nlrender
 {
 
   Neuron::Neuron( const nsol::NeuronMorphologyPtr neuronMorphology_,
@@ -52,7 +61,7 @@ namespace neurolots
   void Neuron::regenerateMesh( const float& alphaRadius_,
                                const std::vector< float >& alphaNeurites_ )
     {
-      (( neurolots::NeuronMorphologyPtr ) _morphology )->NeuronMesh( )->
+      (( nlrender::NeuronMorphologyPtr ) _morphology )->NeuronMesh( )->
         Regenerate( alphaRadius_, alphaNeurites_ );
     }
 
@@ -87,4 +96,4 @@ namespace neurolots
     _boundingBox.zMax = position.z( ) + radius;
   }
 
-} // end namespace neurolots
+} // end namespace nlrender

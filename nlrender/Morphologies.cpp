@@ -1,9 +1,18 @@
+/**
+ * @file    Morphologies.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Morphologies.h"
 
 using namespace std;
 using namespace nsol;
 
-namespace neurolots
+namespace nlrender
 {
 
   Morphologies::Morphologies( void )
@@ -48,6 +57,6 @@ namespace neurolots
     return _morphoMap.end( );
   }
 
-} // end namespace neurolots
+} // end namespace nlrender
 
 // EOF

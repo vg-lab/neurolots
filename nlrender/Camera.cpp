@@ -1,8 +1,17 @@
+/**
+ * @file    Camera.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Camera.h"
 
 #include <cmath>
 
-namespace neurolots
+namespace nlrender
 {
 
   Camera::Camera( float fov_, float ratio_, float nearPlane_, float farPlane_,
@@ -467,6 +476,6 @@ namespace neurolots
     return rot;
   }
 
-} // end namespace neurolots
+} // end namespace nlrender
 
 // EOF

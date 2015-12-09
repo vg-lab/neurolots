@@ -1,14 +1,14 @@
 /**
- * @file    Fem.h
+ * @file    Edges.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_EDGE__
-#define __NEUROLOTS_EDGE__
+#ifndef __NLGENERATOR_EDGE__
+#define __NLGENERATOR_EDGE__
 
 //Eigen
 
@@ -19,7 +19,7 @@
 
 #include <neurolots/nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
 
 
@@ -77,8 +77,8 @@ namespace neurolots
 
 
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_EDGE__
+#endif // __NLGENERATOR_EDGE__
 
 //EOF

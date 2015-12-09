@@ -1,7 +1,15 @@
+/**
+ * @file    Icospehere.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Icosphere.h"
 
-
-namespace neurolots
+namespace nlgenerator
 {
 
   Icosphere::Icosphere( Eigen::Vector3f center_, float radius_,
@@ -373,4 +381,4 @@ namespace neurolots
   }
 
 
-} // end namespace neurolots
+} // end namespace nlgenerator

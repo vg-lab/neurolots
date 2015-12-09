@@ -1,11 +1,20 @@
-#ifndef __NEUROLOTS_NEURON__
-#define __NEUROLOTS_NEURON__
+/**
+ * @file    Neuron.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
+#ifndef __NLRENDER_NEURON__
+#define __NLRENDER_NEURON__
 
 #include <nsol/nsol.h>
 
 #include <neurolots/nlrender/api.h>
 
-namespace neurolots
+namespace nlrender
 {
   typedef struct
   {
@@ -64,6 +73,6 @@ namespace neurolots
 
   typedef Neuron* NeuronPtr;
 
-} // end namespace neurolots
+} // end namespace nlrender
 
-#endif // __NEUROLOTS_NEURON__
+#endif // __NLRENDER_NEURON__

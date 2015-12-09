@@ -1,14 +1,14 @@
 /**
- * @file    Progam.h
+ * @file    Program.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_PROGRAM__
-#define __NEUROLOTS_PROGRAM__
+#ifndef __NLRENDER_PROGRAM__
+#define __NLRENDER_PROGRAM__
 
 #include "Shader.h"
 
@@ -16,7 +16,7 @@
 
 #include <neurolots/nlrender/api.h>
 
-namespace neurolots
+namespace nlrender
 {
 
   class Program
@@ -61,8 +61,8 @@ namespace neurolots
     std::string _path;
   };
 
-}// end namespace neurolots
+}// end namespace nlrender
 
-#endif // __NEUROLOTS_PROGRAM__
+#endif // __NLRENDER_PROGRAM__
 
 //EOF

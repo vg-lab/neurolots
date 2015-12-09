@@ -7,12 +7,12 @@
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_GEOMETRIC_PRIMITIVE__
-#define __NEUROLOTS_GEOMETRIC_PRIMITIVE__
+#ifndef __NLGENERATOR_GEOMETRIC_PRIMITIVE__
+#define __NLGENERATOR_GEOMETRIC_PRIMITIVE__
 
 
 
-namespace neurolots
+namespace nlgenerator
 {
 
   class GeometricPrimitive
@@ -50,8 +50,8 @@ namespace neurolots
 
   typedef GeometricPrimitive * GeometricPrimitivePtr;
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_GEOMETRIC_PRIMITIVE__
+#endif // __NLGENERATOR_GEOMETRIC_PRIMITIVE__
 
 //EOF

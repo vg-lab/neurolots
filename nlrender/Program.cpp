@@ -1,3 +1,12 @@
+/**
+ * @file    Program.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Program.h"
 #include "Config.h"
 
@@ -41,7 +50,7 @@
 
 // 8 Tessellation dist rubroutine
 
-namespace neurolots
+namespace nlrender
 {
 
   Program::Program( TProgram type_, const std::string& path_ )
@@ -190,6 +199,6 @@ namespace neurolots
     return source;
   }
 
-} // end namespace neurolots
+} // end namespace nlrender
 
 //EOF

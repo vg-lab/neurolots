@@ -1,14 +1,14 @@
 /**
  * @file    NeuronMeshGenerator.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_NEURON_MESH_GENERATOR__
-#define __NEUROLOTS_NEURON_MESH_GENERATOR__
+#ifndef __NLGENERATOR_NEURON_MESH_GENERATOR__
+#define __NLGENERATOR_NEURON_MESH_GENERATOR__
 
 #include <nsol/nsol.h>
 
@@ -22,7 +22,7 @@
 
 #include <neurolots/nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
 
   typedef VectorizedNode * VectorizedNodePtr;
@@ -114,8 +114,8 @@ namespace neurolots
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_NEURON_MESH_GENERATOR__
+#endif // __NLGENERATOR_NEURON_MESH_GENERATOR__
 
 //EOF

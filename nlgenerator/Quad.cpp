@@ -1,6 +1,15 @@
+/**
+ * @file    Quad.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Quad.h"
 
-namespace neurolots
+namespace nlgenerator
 {
   Quad::Quad( nlfem::NodePtr node0_,
               nlfem::NodePtr node1_,
@@ -123,4 +132,4 @@ namespace neurolots
     return nearerQuad;
   }
 
-}// end namespace neurolots
+}// end namespace nlgenerator

@@ -1,21 +1,21 @@
 /**
  * @file    VectorizedNode.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_VECTORIZED_NODE__
-#define __NEUROLOTS_VECTORIZED_NODE__
+#ifndef __NLGENERATOR_VECTORIZED_NODE__
+#define __NLGENERATOR_VECTORIZED_NODE__
 
 #include <Eigen/Dense>
 
 #include "GeometricPrimitive.h"
 #include "Quad.h"
 
-namespace neurolots
+namespace nlgenerator
 {
 
   class VectorizedNode
@@ -68,8 +68,8 @@ namespace neurolots
 
   typedef VectorizedNode* VectorizedNodePtr;
 
-}// end namespace neurolots
+}// end namespace nlgenerator
 
-#endif // __NEUROLOTS_VECTORIZED_NODE__
+#endif // __NLGENERATOR_VECTORIZED_NODE__
 
 //EOF
