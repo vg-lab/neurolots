@@ -9,6 +9,7 @@ set(NLRENDER_PUBLIC_HEADERS
   NeuronMorphology.h
   NeuronsCollection.h
   Program.h
+  Shader.h
 )
 
 set(NLRENDER_HEADERS
@@ -23,6 +24,7 @@ set(NLRENDER_SOURCES
   NeuronMorphology.cpp
   NeuronsCollection.cpp
   Program.cpp
+  Shader.cpp
 )
 
 set(NLRENDER_LINK_LIBRARIES

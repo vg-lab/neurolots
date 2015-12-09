@@ -70,6 +70,12 @@ namespace neurolots
     float Fov( void );
 
     NLRENDER_API
+    float& FarPlane( void )
+    {
+      return _farPlane;
+    }
+
+    NLRENDER_API
     Eigen::Vector3f Pivot( void );
 
     NLRENDER_API

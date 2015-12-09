@@ -76,11 +76,11 @@
    <addaction name="actionOpenXMLScene"/>
    <addaction name="actionOpenSWCFile"/>
    <addaction name="separator"/>
+   <addaction name="actionConfiguration"/>
+   <addaction name="actionExtractMesh"/>
    <addaction name="actionWireframe"/>
    <addaction name="actionCloseData"/>
    <addaction name="actionBackgroundColor"/>
-   <addaction name="actionExtractMesh"/>
-   <addaction name="actionConfiguration"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -98,7 +98,7 @@
   <action name="actionHome">
     <property name="icon">
     <iconset resource="../qrc/resources.qrc">
-     <normaloff>:/icons/open_bc.png</normaloff>:/icons/open_bc.png</iconset>
+     <normaloff>:/icons/home.png</normaloff>:/icons/home.png</iconset>
    </property>
    <property name="text">
     <string>Home</string>
@@ -243,13 +243,13 @@
    </property>
    <property name="icon">
     <iconset resource="../qrc/resources.qrc">
-     <normaloff>:/icons/wireframe.png</normaloff>:/icons/wireframe.png</iconset>
+     <normaloff>:/icons/reconstruction.png</normaloff>:/icons/reconstruction.png</iconset>
    </property>
    <property name="text">
-    <string>Extract mesh</string>
+    <string>Reconstruction</string>
    </property>
    <property name="toolTip">
-    <string>Extract mesh</string>
+    <string>Reconstruction</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
@@ -261,7 +261,7 @@
    </property>
    <property name="icon">
     <iconset resource="../qrc/resources.qrc">
-     <normaloff>:/icons/wireframe.png</normaloff>:/icons/wireframe.png</iconset>
+     <normaloff>:/icons/settings.png</normaloff>:/icons/settings.png</iconset>
    </property>
    <property name="text">
     <string>Configuration</string>

@@ -17,10 +17,11 @@ namespace neurolots
 
   NeuronsCollection::NeuronsCollection( Camera* camera_ )
     : _camera( camera_ )
-    , _dataSet( nsol::DataSet( ))
+    , _dataSet( )
 #ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
+    , _tessMethod( HOMOGENEOUS )
   {
     _selectedNeurons.clear( );
 
@@ -28,33 +29,36 @@ namespace neurolots
 
     if ( getenv( "NEUROLOTS_SHADERS_PATH" ) == nullptr )
     {
-      std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
-                << std::endl;
-      exit(-1);
+      // std::cerr << "Environment Variable NEUROLOTS_SHADERS_PATH not defined"
+      //           << std::endl;
+      _programQuads = new Program( Program::QUADS );
+      _programQuadsFB = new Program( Program::QUADS_FB );
+      _programTriangles = new Program( Program::TRIANGLES );
+      _programTrianglesFB = new Program( Program::TRIANGLES_FB );
     }
     else
+    {
       neurolotsShadersPath = std::string( getenv( "NEUROLOTS_SHADERS_PATH" ));
 
-    std::string quadsPath = neurolotsShadersPath;
-    quadsPath.append( "/quads" );
+      std::string quadsPath = neurolotsShadersPath;
+      quadsPath.append( "/quads" );
 
-    std::string trianglesPath = neurolotsShadersPath;
-    trianglesPath.append( "/triangles" );
+      std::string trianglesPath = neurolotsShadersPath;
+      trianglesPath.append( "/triangles" );
 
-    _programQuads = new Program( Program::QUADS, quadsPath );
-    _programQuadsFB = new Program( Program::QUADS_FB, quadsPath );
-    _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
-    _programTrianglesFB = new Program( Program::TRIANGLES_FB, trianglesPath );
-
+      _programQuads = new Program( Program::QUADS, quadsPath );
+      _programQuadsFB = new Program( Program::QUADS_FB, quadsPath );
+      _programTriangles = new Program( Program::TRIANGLES, trianglesPath );
+      _programTrianglesFB = new Program( Program::TRIANGLES_FB, trianglesPath );
+    }
     _programQuads->Init();
     _programQuadsFB->Init( );
     _programTriangles->Init( );
     _programTrianglesFB->Init( );
 
-
-    Lod( 3.0f );
-    Tng( 5.0f );
-    MaxDist( 200.0f );
+    lod( 3.0f );
+    tng( 0.5f );
+    maxDist( 0.1f );
 
     NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
     SelectedNeuronColor( Eigen::Vector3f( 0.7f, 0.5f, 0.0f ));
@@ -182,12 +186,8 @@ namespace neurolots
 
   void NeuronsCollection::Paint( void )
   {
-
-    nsol::MiniColumns miniColumns;
-    nsol::Neurons neurons;
     NeuronPtr neuron;
     NeuronMeshPtr neuronMesh;
-    NeuronMorphologyPtr morphology;
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
@@ -199,119 +199,109 @@ namespace neurolots
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniform3fv( 4, 1, _camera->Position( ));
 
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    for ( const auto& element: _dataSet.neurons( ))
     {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          neuron = dynamic_cast< NeuronPtr >( neurons[ k ] );
-          morphology = ( dynamic_cast< NeuronMorphologyPtr >
-                         ( neuron->morphology( )));
-          neuronMesh = morphology->NeuronMesh( );
+      neuron = dynamic_cast< NeuronPtr >( element.second );
+      neuronMesh = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
+        ->NeuronMesh( );
 
-          glUseProgram( _programQuads->id( ));
-          glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
+      glUseProgram( _programQuads->id( ));
+      glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
 
-          glUseProgram( _programTriangles->id( ));
-          glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
+      glUseProgram( _programTriangles->id( ));
+      glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
 
 #ifdef NEUROLOTS_USE_ZEQ
 
-          if( _zeqConnection )
-          {
-            if( _IsSelected( neuron ) )
-            {
-              glUseProgram( _programQuads->id( ));
-              glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
-              neuronMesh->PaintNeurites( );
-
-              glUseProgram( _programTriangles->id( ));
-              glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
-              neuronMesh->PaintSoma( );
-            }
-            else
-            {
-              glUseProgram( _programTriangles->id( ));
-              glUniform3fv( 3, 1, _neuronColor.data( ));
-              neuronMesh->PaintSoma( );
-            }
-          }
-          else
-          {
-            glUseProgram( _programQuads->id( ));
-            glUniform3fv( 3, 1, _neuronColor.data( ));
-            neuronMesh->PaintNeurites( );
-
-            glUseProgram( _programTriangles->id( ));
-            glUniform3fv( 3, 1, _neuronColor.data( ));
-            neuronMesh->PaintSoma( );
-          }
-#else
+      if( _zeqConnection )
+      {
+        if( _IsSelected( neuron ) )
+        {
           glUseProgram( _programQuads->id( ));
-          glUniform3fv( 3, 1, _neuronColor.data( ));
+          glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
           neuronMesh->PaintNeurites( );
 
           glUseProgram( _programTriangles->id( ));
-          glUniform3fv( 3, 1, _neuronColor.data( ));
+          glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
           neuronMesh->PaintSoma( );
-
-#endif
+        }
+        else
+        {
+          glUseProgram( _programTriangles->id( ));
+          glUniform3fv( 3, 1, _neuronColor.data( ));
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+          neuronMesh->PaintSoma( );
         }
       }
+      else
+      {
+        glUseProgram( _programQuads->id( ));
+        glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+        neuronMesh->PaintNeurites( );
+
+        glUseProgram( _programTriangles->id( ));
+        glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+        neuronMesh->PaintSoma( );
+      }
+#else
+      glUseProgram( _programQuads->id( ));
+      glUniform3fv( 3, 1, _neuronColor.data( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+      neuronMesh->PaintNeurites( );
+
+      glUseProgram( _programTriangles->id( ));
+      glUniform3fv( 3, 1, _neuronColor.data( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+      neuronMesh->PaintSoma( );
+#endif
     }
   }
 
   void NeuronsCollection::PaintNeuron( const unsigned int& id_,
                                        const Eigen::Vector3f& color_ )
   {
-    nsol::MiniColumns miniColumns;
-    nsol::Neurons neurons;
-    NeuronPtr neuron;
-    NeuronMeshPtr neuronMesh;
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    NeuronPtr neuron = nullptr;
+    NeuronMeshPtr neuronMesh = nullptr;
+    nsol::NeuronsMap::iterator it;
+
+    it = _dataSet.neurons( ).find( id_ );
+    if ( it != _dataSet.neurons( ).end( ))
     {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          neuron = ( NeuronPtr ) neurons[ k ];
-          if ( neuron->gid( ) == id_ )
-          {
-            neuronMesh =
-              (( NeuronMorphologyPtr )neuron->morphology( ))->NeuronMesh( );
+      neuron = dynamic_cast< NeuronPtr >( it->second );
+      neuronMesh =  dynamic_cast< NeuronMorphologyPtr >(
+        it->second->morphology( ))->NeuronMesh( );
+    }
+    if ( neuronMesh && neuron )
+    {
+      std::vector< float > color;
+      color.resize( 3 );
+      color[0] = color_.x( );
+      color[1] = color_.y( );
+      color[2] = color_.z( );
 
-            std::vector< float > color;
-            color.resize( 3 );
-            color[0] = color_.x( );
-            color[1] = color_.y( );
-            color[2] = color_.z( );
+      glUseProgram( _programQuads->id( ));
+      glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+      glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+      glUniformMatrix4fv( 2, 1, GL_FALSE,
+                          neuron->vecTransform( ).data( ));
+      glUniform3fv( 3, 1, color.data( ));
+      glUniform3fv( 4, 1,_camera->Position( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+      neuronMesh->PaintNeurites( );
 
-
-            glUseProgram( _programQuads->id( ));
-            glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-            glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-            glUniformMatrix4fv( 2, 1, GL_FALSE,
-                                neuron->vecTransform( ).data( ));
-            glUniform3fv( 3, 1, color.data( ));
-            glUniform3fv( 4, 1,_camera->Position( ));
-            neuronMesh->PaintNeurites( );
-
-            glUseProgram( _programTriangles->id( ));
-            glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-            glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-            glUniformMatrix4fv( 2, 1, GL_FALSE,
-                                neuron->vecTransform( ).data( ));
-            glUniform3fv( 3, 1, color.data( ));
-            glUniform3fv( 4, 1,_camera->Position( ));
-            neuronMesh->PaintSoma( );
-          }
-        }
-      }
+      glUseProgram( _programTriangles->id( ));
+      glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+      glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+      glUniformMatrix4fv( 2, 1, GL_FALSE,
+                          neuron->vecTransform( ).data( ));
+      glUniform3fv( 3, 1, color.data( ));
+      glUniform3fv( 4, 1,_camera->Position( ));
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+      neuronMesh->PaintSoma( );
     }
   }
 
@@ -343,6 +333,7 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintSoma( );
 
     glUseProgram( _programQuads->id( ));
@@ -355,79 +346,22 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintNeurites( );
   }
 
-  void NeuronsCollection::AddLod( const float& addLod_ )
-  {
-    _lod += addLod_;
-    if ( _lod < 1.0f )
-      _lod = 1.0f;
-
-    glUseProgram( _programQuads->id( ));
-    glUniform1fv( 5, 1, &_lod );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniform1fv( 5, 1, &_lod );
-  }
-
-  void NeuronsCollection::AddTng( const float& addTng_ )
-  {
-    _tng += addTng_;
-    if ( _tng < 0.0f )
-      _tng = 0.0f;
-
-    glUseProgram( _programQuads->id( ));
-    glUniform1fv( 6, 1, &_tng );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniform1fv( 6, 1, &_tng );
-  }
-
-  void NeuronsCollection::AddMaxDist( const float& addMaxDist_ )
-  {
-    _maxDist += addMaxDist_;
-    if( _maxDist < 2 )
-      _maxDist = 2;
-
-    glUseProgram( _programQuads->id( ));
-    glUniform1fv( 7, 1, &_maxDist );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniform1fv( 7, 1, &_maxDist );
-  }
-
-
-
   void NeuronsCollection::focusOnNeuron( unsigned int id )
   {
-    nsol::MiniColumns miniColumns;
-    nsol::Neurons neurons;
     NeuronPtr neuron = nullptr;
-    bool found = false;
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    nsol::NeuronsMap::iterator it;
+
+    it = _dataSet.neurons( ).find( id );
+    if( it != _dataSet.neurons( ).end( ))
     {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          if ( neurons[k]->gid( ) == id )
-          {
-            neuron = ( NeuronPtr ) neurons[ k ];
-            found = true;
-            break;
-          }
-        }
-        if ( found )
-          break;
-      }
-      if ( found )
-        break;
+      neuron = dynamic_cast< NeuronPtr >( it->second );
     }
 
-    if( found )
+    if( neuron )
     {
       TBoundingBox bb = neuron->BoundingBox( );
       Eigen::Vector3f center = Eigen::Vector3f(( bb.xMin + bb.xMax ) / 2,
@@ -489,6 +423,7 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
     glUniform1fv( 6, 1, &_tng );
     glUniform1fv( 7, 1, &_maxDist );
+
     glDisable( GL_CULL_FACE );
     glEnable( GL_RASTERIZER_DISCARD );
 
@@ -508,6 +443,7 @@ namespace neurolots
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
     glUseProgram( _programTrianglesFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintSoma( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
@@ -532,6 +468,7 @@ namespace neurolots
     glBeginTransformFeedback( GL_TRIANGLES );
 
     glUseProgram( _programTrianglesFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintSoma( );
 
     glEndTransformFeedback( );
@@ -560,6 +497,7 @@ namespace neurolots
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
     glUseProgram( _programQuadsFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintNeurites( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
@@ -583,6 +521,7 @@ namespace neurolots
     glBeginTransformFeedback( GL_TRIANGLES );
 
     glUseProgram( _programQuadsFB->id( ));
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->PaintNeurites( );
 
     glEndTransformFeedback( );
@@ -632,20 +571,10 @@ namespace neurolots
   std::vector< unsigned int > NeuronsCollection::neuronIDs( void )
   {
     std::vector< unsigned int > ids;
-    nsol::MiniColumns miniColumns;
-    nsol::Neurons neurons;
 
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+    for ( const auto& element: _dataSet.neurons( ))
     {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          ids.push_back( neurons[ k ]->gid( ));
-        }
-      }
+      ids.push_back( element.second->gid( ));
     }
 
     return ids;
@@ -653,24 +582,14 @@ namespace neurolots
 
   NeuronPtr NeuronsCollection::neuronById( unsigned int id )
   {
-    nsol::MiniColumns miniColumns;
-    nsol::Neurons neurons;
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
-    {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          if ( neurons[k]->gid( ) == id )
-          {
-            return ( NeuronPtr ) neurons[ k ];
-          }
-        }
-      }
-    }
-    return nullptr;
+    nsol::NeuronsMap::iterator it;
+
+    it = _dataSet.neurons( ).find( id );
+    if( it == _dataSet.neurons( ).end( ))
+      return nullptr;
+
+    return dynamic_cast< NeuronPtr >( it->second );
+
   }
 
 
@@ -686,9 +605,12 @@ namespace neurolots
 
   // SETTER
 
-  void NeuronsCollection::Lod( float lod_ )
+  void NeuronsCollection::lod( float lod_ )
   {
-    _lod = lod_;
+    if( lod_ < 1 )
+      _lod = 1;
+    else
+      _lod = lod_;
 
     glUseProgram( _programQuads->id( ));
     glUniform1fv( 5, 1, &_lod );
@@ -697,9 +619,14 @@ namespace neurolots
     glUniform1fv( 5, 1, &_lod );
   }
 
-  void NeuronsCollection::Tng( float tng_ )
+  void NeuronsCollection::tng( float tng_ )
   {
-    _tng = tng_;
+    if ( tng_ > 1.0 )
+      _tng = 20.f;
+    else if ( tng_ < 0.0f )
+      _tng = 0.0f;
+    else
+      _tng = tng_ * 20.0f;
 
     glUseProgram( _programQuads->id( ));
     glUniform1fv( 6, 1, &_tng );
@@ -708,9 +635,14 @@ namespace neurolots
     glUniform1fv( 6, 1, &_tng );
   }
 
-  void NeuronsCollection::MaxDist( float maxDist_ )
+  void NeuronsCollection::maxDist( float maxDist_ )
   {
-    _maxDist = maxDist_;
+    if ( maxDist_ > 1.0f )
+      _maxDist = _camera->FarPlane( );
+    else if ( maxDist_ < 0.0f )
+      _maxDist = 0.0f;
+    else
+      _maxDist = maxDist_ * _camera->FarPlane( );
 
     glUseProgram( _programQuads->id( ));
     glUniform1fv( 7, 1, &_maxDist );
@@ -738,56 +670,35 @@ namespace neurolots
   // PRIVATE
 
   void NeuronsCollection::_Init( void )
+  {
+    NeuronPtr neuron;
+    NeuronMorphologyPtr morpho;
+    NeuronMeshPtr neuronMesh;
+
+    for ( auto& element: _dataSet.neurons( ))
     {
-      nsol::MiniColumns miniColumns;
-      NeuronPtr neuron;
-      nsol::Neurons neurons;
-      NeuronMorphologyPtr morpho;
-      NeuronMeshPtr neuronMesh;
+      neuron = dynamic_cast< NeuronPtr >( element.second );
+      morpho =  dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ));
+      neuronMesh = morpho->NeuronMesh( );
 
-
-      for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
-      {
-        miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-        for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-        {
-          neurons = miniColumns[ j ]->neurons( );
-          for( unsigned int k = 0; k < neurons.size( ); k++ )
-          {
-            neuron = ( NeuronPtr )neurons[ k ];
-            morpho = ( NeuronMorphologyPtr )neuron->morphology( );
-            neuronMesh = morpho->NeuronMesh( );
-            neuron->Init( );
-            neuronMesh->Init( );
-          }
-        }
-      }
+      neuron->Init( );
+      neuronMesh->Init( );
     }
+  }
 
   void NeuronsCollection::_GenerateMeshes( void )
   {
-    nsol::ColumnPtr colum;
-    nsol::MiniColumnPtr miniColum;
-    nsol::NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
-    {
-      colum = _dataSet.columns( )[ i ];
-      for( unsigned int j = 0; j < colum->miniColumns( ).size( ); j++ )
-      {
-        miniColum = colum->miniColumns( )[ j ];
-        for( unsigned int k = 0; k < miniColum->neurons( ).size( ); k++ )
-        {
-          neuron = miniColum->neurons( )[ k ];
-          morpho = ( NeuronMorphologyPtr )neuron->morphology( );
 
-          if( !morpho->HasNeuronMesh( ) )
-          {
-            neuronMesh = new NeuronMesh( morpho );
-            morpho->NeuronMesh( neuronMesh );
-          }
-        }
+    for( auto& element: _dataSet.neurons( ))
+    {
+      morpho = dynamic_cast< NeuronMorphologyPtr >(
+        element.second->morphology( ));
+      if( !morpho->HasNeuronMesh( ) )
+      {
+        neuronMesh = new NeuronMesh( morpho );
+        morpho->NeuronMesh( neuronMesh );
       }
     }
   }
@@ -800,9 +711,7 @@ namespace neurolots
 
   void NeuronsCollection::_DefaultCamera( void )
   {
-    nsol::MiniColumns miniColumns;
     NeuronPtr neuron;
-    nsol::Neurons neurons;
     TBoundingBox boundingBox;
 
     boundingBox.xMax = FLT_MIN;
@@ -812,34 +721,26 @@ namespace neurolots
     boundingBox.zMax = FLT_MIN;
     boundingBox.zMin = FLT_MAX;
 
-    for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
+
+    for ( const auto& element: _dataSet.neurons( ))
     {
-      miniColumns = _dataSet.columns( )[ i ]->miniColumns( );
-      for( unsigned int j = 0; j < miniColumns.size( ); j++ )
-      {
-        neurons = miniColumns[ j ]->neurons( );
-        for( unsigned int k = 0; k < neurons.size( ); k++ )
-        {
-          neuron = ( NeuronPtr )neurons[ k ];
-          TBoundingBox box = neuron->BoundingBox( );
+      neuron = dynamic_cast< NeuronPtr >( element.second );
+      TBoundingBox box = neuron->BoundingBox( );
 
-          if( box.xMax > boundingBox.xMax)
-            boundingBox.xMax = box.xMax;
-          if( box.xMin < boundingBox.xMin)
-            boundingBox.xMin = box.xMin;
+      if( box.xMax > boundingBox.xMax)
+        boundingBox.xMax = box.xMax;
+      if( box.xMin < boundingBox.xMin)
+        boundingBox.xMin = box.xMin;
 
-          if( box.yMax > boundingBox.yMax)
-            boundingBox.yMax = box.yMax;
-          if( box.yMin < boundingBox.yMin)
-            boundingBox.yMin = box.yMin;
+      if( box.yMax > boundingBox.yMax)
+        boundingBox.yMax = box.yMax;
+      if( box.yMin < boundingBox.yMin)
+        boundingBox.yMin = box.yMin;
 
-          if( box.zMax > boundingBox.zMax)
-            boundingBox.zMax = box.zMax;
-          if( box.zMin < boundingBox.zMin)
-            boundingBox.zMin = box.zMin;
-
-        }
-      }
+      if( box.zMax > boundingBox.zMax)
+        boundingBox.zMax = box.zMax;
+      if( box.zMin < boundingBox.zMin)
+        boundingBox.zMin = box.zMin;
     }
 
     Eigen::Vector3f center(( boundingBox.xMin + boundingBox.xMax ) / 2,
@@ -1027,6 +928,8 @@ namespace neurolots
       boundingBox.zMax = FLT_MIN;
       boundingBox.zMin = FLT_MAX;
 
+
+      // TO CHANGE
       for( unsigned int i = 0; i < _dataSet.columns( ).size( ); i++ )
       {
         miniColumns = _dataSet.columns( )[ i ]->miniColumns( );

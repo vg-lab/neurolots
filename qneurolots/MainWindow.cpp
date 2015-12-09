@@ -47,111 +47,17 @@ MainWindow::MainWindow( QWidget* parent_,
 
   connect( _ui->actionAbout, SIGNAL(triggered( )),
            this, SLOT( showAbout( )));
-// Extraction dock
-  _extractMeshDock = new QDockWidget( );
-  this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
-                       _extractMeshDock, Qt::Vertical );
-  _extractMeshDock->setSizePolicy(QSizePolicy::MinimumExpanding,
-                             QSizePolicy::Expanding);
 
-  _extractMeshDock->setFeatures(QDockWidget::DockWidgetClosable |
-                           QDockWidget::DockWidgetMovable |
-                           QDockWidget::DockWidgetFloatable);
-  _extractMeshDock->setWindowTitle( QString( "Reconstruction" ));
-  _extractMeshDock->setMinimumSize( 200, 200 );
-
-  _extractMeshDock->close( );
-
-  QWidget* newWidget = new QWidget( );
-  _extractMeshDock->setWidget( newWidget );
-
-  QVBoxLayout* _meshDockLayout = new QVBoxLayout( );
-  _meshDockLayout->setAlignment( Qt::AlignTop );
-  newWidget->setLayout( _meshDockLayout );
-
-  //Neurons group
-  QGroupBox* _neuronsGroup = new QGroupBox( QString( "Select Neuron" ));
-  QVBoxLayout* _neuronsLayout = new QVBoxLayout( );
-  _neuronsGroup->setLayout( _neuronsLayout );
-  _meshDockLayout->addWidget( _neuronsGroup );
-
-  _neuronList = new QListWidget( );
-  _neuronsLayout->addWidget( new QLabel( QString( "Neurons" )));
-  _neuronsLayout->addWidget( _neuronList );
-
-  // Soma reconstruction group
-  QGroupBox* _somaGroup = new QGroupBox( QString( "Soma reconstruction" ));
-  QVBoxLayout* _somaGroupLayout = new QVBoxLayout( );
-  _somaGroup->setLayout( _somaGroupLayout );
-  _meshDockLayout->addWidget( _somaGroup );
-
-  _radiusSlider = new QSlider( Qt::Horizontal );
-  _radiusSlider->setMinimum( 25 );
-  _radiusSlider->setMaximum( 100 );
-  _radiusSlider->setValue( 100 );
-
-  _somaGroupLayout->addWidget( new QLabel( QString( "Alpha radius" )));
-  _somaGroupLayout->addWidget( _radiusSlider );
-
-  QScrollArea* _neuritesArea = new QScrollArea( );
-  _neuritesArea->setSizePolicy( QSizePolicy::MinimumExpanding,
-                            QSizePolicy::Expanding );
-  _neuritesArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-  _neuritesArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-  _neuritesArea->setWidgetResizable( true );
-  _neuritesArea->setFrameShape( QFrame::NoFrame );
-  _somaGroupLayout->addWidget( _neuritesArea );
-  QWidget* _neuritesWidget = new QWidget( );
-  _neuritesArea->setWidget( _neuritesWidget );
-  _neuritesLayout = new QVBoxLayout( );
-  _neuritesWidget->setLayout( _neuritesLayout );
-
-// Extraction group
-  QGroupBox* _extractionGroup = new QGroupBox( QString( "Mesh extraction" ));
-  QVBoxLayout* _extractionLayout = new QVBoxLayout( );
-  _extractionGroup->setLayout( _extractionLayout );
-  _meshDockLayout->addWidget( _extractionGroup );
-
-  _extractButton = new QPushButton( QString( "Extract" ));
-  _extractionLayout->addWidget( _extractButton );
-
-  connect( _neuronList, SIGNAL( itemClicked( QListWidgetItem* )),
-           this, SLOT( onListClicked( QListWidgetItem* )));
-
-  connect( _extractMeshDock->toggleViewAction( ), SIGNAL( toggled( bool )),
-           _ui->actionExtractMesh, SLOT( setChecked( bool )));
-  connect( _ui->actionExtractMesh, SIGNAL( triggered( )),
-           this, SLOT( updateExtractMeshDock( )));
-
-// Configuration Dock
-
-  _configurationDock = new QDockWidget( );
-  this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
-                       _configurationDock, Qt::Vertical );
-  _configurationDock->setSizePolicy(QSizePolicy::MinimumExpanding,
-                             QSizePolicy::Expanding);
-
-  _configurationDock->setFeatures(QDockWidget::DockWidgetClosable |
-                           QDockWidget::DockWidgetMovable |
-                           QDockWidget::DockWidgetFloatable);
-  _configurationDock->setWindowTitle( QString( "Configuration" ));
-  _configurationDock->setMinimumSize( 200, 200 );
-
-  _configurationDock->close( );
-
-  newWidget = new QWidget( );
-  _configurationDock->setWidget( newWidget );
-
-  QVBoxLayout* _configDockLayout = new QVBoxLayout( );
-  _configDockLayout->setAlignment( Qt::AlignTop );
-  newWidget->setLayout( _configDockLayout );
-
-  connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),
-           _ui->actionConfiguration, SLOT( setChecked( bool )));
-  connect( _ui->actionConfiguration, SIGNAL( triggered( )),
-           this, SLOT( updateConfigurationDock( )));
-
+  _initExtractionDock( );
+  _initConfigurationDock( );
 }
+
+MainWindow::~MainWindow( void )
+{
+    delete _ui;
+}
+
+// PUBLIC
 
 void MainWindow::init( const std::string& zeqUri )
 {
@@ -189,20 +95,33 @@ void MainWindow::init( const std::string& zeqUri )
   connect( _ui->actionOpenSWCFile, SIGNAL( triggered( )),
            this, SLOT( openSWCFileThroughDialog( )));
 
-
-  // connect( _radiusSlider, SIGNAL( sliderReleased( )),
-  //          this, SLOT( onActionGenerate( )));
-
   connect( _radiusSlider, SIGNAL( valueChanged( int )),
            this, SLOT( onActionGenerate( int )));
 
   connect( _extractButton, SIGNAL( clicked( )),
            _openGLWidget, SLOT( extractMesh( )));
-}
 
-MainWindow::~MainWindow( void )
-{
-    delete _ui;
+  connect( _lotSlider, SIGNAL( valueChanged( int )),
+           _openGLWidget, SLOT( onLotValueChanged( int )));
+
+  _lotSlider->valueChanged( _lotSlider->value( ));
+
+  connect( _distanceSlider, SIGNAL( valueChanged( int )),
+           _openGLWidget, SLOT( onDistanceValueChanged( int )));
+
+  _distanceSlider->valueChanged( _distanceSlider->value( ));
+
+  connect( _tangSlider, SIGNAL( valueChanged( int )),
+           _openGLWidget, SLOT( onTangValueChanged( int )));
+
+  _tangSlider->valueChanged( _tangSlider->value( ));
+
+  connect( _radioHomogeneous, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( onHomogeneousClicked( )));
+
+  connect( _radioLinear, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( onLinearClicked( )));
+  _radioLinear->clicked( );
 }
 
 
@@ -218,6 +137,39 @@ void MainWindow::openBlueConfig( const std::string& fileName,
                            OpenGLWidget::TDataFileType::BlueConfig,
                            targetLabel );
   updateNeuronList( );
+}
+
+void MainWindow::openXMLScene( const std::string& fileName )
+{
+  _openGLWidget->loadData( fileName,
+    OpenGLWidget::TDataFileType::NsolScene );
+  updateNeuronList( );
+}
+
+void MainWindow::openSWCFile( const std::string& fileName )
+{
+  _openGLWidget->loadData( fileName,
+    OpenGLWidget::TDataFileType::SWC );
+  updateNeuronList( );
+}
+
+void MainWindow::updateNeuronList( void )
+{
+  _neuronList->clear( );
+  const std::vector< unsigned int >& ids = _openGLWidget->neuronIDs( );
+
+  for( const auto& id: ids )
+  {
+    _neuronList->addItem( QString::number( id ));
+  }
+}
+
+// PUBLIC SLOTS
+
+void MainWindow::home( void )
+{
+  _openGLWidget->home( );
+  _generateNeuritesLayout( );
 }
 
 void MainWindow::openBlueConfigThroughDialog( void )
@@ -250,14 +202,6 @@ void MainWindow::openBlueConfigThroughDialog( void )
 
 }
 
-void MainWindow::openXMLScene( const std::string& fileName )
-{
-  _openGLWidget->loadData( fileName,
-    OpenGLWidget::TDataFileType::NsolScene );
-  updateNeuronList( );
-}
-
-
 void MainWindow::openXMLSceneThroughDialog( void )
 {
 #ifdef NSOL_USE_QT5CORE
@@ -273,57 +217,6 @@ void MainWindow::openXMLSceneThroughDialog( void )
   }
 #endif
 
-}
-
-
-void MainWindow::openSWCFile( const std::string& fileName )
-{
-  _openGLWidget->loadData( fileName,
-    OpenGLWidget::TDataFileType::SWC );
-  updateNeuronList( );
-}
-
-void MainWindow::updateNeuronList( void )
-{
-  _neuronList->clear( );
-  std::vector< unsigned int > ids = _openGLWidget->neuronIDs( );
-
-  for( auto id: ids )
-  {
-    _neuronList->addItem( QString::number( id ));
-  }
-}
-
-void MainWindow::generateNeuritesLayout( void )
-{
-  unsigned int numDendrites = _openGLWidget->numNeurites( );
-
-  _neuriteSliders.clear( );
-
-  QLayoutItem* child;
-  while(( child = _neuritesLayout->takeAt( 0 )) != 0 )
-  {
-    delete child->widget( );
-  }
-
-  QSlider* _neuriteSlider;
-  for( unsigned int i = 0; i < numDendrites; i++ )
-  {
-    _neuriteSlider = new QSlider( Qt::Horizontal );
-    _neuriteSlider->setMinimum(0);
-    _neuriteSlider->setMaximum(200);
-    _neuriteSlider->setValue(100);
-    _neuritesLayout->addWidget( new QLabel( QString( "Alpha neurite " ) +
-                                            QString::number( i )));
-
-    _neuritesLayout->addWidget( _neuriteSlider );
-    _neuriteSliders.push_back( _neuriteSlider );
-    // connect( _neuriteSlider, SIGNAL( sliderReleased( )),
-    //        this, SLOT( onActionGenerate( )));
-    connect( _neuriteSlider, SIGNAL( valueChanged( int )),
-           this, SLOT( onActionGenerate( int )));
-  }
-  _radiusSlider->setValue(100);
 }
 
 void MainWindow::openSWCFileThroughDialog( void )
@@ -437,20 +330,7 @@ void MainWindow::onListClicked( QListWidgetItem* item )
 {
   int id = item->text( ).toInt( );
   _openGLWidget->neuron( id );
-  generateNeuritesLayout( );
-}
-
-void MainWindow::onActionGenerate( void )
-{
-  float alphaRadius = ( float )_radiusSlider->value( ) / 100.0f;
-  std::vector< float > alphaNeurites;
-
-  for ( unsigned int i = 0; i < _neuriteSliders.size( ); i++ )
-  {
-    alphaNeurites.push_back(( float ) _neuriteSliders[i]->value( ) / 100.0f );
-  }
-
-  _openGLWidget->regenerateNeuron( alphaRadius, alphaNeurites );
+  _generateNeuritesLayout( );
 }
 
 void MainWindow::onActionGenerate( int /*value_*/ )
@@ -467,8 +347,189 @@ void MainWindow::onActionGenerate( int /*value_*/ )
   _openGLWidget->regenerateNeuron( alphaRadius, alphaNeurites );
 }
 
-void MainWindow::home( void )
+// PRIVATE
+
+void MainWindow::_generateNeuritesLayout( void )
 {
-  _openGLWidget->home( );
-  generateNeuritesLayout( );
+  unsigned int numDendrites = _openGLWidget->numNeurites( );
+
+  _neuriteSliders.clear( );
+
+  QLayoutItem* child;
+  while(( child = _neuritesLayout->takeAt( 0 )) != 0 )
+  {
+    delete child->widget( );
+  }
+
+  QSlider* _neuriteSlider;
+  for( unsigned int i = 0; i < numDendrites; i++ )
+  {
+    _neuriteSlider = new QSlider( Qt::Horizontal );
+    _neuriteSlider->setMinimum(0);
+    _neuriteSlider->setMaximum(200);
+    _neuriteSlider->setValue(100);
+    _neuritesLayout->addWidget( new QLabel( QString( "Neurite " ) +
+                                            QString::number( i ) +
+                                            QString( " factor" )));
+
+    _neuritesLayout->addWidget( _neuriteSlider );
+    _neuriteSliders.push_back( _neuriteSlider );
+    // connect( _neuriteSlider, SIGNAL( sliderReleased( )),
+    //        this, SLOT( onActionGenerate( )));
+    connect( _neuriteSlider, SIGNAL( valueChanged( int )),
+           this, SLOT( onActionGenerate( int )));
+  }
+  _radiusSlider->setValue(100);
+}
+
+void MainWindow::_initExtractionDock( void )
+{
+  _extractMeshDock = new QDockWidget( );
+  this->addDockWidget( Qt::DockWidgetAreas::enum_type::RightDockWidgetArea,
+                       _extractMeshDock, Qt::Vertical );
+  _extractMeshDock->setSizePolicy(QSizePolicy::MinimumExpanding,
+                             QSizePolicy::Expanding);
+
+  _extractMeshDock->setFeatures(QDockWidget::DockWidgetClosable |
+                           QDockWidget::DockWidgetMovable |
+                           QDockWidget::DockWidgetFloatable);
+  _extractMeshDock->setWindowTitle( QString( "Reconstruction" ));
+  _extractMeshDock->setMinimumSize( 200, 200 );
+
+  _extractMeshDock->close( );
+
+  QWidget* newWidget = new QWidget( );
+  _extractMeshDock->setWidget( newWidget );
+
+  QVBoxLayout* _meshDockLayout = new QVBoxLayout( );
+  _meshDockLayout->setAlignment( Qt::AlignTop );
+  newWidget->setLayout( _meshDockLayout );
+
+  //Neurons group
+  QGroupBox* _neuronsGroup = new QGroupBox( QString( "Select Neuron" ));
+  QVBoxLayout* _neuronsLayout = new QVBoxLayout( );
+  _neuronsGroup->setLayout( _neuronsLayout );
+  _meshDockLayout->addWidget( _neuronsGroup );
+
+  _neuronList = new QListWidget( );
+  _neuronsLayout->addWidget( new QLabel( QString( "Neurons" )));
+  _neuronsLayout->addWidget( _neuronList );
+
+  // Soma reconstruction group
+  QGroupBox* _somaGroup = new QGroupBox( QString( "Soma reconstruction" ));
+  QVBoxLayout* _somaGroupLayout = new QVBoxLayout( );
+  _somaGroup->setLayout( _somaGroupLayout );
+  _meshDockLayout->addWidget( _somaGroup );
+
+  _radiusSlider = new QSlider( Qt::Horizontal );
+  _radiusSlider->setMinimum( 25 );
+  _radiusSlider->setMaximum( 100 );
+  _radiusSlider->setValue( 100 );
+
+  _somaGroupLayout->addWidget( new QLabel( QString( "Radius factor" )));
+  _somaGroupLayout->addWidget( _radiusSlider );
+
+  QScrollArea* _neuritesArea = new QScrollArea( );
+  _neuritesArea->setSizePolicy( QSizePolicy::MinimumExpanding,
+                            QSizePolicy::Expanding );
+  _neuritesArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+  _neuritesArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+  _neuritesArea->setWidgetResizable( true );
+  _neuritesArea->setFrameShape( QFrame::NoFrame );
+  _somaGroupLayout->addWidget( _neuritesArea );
+  QWidget* _neuritesWidget = new QWidget( );
+  _neuritesArea->setWidget( _neuritesWidget );
+  _neuritesLayout = new QVBoxLayout( );
+  _neuritesWidget->setLayout( _neuritesLayout );
+
+// Extraction group
+  QGroupBox* _extractionGroup = new QGroupBox( QString( "Mesh extraction" ));
+  QVBoxLayout* _extractionLayout = new QVBoxLayout( );
+  _extractionGroup->setLayout( _extractionLayout );
+  _meshDockLayout->addWidget( _extractionGroup );
+
+  _extractButton = new QPushButton( QString( "Extract" ));
+  _extractionLayout->addWidget( _extractButton );
+
+  connect( _neuronList, SIGNAL( itemClicked( QListWidgetItem* )),
+           this, SLOT( onListClicked( QListWidgetItem* )));
+
+  connect( _extractMeshDock->toggleViewAction( ), SIGNAL( toggled( bool )),
+           _ui->actionExtractMesh, SLOT( setChecked( bool )));
+  connect( _ui->actionExtractMesh, SIGNAL( triggered( )),
+           this, SLOT( updateExtractMeshDock( )));
+
+}
+
+void MainWindow::_initConfigurationDock( void )
+{
+  _configurationDock = new QDockWidget( );
+  this->addDockWidget( Qt::DockWidgetAreas::enum_type::LeftDockWidgetArea,
+                       _configurationDock, Qt::Vertical );
+  _configurationDock->setSizePolicy(QSizePolicy::MinimumExpanding,
+                             QSizePolicy::Expanding);
+
+  _configurationDock->setFeatures(QDockWidget::DockWidgetClosable |
+                           QDockWidget::DockWidgetMovable |
+                           QDockWidget::DockWidgetFloatable);
+  _configurationDock->setWindowTitle( QString( "Configuration" ));
+  _configurationDock->setMinimumSize( 200, 200 );
+
+  _configurationDock->close( );
+
+  QWidget* newWidget = new QWidget( );
+  _configurationDock->setWidget( newWidget );
+
+  QVBoxLayout* _configDockLayout = new QVBoxLayout( );
+  _configDockLayout->setAlignment( Qt::AlignTop );
+  newWidget->setLayout( _configDockLayout );
+
+  QGroupBox* tessParamsGroup = new QGroupBox( QString( "Tessellation params" ));
+  _configDockLayout->addWidget( tessParamsGroup );
+  QVBoxLayout* vbox = new QVBoxLayout;
+  tessParamsGroup->setLayout( vbox );
+
+  _lotSlider = new QSlider( Qt::Horizontal );
+  _lotSlider->setMinimum( 1 );
+  _lotSlider->setMaximum( 10 );
+  _lotSlider->setValue( 4 );
+  vbox->addWidget(
+    new QLabel( QString( "Level" )));
+  vbox->addWidget( _lotSlider );
+
+  _distanceSlider = new QSlider( Qt::Horizontal );
+  _distanceSlider->setMinimum( 0 );
+  _distanceSlider->setMaximum( 1000 );
+  _distanceSlider->setValue( 10 );
+  vbox->addWidget(
+    new QLabel( QString( "Maximum Distance" )));
+  vbox->addWidget( _distanceSlider );
+
+  _tangSlider = new QSlider( Qt::Horizontal );
+  _tangSlider->setMinimum( 0 );
+  _tangSlider->setMaximum( 50 );
+  _tangSlider->setValue( 10 );
+  vbox->addWidget(
+    new QLabel( QString( "Tangent smoothing" )));
+  vbox->addWidget( _tangSlider );
+
+  // Radio Buttons Group
+
+  QGroupBox* tessMethodGroup = new QGroupBox( QString( "Tessellation method" ));
+  _configDockLayout->addWidget( tessMethodGroup );
+  vbox = new QVBoxLayout;
+  tessMethodGroup->setLayout( vbox );
+
+  _radioHomogeneous = new QRadioButton( QString( "Homogeneous" ));
+  vbox->addWidget( _radioHomogeneous );
+  _radioLinear = new QRadioButton( QString( "Linear" ));
+  vbox->addWidget( _radioLinear );
+
+  _radioLinear->setChecked( true );
+
+  connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),
+           _ui->actionConfiguration, SLOT( setChecked( bool )));
+  connect( _ui->actionConfiguration, SIGNAL( triggered( )),
+           this, SLOT( updateConfigurationDock( )));
+
 }

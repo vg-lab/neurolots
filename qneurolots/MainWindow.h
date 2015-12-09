@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QRadioButton>
 
 namespace Ui
 {
@@ -42,8 +43,6 @@ public slots:
   void updateExtractMeshDock( void );
   void updateConfigurationDock( void );
   void onListClicked( QListWidgetItem *item );
-
-  void onActionGenerate( void );
   void onActionGenerate( int value_ );
 
 protected:
@@ -53,7 +52,9 @@ protected:
 
 private:
 
-  void generateNeuritesLayout( void );
+  void _generateNeuritesLayout( void );
+  void _initExtractionDock( void );
+  void _initConfigurationDock( void );
 
   Ui::MainWindow* _ui;
   OpenGLWidget* _openGLWidget;
@@ -67,4 +68,12 @@ private:
   std::vector< QSlider* > _neuriteSliders;
 
   QPushButton* _extractButton;
+
+  QSlider* _lotSlider;
+  QSlider* _distanceSlider;
+  QSlider* _tangSlider;
+
+  QRadioButton* _radioHomogeneous;
+  QRadioButton* _radioLinear;
+
 };

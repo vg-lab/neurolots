@@ -10,20 +10,7 @@
 #ifndef __NEUROLOTS_PROGRAM__
 #define __NEUROLOTS_PROGRAM__
 
-
-//OpenGL
-#ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
-#include <GL/glew.h>
-#endif
-#ifdef Darwin
-#include <gl.h>
-#include <glu.h>
-#include <GLUT/glut.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
-#endif
+#include "Shader.h"
 
 #include <string>
 
@@ -39,15 +26,14 @@ namespace neurolots
 
     typedef enum
     {
-      LINES = 0,
-      TRIANGLES,
+      TRIANGLES = 0,
       TRIANGLES_FB,
       QUADS,
       QUADS_FB
     } TProgram;
 
     NLRENDER_API
-    Program( TProgram type_, const std::string& path_ );
+    Program( TProgram type_, const std::string& path_ = std::string( "" ));
 
     NLRENDER_API
     ~Program( void );
@@ -56,23 +42,21 @@ namespace neurolots
     void Init( void );
 
     NLRENDER_API
-    GLuint id( void );
+    unsigned int& id( void );
 
 
   private:
 
-    GLuint _LoadShader( const std::string& fileName_, GLenum type_ );
-    void _ShaderInit( void );
+    std::string _LoadShader( const std::string& fileName_  );
 
     TProgram _type;
 
-    GLuint id_;
+    unsigned int id_;
 
-    GLuint vshader_;
-    GLuint teshader_;
-    GLuint tcshader_;
-    GLuint gshader_;
-    GLuint fshader_;
+    ShaderPtr vshader_;
+    ShaderPtr teshader_;
+    ShaderPtr tcshader_;
+    ShaderPtr fshader_;
 
     std::string _path;
   };

@@ -97,6 +97,12 @@ public slots:
   void timerUpdate( void );
   void extractMesh( void );
 
+  void onLotValueChanged( int value_ );
+  void onDistanceValueChanged( int value_ );
+  void onTangValueChanged( int value_ );
+
+  void onHomogeneousClicked( void );
+  void onLinearClicked( void );
 
 protected:
 
