@@ -1,5 +1,15 @@
-#ifndef __QNEUROLOTS__OPENGLWIDGET__
-#define __QNEUROLOTS__OPENGLWIDGET__
+/**
+ * @file    OpenGLWidget.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>,
+ * Pablo Toharia <pablo.toharia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
+#ifndef __NEUROTESSMESH__OPENGLWIDGET__
+#define __NEUROTESSMESH__OPENGLWIDGET__
 
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>

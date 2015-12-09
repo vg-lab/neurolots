@@ -1,6 +1,16 @@
+/**
+ * @file    MainWindow.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>,
+ * Pablo Toharia <pablo.toharia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "ui_mainwindow.h"
 #include "MainWindow.h"
-#include <qneurolots/version.h>
+#include <neurotessmesh/version.h>
 #ifdef NEUROLOTS_USE_GMRVZEQ
 #include <gmrvzeq/version.h>
 #endif
@@ -239,12 +249,12 @@ void MainWindow::showAbout( void )
 {
 
   QMessageBox::about(
-    this, tr( "About " ) + tr( "QNeurolots" ),
-    tr( "<p><BIG><b>" ) + tr( "QNeurolots" ) + tr( "</b></BIG><br><br>" ) +
+    this, tr( "About " ) + tr( "NeuroTessMesh" ),
+    tr( "<p><BIG><b>" ) + tr( "NeuroTessMesh" ) + tr( "</b></BIG><br><br>" ) +
     tr( "version " ) +
-    tr( qneurolots::Version::getString( ).c_str( )) +
+    tr( neurotessmesh::Version::getString( ).c_str( )) +
     tr( " (" ) +
-    tr( std::to_string( qneurolots::Version::getRevision( )).c_str( )) +
+    tr( std::to_string( neurotessmesh::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
     tr( "<br><br>Using: " ) +
     tr( "<ul>") +
