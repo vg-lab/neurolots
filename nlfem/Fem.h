@@ -1,14 +1,15 @@
 /**
  * @file    Fem.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
- * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __FEM_FEM__
-#define __FEM_FEM__
+
+#ifndef __NLFEM_FEM__
+#define __NLFEM_FEM__
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -21,7 +22,7 @@
 #include "Node.h"
 #include "Tetrahedron.h"
 
-namespace fem
+namespace nlfem
 {
 
 
@@ -63,8 +64,8 @@ namespace fem
       unsigned int _dim;
   };
 
-}// end namespace fem
+}// end namespace nlfem
 
-#endif // __FEM_FEM__
+#endif // __NLFEM_FEM__
 
 //EOF

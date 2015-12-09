@@ -1,12 +1,16 @@
+/**
+ * @file    Tetrahedron.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Tetrahedron.h"
 
-namespace fem
+namespace nlfem
 {
-
-  /////////////////////////////
-  // Class Tetrahedron
-  /////////////////////////////
-
 
   Tetrahedron::Tetrahedron( NodePtr node0_, NodePtr node1_, NodePtr node2_,
                             NodePtr node3_ )
@@ -117,10 +121,6 @@ namespace fem
     _volume = volume_;
   }
 
-  /////////////////////////////
-  // Class Tetrahedra
-  /////////////////////////////
-
   Tetrahedra::Tetrahedra( void )
   {
 
@@ -203,4 +203,4 @@ namespace fem
     }
   }
 
-} //end namespace fem
+} //end namespace nlfem

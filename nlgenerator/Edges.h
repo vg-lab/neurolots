@@ -29,7 +29,7 @@ namespace neurolots
     public:
 
       NLGENERATOR_API
-      Edge( unsigned int node_, fem::NodePtr middleNode_ );
+      Edge( unsigned int node_, nlfem::NodePtr middleNode_ );
 
       NLGENERATOR_API
       ~Edge( void );
@@ -39,12 +39,12 @@ namespace neurolots
       unsigned int Node( void );
 
       NLGENERATOR_API
-      fem::NodePtr MiddleNode( void );
+      nlfem::NodePtr MiddleNode( void );
 
     private:
 
       unsigned int _node;
-      fem::NodePtr _middleNode;
+      nlfem::NodePtr _middleNode;
 
   };
 
@@ -58,16 +58,16 @@ namespace neurolots
       ~Edges( void );
 
       NLGENERATOR_API
-      fem::NodePtr AddEdge( std::vector< fem::NodePtr >& nodes,
-                            fem::NodePtr node0, fem::NodePtr node1 );
+      nlfem::NodePtr AddEdge( std::vector< nlfem::NodePtr >& nodes,
+                              nlfem::NodePtr node0, nlfem::NodePtr node1 );
 
       NLGENERATOR_API
       void Clear( void );
 
     private:
 
-      fem::NodePtr _MiddleNode( std::vector< fem::NodePtr >& nodes,
-                                fem::NodePtr node0, fem::NodePtr node1);
+      nlfem::NodePtr _MiddleNode( std::vector< nlfem::NodePtr >& nodes,
+                                  nlfem::NodePtr node0, nlfem::NodePtr node1);
 
       Eigen::Vector3f _center;
       float _radius;

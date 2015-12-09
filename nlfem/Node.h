@@ -1,14 +1,14 @@
 /**
  * @file    Node.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
- * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __FEM_NODE__
-#define __FEM_NODE__
+#ifndef __NLFEM_NODE__
+#define __NLFEM_NODE__
 
 //Eigen
 #include <Eigen/Dense>
@@ -19,7 +19,7 @@
 #include <neurolots/nlfem/api.h>
 
 
-namespace fem
+namespace nlfem
 {
 
 
@@ -144,8 +144,8 @@ namespace fem
 
   };
 
-} // end namespace fem
+} // end namespace nlfem
 
-#endif // __FEM_NODE__
+#endif // __NLFEM_NODE__
 
 //EOF

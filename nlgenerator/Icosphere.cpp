@@ -14,47 +14,47 @@ namespace neurolots
     _tetrahedra.clear( );
     _quads.clear( );
 
-    fem::NodePtr n0 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
+    nlfem::NodePtr n0 = new nlfem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
                                      0.0f ), 0 );
     n0->Center( _center );
     _nodes.push_back( n0 );
 
-    fem::NodePtr n1 = new fem::Node( _center + Eigen::Vector3f( 0.0f, _radius,
-                                     0.0f ), 1, true );
+    nlfem::NodePtr n1 = new nlfem::Node(
+      _center + Eigen::Vector3f( 0.0f, _radius, 0.0f ), 1, true );
     n1->Center( _center );
     _nodes.push_back( n1 );
-    fem::NodePtr n2 = new fem::Node( _center + Eigen::Vector3f( 0.0f, -_radius,
-                                     0.0f ), 2, true );
+    nlfem::NodePtr n2 = new nlfem::Node(
+      _center + Eigen::Vector3f( 0.0f, -_radius, 0.0f ), 2, true );
     n2->Center( _center );
     _nodes.push_back( n2 );
 
-    fem::NodePtr n3 = new fem::Node( _center + Eigen::Vector3f( _radius, 0.0f,
-                                     0.0f ), 3, true );
+    nlfem::NodePtr n3 = new nlfem::Node(
+      _center + Eigen::Vector3f( _radius, 0.0f, 0.0f ), 3, true );
     n3->Center( _center );
     _nodes.push_back( n3 );
-    fem::NodePtr n4 = new fem::Node( _center + Eigen::Vector3f( -_radius, 0.0f,
-                                     0.0f ), 4, true );
+    nlfem::NodePtr n4 = new nlfem::Node(
+      _center + Eigen::Vector3f( -_radius, 0.0f, 0.0f ), 4, true );
     n4->Center( _center );
     _nodes.push_back( n4 );
 
-    fem::NodePtr n5 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
-                                     _radius ), 5, true );
+    nlfem::NodePtr n5 = new nlfem::Node(
+      _center + Eigen::Vector3f( 0.0f, 0.0f, _radius ), 5, true );
     n5->Center( _center );
     _nodes.push_back( n5 );
-    fem::NodePtr n6 = new fem::Node( _center + Eigen::Vector3f( 0.0f, 0.0f,
-                                     -_radius ), 6, true );
+    nlfem::NodePtr n6 = new nlfem::Node(
+      _center + Eigen::Vector3f( 0.0f, 0.0f, -_radius ), 6, true );
     n6->Center( _center );
     _nodes.push_back( n6 );
 
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n1, n3, n5 ));
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n1, n5, n4 ));
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n5, n3, n2 ));
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n5, n2, n4 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n1, n3, n5 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n1, n5, n4 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n5, n3, n2 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n5, n2, n4 ));
 
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n1, n4, n6 ));
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n1, n6, n3 ));
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n6, n4, n2 ));
-    _tetrahedra.push_back( new fem::Tetrahedron( n0, n6, n2, n3 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n1, n4, n6 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n1, n6, n3 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n6, n4, n2 ));
+    _tetrahedra.push_back( new nlfem::Tetrahedron( n0, n6, n2, n3 ));
 
     _quads.push_back( new Quad( n4, n5, n3, n1 ));
     _quads.push_back( new Quad( n4, n2, n3, n5 ));
@@ -89,7 +89,7 @@ namespace neurolots
 
     Eigen::Quaternion< float > q;
 
-    fem::Nodes::ContornIds( _nodes );
+    nlfem::Nodes::ContornIds( _nodes );
 
     for ( unsigned int i = 0; i < firstNodes.size( ); i++ )
     {
@@ -137,7 +137,7 @@ namespace neurolots
         }
       }
 
-      std::vector< fem::NodePtr > nodes(4);
+      std::vector< nlfem::NodePtr > nodes(4);
 
       quad->Node0( )->Pos( position[offset] );
       nodes[offset] = quad->Node0( );
@@ -162,19 +162,19 @@ namespace neurolots
       vNode->Tangent( tangent );
     }
 
-    fem::Fem fem( _nodes, _tetrahedra );
+    nlfem::Fem fem( _nodes, _tetrahedra );
     fem.Solve( );
 
     _CalculateCenters( );
   }
 
   void Icosphere::TrianglesToVector( std::vector< float >& vertices,
-                                std::vector< float >& centers,
-                                std::vector< float >& tangents,
-                                std::vector< unsigned int >& mesh )
+                                     std::vector< float >& centers,
+                                     std::vector< float >& tangents,
+                                     std::vector< unsigned int >& mesh )
   {
-    fem::Tetrahedra::FacesToVectors( _tetrahedra, _nodes, vertices, centers,
-                                     tangents, mesh );
+    nlfem::Tetrahedra::FacesToVectors( _tetrahedra, _nodes, vertices, centers,
+                                       tangents, mesh );
   }
 
   void Icosphere::TrianglesToVector(
@@ -188,9 +188,9 @@ namespace neurolots
   }
 
   void Icosphere::QuadsToVector( std::vector< float >& vertices,
-                                      std::vector< float >& centers,
-                                      std::vector< float >& tangents,
-                                      std::vector< unsigned int >& mesh )
+                                 std::vector< float >& centers,
+                                 std::vector< float >& tangents,
+                                 std::vector< unsigned int >& mesh )
   {
     Quads::FacesToVectors( _quads, _nodes, vertices, centers, tangents, mesh );
   }
@@ -201,47 +201,47 @@ namespace neurolots
     {
       Edges edges( _center, _radius );
 
-      std::vector< fem::TetrahedronPtr > tets;
+      std::vector< nlfem::TetrahedronPtr > tets;
       std::vector< QuadPtr > quads;
 
       unsigned int size = ( unsigned int ) _tetrahedra.size( );
 
       for ( unsigned int k = 0; k < size; k++ )
       {
-        fem::NodePtr a = _tetrahedra[k]->Node0( );
-        fem::NodePtr b = _tetrahedra[k]->Node1( );
-        fem::NodePtr c = _tetrahedra[k]->Node2( );
-        fem::NodePtr d = _tetrahedra[k]->Node3( );
+        nlfem::NodePtr a = _tetrahedra[k]->Node0( );
+        nlfem::NodePtr b = _tetrahedra[k]->Node1( );
+        nlfem::NodePtr c = _tetrahedra[k]->Node2( );
+        nlfem::NodePtr d = _tetrahedra[k]->Node3( );
 
-        fem::NodePtr e =  edges.AddEdge( _nodes, a, b );
-        fem::NodePtr f =  edges.AddEdge( _nodes, a, c );
-        fem::NodePtr g =  edges.AddEdge( _nodes, a, d );
-        fem::NodePtr h =  edges.AddEdge( _nodes, b, c );
-        fem::NodePtr i =  edges.AddEdge( _nodes, c, d );
-        fem::NodePtr j =  edges.AddEdge( _nodes, d, b );
+        nlfem::NodePtr e =  edges.AddEdge( _nodes, a, b );
+        nlfem::NodePtr f =  edges.AddEdge( _nodes, a, c );
+        nlfem::NodePtr g =  edges.AddEdge( _nodes, a, d );
+        nlfem::NodePtr h =  edges.AddEdge( _nodes, b, c );
+        nlfem::NodePtr i =  edges.AddEdge( _nodes, c, d );
+        nlfem::NodePtr j =  edges.AddEdge( _nodes, d, b );
         //4 Externos
-        tets.push_back( new fem::Tetrahedron( a, e, f, g ));
-        tets.push_back( new fem::Tetrahedron( b, h, e, j ));
-        tets.push_back( new fem::Tetrahedron( c, i, f, h ));
-        tets.push_back( new fem::Tetrahedron( d, j, g, i ));
+        tets.push_back( new nlfem::Tetrahedron( a, e, f, g ));
+        tets.push_back( new nlfem::Tetrahedron( b, h, e, j ));
+        tets.push_back( new nlfem::Tetrahedron( c, i, f, h ));
+        tets.push_back( new nlfem::Tetrahedron( d, j, g, i ));
             //4 Internos
-        tets.push_back( new fem::Tetrahedron( e, f, j, h ));
-        tets.push_back( new fem::Tetrahedron( i, f, h, j ));
-        tets.push_back( new fem::Tetrahedron( e, f, g, j ));
-        tets.push_back( new fem::Tetrahedron( i, f, j, g ));
+        tets.push_back( new nlfem::Tetrahedron( e, f, j, h ));
+        tets.push_back( new nlfem::Tetrahedron( i, f, h, j ));
+        tets.push_back( new nlfem::Tetrahedron( e, f, g, j ));
+        tets.push_back( new nlfem::Tetrahedron( i, f, j, g ));
       }
 
       for ( unsigned int k=0; k<_quads.size(); k++ )
       {
-        fem::NodePtr a = _quads[k]->Node0( );
-        fem::NodePtr b = _quads[k]->Node1( );
-        fem::NodePtr c = _quads[k]->Node2( );
-        fem::NodePtr d = _quads[k]->Node3( );
-        fem::NodePtr e = edges.AddEdge( _nodes, a, b );
-        fem::NodePtr f = edges.AddEdge( _nodes, b, c );
-        fem::NodePtr g = edges.AddEdge( _nodes, c, d );
-        fem::NodePtr h = edges.AddEdge( _nodes, d, a );
-        fem::NodePtr i = edges.AddEdge( _nodes, b, d );
+        nlfem::NodePtr a = _quads[k]->Node0( );
+        nlfem::NodePtr b = _quads[k]->Node1( );
+        nlfem::NodePtr c = _quads[k]->Node2( );
+        nlfem::NodePtr d = _quads[k]->Node3( );
+        nlfem::NodePtr e = edges.AddEdge( _nodes, a, b );
+        nlfem::NodePtr f = edges.AddEdge( _nodes, b, c );
+        nlfem::NodePtr g = edges.AddEdge( _nodes, c, d );
+        nlfem::NodePtr h = edges.AddEdge( _nodes, d, a );
+        nlfem::NodePtr i = edges.AddEdge( _nodes, b, d );
         quads.push_back(new Quad(a,e,i,h));
         quads.push_back(new Quad(e,b,f,i));
         quads.push_back(new Quad(i,f,c,g));
@@ -258,7 +258,7 @@ namespace neurolots
 
   void Icosphere::_CalculateCenters( void )
   {
-    fem::NodePtr node;
+    nlfem::NodePtr node;
     for ( unsigned int i = 0; i < _nodes.size( ); i++ )
     {
       node = _nodes[i];
@@ -277,7 +277,7 @@ namespace neurolots
 
     for ( unsigned int i = 0; i < _tetrahedra.size( ); i++ )
     {
-      fem::TetrahedronPtr tet = _tetrahedra[i];
+      nlfem::TetrahedronPtr tet = _tetrahedra[i];
 
       bool fixed0 = tet->Node0( )->Fixed( );
       bool fixed1 = tet->Node1( )->Fixed( );

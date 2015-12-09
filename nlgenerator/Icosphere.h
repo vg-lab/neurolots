@@ -72,8 +72,8 @@ namespace neurolots
       Eigen::Vector3f _center;
       float _radius;
 
-      std::vector< fem::NodePtr > _nodes;
-      std::vector< fem::TetrahedronPtr > _tetrahedra;
+      std::vector< nlfem::NodePtr > _nodes;
+      std::vector< nlfem::TetrahedronPtr > _tetrahedra;
       std::vector< QuadPtr > _quads;
 
   };

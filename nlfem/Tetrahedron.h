@@ -1,14 +1,14 @@
 /**
  * @file    Tetrahedron.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
- * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __FEM_TETRAHEDRON__
-#define __FEM_TETRAHEDRON__
+#ifndef __NLFEM_TETRAHEDRON__
+#define __NLFEM_TETRAHEDRON__
 
 //Eigen
 #include <Eigen/Dense>
@@ -21,7 +21,7 @@
 #include <neurolots/nlfem/api.h>
 
 
-namespace fem
+namespace nlfem
 {
 
 
@@ -140,8 +140,8 @@ namespace fem
 
   };
 
-} // end namespace fem
+} // end namespace nlfem
 
-#endif // __FEM_TETRAHEDRON__
+#endif // __NLFEM_TETRAHEDRON__
 
 //EOF

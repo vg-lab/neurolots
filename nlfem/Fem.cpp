@@ -1,6 +1,15 @@
+/**
+ * @file    Fem.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Fem.h"
 
-namespace fem
+namespace nlfem
 {
 
   Fem::Fem( std::vector< NodePtr > nodes_,
@@ -422,4 +431,4 @@ namespace fem
   }
 
 
-} // end namespace fem
+} // end namespace nlfem

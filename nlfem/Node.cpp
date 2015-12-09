@@ -1,11 +1,16 @@
+/**
+ * @file    Node.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Node.h"
 
-namespace fem
+namespace nlfem
 {
-
-  /////////////////////////////
-  // Class Node
-  /////////////////////////////
 
   Node::Node( Eigen::Vector3f pos0_, unsigned int id_, bool contorn_ )
     : _id( id_ )
@@ -135,9 +140,6 @@ namespace fem
   }
 
 
-  /////////////////////////////
-  // Class Nodes
-  /////////////////////////////
 
   Nodes::Nodes( void )
   {
@@ -219,4 +221,4 @@ namespace fem
     }
   }
 
-}// end namespace fem
+}// end namespace nlfem
