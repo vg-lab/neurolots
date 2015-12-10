@@ -1,9 +1,20 @@
+/**
+ * @file    Quad.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Quad.h"
 
-namespace neurolots
+namespace nlgenerator
 {
-  Quad::Quad( fem::NodePtr node0_, fem::NodePtr node1_, fem::NodePtr node2_,
-              fem::NodePtr node3_ )
+  Quad::Quad( nlfem::NodePtr node0_,
+              nlfem::NodePtr node1_,
+              nlfem::NodePtr node2_,
+              nlfem::NodePtr node3_ )
     : _node0( node0_ )
     , _node1( node1_ )
     , _node2( node2_ )
@@ -19,22 +30,22 @@ namespace neurolots
 
   }
 
-  fem::NodePtr Quad::Node0( void )
+  nlfem::NodePtr Quad::Node0( void )
   {
     return _node0;
   }
 
-  fem::NodePtr Quad::Node1( void )
+  nlfem::NodePtr Quad::Node1( void )
   {
     return _node1;
   }
 
-  fem::NodePtr Quad::Node2( void )
+  nlfem::NodePtr Quad::Node2( void )
   {
     return _node2;
   }
 
-  fem::NodePtr Quad::Node3( void )
+  nlfem::NodePtr Quad::Node3( void )
   {
     return _node3;
   }
@@ -66,13 +77,13 @@ namespace neurolots
   }
 
   void Quads::FacesToVectors( std::vector< QuadPtr >& quads,
-                              std::vector< fem::NodePtr >& nodes,
+                              std::vector< nlfem::NodePtr >& nodes,
                               std::vector< float >& vertices,
                               std::vector< float >& centers,
                               std::vector< float >& tangents,
                               std::vector< unsigned int >& mesh )
   {
-    fem::Nodes::ContornNodesToVectors( nodes, vertices, centers, tangents );
+    nlfem::Nodes::ContornNodesToVectors( nodes, vertices, centers, tangents );
 
     for ( unsigned int i=0; i < quads.size(); i++ )
     {
@@ -121,4 +132,4 @@ namespace neurolots
     return nearerQuad;
   }
 
-}// end namespace neurolots
+}// end namespace nlgenerator

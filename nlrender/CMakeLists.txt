@@ -44,7 +44,7 @@ if (GMRVZEQ_FOUND)
   set(NLRENDER_LINK_LIBRARIES ${NLRENDER_LINK_LIBRARIES} gmrvzeq)
 endif( )
 
-set(NLRENDER_INCLUDE_NAME neurolots/nlrender)
+set(NLRENDER_INCLUDE_NAME nlrender)
 set(NLRENDER_NAMESPACE nlrender)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlrender )

@@ -1,8 +1,17 @@
+/**
+ * @file    NeuronMesh.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "NeuronMesh.h"
 
 using namespace std;
 
-namespace neurolots
+namespace nlrender
 {
 
   NeuronMesh::NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ )
@@ -25,8 +34,9 @@ namespace neurolots
       std::vector< float > tangents;
       std::vector< unsigned int > mesh;
 
-      NeuronMeshGenerator::GenerateMesh( _morpho, vertices, centers,
-                                         tangents, mesh, _somaEnd );
+      nlgenerator::NeuronMeshGenerator::GenerateMesh( _morpho, vertices,
+                                                      centers, tangents,
+                                                      mesh, _somaEnd );
       // VAO Generation
       glGenVertexArrays( 1, &vao_ );
       glBindVertexArray( vao_ );
@@ -78,9 +88,11 @@ namespace neurolots
     std::vector< float > tangents;
     std::vector< unsigned int > mesh;
 
-    NeuronMeshGenerator::GenerateMesh( _morpho, alphaRadius_, alphaNeurites_,
-                                       vertices, centers, tangents, mesh,
-                                       _somaEnd );
+    nlgenerator::NeuronMeshGenerator::GenerateMesh( _morpho, alphaRadius_,
+                                                    alphaNeurites_,
+                                                    vertices, centers,
+                                                    tangents, mesh,
+                                                    _somaEnd );
     // VAO Generation
     glBindVertexArray( vao_ );
 
@@ -130,8 +142,9 @@ namespace neurolots
   }
 
 
-  void NeuronMesh::WriteOBJ( const std::string& fileName_, Vertices& vertices_,
-    const Facets& facets_ ) const
+  void NeuronMesh::WriteOBJ( const std::string& fileName_,
+                             nlgeometry::Vertices& vertices_,
+                             const nlgeometry::Facets& facets_ ) const
   {
     ofstream outStream(fileName_.c_str());
     if(!outStream.is_open())
@@ -147,13 +160,13 @@ namespace neurolots
                 << vertices_[i]->position( ).y( ) << " "
                 << vertices_[i]->position( ).z( ) << std::endl;
     }
-    for( VertexPtr vertex: vertices_ )
+    for( nlgeometry::VertexPtr vertex: vertices_ )
     {
       outStream << "vn " << vertex->normal( ).x( ) << " "
                 << vertex->normal( ).y( ) << " "
                 << vertex->normal( ).z( ) << std::endl;
     }
-    for( FacetPtr facet: facets_ )
+    for( nlgeometry::FacetPtr facet: facets_ )
     {
       outStream << "f " << facet->v0( )->id( ) << "//" <<  facet->v0( )->id( )
                 << " " << facet->v1( )->id( ) << "//" <<  facet->v1( )->id( )
@@ -168,6 +181,6 @@ namespace neurolots
 
   }
 
-} // end namespace neurolots
+} // end namespace nlrender
 
 // EOF

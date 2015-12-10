@@ -1,6 +1,15 @@
+/**
+ * @file    VectorizedNode.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "VectorizedNode.h"
 
-namespace neurolots
+namespace nlgenerator
 {
 
   VectorizedNode::VectorizedNode( void )
@@ -109,6 +118,6 @@ namespace neurolots
     return _firstNode;
   }
 
-}// end namespace neurolots
+}// end namespace nlgenerator
 
 //EOF

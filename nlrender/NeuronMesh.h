@@ -1,14 +1,14 @@
 /**
  * @file    NeuronMesh.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_NEURON_MESH__
-#define __NEUROLOTS_NEURON_MESH__
+#ifndef __NLRENDER_NEURON_MESH__
+#define __NLRENDER_NEURON_MESH__
 
 //OpenGL
 #ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
@@ -40,11 +40,10 @@
 #include <vector>
 #include <map>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
-namespace neurolots
+namespace nlrender
 {
-
 
   class NeuronMesh
   {
@@ -71,8 +70,9 @@ namespace neurolots
     void PaintNeurites( void ) const;
 
     NLRENDER_API
-    void WriteOBJ( const std::string& fileName_, Vertices& vertices_,
-                   const Facets& facets_ ) const;
+    void WriteOBJ( const std::string& fileName_,
+                   nlgeometry::Vertices& vertices_,
+                   const nlgeometry::Facets& facets_ ) const;
 
   private:
 
@@ -89,8 +89,8 @@ namespace neurolots
 
   typedef NeuronMesh * NeuronMeshPtr;
 
-} // end namespace neurolots
+} // end namespace nlrender
 
-#endif // __NEUROLOTS_NEURON_MESH__
+#endif // __NLRENDER_NEURON_MESH__
 
 //EOF

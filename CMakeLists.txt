@@ -86,7 +86,7 @@ add_subdirectory( nlgeometry )
 add_subdirectory( nlfem )
 add_subdirectory( nlgenerator )
 add_subdirectory( nlrender )
-add_subdirectory( qneurolots )
+add_subdirectory( neurotessmesh )
 
 install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h
   DESTINATION include/neurolots )

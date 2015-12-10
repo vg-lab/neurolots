@@ -1,6 +1,15 @@
+/**
+ * @file    Facet.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Facet.h"
 
-namespace neurolots
+namespace nlgeometry
 {
 
   Facet::Facet(  const VertexPtr& v0_, const VertexPtr& v1_,
@@ -48,4 +57,4 @@ namespace neurolots
   }
 
 
-} // end namespace neurolots
+} // end namespace nlgeometry

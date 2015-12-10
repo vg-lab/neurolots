@@ -1,14 +1,14 @@
 /**
- * @file    Fem.h
+ * @file    Edges.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_EDGE__
-#define __NEUROLOTS_EDGE__
+#ifndef __NLGENERATOR_EDGE__
+#define __NLGENERATOR_EDGE__
 
 //Eigen
 
@@ -17,9 +17,9 @@
 #include <iostream>
 #include <vector>
 
-#include <neurolots/nlgenerator/api.h>
+#include <nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
 
 
@@ -29,7 +29,7 @@ namespace neurolots
     public:
 
       NLGENERATOR_API
-      Edge( unsigned int node_, fem::NodePtr middleNode_ );
+      Edge( unsigned int node_, nlfem::NodePtr middleNode_ );
 
       NLGENERATOR_API
       ~Edge( void );
@@ -39,12 +39,12 @@ namespace neurolots
       unsigned int Node( void );
 
       NLGENERATOR_API
-      fem::NodePtr MiddleNode( void );
+      nlfem::NodePtr MiddleNode( void );
 
     private:
 
       unsigned int _node;
-      fem::NodePtr _middleNode;
+      nlfem::NodePtr _middleNode;
 
   };
 
@@ -58,16 +58,16 @@ namespace neurolots
       ~Edges( void );
 
       NLGENERATOR_API
-      fem::NodePtr AddEdge( std::vector< fem::NodePtr >& nodes,
-                            fem::NodePtr node0, fem::NodePtr node1 );
+      nlfem::NodePtr AddEdge( std::vector< nlfem::NodePtr >& nodes,
+                              nlfem::NodePtr node0, nlfem::NodePtr node1 );
 
       NLGENERATOR_API
       void Clear( void );
 
     private:
 
-      fem::NodePtr _MiddleNode( std::vector< fem::NodePtr >& nodes,
-                                fem::NodePtr node0, fem::NodePtr node1);
+      nlfem::NodePtr _MiddleNode( std::vector< nlfem::NodePtr >& nodes,
+                                  nlfem::NodePtr node0, nlfem::NodePtr node1);
 
       Eigen::Vector3f _center;
       float _radius;
@@ -77,8 +77,8 @@ namespace neurolots
 
 
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_EDGE__
+#endif // __NLGENERATOR_EDGE__
 
 //EOF

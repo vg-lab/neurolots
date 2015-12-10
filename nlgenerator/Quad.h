@@ -1,45 +1,45 @@
 /**
- * @file    Tetrahedron.h
+ * @file    Quad.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_QUAD__
-#define __NEUROLOTS_QUAD__
+#ifndef __NLGENERATOR_QUAD__
+#define __NLGENERATOR_QUAD__
 
 #include "../nlfem/Node.h"
 #include <cfloat>
 
-#include <neurolots/nlgenerator/api.h>
+#include <nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
   class Quad
   {
     public:
 
       NLGENERATOR_API
-      Quad( fem::NodePtr node0_, fem::NodePtr node1_, fem::NodePtr node2_,
-            fem::NodePtr node3_ );
+      Quad( nlfem::NodePtr node0_, nlfem::NodePtr node1_, nlfem::NodePtr node2_,
+            nlfem::NodePtr node3_ );
 
       NLGENERATOR_API
       ~Quad( void );
 
       //Getters
       NLGENERATOR_API
-      fem::NodePtr Node0( void );
+      nlfem::NodePtr Node0( void );
 
       NLGENERATOR_API
-      fem::NodePtr Node1( void );
+      nlfem::NodePtr Node1( void );
 
       NLGENERATOR_API
-      fem::NodePtr Node2( void );
+      nlfem::NodePtr Node2( void );
 
       NLGENERATOR_API
-      fem::NodePtr Node3( void );
+      nlfem::NodePtr Node3( void );
 
       NLGENERATOR_API
       Eigen::Vector3f Center( void );
@@ -53,10 +53,10 @@ namespace neurolots
 
     private:
 
-      fem::NodePtr _node0;
-      fem::NodePtr _node1;
-      fem::NodePtr _node2;
-      fem::NodePtr _node3;
+      nlfem::NodePtr _node0;
+      nlfem::NodePtr _node1;
+      nlfem::NodePtr _node2;
+      nlfem::NodePtr _node3;
 
       Eigen::Vector3f _center;
 
@@ -79,7 +79,7 @@ namespace neurolots
 
       NLGENERATOR_API
       static void FacesToVectors( std::vector< QuadPtr >& quads,
-                                  std::vector< fem::NodePtr >& nodes,
+                                  std::vector< nlfem::NodePtr >& nodes,
                                   std::vector< float >& vertices,
                                   std::vector< float >& centers,
                                   std::vector< float >& tangents,
@@ -91,8 +91,8 @@ namespace neurolots
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_QUAD__
+#endif // __NLGENERATOR_QUAD__
 
 // EOF

@@ -1,14 +1,14 @@
 /**
  * @file    NeuronsCollection.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_NEURONS_COLLECTION__
-#define __NEUROLOTS_NEURONS_COLLECTION__
+#ifndef __NLRENDER_NEURONS_COLLECTION__
+#define __NLRENDER_NEURONS_COLLECTION__
 
 
 #include "Program.h"
@@ -35,11 +35,11 @@
 
 #endif
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 #include "Neuron.h"
 #include "../nlgeometry/Facet.h"
 
-namespace neurolots
+namespace nlrender
 {
 
   typedef nsol::Columns* ColumnsPtr;
@@ -152,7 +152,8 @@ namespace neurolots
 
     void _VectorToMesh( const std::vector< float >& vecVertices_,
                         const std::vector< float >& vecNormals_,
-                        Vertices& vertices_, Facets& facets_ ) const;
+                        nlgeometry::Vertices& vertices_,
+                        nlgeometry::Facets& facets_ ) const;
 
 #ifdef NEUROLOTS_USE_ZEQ
 
@@ -200,8 +201,8 @@ namespace neurolots
     unsigned int _tessMethod;
   };
 
-} // end namespace neurolots
+} // end namespace nlrender
 
-#endif // __NEUROLOTS_NEURONS_COLLECTION__
+#endif // __NLRENDER_NEURONS_COLLECTION__
 
 //EOF

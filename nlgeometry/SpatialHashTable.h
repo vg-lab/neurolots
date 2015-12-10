@@ -1,20 +1,20 @@
 /**
- * @file    SpatialHashTable.h
+ * @file    SpatialHashtable.cpp
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
- * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_SPATIAL_HASH_TABLE__
-#define __NEUROLOTS_SPATIAL_HASH_TABLE__
+#ifndef __NLGEOMETRY_SPATIAL_HASH_TABLE__
+#define __NLGEOMETRY_SPATIAL_HASH_TABLE__
 
 #include "Vertex.h"
 
-#include <neurolots/nlgeometry/api.h>
+#include <nlgeometry/api.h>
 
-namespace neurolots
+namespace nlgeometry
 {
   class SpatialHashTable
   {
@@ -52,8 +52,8 @@ namespace neurolots
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgeometry
 
-#endif // __NEUROLOTS_SPATIAL_HASH__
+#endif // __NLGEOMETRY_SPATIAL_HASH__
 
 // EOF

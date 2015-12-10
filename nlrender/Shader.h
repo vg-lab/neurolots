@@ -1,11 +1,20 @@
-#ifndef __NEUROLOTS_SHADER__
-#define __NEUROLOTS_SHADER__
+/**
+ * @file    Shader.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
+#ifndef __NLRENDER_SHADER__
+#define __NLRENDER_SHADER__
 
 #include <string>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
-namespace neurolots
+namespace nlrender
 {
 
   class Shader
@@ -54,8 +63,8 @@ namespace neurolots
 
   typedef Shader* ShaderPtr;
 
-} // end namespace neurolots
+} // end namespace nlrender
 
-#endif // __NEUROLOTS_SHADER__
+#endif // __NLRENDER_SHADER__
 
 // EOF

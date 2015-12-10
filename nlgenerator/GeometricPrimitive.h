@@ -7,36 +7,58 @@
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_GEOMETRIC_PRIMITIVE__
-#define __NEUROLOTS_GEOMETRIC_PRIMITIVE__
+#ifndef __NLGENERATOR_GEOMETRIC_PRIMITIVE__
+#define __NLGENERATOR_GEOMETRIC_PRIMITIVE__
 
+#include <nlgenerator/api.h>
 
-
-namespace neurolots
+namespace nlgenerator
 {
 
   class GeometricPrimitive
   {
 
-    public:
+  public:
 
-      GeometricPrimitive( int a_ );
-      GeometricPrimitive( int a_, int b_, int c_, int d_ );
-      ~GeometricPrimitive( void );
+    NLGENERATOR_API
+    GeometricPrimitive( int a_, int b_, int c_, int d_ );
 
-      //Setters
-      void A( int a_ );
-      void B( int b_ );
-      void C( int c_ );
-      void D( int d_ );
-      void E( int e_ );
+    NLGENERATOR_API
+    ~GeometricPrimitive( void );
 
-      //Getters
-      int A( void );
-      int B( void );
-      int C( void );
-      int D( void );
-      int E( void );
+    //Setters
+
+    NLGENERATOR_API
+    void A( int a_ );
+
+    NLGENERATOR_API
+    void B( int b_ );
+
+    NLGENERATOR_API
+    void C( int c_ );
+
+    NLGENERATOR_API
+    void D( int d_ );
+
+    NLGENERATOR_API
+    void E( int e_ );
+
+    //Getters
+
+    NLGENERATOR_API
+    int A( void );
+
+    NLGENERATOR_API
+    int B( void );
+
+    NLGENERATOR_API
+    int C( void );
+
+    NLGENERATOR_API
+    int D( void );
+
+    NLGENERATOR_API
+    int E( void );
 
     private:
 
@@ -50,8 +72,8 @@ namespace neurolots
 
   typedef GeometricPrimitive * GeometricPrimitivePtr;
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_GEOMETRIC_PRIMITIVE__
+#endif // __NLGENERATOR_GEOMETRIC_PRIMITIVE__
 
 //EOF

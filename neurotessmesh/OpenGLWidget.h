@@ -1,5 +1,15 @@
-#ifndef __QNEUROLOTS__OPENGLWIDGET__
-#define __QNEUROLOTS__OPENGLWIDGET__
+/**
+ * @file    OpenGLWidget.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>,
+ * Pablo Toharia <pablo.toharia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
+#ifndef __NEUROTESSMESH__OPENGLWIDGET__
+#define __NEUROTESSMESH__OPENGLWIDGET__
 
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
@@ -122,8 +132,8 @@ protected:
 
   bool _wireframe;
 
-  neurolots::Camera* _camera;
-  neurolots::NeuronsCollection* _neuronsCollection;
+  nlrender::Camera* _camera;
+  nlrender::NeuronsCollection* _neuronsCollection;
   unsigned int _frameCount;
 
   int _mouseX, _mouseY;
@@ -134,7 +144,7 @@ protected:
 
   QColor _currentClearColor;
 
-  neurolots::NeuronPtr _neuron;
+  nlrender::NeuronPtr _neuron;
 
   QTimer* _cameraTimer;
   std::chrono::time_point< std::chrono::system_clock > _then;
@@ -142,4 +152,4 @@ protected:
 
 };
 
-#endif // __QNEUROLOTS__OPENGLWIDGET__
+#endif // __NEUROTESSMESH__OPENGLWIDGET__

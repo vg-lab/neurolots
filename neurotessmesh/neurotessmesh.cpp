@@ -1,9 +1,19 @@
+/**
+ * @file    neurotessmesh.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>,
+ * Pablo Toharia <pablo.toharia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include <QApplication>
 #include "MainWindow.h"
 #include <QDebug>
 #include <QOpenGLWidget>
 
-#include <qneurolots/version.h>
+#include <neurotessmesh/version.h>
 
 void setFormat( int ctxOpenGLMajor, int ctxOpenGLMinor,
                 int ctxOpenGLSamples, int ctxOpenGLVSync );
@@ -144,7 +154,7 @@ int main( int argc, char** argv )
   setFormat( ctxOpenGLMajor, ctxOpenGLMinor,
              ctxOpenGLSamples, ctxOpenGLVSync );
   MainWindow mainWindow;
-  mainWindow.setWindowTitle("QNeuroLOTs");
+  mainWindow.setWindowTitle("NeuroTessMesh");
 
   if ( initWindowSize )
     mainWindow.resize( initWindowWidth, initWindowHeight );
@@ -225,11 +235,11 @@ void dumpVersion( void )
 {
 
   std::cerr << std::endl
-            << "qneurolots "
-            << qneurolots::Version::getMajor( ) << "."
-            << qneurolots::Version::getMinor( ) << "."
-            << qneurolots::Version::getPatch( )
-            << " (" << qneurolots::Version::getRevision( ) << ")"
+            << "neurotessmesh "
+            << neurotessmesh::Version::getMajor( ) << "."
+            << neurotessmesh::Version::getMinor( ) << "."
+            << neurotessmesh::Version::getPatch( )
+            << " (" << neurotessmesh::Version::getRevision( ) << ")"
             << std::endl << std::endl;
 
   std::cerr << "BBPSDK support built-in: ";

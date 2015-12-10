@@ -1,6 +1,15 @@
+/**
+ * @file    Vertex.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "Vertex.h"
 
-namespace neurolots
+namespace nlgeometry
 {
 
   Vertex::Vertex(  const Eigen::Vector3f& position_,
@@ -32,4 +41,4 @@ namespace neurolots
     return _normal;
   }
 
-} // end namespace neurolots
+} // end namespace nlgeometry

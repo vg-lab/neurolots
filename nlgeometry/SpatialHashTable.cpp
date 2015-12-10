@@ -1,8 +1,17 @@
+/**
+ * @file    SpatialHashtable.cpp
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
 #include "SpatialHashTable.h"
 
 #include <iostream>
 
-namespace neurolots
+namespace nlgeometry
 {
   SpatialHashTable::SpatialHashTable( unsigned int size_ , float cellSize_,
                                       float tolerance_,
@@ -81,4 +90,4 @@ namespace neurolots
              pos.z( ) <= vpos.z( ) && pos.z( ) >= vneg.z( ) );
   }
 
-}// end namespace neurolots
+}// end namespace nlgeometry

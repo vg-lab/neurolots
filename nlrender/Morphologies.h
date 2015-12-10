@@ -1,14 +1,14 @@
 /**
  * @file    Morphologies.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_MORPHOLOGIES__
-#define __NEUROLOTS_MORPHOLOGIES__
+#ifndef __NLRENDER_MORPHOLOGIES__
+#define __NLRENDER_MORPHOLOGIES__
 
 #include "NeuronMesh.h"
 
@@ -17,9 +17,9 @@
 #include <iostream>
 #include <unordered_map>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
-namespace neurolots
+namespace nlrender
 {
   typedef NeuronMesh * NeuronMeshPtr;
   typedef std::unordered_map< nsol::NeuronMorphologyPtr, NeuronMeshPtr >
@@ -59,8 +59,8 @@ namespace neurolots
 
   };
 
-} // end namespace neurolots
+} // end namespace nlrender
 
-#endif // __NEUROLOTS_MORPHOLOGIES__
+#endif // __NLRENDER_MORPHOLOGIES__
 
 //EOF

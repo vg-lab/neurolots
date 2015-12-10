@@ -1,5 +1,14 @@
-#ifndef __NEUROLOTS_NEURON_MORPHOLOGY__
-#define __NEUROLOTS_NEURON_MORPHOLOGY__
+/**
+ * @file    NeuronMorphology.h
+ * @brief
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
+ * Do not distribute without further notice.
+ */
+
+#ifndef __NLRENDER_NEURON_MORPHOLOGY__
+#define __NLRENDER_NEURON_MORPHOLOGY__
 
 #include "NeuronMesh.h"
 
@@ -7,9 +16,9 @@
 
 #include <iostream>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
-namespace neurolots
+namespace nlrender
 {
 
   class NeuronMorphology : public nsol::NeuronMorphology
@@ -43,8 +52,8 @@ namespace neurolots
 
   typedef NeuronMorphology * NeuronMorphologyPtr;
 
-} // end namespace neurolots
+} // end namespace nlrender
 
-#endif // __NEUROLOTS_NEURON_MORPHOLOGY__
+#endif // __NLRENDER_NEURON_MORPHOLOGY__
 
 //EOF

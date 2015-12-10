@@ -25,7 +25,7 @@ set(NLGENERATOR_LINK_LIBRARIES
   nsol
   nlfem )
 
-set(NLGENERATOR_INCLUDE_NAME neurolots/nlgenerator)
+set(NLGENERATOR_INCLUDE_NAME nlgenerator)
 set(NLGENERATOR_NAMESPACE nlgenerator)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlgenerator )

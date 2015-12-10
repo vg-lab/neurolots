@@ -1,14 +1,14 @@
 /**
  * @file    Icospehere.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_ICOSPHERE__
-#define __NEUROLOTS_ICOSPHERE__
+#ifndef __NLGENERATOR_ICOSPHERE__
+#define __NLGENERATOR_ICOSPHERE__
 
 //Eigen
 #include <Eigen/Dense>
@@ -24,9 +24,9 @@
 #include <iostream>
 #include <vector>
 
-#include <neurolots/nlgenerator/api.h>
+#include <nlgenerator/api.h>
 
-namespace neurolots
+namespace nlgenerator
 {
 
 
@@ -72,14 +72,14 @@ namespace neurolots
       Eigen::Vector3f _center;
       float _radius;
 
-      std::vector< fem::NodePtr > _nodes;
-      std::vector< fem::TetrahedronPtr > _tetrahedra;
+      std::vector< nlfem::NodePtr > _nodes;
+      std::vector< nlfem::TetrahedronPtr > _tetrahedra;
       std::vector< QuadPtr > _quads;
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgenerator
 
-#endif // __NEUROLOTS_ICOSPHERE__
+#endif // __NLGENERATOR_ICOSPHERE__
 
 //EOF

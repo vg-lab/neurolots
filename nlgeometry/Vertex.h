@@ -1,21 +1,21 @@
 /**
  * @file    Vertex.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
- * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_VERTEX__
-#define __NEUROLOTS_VERTEX__
+#ifndef __NLGEOMETRY_VERTEX__
+#define __NLGEOMETRY_VERTEX__
 
 #include <Eigen/Dense>
 #include <vector>
 
-#include <neurolots/nlgeometry/api.h>
+#include <nlgeometry/api.h>
 
-namespace neurolots
+namespace nlgeometry
 {
   class Vertex
   {
@@ -51,8 +51,8 @@ namespace neurolots
 
   typedef std::vector< VertexPtr > Vertices;
 
-} // end namespace neurolots
+} // end namespace nlgeometry
 
-#endif // __NEUROLOTS_VERTEX__
+#endif // __NLGEOMETRY_VERTEX__
 
 // EOF

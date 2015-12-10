@@ -1,20 +1,20 @@
 /**
  * @file    Facet.h
  * @brief
- * @author  Juan José García <juanjosegarciacan@gmail.com>
- * @date
- * @remarks Copyright (c) GMRV/URJC. All rights reserved.
+ * @author  Juan José García <juanjose.garcia@urjc.es>
+ * @date    2015
+ * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
  */
 
-#ifndef __NEUROLOTS_FACET__
-#define __NEUROLOTS_FACET__
+#ifndef __NLGEOMETRY_FACET__
+#define __NLGEOMETRY_FACET__
 
 #include "Vertex.h"
 
-#include <neurolots/nlgeometry/api.h>
+#include <nlgeometry/api.h>
 
-namespace neurolots
+namespace nlgeometry
 {
   class Facet
   {
@@ -59,8 +59,8 @@ namespace neurolots
   typedef Facet* FacetPtr;
   typedef std::vector< FacetPtr > Facets;
 
-} // end namespace neurolots
+} // end namespace nlgeometry
 
-#endif // __NEUROLOTS_FACET__
+#endif // __NLGEOMETRY_FACET__
 
 // EOF
