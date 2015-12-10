@@ -2,12 +2,15 @@ NeuroTessMesh
 =====================================================
 
 ## Introduction
-
-NeuroTessMesh provides a visual environment for the generation of 3D polygonal meshes that approximate the membrane of neuronal cells, from
-the morphological tracings that describe the morphology of the neurons.
-The 3D model can be tesselated at different levels of detail, providing either homogeneus or adaptive resolution along the model.
-The soma shape is recovered from the incomplete information of the tracings, applying a physical deformation model that can be 
-interactively adjusted.
+NeuroLOTs is a set of libraries and tools for generating neuronal meshes and for 
+visualizing them at different levels of detail using GPU-based tessellation.
+As a part of NeuroLOTS, NeuroTessMesh provides a visual environment for the 
+generation of 3D polygonal meshes that approximate the membrane of neuronal 
+cells, from the morphological tracings that describe the morphology of the 
+neurons. The 3D models can be tesselated at different levels of detail, 
+providing either homogeneus or adaptive resolution along the model. The soma 
+shape is recovered from the incomplete information of the tracings, applying a 
+physical deformation model that can be interactively adjusted.
 
 ## Dependencies
 
@@ -17,18 +20,18 @@ interactively adjusted.
     * eigen3
 
 * Optional dependencies:
-    * Qt5.4: enables building qneurolots viewer
-    * freeglut: enables building neurolots simple viewer
+    * Qt5.4: enables building neurotessmesh viewer
     * zeq: enables syncing selections and syncing camera
     * gmrvzeq: enables sending focus messages
 
-Note: nsol and vmmlib are automatically download and build if not found by CMake.
+Note: nsol and vmmlib are automatically downloaded and built if not found by 
+CMake.
 
-In order to check which optional dependencies have been used the following 
+In order to check which optional dependencies have been used, the following 
 command can be used:
 
 ```bash 
-./qneurolots --version
+./neurotessmesh --version
 ```
 
 ## Building
@@ -46,10 +49,10 @@ make
 
 ## Running
 
-All the features can be accesed using the GUI app qneurolots but some of them
+All the features can be accesed using the neurotessmesh GUI but some of them
 are also available through CLI. Running the following can provide a list of
-the CLI arguments qneurolots accepts:
+the CLI arguments neurotessmesh accepts:
 
 ```bash 
-./qneurolots --help
+./neurotessmesh --help
 ```
