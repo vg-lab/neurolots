@@ -17,7 +17,7 @@
 #include <iostream>
 #include <cstdio>
 
-#include <neurolots/nlfem/api.h>
+#include <nlfem/api.h>
 
 #include "Node.h"
 #include "Tetrahedron.h"

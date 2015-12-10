@@ -57,4 +57,4 @@ namespace nlgeometry
   }
 
 
-} // end namespace neurolots
+} // end namespace nlgeometry

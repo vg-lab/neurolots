@@ -12,7 +12,7 @@
 
 #include "Vertex.h"
 
-#include <neurolots/nlgeometry/api.h>
+#include <nlgeometry/api.h>
 
 namespace nlgeometry
 {
@@ -52,7 +52,7 @@ namespace nlgeometry
 
   };
 
-} // end namespace neurolots
+} // end namespace nlgeometry
 
 #endif // __NLGEOMETRY_SPATIAL_HASH__
 

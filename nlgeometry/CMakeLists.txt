@@ -16,7 +16,7 @@ set( NLGEOMETRY_SOURCES
 set( NLGEOMETRY_LINK_LIBRARIES
 )
 
-set( NLGEOMETRY_INCLUDE_NAME neurolots/nlgeometry )
+set( NLGEOMETRY_INCLUDE_NAME nlgeometry )
 set( NLGEOMETRY_NAMESPACE nlgeometry )
 add_definitions( -DNEUROLOTS_SHARED )
 common_library( nlgeometry )

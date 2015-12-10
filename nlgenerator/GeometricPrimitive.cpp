@@ -12,12 +12,6 @@
 namespace nlgenerator
 {
 
-  GeometricPrimitive::GeometricPrimitive( int a_ )
-     : _a( a_ )
-   {
-
-   }
-
   GeometricPrimitive::GeometricPrimitive( int a_, int b_, int c_, int d_ )
     : _a( a_ )
     , _b( b_ )

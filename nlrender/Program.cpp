@@ -70,7 +70,7 @@ namespace nlrender
 
   void Program::Init( void )
   {
-    if ( !neurolots::nlrender::Config::isInitialized( ))
+    if ( !nlrender::Config::isInitialized( ))
     {
       throw std::runtime_error( "nlrender has not been initialized" );
       return;

@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
 namespace nlrender
 {

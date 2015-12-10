@@ -13,7 +13,7 @@ set(NLFEM_SOURCES
   Tetrahedron.cpp
 )
 
-set(NLFEM_INCLUDE_NAME neurolots/nlfem)
+set(NLFEM_INCLUDE_NAME nlfem)
 set(NLFEM_NAMESPACE nlfem)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlfem )

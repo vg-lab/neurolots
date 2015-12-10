@@ -41,4 +41,4 @@ namespace nlgeometry
     return _normal;
   }
 
-} // end namespace neurolots
+} // end namespace nlgeometry

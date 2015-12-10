@@ -17,7 +17,7 @@
 #include <iostream>
 #include <vector>
 
-#include <neurolots/nlgenerator/api.h>
+#include <nlgenerator/api.h>
 
 namespace nlgenerator
 {

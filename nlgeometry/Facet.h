@@ -12,7 +12,7 @@
 
 #include "Vertex.h"
 
-#include <neurolots/nlgeometry/api.h>
+#include <nlgeometry/api.h>
 
 namespace nlgeometry
 {
@@ -59,7 +59,7 @@ namespace nlgeometry
   typedef Facet* FacetPtr;
   typedef std::vector< FacetPtr > Facets;
 
-} // end namespace neurolots
+} // end namespace nlgeometry
 
 #endif // __NLGEOMETRY_FACET__
 

@@ -76,7 +76,7 @@ OpenGLWidget::~OpenGLWidget( void )
 void OpenGLWidget::createNeuronsCollection( void )
 {
   makeCurrent( );
-  neurolots::nlrender::Config::init( );
+  nlrender::Config::init( );
   _neuronsCollection = new nlrender::NeuronsCollection( _camera );
 }
 

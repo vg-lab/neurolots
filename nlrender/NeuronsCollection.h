@@ -35,7 +35,7 @@
 
 #endif
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 #include "Neuron.h"
 #include "../nlgeometry/Facet.h"
 

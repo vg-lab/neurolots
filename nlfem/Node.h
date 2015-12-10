@@ -16,7 +16,7 @@
 #include <iostream>
 #include <vector>
 
-#include <neurolots/nlfem/api.h>
+#include <nlfem/api.h>
 
 
 namespace nlfem

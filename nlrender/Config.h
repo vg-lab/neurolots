@@ -11,26 +11,24 @@
 #ifndef __NLRENDER_CONFIG__
 #define __NLRENDER_CONFIG__
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
-namespace neurolots
+
+namespace nlrender
 {
-  namespace nlrender
+
+  class NLRENDER_API Config
   {
-    class NLRENDER_API Config
-    {
 
-    public:
-      static void init( void );
-      static bool isInitialized( void );
+  public:
+    static void init( void );
+    static bool isInitialized( void );
 
-    private:
-      static bool _initialized;
+  private:
+    static bool _initialized;
 
-    };
+  };
 
-  } // namespace nlrender
-} // namespace neurolots
-
+} // namespace nlrender
 
 #endif //__NLRENDER_CONFIG__

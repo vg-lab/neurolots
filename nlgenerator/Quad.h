@@ -13,7 +13,7 @@
 #include "../nlfem/Node.h"
 #include <cfloat>
 
-#include <neurolots/nlgenerator/api.h>
+#include <nlgenerator/api.h>
 
 namespace nlgenerator
 {

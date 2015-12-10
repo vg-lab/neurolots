@@ -40,11 +40,10 @@
 #include <vector>
 #include <map>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
 namespace nlrender
 {
-
 
   class NeuronMesh
   {

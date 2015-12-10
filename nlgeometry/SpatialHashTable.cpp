@@ -90,4 +90,4 @@ namespace nlgeometry
              pos.z( ) <= vpos.z( ) && pos.z( ) >= vneg.z( ) );
   }
 
-}// end namespace neurolots
+}// end namespace nlgeometry

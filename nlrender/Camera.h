@@ -20,7 +20,7 @@
 #include <string>
 #include <chrono>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
 #ifdef NEUROLOTS_USE_ZEQ
 #include <zeq/zeq.h>

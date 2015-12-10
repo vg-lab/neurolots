@@ -20,7 +20,7 @@
 #include "VectorizedNode.h"
 #include "Icosphere.h"
 
-#include <neurolots/nlgenerator/api.h>
+#include <nlgenerator/api.h>
 
 namespace nlgenerator
 {

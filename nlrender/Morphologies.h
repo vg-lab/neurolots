@@ -17,7 +17,7 @@
 #include <iostream>
 #include <unordered_map>
 
-#include <neurolots/nlrender/api.h>
+#include <nlrender/api.h>
 
 namespace nlrender
 {
