@@ -322,7 +322,7 @@ void MainWindow::showAbout( void )
 
 void MainWindow::updateExtractMeshDock( void )
 {
-  if( _ui->actionExtractMesh->isChecked( ))
+  if( _ui->actionEditSave->isChecked( ))
     _extractMeshDock->show( );
   else
     _extractMeshDock->close( );
@@ -403,7 +403,7 @@ void MainWindow::_initExtractionDock( void )
   _extractMeshDock->setFeatures(QDockWidget::DockWidgetClosable |
                            QDockWidget::DockWidgetMovable |
                            QDockWidget::DockWidgetFloatable);
-  _extractMeshDock->setWindowTitle( QString( "Reconstruction" ));
+  _extractMeshDock->setWindowTitle( QString( "Edit And Save" ));
   _extractMeshDock->setMinimumSize( 200, 200 );
 
   _extractMeshDock->close( );
@@ -426,7 +426,7 @@ void MainWindow::_initExtractionDock( void )
   _neuronsLayout->addWidget( _neuronList );
 
   // Soma reconstruction group
-  QGroupBox* _somaGroup = new QGroupBox( QString( "Soma reconstruction" ));
+  QGroupBox* _somaGroup = new QGroupBox( QString( "Parameters" ));
   QVBoxLayout* _somaGroupLayout = new QVBoxLayout( );
   _somaGroup->setLayout( _somaGroupLayout );
   _meshDockLayout->addWidget( _somaGroup );
@@ -452,21 +452,15 @@ void MainWindow::_initExtractionDock( void )
   _neuritesLayout = new QVBoxLayout( );
   _neuritesWidget->setLayout( _neuritesLayout );
 
-// Extraction group
-  QGroupBox* _extractionGroup = new QGroupBox( QString( "Mesh extraction" ));
-  QVBoxLayout* _extractionLayout = new QVBoxLayout( );
-  _extractionGroup->setLayout( _extractionLayout );
-  _meshDockLayout->addWidget( _extractionGroup );
-
-  _extractButton = new QPushButton( QString( "Extract" ));
-  _extractionLayout->addWidget( _extractButton );
+  _extractButton = new QPushButton( QString( "Save" ));
+  _somaGroupLayout->addWidget( _extractButton );
 
   connect( _neuronList, SIGNAL( itemClicked( QListWidgetItem* )),
            this, SLOT( onListClicked( QListWidgetItem* )));
 
   connect( _extractMeshDock->toggleViewAction( ), SIGNAL( toggled( bool )),
-           _ui->actionExtractMesh, SLOT( setChecked( bool )));
-  connect( _ui->actionExtractMesh, SIGNAL( triggered( )),
+           _ui->actionEditSave, SLOT( setChecked( bool )));
+  connect( _ui->actionEditSave, SIGNAL( triggered( )),
            this, SLOT( updateExtractMeshDock( )));
 
 }
@@ -504,7 +498,7 @@ void MainWindow::_initConfigurationDock( void )
   _lotSlider->setMaximum( 30 );
   _lotSlider->setValue( 4 );
   vbox->addWidget(
-    new QLabel( QString( "Level" )));
+    new QLabel( QString( "Subdivision Level" )));
   vbox->addWidget( _lotSlider );
 
   _distanceSlider = new QSlider( Qt::Horizontal );
@@ -525,14 +519,15 @@ void MainWindow::_initConfigurationDock( void )
 
   // Radio Buttons Group
 
-  QGroupBox* tessMethodGroup = new QGroupBox( QString( "Tessellation method" ));
+  QGroupBox* tessMethodGroup =
+    new QGroupBox( QString( "Tessellation criteria" ));
   _configDockLayout->addWidget( tessMethodGroup );
   vbox = new QVBoxLayout;
   tessMethodGroup->setLayout( vbox );
 
   _radioHomogeneous = new QRadioButton( QString( "Homogeneous" ));
   vbox->addWidget( _radioHomogeneous );
-  _radioLinear = new QRadioButton( QString( "Linear" ));
+  _radioLinear = new QRadioButton( QString( "Camera Distance" ));
   vbox->addWidget( _radioLinear );
 
   _radioLinear->setChecked( true );

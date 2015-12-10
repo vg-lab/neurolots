@@ -53,7 +53,7 @@
     <addaction name="actionShowFPSOnIdleUpdate"/>
     <addaction name="actionWireframe"/>
     <addaction name="actionBackgroundColor"/>
-    <addaction name="actionExtractMesh"/>
+    <addaction name="actionEditSave"/>
     <addaction name="actionConfiguration"/>
    </widget>
    <addaction name="menuFile"/>
@@ -71,13 +71,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionHome"/>
    <addaction name="actionOpenBlueConfig"/>
    <addaction name="actionOpenXMLScene"/>
    <addaction name="actionOpenSWCFile"/>
    <addaction name="separator"/>
+   <addaction name="actionHome"/>
    <addaction name="actionConfiguration"/>
-   <addaction name="actionExtractMesh"/>
+   <addaction name="actionEditSave"/>
    <addaction name="actionWireframe"/>
    <addaction name="actionCloseData"/>
    <addaction name="actionBackgroundColor"/>
@@ -237,7 +237,7 @@
     <string>Ctrl+W</string>
    </property>
   </action>
-  <action name="actionExtractMesh">
+  <action name="actionEditSave">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -246,10 +246,10 @@
      <normaloff>:/icons/reconstruction.png</normaloff>:/icons/reconstruction.png</iconset>
    </property>
    <property name="text">
-    <string>Reconstruction</string>
+    <string>Edit And Save</string>
    </property>
    <property name="toolTip">
-    <string>Reconstruction</string>
+    <string>Edit And Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
