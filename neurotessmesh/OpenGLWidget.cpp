@@ -12,6 +12,7 @@
 #include <QOpenGLContext>
 #include <QMouseEvent>
 #include <QColorDialog>
+#include <QFileDialog>
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -64,6 +65,8 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
 
   // This is needed to get key evends
   this->setFocusPolicy( Qt::WheelFocus );
+
+  _lastSavedFileName = QDir::currentPath( );
 
 }
 
@@ -363,9 +366,31 @@ void OpenGLWidget::extractMesh( void )
 {
   if( _neuron )
   {
-    this->makeCurrent( );
-    _neuronsCollection->extractMesh( _neuron );
-    glUseProgram( 0 );
+
+    QString path;
+    QString filter( tr( "OBJ (*.obj);; All files (*)" ));
+    QFileDialog* fd = new QFileDialog( this,
+                                       QString( "Save mesh to OBJ file" ),
+                                       _lastSavedFileName,
+                                       filter);
+
+    fd->setOption( QFileDialog::DontUseNativeDialog, true );
+    fd->setDefaultSuffix( "obj") ;
+    fd->setFileMode( QFileDialog/*::FileMode*/::AnyFile );
+    fd->setAcceptMode( QFileDialog/*::AcceptMode*/::AcceptSave );
+    if ( fd->exec( ))
+      path = fd->selectedFiles( )[0];
+
+    if ( path != QString( "" ))
+    {
+      std::cout << "file " << path.toStdString( ) << std::endl;
+
+      _lastSavedFileName = QFileInfo( path ).path( );
+      this->makeCurrent( );
+      _neuronsCollection->extractMesh( _neuron, path.toStdString( ));
+      glUseProgram( 0 );
+
+    }
   }
 }
 
