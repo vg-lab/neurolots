@@ -1,10 +1,13 @@
-NeuroLOTs - Neuron Level Of Detail with TeSsellation
+NeuroTessMesh 
 =====================================================
 
 ## Introduction
 
-NeuroLOTs is a set of libraries and tools for generating neuronal meshes and 
-visualize them using different levels of detail using tessellation.
+NeuroTessMesh provides a visual environment for the generation of 3D polygonal meshes that approximate the membrane of neuronal cells, from
+the morphological tracings that describe the morphology of the neurons.
+The 3D model can be tesselated at different levels of detail, providing either homogeneus or adaptive resolution along the model.
+The soma shape is recovered from the incomplete information of the tracings, applying a physical deformation model that can be 
+interactively adjusted.
 
 ## Dependencies
 
@@ -30,7 +33,7 @@ command can be used:
 
 ## Building
 
-NeuroLOTs has been succesfully built and used on Ubuntu 14.04, Mac OSX Yosemite
+NeuroTessMesh has been succesfully built and used on Ubuntu 14.04, Mac OSX Yosemite
 and Windows 7/8 Visual Studio 2013 Win64. Please ensure that Release version is
 built in order to get the best performance possible.
 
