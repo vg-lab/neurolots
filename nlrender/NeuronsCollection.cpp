@@ -402,7 +402,9 @@ namespace nlrender
     _camera->TargetPivotRadius( _defaultPivot, _defaultRadius );
   }
 
-  void NeuronsCollection::extractMesh( NeuronPtr neuron_ )
+  void NeuronsCollection::extractMesh(
+    NeuronPtr neuron_,
+    const std::string& outFileName )
   {
     NeuronMeshPtr neuronMesh;
     if ( !neuron_ )
@@ -565,8 +567,7 @@ namespace nlrender
 
     _backVertices.clear( );
     _backNormals.clear( );
-
-    neuronMesh->WriteOBJ( std::string("out.obj"), vertices, facets );
+    neuronMesh->WriteOBJ( outFileName, vertices, facets );
 
   }
 

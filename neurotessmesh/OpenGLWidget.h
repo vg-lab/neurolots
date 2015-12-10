@@ -149,6 +149,7 @@ protected:
   QTimer* _cameraTimer;
   std::chrono::time_point< std::chrono::system_clock > _then;
 
+  QString _lastSavedFileName;
 
 };
 

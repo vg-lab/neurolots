@@ -23,7 +23,6 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QGroupBox>
 #include <QScrollArea>
 
 
@@ -180,6 +179,8 @@ void MainWindow::home( void )
 {
   _openGLWidget->home( );
   _generateNeuritesLayout( );
+  _extractButton->setEnabled( false );
+  _somaGroup->hide( );
 }
 
 void MainWindow::openBlueConfigThroughDialog( void )
@@ -341,6 +342,9 @@ void MainWindow::onListClicked( QListWidgetItem* item )
   int id = item->text( ).toInt( );
   _openGLWidget->neuron( id );
   _generateNeuritesLayout( );
+  _extractButton->setEnabled( true );
+  _somaGroup->show( );
+
 }
 
 void MainWindow::onActionGenerate( int /*value_*/ )
@@ -426,10 +430,11 @@ void MainWindow::_initExtractionDock( void )
   _neuronsLayout->addWidget( _neuronList );
 
   // Soma reconstruction group
-  QGroupBox* _somaGroup = new QGroupBox( QString( "Parameters" ));
+  _somaGroup = new QGroupBox( QString( "Parameters" ));
   QVBoxLayout* _somaGroupLayout = new QVBoxLayout( );
   _somaGroup->setLayout( _somaGroupLayout );
   _meshDockLayout->addWidget( _somaGroup );
+  _somaGroup->hide( );
 
   _radiusSlider = new QSlider( Qt::Horizontal );
   _radiusSlider->setMinimum( 25 );
@@ -453,7 +458,8 @@ void MainWindow::_initExtractionDock( void )
   _neuritesWidget->setLayout( _neuritesLayout );
 
   _extractButton = new QPushButton( QString( "Save" ));
-  _somaGroupLayout->addWidget( _extractButton );
+  _extractButton->setEnabled( false );
+  _meshDockLayout->addWidget( _extractButton );
 
   connect( _neuronList, SIGNAL( itemClicked( QListWidgetItem* )),
            this, SLOT( onListClicked( QListWidgetItem* )));
@@ -531,6 +537,10 @@ void MainWindow::_initConfigurationDock( void )
   vbox->addWidget( _radioLinear );
 
   _radioLinear->setChecked( true );
+
+  connect( _radioLinear, SIGNAL( toggled( bool )),
+           _distanceSlider, SLOT( setEnabled( bool )));
+
 
   connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),
            _ui->actionConfiguration, SLOT( setChecked( bool )));

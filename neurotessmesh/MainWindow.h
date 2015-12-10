@@ -16,6 +16,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QGroupBox>
 
 namespace Ui
 {
@@ -82,6 +83,8 @@ private:
   QSlider* _lotSlider;
   QSlider* _distanceSlider;
   QSlider* _tangSlider;
+
+  QGroupBox* _somaGroup;
 
   QRadioButton* _radioHomogeneous;
   QRadioButton* _radioLinear;
