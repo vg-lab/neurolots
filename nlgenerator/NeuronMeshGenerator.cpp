@@ -141,6 +141,13 @@ namespace nlgenerator
         radius = r;
     }
 
+    if ( radius < 0.00001f )
+    {
+      std::cerr << "Warning: using soma max radius for the icosphere"
+                << std::endl;
+      radius = soma->maxRadius( );
+    }
+
     Icosphere ico( center, radius, 3 );
 
     ico.CalculateSoma( firstNodes );
@@ -171,6 +178,16 @@ namespace nlgenerator
       if ( r < radius )
         radius = r;
     }
+    if ( radius < 0.00001f )
+    {
+      std::cerr << "Warning: using soma max radius for the icosphere"
+                << std::endl;
+      radius = soma->maxRadius( );
+    }
+    #ifdef DEBUG
+    assert( alphaRadius != 0 );
+    #endif
+
     radius *= alphaRadius;
     Icosphere ico( center, radius, 3 );
 
