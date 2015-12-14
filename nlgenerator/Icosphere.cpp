@@ -17,9 +17,6 @@ namespace nlgenerator
     : _center( center_ )
     , _radius( radius_ )
   {
-
-    std::cout << center_ << " " << radius_ << std::endl;
-
     #ifdef DEBUG
     assert( radius_ != 0 );
     #endif
