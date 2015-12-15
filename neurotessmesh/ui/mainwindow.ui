@@ -52,7 +52,7 @@
     <addaction name="actionUpdateOnIdle"/>
     <addaction name="actionShowFPSOnIdleUpdate"/>
     <addaction name="actionWireframe"/>
-    <addaction name="actionBackgroundColor"/>
+    <addaction name="actionRenderOptions"/>
     <addaction name="actionEditSave"/>
     <addaction name="actionConfiguration"/>
    </widget>
@@ -80,7 +80,7 @@
    <addaction name="actionEditSave"/>
    <addaction name="actionWireframe"/>
    <addaction name="actionCloseData"/>
-   <addaction name="actionBackgroundColor"/>
+   <addaction name="actionRenderOptions"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -124,13 +124,19 @@
     <string>Ctrl+I</string>
    </property>
   </action>
-  <action name="actionBackgroundColor">
+  <action name="actionRenderOptions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../qrc/resources.qrc">
      <normaloff>:/icons/colorpicker.png</normaloff>:/icons/colorpicker.png</iconset>
    </property>
    <property name="text">
-    <string>Background color</string>
+    <string>Render options</string>
+   </property>
+   <property name="toolTip">
+    <string>Render options</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>

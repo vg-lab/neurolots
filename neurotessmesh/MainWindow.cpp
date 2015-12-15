@@ -59,6 +59,7 @@ MainWindow::MainWindow( QWidget* parent_,
 
   _initExtractionDock( );
   _initConfigurationDock( );
+  _initRenderOptionsDock( );
 }
 
 MainWindow::~MainWindow( void )
@@ -85,9 +86,6 @@ void MainWindow::init( const std::string& zeqUri )
 
   connect( _ui->actionUpdateOnIdle, SIGNAL( triggered( )),
            _openGLWidget, SLOT( toggleUpdateOnIdle( )));
-
-  connect( _ui->actionBackgroundColor, SIGNAL( triggered( )),
-           _openGLWidget, SLOT( changeClearColor( )));
 
   connect( _ui->actionShowFPSOnIdleUpdate, SIGNAL( triggered( )),
            _openGLWidget, SLOT( toggleShowFPS( )));
@@ -131,6 +129,15 @@ void MainWindow::init( const std::string& zeqUri )
   connect( _radioLinear, SIGNAL( clicked( )),
            _openGLWidget, SLOT( onLinearClicked( )));
   _radioLinear->clicked( );
+
+  connect( _backGroundColor, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( changeClearColor( )));
+
+  connect( _neuronColor, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( changeNeuronColor( )));
+
+  connect( _selectedNeuronColor, SIGNAL( clicked( )),
+           _openGLWidget, SLOT( changeSelectedNeuronColor( )));
 }
 
 
@@ -336,6 +343,15 @@ void MainWindow::updateConfigurationDock( void )
   else
     _configurationDock->close( );
 }
+
+void MainWindow::updateRenderOptionsDock( void )
+{
+  if( _ui->actionRenderOptions->isChecked( ))
+    _renderOptionsDock->show( );
+  else
+    _renderOptionsDock->close( );
+}
+
 
 void MainWindow::onListClicked( QListWidgetItem* item )
 {
@@ -547,4 +563,45 @@ void MainWindow::_initConfigurationDock( void )
   connect( _ui->actionConfiguration, SIGNAL( triggered( )),
            this, SLOT( updateConfigurationDock( )));
 
+}
+
+void MainWindow::_initRenderOptionsDock( void )
+{
+  _renderOptionsDock = new QDockWidget( );
+  this->addDockWidget( Qt::DockWidgetAreas::enum_type::LeftDockWidgetArea,
+                       _renderOptionsDock, Qt::Vertical );
+  _renderOptionsDock->setSizePolicy(QSizePolicy::MinimumExpanding,
+                             QSizePolicy::Expanding);
+  _renderOptionsDock->setFeatures(QDockWidget::DockWidgetClosable |
+                           QDockWidget::DockWidgetMovable |
+                           QDockWidget::DockWidgetFloatable);
+  _renderOptionsDock->setWindowTitle( QString( "Render Options" ));
+  _renderOptionsDock->setMinimumSize( 200, 200 );
+
+  _renderOptionsDock->close( );
+
+  QWidget* newWidget = new QWidget( );
+  _renderOptionsDock->setWidget( newWidget );
+
+  QVBoxLayout* roDockLayout = new QVBoxLayout( );
+  roDockLayout->setAlignment( Qt::AlignTop );
+  newWidget->setLayout( roDockLayout );
+
+  _backGroundColor = new QPushButton( QString( "Back ground color" ));
+  _backGroundColor->setEnabled( true );
+  roDockLayout->addWidget( _backGroundColor );
+
+  _neuronColor = new QPushButton( QString( "Neuron color" ));
+  _neuronColor->setEnabled( true );
+  roDockLayout->addWidget( _neuronColor );
+
+  _selectedNeuronColor = new QPushButton( QString( "Selected neuron color" ));
+  _selectedNeuronColor->setEnabled( true );
+  roDockLayout->addWidget( _selectedNeuronColor );
+
+
+  connect( _renderOptionsDock->toggleViewAction( ), SIGNAL( toggled( bool )),
+           _ui->actionRenderOptions, SLOT( setChecked( bool )));
+  connect( _ui->actionRenderOptions, SIGNAL( triggered( )),
+           this, SLOT( updateRenderOptionsDock( )));
 }

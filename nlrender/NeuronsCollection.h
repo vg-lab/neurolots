@@ -81,12 +81,10 @@ namespace nlrender
     void Paint( void );
 
     NLRENDER_API
-    void PaintNeuron( const unsigned int& id_, const Eigen::Vector3f& color_
-                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
+    void PaintNeuron( const unsigned int& id_ );
 
     NLRENDER_API
-    void PaintNeuron( const NeuronPtr& neuron, const Eigen::Vector3f& color_
-                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
+    void PaintNeuron( const NeuronPtr& neuron );
 
     NLRENDER_API
     void focusOnNeuron( unsigned int id );

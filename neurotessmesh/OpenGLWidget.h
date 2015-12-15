@@ -101,6 +101,8 @@ public:
 public slots:
 
   void changeClearColor( void );
+  void changeNeuronColor( void );
+  void changeSelectedNeuronColor( void );
   void toggleUpdateOnIdle( void );
   void toggleShowFPS( void );
   void toggleWireframe( void );

@@ -320,6 +320,47 @@ void OpenGLWidget::changeClearColor( void )
   }
 }
 
+void OpenGLWidget::changeNeuronColor( void )
+{
+  Eigen::Vector3f currentColorVec = _neuronsCollection->NeuronColor( );
+  QColor currentColor( int( currentColorVec.x( ) * 255 ),
+                       int( currentColorVec.y( ) * 255 ),
+                       int( currentColorVec.z( ) * 255 ));
+  QColor color =
+    QColorDialog::getColor( currentColor, parentWidget( ),
+                            "Choose neuron color",
+                            QColorDialog::DontUseNativeDialog);
+  if ( color.isValid( ))
+  {
+    _neuronsCollection->NeuronColor(
+      Eigen::Vector3f(
+        float( color.red( )) / 255.0f,
+        float( color.green( )) / 255.0f,
+        float( color.blue( )) / 255.0f ));
+    update( );
+  }
+}
+
+void OpenGLWidget::changeSelectedNeuronColor( void )
+{
+  Eigen::Vector3f currentColorVec = _neuronsCollection->SelectedNeuronColor( );
+  QColor currentColor( int( currentColorVec.x( ) * 255 ),
+                       int( currentColorVec.y( ) * 255 ),
+                       int( currentColorVec.z( ) * 255 ));
+  QColor color =
+    QColorDialog::getColor( currentColor, parentWidget( ),
+                            "Choose selected neuron color",
+                            QColorDialog::DontUseNativeDialog);
+  if ( color.isValid( ))
+  {
+    _neuronsCollection->SelectedNeuronColor(
+      Eigen::Vector3f(
+        float( color.red( )) / 255.0f,
+        float( color.green( )) / 255.0f,
+        float( color.blue( )) / 255.0f ));
+    update( );
+  }
+}
 
 void OpenGLWidget::toggleUpdateOnIdle( void )
 {

@@ -53,6 +53,7 @@ public slots:
 
   void updateExtractMeshDock( void );
   void updateConfigurationDock( void );
+  void updateRenderOptionsDock( void );
   void onListClicked( QListWidgetItem *item );
   void onActionGenerate( int value_ );
 
@@ -66,12 +67,14 @@ private:
   void _generateNeuritesLayout( void );
   void _initExtractionDock( void );
   void _initConfigurationDock( void );
+  void _initRenderOptionsDock( void );
 
   Ui::MainWindow* _ui;
   OpenGLWidget* _openGLWidget;
 
   QDockWidget* _extractMeshDock;
   QDockWidget* _configurationDock;
+  QDockWidget* _renderOptionsDock;
 
   QListWidget* _neuronList;
   QSlider* _radiusSlider;
@@ -88,5 +91,9 @@ private:
 
   QRadioButton* _radioHomogeneous;
   QRadioButton* _radioLinear;
+
+  QPushButton* _backGroundColor;
+  QPushButton* _neuronColor;
+  QPushButton* _selectedNeuronColor;
 
 };
