@@ -23,7 +23,6 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QGroupBox>
 #include <QScrollArea>
 
 
@@ -180,6 +179,8 @@ void MainWindow::home( void )
 {
   _openGLWidget->home( );
   _generateNeuritesLayout( );
+  _extractButton->setEnabled( false );
+  _somaGroup->hide( );
 }
 
 void MainWindow::openBlueConfigThroughDialog( void )
@@ -322,7 +323,7 @@ void MainWindow::showAbout( void )
 
 void MainWindow::updateExtractMeshDock( void )
 {
-  if( _ui->actionExtractMesh->isChecked( ))
+  if( _ui->actionEditSave->isChecked( ))
     _extractMeshDock->show( );
   else
     _extractMeshDock->close( );
@@ -341,6 +342,9 @@ void MainWindow::onListClicked( QListWidgetItem* item )
   int id = item->text( ).toInt( );
   _openGLWidget->neuron( id );
   _generateNeuritesLayout( );
+  _extractButton->setEnabled( true );
+  _somaGroup->show( );
+
 }
 
 void MainWindow::onActionGenerate( int /*value_*/ )
@@ -403,7 +407,7 @@ void MainWindow::_initExtractionDock( void )
   _extractMeshDock->setFeatures(QDockWidget::DockWidgetClosable |
                            QDockWidget::DockWidgetMovable |
                            QDockWidget::DockWidgetFloatable);
-  _extractMeshDock->setWindowTitle( QString( "Reconstruction" ));
+  _extractMeshDock->setWindowTitle( QString( "Edit And Save" ));
   _extractMeshDock->setMinimumSize( 200, 200 );
 
   _extractMeshDock->close( );
@@ -426,10 +430,11 @@ void MainWindow::_initExtractionDock( void )
   _neuronsLayout->addWidget( _neuronList );
 
   // Soma reconstruction group
-  QGroupBox* _somaGroup = new QGroupBox( QString( "Soma reconstruction" ));
+  _somaGroup = new QGroupBox( QString( "Parameters" ));
   QVBoxLayout* _somaGroupLayout = new QVBoxLayout( );
   _somaGroup->setLayout( _somaGroupLayout );
   _meshDockLayout->addWidget( _somaGroup );
+  _somaGroup->hide( );
 
   _radiusSlider = new QSlider( Qt::Horizontal );
   _radiusSlider->setMinimum( 25 );
@@ -452,21 +457,16 @@ void MainWindow::_initExtractionDock( void )
   _neuritesLayout = new QVBoxLayout( );
   _neuritesWidget->setLayout( _neuritesLayout );
 
-// Extraction group
-  QGroupBox* _extractionGroup = new QGroupBox( QString( "Mesh extraction" ));
-  QVBoxLayout* _extractionLayout = new QVBoxLayout( );
-  _extractionGroup->setLayout( _extractionLayout );
-  _meshDockLayout->addWidget( _extractionGroup );
-
-  _extractButton = new QPushButton( QString( "Extract" ));
-  _extractionLayout->addWidget( _extractButton );
+  _extractButton = new QPushButton( QString( "Save" ));
+  _extractButton->setEnabled( false );
+  _meshDockLayout->addWidget( _extractButton );
 
   connect( _neuronList, SIGNAL( itemClicked( QListWidgetItem* )),
            this, SLOT( onListClicked( QListWidgetItem* )));
 
   connect( _extractMeshDock->toggleViewAction( ), SIGNAL( toggled( bool )),
-           _ui->actionExtractMesh, SLOT( setChecked( bool )));
-  connect( _ui->actionExtractMesh, SIGNAL( triggered( )),
+           _ui->actionEditSave, SLOT( setChecked( bool )));
+  connect( _ui->actionEditSave, SIGNAL( triggered( )),
            this, SLOT( updateExtractMeshDock( )));
 
 }
@@ -504,7 +504,7 @@ void MainWindow::_initConfigurationDock( void )
   _lotSlider->setMaximum( 30 );
   _lotSlider->setValue( 4 );
   vbox->addWidget(
-    new QLabel( QString( "Level" )));
+    new QLabel( QString( "Subdivision Level" )));
   vbox->addWidget( _lotSlider );
 
   _distanceSlider = new QSlider( Qt::Horizontal );
@@ -525,17 +525,22 @@ void MainWindow::_initConfigurationDock( void )
 
   // Radio Buttons Group
 
-  QGroupBox* tessMethodGroup = new QGroupBox( QString( "Tessellation method" ));
+  QGroupBox* tessMethodGroup =
+    new QGroupBox( QString( "Tessellation criteria" ));
   _configDockLayout->addWidget( tessMethodGroup );
   vbox = new QVBoxLayout;
   tessMethodGroup->setLayout( vbox );
 
   _radioHomogeneous = new QRadioButton( QString( "Homogeneous" ));
   vbox->addWidget( _radioHomogeneous );
-  _radioLinear = new QRadioButton( QString( "Linear" ));
+  _radioLinear = new QRadioButton( QString( "Camera Distance" ));
   vbox->addWidget( _radioLinear );
 
   _radioLinear->setChecked( true );
+
+  connect( _radioLinear, SIGNAL( toggled( bool )),
+           _distanceSlider, SLOT( setEnabled( bool )));
+
 
   connect( _configurationDock->toggleViewAction( ), SIGNAL( toggled( bool )),
            _ui->actionConfiguration, SLOT( setChecked( bool )));

@@ -98,7 +98,8 @@ namespace nlrender
     void focusAll( void );
 
     NLRENDER_API
-    void extractMesh( NeuronPtr neuron_ );
+    void extractMesh( NeuronPtr neuron_,
+                      const std::string& outFileName = std::string("out.obj"));
 
     //Getters
 

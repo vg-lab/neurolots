@@ -36,7 +36,7 @@ int main( int argc, char** argv )
 
   int ctxOpenGLMajor = DEFAULT_CONTEXT_OPENGL_MAJOR;
   int ctxOpenGLMinor = DEFAULT_CONTEXT_OPENGL_MINOR;
-  int ctxOpenGLSamples = 0;
+  int ctxOpenGLSamples = 16;
   int ctxOpenGLVSync = 1;
 
 
