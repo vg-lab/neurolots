@@ -1,6 +1,6 @@
 git clone git@gitlab.gmrv.es:common/jambs-config-nsviz.git
 git clone git@gitlab.gmrv.es:common/jambs-config-hbp.git
-export JAMBS_nsol_repo_tag=51225ec
-export JAMBS_zeq_repo_tag=013ba7a
-export JAMBS_gmrvzeq_repo_tag=883abbb
+export JAMBS_nsol_repo_tag=612462a
+export JAMBS_zeq_repo_tag=e6bf42e
+export JAMBS_gmrvzeq_repo_tag=dd922c0
 export JAMBS_deflect_repo_tag=160ff53

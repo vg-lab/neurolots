@@ -17,6 +17,9 @@ namespace nlgenerator
     : _center( center_ )
     , _radius( radius_ )
   {
+    #ifdef DEBUG
+    assert( radius_ != 0 );
+    #endif
 
     _nodes.clear( );
     _tetrahedra.clear( );
@@ -103,10 +106,22 @@ namespace nlgenerator
     {
       VectorizedNodePtr vNode = firstNodes[i];
 
+#ifdef DEBUG
+      assert( !_quads.empty( ));
+#endif
+
       QuadPtr quad = Quads::NearerQuad( _quads, vNode->Position( ));
 
       center = vNode->Position( );
       tangent = ( vNode->Position( ) - _center).normalized( );
+
+#ifdef DEBUG
+      assert( quad );
+      assert( quad->Node0( ));
+      assert( quad->Node1( ));
+      assert( quad->Node2( ));
+      assert( quad->Node3( ));
+#endif
 
       quad->Node0( )->Center( center);
       quad->Node0( )->Tangent( tangent );
