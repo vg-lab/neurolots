@@ -76,6 +76,11 @@ void MainWindow::init( const std::string& zeqUri )
   _openGLWidget->setMinimumSize( QSize( 100, 100 ));
   qDebug( ) << _openGLWidget->format( );
 
+  if( _openGLWidget->format( ).version( ).first < 4 )
+  {
+    std::cerr << "This application requires at least OpenGL 4.0" << std::endl;
+    exit( -1 );
+  }
   _openGLWidget->idleUpdate( _ui->actionUpdateOnIdle->isChecked( ));
 
   _openGLWidget->createNeuronsCollection( );
