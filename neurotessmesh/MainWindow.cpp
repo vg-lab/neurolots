@@ -138,6 +138,14 @@ void MainWindow::init( const std::string& zeqUri )
 
   connect( _selectedNeuronColor, SIGNAL( clicked( )),
            _openGLWidget, SLOT( changeSelectedNeuronColor( )));
+
+  connect( _neuronRender, SIGNAL( currentIndexChanged( int )),
+           _openGLWidget, SLOT( changeNeuronPiece( int )));
+  _neuronRender->currentIndexChanged( 0 );
+
+  connect( _selectedNeuronRender, SIGNAL( currentIndexChanged( int )),
+           _openGLWidget, SLOT( changeSelectedNeuronPiece( int )));
+  _selectedNeuronRender->currentIndexChanged( 0 );
 }
 
 
@@ -587,17 +595,43 @@ void MainWindow::_initRenderOptionsDock( void )
   roDockLayout->setAlignment( Qt::AlignTop );
   newWidget->setLayout( roDockLayout );
 
+
+  QGroupBox* colorGroup = new QGroupBox( QString( "Color" ));
+  roDockLayout->addWidget( colorGroup );
+  QVBoxLayout* vbox = new QVBoxLayout;
+  colorGroup->setLayout( vbox );
+
   _backGroundColor = new QPushButton( QString( "Back ground color" ));
   _backGroundColor->setEnabled( true );
-  roDockLayout->addWidget( _backGroundColor );
+  vbox->addWidget( _backGroundColor );
 
-  _neuronColor = new QPushButton( QString( "Neuron color" ));
+  _neuronColor = new QPushButton( /*QString( "Neuron color" )*/);
   _neuronColor->setEnabled( true );
-  roDockLayout->addWidget( _neuronColor );
+  vbox->addWidget( _neuronColor );
 
   _selectedNeuronColor = new QPushButton( QString( "Selected neuron color" ));
   _selectedNeuronColor->setEnabled( true );
-  roDockLayout->addWidget( _selectedNeuronColor );
+  vbox->addWidget( _selectedNeuronColor );
+
+
+  QGroupBox* renderGroup = new QGroupBox( QString( "Render piece selection" ));
+  roDockLayout->addWidget( renderGroup );
+  vbox = new QVBoxLayout;
+  renderGroup->setLayout( vbox );
+
+  _neuronRender = new QComboBox( );
+  vbox->addWidget( new QLabel( QString( "Neuron" )));
+  vbox->addWidget( _neuronRender );
+  _neuronRender->addItem( QString( "all" ));
+  _neuronRender->addItem( QString( "soma" ));
+  _neuronRender->addItem( QString( "neurites" ));
+
+  _selectedNeuronRender = new QComboBox( );
+  vbox->addWidget( new QLabel( QString( "Selected neuron" )));
+  vbox->addWidget( _selectedNeuronRender );
+  _selectedNeuronRender->addItem( QString( "all" ));
+  _selectedNeuronRender->addItem( QString( "soma" ));
+  _selectedNeuronRender->addItem( QString( "neurites" ));
 
 
   connect( _renderOptionsDock->toggleViewAction( ), SIGNAL( toggled( bool )),

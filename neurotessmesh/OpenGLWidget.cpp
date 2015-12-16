@@ -362,6 +362,47 @@ void OpenGLWidget::changeSelectedNeuronColor( void )
   }
 }
 
+void OpenGLWidget::changeNeuronPiece( int index_ )
+{
+  switch( index_ )
+  {
+  case 0:
+    _neuronsCollection->PaintSoma( true );
+    _neuronsCollection->PaintNeurites( true );
+    break;
+  case 1:
+    _neuronsCollection->PaintSoma( true );
+    _neuronsCollection->PaintNeurites( false );
+    break;
+  case 2:
+    _neuronsCollection->PaintSoma( false );
+    _neuronsCollection->PaintNeurites( true );
+    break;
+  }
+  update( );
+}
+
+void OpenGLWidget::changeSelectedNeuronPiece( int index_ )
+{
+  switch( index_ )
+  {
+  case 0:
+    _neuronsCollection->PaintSelectedSoma( true );
+    _neuronsCollection->PaintSelectedNeurites( true );
+    break;
+  case 1:
+    _neuronsCollection->PaintSelectedSoma( true );
+    _neuronsCollection->PaintSelectedNeurites( false );
+    break;
+  case 2:
+    _neuronsCollection->PaintSelectedSoma( false );
+    _neuronsCollection->PaintSelectedNeurites( true );
+    break;
+  }
+  update( );
+}
+
+
 void OpenGLWidget::toggleUpdateOnIdle( void )
 {
   _idleUpdate = !_idleUpdate;

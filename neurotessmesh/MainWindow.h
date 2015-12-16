@@ -15,6 +15,7 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QComboBox>
 #include <QRadioButton>
 #include <QGroupBox>
 
@@ -95,5 +96,8 @@ private:
   QPushButton* _backGroundColor;
   QPushButton* _neuronColor;
   QPushButton* _selectedNeuronColor;
+
+  QComboBox* _neuronRender;
+  QComboBox* _selectedNeuronRender;
 
 };

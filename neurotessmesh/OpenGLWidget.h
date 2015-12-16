@@ -116,6 +116,9 @@ public slots:
   void onHomogeneousClicked( void );
   void onLinearClicked( void );
 
+  void changeNeuronPiece( int index_ );
+  void changeSelectedNeuronPiece( int index_ );
+
 protected:
 
   virtual void initializeGL( void );
