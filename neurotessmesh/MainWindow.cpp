@@ -605,7 +605,7 @@ void MainWindow::_initRenderOptionsDock( void )
   _backGroundColor->setEnabled( true );
   vbox->addWidget( _backGroundColor );
 
-  _neuronColor = new QPushButton( /*QString( "Neuron color" )*/);
+  _neuronColor = new QPushButton( QString( "Neuron color" ));
   _neuronColor->setEnabled( true );
   vbox->addWidget( _neuronColor );
 
