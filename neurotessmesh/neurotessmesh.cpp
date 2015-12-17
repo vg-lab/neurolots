@@ -128,7 +128,6 @@ int main( int argc, char** argv )
     if ( strcmp( argv[i], "--context-version" ) == 0 ||
          strcmp( argv[i],"-cv") == 0 )
     {
-      initWindowSize = true;
       if ( i + 2 >= argc )
         usageMessage( argv[0] );
       ctxOpenGLMajor = atoi( argv[ ++i ] );
@@ -212,7 +211,7 @@ void usageMessage( char* progName )
             << std::endl
             << "\t[ -nvs | --no-vsync ] (2)"
             << std::endl
-            << "\t[ -vs | --context-version ] major minor (3)"
+            << "\t[ -cv | --context-version ] major minor (3)"
             << std::endl
             << "\t[ --version ]"
             << std::endl
@@ -284,7 +283,6 @@ void setFormat( int ctxOpenGLMajor,
                 int ctxOpenGLSamples,
                 int ctxOpenGLVSync )
 {
-
   if ( std::getenv("CONTEXT_OPENGL_MAJOR"))
     ctxOpenGLMajor = std::stoi( std::getenv("CONTEXT_OPENGL_MAJOR"));
 
@@ -315,7 +313,6 @@ void setFormat( int ctxOpenGLMajor,
     format.setProfile( QSurfaceFormat::CompatibilityProfile );
   else
     format.setProfile( QSurfaceFormat::CoreProfile );
-
 }
 
 bool atLeastTwo( bool a, bool b, bool c )
