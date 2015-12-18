@@ -10,6 +10,7 @@
 
 #include <QMainWindow>
 #include "OpenGLWidget.h"
+#include "ColorSelectionWidget.h"
 
 #include <QDockWidget>
 #include <QListWidget>
@@ -93,9 +94,9 @@ private:
   QRadioButton* _radioHomogeneous;
   QRadioButton* _radioLinear;
 
-  QPushButton* _backGroundColor;
-  QPushButton* _neuronColor;
-  QPushButton* _selectedNeuronColor;
+  ColorSelectionWidget* _backGroundColor;
+  ColorSelectionWidget* _neuronColor;
+  ColorSelectionWidget* _selectedNeuronColor;
 
   QComboBox* _neuronRender;
   QComboBox* _selectedNeuronRender;

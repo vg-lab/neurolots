@@ -15,6 +15,7 @@
 #include <QOpenGLWidget>
 #include <QLabel>
 #include <QTimer>
+#include <QColor>
 #include <chrono>
 
 #define NEUROLOTS_SKIP_GLEW_INCLUDE 1
@@ -100,9 +101,9 @@ public:
 
 public slots:
 
-  void changeClearColor( void );
-  void changeNeuronColor( void );
-  void changeSelectedNeuronColor( void );
+  void changeClearColor( QColor color );
+  void changeNeuronColor( QColor color );
+  void changeSelectedNeuronColor( QColor color );
   void toggleUpdateOnIdle( void );
   void toggleShowFPS( void );
   void toggleWireframe( void );
@@ -146,8 +147,6 @@ protected:
 
   bool _idleUpdate;
   bool _paint;
-
-  QColor _currentClearColor;
 
   nlrender::NeuronPtr _neuron;
 
