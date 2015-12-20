@@ -155,6 +155,8 @@ protected:
 
   QString _lastSavedFileName;
 
+  const static float _colorFactor;
+
 };
 
 #endif // __NEUROTESSMESH__OPENGLWIDGET__

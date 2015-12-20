@@ -1,8 +1,7 @@
 /**
  * @file    ColorSelectionWidget.cpp
  * @brief
- * @author  Juan José García <juanjose.garcia@urjc.es>,
- * Pablo Toharia <pablo.toharia@urjc.es>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date    2015
  * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.
@@ -28,10 +27,10 @@ ColorSelectionWidget::ColorSelectionWidget( QWidget* initParent )
 
 void ColorSelectionWidget::paintEvent( QPaintEvent* /*event*/ )
 {
-  QPainter painter(this);
+  QPainter painter( this );
 
-  QRect rect_square( 0, 0, this->width( ), this->height( ));
-  painter.fillRect( rect_square, _color );
+  QRect rectSquare( 0, 0, this->width( ), this->height( ));
+  painter.fillRect( rectSquare, _color );
 }
 
 void ColorSelectionWidget::mousePressEvent( QMouseEvent* /*event*/ )

@@ -20,6 +20,8 @@
 #include "MainWindow.h"
 #include "../nlrender/Config.h"
 
+const float OpenGLWidget::_colorFactor = 1 / 255.0f;
+
 OpenGLWidget::OpenGLWidget( QWidget* parent_,
                             Qt::WindowFlags windowsFlags_,
                             const std::string&
@@ -299,10 +301,10 @@ void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
 void OpenGLWidget::changeClearColor( QColor color )
 {
     makeCurrent( );
-    glClearColor( float( color.red( )) / 255.0f,
-                  float( color.green( )) / 255.0f,
-                  float( color.blue( )) / 255.0f,
-                  float( color.alpha( )) / 255.0f );
+    glClearColor( float( color.red( )) * _colorFactor,
+                  float( color.green( )) * _colorFactor,
+                  float( color.blue( )) * _colorFactor,
+                  float( color.alpha( )) * _colorFactor);
     update( );
 }
 
@@ -310,9 +312,9 @@ void OpenGLWidget::changeNeuronColor( QColor color )
 {
   makeCurrent( );
   _neuronsCollection->NeuronColor(
-    Eigen::Vector3f( float( color.red( )) / 255.0f,
-                     float( color.green( )) / 255.0f,
-                     float( color.blue( )) / 255.0f ));
+    Eigen::Vector3f( float( color.red( )) * _colorFactor,
+                     float( color.green( )) * _colorFactor,
+                     float( color.blue( )) * _colorFactor ));
   update( );
 }
 
@@ -320,9 +322,9 @@ void OpenGLWidget::changeSelectedNeuronColor(  QColor color )
 {
   makeCurrent( );
   _neuronsCollection->SelectedNeuronColor(
-    Eigen::Vector3f( float( color.red( )) / 255.0f,
-                     float( color.green( )) / 255.0f,
-                     float( color.blue( )) / 255.0f ));
+    Eigen::Vector3f( float( color.red( )) * _colorFactor,
+                     float( color.green( )) * _colorFactor,
+                     float( color.blue( )) * _colorFactor ));
   update( );
 }
 

@@ -1,8 +1,7 @@
 /**
  * @file    ColorSelectionWidget.h
  * @brief
- * @author  Juan José García <juanjose.garcia@urjc.es>,
- * Pablo Toharia <pablo.toharia@urjc.es>
+ * @author  Juan José García <juanjose.garcia@urjc.es>
  * @date    2015
  * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
  * Do not distribute without further notice.

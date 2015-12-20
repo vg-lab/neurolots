@@ -486,8 +486,8 @@ void MainWindow::_initExtractionDock( void )
   _neuritesWidget->setLayout( _neuritesLayout );
 
   _extractButton = new QPushButton( QString( "Save" ));
-  _extractButton->setSizePolicy(QSizePolicy::Fixed,
-                                QSizePolicy::Fixed);
+  _extractButton->setSizePolicy( QSizePolicy::Fixed,
+                                 QSizePolicy::Fixed);
   _extractButton->setEnabled( false );
   _meshDockLayout->addWidget( _extractButton );
 
@@ -525,8 +525,8 @@ void MainWindow::_initConfigurationDock( void )
   newWidget->setLayout( _configDockLayout );
 
   QGroupBox* tessParamsGroup = new QGroupBox( QString( "Tessellation params" ));
-  tessParamsGroup->setSizePolicy(QSizePolicy::Fixed,
-                                 QSizePolicy::Fixed);
+  tessParamsGroup->setSizePolicy( QSizePolicy::Fixed,
+                                  QSizePolicy::Fixed);
   _configDockLayout->addWidget( tessParamsGroup );
   QVBoxLayout* vbox = new QVBoxLayout;
   tessParamsGroup->setLayout( vbox );
