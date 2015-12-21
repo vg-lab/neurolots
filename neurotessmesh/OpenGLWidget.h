@@ -44,7 +44,7 @@ public:
                 const std::string& zeqUri = "" );
   ~OpenGLWidget( void );
 
-  void createNeuronsCollection( void );
+  void createNeuronsCollection( const std::string& zeqUri = "" );
 
   void loadData( const std::string& fileName,
                  const TDataFileType fileType = TDataFileType::BlueConfig,
