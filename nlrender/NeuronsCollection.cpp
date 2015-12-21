@@ -26,6 +26,10 @@ namespace nlrender
 
   NeuronsCollection::NeuronsCollection( Camera* camera_ )
     : _camera( camera_ )
+    , _paintSoma( true )
+    , _paintNeurites( true )
+    , _paintSelectedSoma( true )
+    , _paintSelectedNeurites( true )
     , _dataSet( )
 #ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
@@ -208,70 +212,66 @@ namespace nlrender
     glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
     glUniform3fv( 4, 1, _camera->Position( ));
 
+
+    std::vector< float > color;
+    bool paintSoma = false;
+    bool paintNeurites = false;
+
     for ( const auto& element: _dataSet.neurons( ))
     {
       neuron = dynamic_cast< NeuronPtr >( element.second );
       neuronMesh = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
         ->NeuronMesh( );
 
-      glUseProgram( _programQuads->id( ));
-      glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
-
-      glUseProgram( _programTriangles->id( ));
-      glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
-
 #ifdef NEUROLOTS_USE_ZEQ
-
       if( _zeqConnection )
       {
         if( _IsSelected( neuron ) )
         {
-          glUseProgram( _programQuads->id( ));
-          glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
-          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-          neuronMesh->PaintNeurites( );
+          color = _selectedNeuronColor;
+          paintSoma = _paintSelectedSoma;
+          paintNeurites = _paintSelectedNeurites;
 
-          glUseProgram( _programTriangles->id( ));
-          glUniform3fv( 3, 1, _selectedNeuronColor.data( ));
-          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-          neuronMesh->PaintSoma( );
         }
         else
         {
-          glUseProgram( _programTriangles->id( ));
-          glUniform3fv( 3, 1, _neuronColor.data( ));
-          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-          neuronMesh->PaintSoma( );
+          color = _neuronColor;
+          paintSoma = _paintSoma;
+          paintNeurites = _paintNeurites;
         }
       }
       else
       {
-        glUseProgram( _programQuads->id( ));
-        glUniform3fv( 3, 1, _neuronColor.data( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-        neuronMesh->PaintNeurites( );
+        color = _neuronColor;
+        paintSoma = _paintSoma;
+        paintNeurites = _paintNeurites;
+      }
+#else
+      color = _neuronColor;
+      paintSoma = _paintSoma;
+      paintNeurites = _paintNeurites;
+#endif
 
+      if( paintSoma )
+      {
         glUseProgram( _programTriangles->id( ));
-        glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
+        glUniform3fv( 3, 1, color.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
         neuronMesh->PaintSoma( );
       }
-#else
-      glUseProgram( _programQuads->id( ));
-      glUniform3fv( 3, 1, _neuronColor.data( ));
-      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-      neuronMesh->PaintNeurites( );
-
-      glUseProgram( _programTriangles->id( ));
-      glUniform3fv( 3, 1, _neuronColor.data( ));
-      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-      neuronMesh->PaintSoma( );
-#endif
+      if( paintNeurites )
+      {
+        glUseProgram( _programQuads->id( ));
+        glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
+        glUniform3fv( 3, 1, color.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+        neuronMesh->PaintNeurites( );
+      }
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const unsigned int& id_,
-                                       const Eigen::Vector3f& color_ )
+  void NeuronsCollection::PaintNeuron( const unsigned int& id_ )
   {
     NeuronPtr neuron = nullptr;
     NeuronMeshPtr neuronMesh = nullptr;
@@ -286,36 +286,34 @@ namespace nlrender
     }
     if ( neuronMesh && neuron )
     {
-      std::vector< float > color;
-      color.resize( 3 );
-      color[0] = color_.x( );
-      color[1] = color_.y( );
-      color[2] = color_.z( );
-
-      glUseProgram( _programQuads->id( ));
-      glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-      glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-      glUniformMatrix4fv( 2, 1, GL_FALSE,
-                          neuron->vecTransform( ).data( ));
-      glUniform3fv( 3, 1, color.data( ));
-      glUniform3fv( 4, 1,_camera->Position( ));
-      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-      neuronMesh->PaintNeurites( );
-
-      glUseProgram( _programTriangles->id( ));
-      glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-      glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-      glUniformMatrix4fv( 2, 1, GL_FALSE,
-                          neuron->vecTransform( ).data( ));
-      glUniform3fv( 3, 1, color.data( ));
-      glUniform3fv( 4, 1,_camera->Position( ));
-      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-      neuronMesh->PaintSoma( );
+      if( _paintSoma )
+      {
+        glUseProgram( _programQuads->id( ));
+        glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+        glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+        glUniformMatrix4fv( 2, 1, GL_FALSE,
+                            neuron->vecTransform( ).data( ));
+        glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniform3fv( 4, 1,_camera->Position( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+        neuronMesh->PaintNeurites( );
+      }
+      if( _paintNeurites )
+      {
+        glUseProgram( _programTriangles->id( ));
+        glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+        glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+        glUniformMatrix4fv( 2, 1, GL_FALSE,
+                            neuron->vecTransform( ).data( ));
+        glUniform3fv( 3, 1, _neuronColor.data( ));
+        glUniform3fv( 4, 1,_camera->Position( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+        neuronMesh->PaintSoma( );
+      }
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const NeuronPtr& neuron,
-                                       const Eigen::Vector3f& color_ )
+  void NeuronsCollection::PaintNeuron( const NeuronPtr& neuron )
   {
     NeuronMeshPtr neuronMesh;
     if ( !neuron )
@@ -326,37 +324,36 @@ namespace nlrender
     if( !neuronMesh )
       return;
 
-    std::vector< float > color;
-    color.resize( 3 );
-    color[0] = color_.x( );
-    color[1] = color_.y( );
-    color[2] = color_.z( );
-
-    glUseProgram( _programTriangles->id( ));
-    glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-    glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-    glUniformMatrix4fv( 2, 1, GL_FALSE,
-                        neuron->vecTransform( ).data( ));
-    glUniform3fv( 3, 1, color.data( ));
-    glUniform3fv( 4, 1,_camera->Position( ));
-    glUniform1fv( 5, 1, &_lod );
-    glUniform1fv( 6, 1, &_tng );
-    glUniform1fv( 7, 1, &_maxDist );
-    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-    neuronMesh->PaintSoma( );
-
-    glUseProgram( _programQuads->id( ));
-    glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-    glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-    glUniformMatrix4fv( 2, 1, GL_FALSE,
-                        neuron->vecTransform( ).data( ));
-    glUniform3fv( 3, 1, color.data( ));
-    glUniform3fv( 4, 1,_camera->Position( ));
-    glUniform1fv( 5, 1, &_lod );
-    glUniform1fv( 6, 1, &_tng );
-    glUniform1fv( 7, 1, &_maxDist );
-    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-    neuronMesh->PaintNeurites( );
+    if( _paintSoma )
+    {
+      glUseProgram( _programTriangles->id( ));
+      glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+      glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+      glUniformMatrix4fv( 2, 1, GL_FALSE,
+                          neuron->vecTransform( ).data( ));
+      glUniform3fv( 3, 1, _neuronColor.data( ));
+      glUniform3fv( 4, 1,_camera->Position( ));
+      glUniform1fv( 5, 1, &_lod );
+      glUniform1fv( 6, 1, &_tng );
+      glUniform1fv( 7, 1, &_maxDist );
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+      neuronMesh->PaintSoma( );
+    }
+    if( _paintNeurites )
+    {
+      glUseProgram( _programQuads->id( ));
+      glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
+      glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
+      glUniformMatrix4fv( 2, 1, GL_FALSE,
+                          neuron->vecTransform( ).data( ));
+      glUniform3fv( 3, 1, _neuronColor.data( ));
+      glUniform3fv( 4, 1, _camera->Position( ));
+      glUniform1fv( 5, 1, &_lod );
+      glUniform1fv( 6, 1, &_tng );
+      glUniform1fv( 7, 1, &_maxDist );
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
+      neuronMesh->PaintNeurites( );
+    }
   }
 
   void NeuronsCollection::focusOnNeuron( unsigned int id )
@@ -573,6 +570,19 @@ namespace nlrender
 
   // GETTERS
 
+  Eigen::Vector3f NeuronsCollection::NeuronColor( void )
+  {
+    Eigen::Vector3f color( _neuronColor[0], _neuronColor[1], _neuronColor[2] );
+    return color;
+  }
+
+  Eigen::Vector3f NeuronsCollection::SelectedNeuronColor( void )
+  {
+    Eigen::Vector3f color( _selectedNeuronColor[0], _selectedNeuronColor[1],
+                           _selectedNeuronColor[2] );
+    return color;
+  }
+
   ColumnsPtr NeuronsCollection::Columns( void )
   {
     return &_dataSet.columns( );
@@ -661,7 +671,7 @@ namespace nlrender
     glUniform1fv( 7, 1, &_maxDist );
   }
 
-  void NeuronsCollection::NeuronColor( Eigen::Vector3f neuronColor_ )
+  void NeuronsCollection::NeuronColor( const Eigen::Vector3f& neuronColor_ )
   {
     _neuronColor.resize( 3 );
     _neuronColor[ 0 ] = neuronColor_.x( );
@@ -669,12 +679,33 @@ namespace nlrender
     _neuronColor[ 2 ] = neuronColor_.z( );
   }
 
-  void NeuronsCollection::SelectedNeuronColor( Eigen::Vector3f neuronColor_ )
+  void NeuronsCollection::SelectedNeuronColor(
+    const Eigen::Vector3f& neuronColor_ )
   {
     _selectedNeuronColor.resize( 3 );
     _selectedNeuronColor[ 0 ] = neuronColor_.x( );
     _selectedNeuronColor[ 1 ] = neuronColor_.y( );
     _selectedNeuronColor[ 2 ] = neuronColor_.z( );
+  }
+
+  void NeuronsCollection::PaintSoma( bool paintSoma_ )
+  {
+    _paintSoma = paintSoma_;
+  }
+
+  void NeuronsCollection::PaintNeurites( bool paintNeurites_ )
+  {
+    _paintNeurites = paintNeurites_;
+  }
+
+  void NeuronsCollection::PaintSelectedSoma( bool paintSelectedSoma_ )
+  {
+    _paintSelectedSoma = paintSelectedSoma_;
+  }
+
+  void NeuronsCollection::PaintSelectedNeurites( bool paintSelectedNeurites_ )
+  {
+    _paintSelectedNeurites = paintSelectedNeurites_;
   }
 
   // PRIVATE

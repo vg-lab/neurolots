@@ -81,12 +81,10 @@ namespace nlrender
     void Paint( void );
 
     NLRENDER_API
-    void PaintNeuron( const unsigned int& id_, const Eigen::Vector3f& color_
-                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
+    void PaintNeuron( const unsigned int& id_ );
 
     NLRENDER_API
-    void PaintNeuron( const NeuronPtr& neuron, const Eigen::Vector3f& color_
-                      = Eigen::Vector3f(  0.0f, 0.5f, 0.7f ));
+    void PaintNeuron( const NeuronPtr& neuron );
 
     NLRENDER_API
     void focusOnNeuron( unsigned int id );
@@ -102,6 +100,13 @@ namespace nlrender
                       const std::string& outFileName = std::string("out.obj"));
 
     //Getters
+
+    NLRENDER_API
+    Eigen::Vector3f NeuronColor( void );
+
+    NLRENDER_API
+    Eigen::Vector3f SelectedNeuronColor( void );
+
     NLRENDER_API
     ColumnsPtr Columns( void );
 
@@ -130,18 +135,30 @@ namespace nlrender
     void maxDist( float maxDist_ );
 
     NLRENDER_API
-    void NeuronColor( Eigen::Vector3f neuronColor_ );
+    void NeuronColor( const Eigen::Vector3f& neuronColor_ );
 
     NLRENDER_API
-    void SelectedNeuronColor( Eigen::Vector3f selectedNeuronColor_ );
+    void SelectedNeuronColor( const Eigen::Vector3f& selectedNeuronColor_ );
 
     NLRENDER_API
-    void tessMethod( TTessMethod tessMethod_ )
+    void PaintSoma( bool paintSoma_ );
+
+    NLRENDER_API
+    void PaintNeurites( bool paintNeurites_ );
+
+    NLRENDER_API
+    void PaintSelectedSoma( bool paintSelectedSoma_ );
+
+    NLRENDER_API
+    void PaintSelectedNeurites( bool paintSelectedNeurites_ );
+
+    NLRENDER_API
+    void tessMethod( const TTessMethod& tessMethod_ )
     {
       _tessMethod = ( unsigned int ) tessMethod_;
     }
 
-    private:
+  private:
 
     void _Init( void );
 
@@ -182,6 +199,11 @@ namespace nlrender
 
     std::vector< float > _neuronColor;
     std::vector< float > _selectedNeuronColor;
+
+    bool _paintSoma;
+    bool _paintNeurites;
+    bool _paintSelectedSoma;
+    bool _paintSelectedNeurites;
 
     nsol::DataSet _dataSet;
 

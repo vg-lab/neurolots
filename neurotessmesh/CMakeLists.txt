@@ -54,6 +54,7 @@ set(NEUROTESSMESH_SOURCES
   neurotessmesh.cpp
   MainWindow.cpp
   OpenGLWidget.cpp
+  ColorSelectionWidget.cpp
   CMakeSetup.rc
 )
 
@@ -63,7 +64,9 @@ set(NEUROTESSMESH_HEADERS
 
 set(NEUROTESSMESH_MOC_HEADERS
   MainWindow.h
-  OpenGLWidget.h)
+  OpenGLWidget.h
+  ColorSelectionWidget.h
+  )
 
 set(NEUROTESSMESH_UI_FORMS
   ${UIDIR}/mainwindow.ui

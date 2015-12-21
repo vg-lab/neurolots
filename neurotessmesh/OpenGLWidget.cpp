@@ -20,6 +20,8 @@
 #include "MainWindow.h"
 #include "../nlrender/Config.h"
 
+const float OpenGLWidget::_colorFactor = 1 / 255.0f;
+
 OpenGLWidget::OpenGLWidget( QWidget* parent_,
                             Qt::WindowFlags windowsFlags_,
                             const std::string&
@@ -39,7 +41,6 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   , _translation( false )
   , _idleUpdate( true )
   , _paint( false )
-  , _currentClearColor( 20, 20, 20, 0 )
   , _neuron( nullptr )
 {
 #ifdef NEUROLOTS_USE_ZEQ
@@ -121,10 +122,7 @@ void OpenGLWidget::initializeGL( void )
   initializeOpenGLFunctions( );
 
   glEnable( GL_DEPTH_TEST );
-  glClearColor( float( _currentClearColor.red( )) / 255.0f,
-                float( _currentClearColor.green( )) / 255.0f,
-                float( _currentClearColor.blue( )) / 255.0f,
-                float( _currentClearColor.alpha( )) / 255.0f );
+  glClearColor(  0.0f, 0.0f, 0.0f, 1.0f );
   glPolygonMode( GL_FRONT_AND_BACK , GL_FILL );
   glEnable( GL_CULL_FACE );
 
@@ -300,24 +298,74 @@ void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
 }
 
 
-void OpenGLWidget::changeClearColor( void )
+void OpenGLWidget::changeClearColor( QColor color )
 {
-  QColor color =
-    QColorDialog::getColor( _currentClearColor, parentWidget( ),
-                            "Choose new background color",
-                            QColorDialog::DontUseNativeDialog);
-
-  if ( color.isValid( ))
-  {
-    _currentClearColor = color;
-
     makeCurrent( );
-    glClearColor( float( _currentClearColor.red( )) / 255.0f,
-                  float( _currentClearColor.green( )) / 255.0f,
-                  float( _currentClearColor.blue( )) / 255.0f,
-                  float( _currentClearColor.alpha( )) / 255.0f );
+    glClearColor( float( color.red( )) * _colorFactor,
+                  float( color.green( )) * _colorFactor,
+                  float( color.blue( )) * _colorFactor,
+                  float( color.alpha( )) * _colorFactor);
     update( );
+}
+
+void OpenGLWidget::changeNeuronColor( QColor color )
+{
+  makeCurrent( );
+  _neuronsCollection->NeuronColor(
+    Eigen::Vector3f( float( color.red( )) * _colorFactor,
+                     float( color.green( )) * _colorFactor,
+                     float( color.blue( )) * _colorFactor ));
+  update( );
+}
+
+void OpenGLWidget::changeSelectedNeuronColor(  QColor color )
+{
+  makeCurrent( );
+  _neuronsCollection->SelectedNeuronColor(
+    Eigen::Vector3f( float( color.red( )) * _colorFactor,
+                     float( color.green( )) * _colorFactor,
+                     float( color.blue( )) * _colorFactor ));
+  update( );
+}
+
+void OpenGLWidget::changeNeuronPiece( int index_ )
+{
+  switch( index_ )
+  {
+  case 0:
+    _neuronsCollection->PaintSoma( true );
+    _neuronsCollection->PaintNeurites( true );
+    break;
+  case 1:
+    _neuronsCollection->PaintSoma( true );
+    _neuronsCollection->PaintNeurites( false );
+    break;
+  case 2:
+    _neuronsCollection->PaintSoma( false );
+    _neuronsCollection->PaintNeurites( true );
+    break;
   }
+  update( );
+}
+
+void OpenGLWidget::changeSelectedNeuronPiece( int index_ )
+{
+  switch( index_ )
+  {
+  case 0:
+    _neuronsCollection->PaintSelectedSoma( true );
+    _neuronsCollection->PaintSelectedNeurites( true );
+    break;
+  case 1:
+    _neuronsCollection->PaintSelectedSoma( true );
+    _neuronsCollection->PaintSelectedNeurites( false );
+    break;
+  case 2:
+    _neuronsCollection->PaintSelectedSoma( false );
+    _neuronsCollection->PaintSelectedNeurites( true );
+    break;
+  }
+  update( );
 }
 
 

@@ -24,6 +24,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QScrollArea>
+#include <QGridLayout>
 
 
 MainWindow::MainWindow( QWidget* parent_,
@@ -59,6 +60,7 @@ MainWindow::MainWindow( QWidget* parent_,
 
   _initExtractionDock( );
   _initConfigurationDock( );
+  _initRenderOptionsDock( );
 }
 
 MainWindow::~MainWindow( void )
@@ -90,9 +92,6 @@ void MainWindow::init( const std::string& zeqUri )
 
   connect( _ui->actionUpdateOnIdle, SIGNAL( triggered( )),
            _openGLWidget, SLOT( toggleUpdateOnIdle( )));
-
-  connect( _ui->actionBackgroundColor, SIGNAL( triggered( )),
-           _openGLWidget, SLOT( changeClearColor( )));
 
   connect( _ui->actionShowFPSOnIdleUpdate, SIGNAL( triggered( )),
            _openGLWidget, SLOT( toggleShowFPS( )));
@@ -136,6 +135,26 @@ void MainWindow::init( const std::string& zeqUri )
   connect( _radioLinear, SIGNAL( clicked( )),
            _openGLWidget, SLOT( onLinearClicked( )));
   _radioLinear->clicked( );
+
+  connect( _backGroundColor, SIGNAL( colorChanged( QColor )),
+           _openGLWidget, SLOT( changeClearColor( QColor )));
+  _backGroundColor->color( QColor( 255, 255, 255 ));
+
+  connect( _neuronColor, SIGNAL( colorChanged( QColor )),
+           _openGLWidget, SLOT( changeNeuronColor( QColor )));
+  _neuronColor->color( QColor( 0, 120, 250 ));
+
+  connect( _selectedNeuronColor, SIGNAL( colorChanged( QColor )),
+           _openGLWidget, SLOT( changeSelectedNeuronColor( QColor )));
+  _selectedNeuronColor->color( QColor( 250, 120, 0 ));
+
+  connect( _neuronRender, SIGNAL( currentIndexChanged( int )),
+           _openGLWidget, SLOT( changeNeuronPiece( int )));
+  _neuronRender->currentIndexChanged( 0 );
+
+  connect( _selectedNeuronRender, SIGNAL( currentIndexChanged( int )),
+           _openGLWidget, SLOT( changeSelectedNeuronPiece( int )));
+  _selectedNeuronRender->currentIndexChanged( 0 );
 }
 
 
@@ -342,6 +361,15 @@ void MainWindow::updateConfigurationDock( void )
     _configurationDock->close( );
 }
 
+void MainWindow::updateRenderOptionsDock( void )
+{
+  if( _ui->actionRenderOptions->isChecked( ))
+    _renderOptionsDock->show( );
+  else
+    _renderOptionsDock->close( );
+}
+
+
 void MainWindow::onListClicked( QListWidgetItem* item )
 {
   int id = item->text( ).toInt( );
@@ -451,7 +479,7 @@ void MainWindow::_initExtractionDock( void )
 
   QScrollArea* _neuritesArea = new QScrollArea( );
   _neuritesArea->setSizePolicy( QSizePolicy::MinimumExpanding,
-                            QSizePolicy::Expanding );
+                                QSizePolicy::Expanding );
   _neuritesArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
   _neuritesArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
   _neuritesArea->setWidgetResizable( true );
@@ -463,6 +491,8 @@ void MainWindow::_initExtractionDock( void )
   _neuritesWidget->setLayout( _neuritesLayout );
 
   _extractButton = new QPushButton( QString( "Save" ));
+  _extractButton->setSizePolicy( QSizePolicy::Fixed,
+                                 QSizePolicy::Fixed);
   _extractButton->setEnabled( false );
   _meshDockLayout->addWidget( _extractButton );
 
@@ -500,6 +530,8 @@ void MainWindow::_initConfigurationDock( void )
   newWidget->setLayout( _configDockLayout );
 
   QGroupBox* tessParamsGroup = new QGroupBox( QString( "Tessellation params" ));
+  tessParamsGroup->setSizePolicy( QSizePolicy::Fixed,
+                                  QSizePolicy::Fixed);
   _configDockLayout->addWidget( tessParamsGroup );
   QVBoxLayout* vbox = new QVBoxLayout;
   tessParamsGroup->setLayout( vbox );
@@ -552,4 +584,76 @@ void MainWindow::_initConfigurationDock( void )
   connect( _ui->actionConfiguration, SIGNAL( triggered( )),
            this, SLOT( updateConfigurationDock( )));
 
+}
+
+void MainWindow::_initRenderOptionsDock( void )
+{
+  _renderOptionsDock = new QDockWidget( );
+  this->addDockWidget( Qt::DockWidgetAreas::enum_type::LeftDockWidgetArea,
+                       _renderOptionsDock, Qt::Vertical );
+  _renderOptionsDock->setSizePolicy(QSizePolicy::Fixed,
+                                    QSizePolicy::Fixed);
+  _renderOptionsDock->setFeatures(QDockWidget::DockWidgetClosable |
+                           QDockWidget::DockWidgetMovable |
+                           QDockWidget::DockWidgetFloatable);
+  _renderOptionsDock->setWindowTitle( QString( "Render Options" ));
+  _renderOptionsDock->setMinimumSize( 200, 200 );
+
+  _renderOptionsDock->close( );
+
+  QWidget* newWidget = new QWidget( );
+  _renderOptionsDock->setWidget( newWidget );
+
+  QVBoxLayout* roDockLayout = new QVBoxLayout( );
+  roDockLayout->setAlignment( Qt::AlignTop );
+  newWidget->setLayout( roDockLayout );
+
+
+  QGroupBox* colorGroup = new QGroupBox( QString( "Color" ));
+  colorGroup->setSizePolicy( QSizePolicy(QSizePolicy::Fixed,
+                                         QSizePolicy::Fixed));
+  roDockLayout->addWidget( colorGroup );
+  QGridLayout* gridbox = new QGridLayout;
+  colorGroup->setLayout( gridbox );
+
+  gridbox->addWidget( new QLabel( QString("Background color")), 0, 0);
+  _backGroundColor = new ColorSelectionWidget( this );
+  gridbox->addWidget( _backGroundColor, 0, 1 );
+
+  gridbox->addWidget( new QLabel( QString("Neuron color")), 1, 0);
+  _neuronColor = new ColorSelectionWidget( this );
+  gridbox->addWidget( _neuronColor, 1, 1 );
+
+  gridbox->addWidget( new QLabel( QString("Selected neuron color")), 2, 0);
+  _selectedNeuronColor = new ColorSelectionWidget( this );
+  gridbox->addWidget( _selectedNeuronColor, 2, 1 );
+
+
+  QGroupBox* renderGroup = new QGroupBox( QString( "Render piece selection" ));
+  roDockLayout->addWidget( renderGroup );
+  QVBoxLayout* vbox = new QVBoxLayout;
+  renderGroup->setLayout( vbox );
+
+  _neuronRender = new QComboBox( );
+  _neuronRender->setSizePolicy( QSizePolicy(QSizePolicy::Fixed,
+                                            QSizePolicy::Fixed));
+  vbox->addWidget( new QLabel( QString( "Neuron" )));
+  vbox->addWidget( _neuronRender );
+  _neuronRender->addItem( QString( "all" ));
+  _neuronRender->addItem( QString( "soma" ));
+  _neuronRender->addItem( QString( "neurites" ));
+
+  _selectedNeuronRender = new QComboBox( );
+  _selectedNeuronRender->setSizePolicy( QSizePolicy(QSizePolicy::Fixed,
+                                                    QSizePolicy::Fixed));
+  vbox->addWidget( new QLabel( QString( "Selected neuron" )));
+  vbox->addWidget( _selectedNeuronRender );
+  _selectedNeuronRender->addItem( QString( "all" ));
+  _selectedNeuronRender->addItem( QString( "soma" ));
+  _selectedNeuronRender->addItem( QString( "neurites" ));
+
+  connect( _renderOptionsDock->toggleViewAction( ), SIGNAL( toggled( bool )),
+           _ui->actionRenderOptions, SLOT( setChecked( bool )));
+  connect( _ui->actionRenderOptions, SIGNAL( triggered( )),
+           this, SLOT( updateRenderOptionsDock( )));
 }

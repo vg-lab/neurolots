@@ -15,6 +15,7 @@
 #include <QOpenGLWidget>
 #include <QLabel>
 #include <QTimer>
+#include <QColor>
 #include <chrono>
 
 #define NEUROLOTS_SKIP_GLEW_INCLUDE 1
@@ -100,7 +101,9 @@ public:
 
 public slots:
 
-  void changeClearColor( void );
+  void changeClearColor( QColor color );
+  void changeNeuronColor( QColor color );
+  void changeSelectedNeuronColor( QColor color );
   void toggleUpdateOnIdle( void );
   void toggleShowFPS( void );
   void toggleWireframe( void );
@@ -113,6 +116,9 @@ public slots:
 
   void onHomogeneousClicked( void );
   void onLinearClicked( void );
+
+  void changeNeuronPiece( int index_ );
+  void changeSelectedNeuronPiece( int index_ );
 
 protected:
 
@@ -142,14 +148,14 @@ protected:
   bool _idleUpdate;
   bool _paint;
 
-  QColor _currentClearColor;
-
   nlrender::NeuronPtr _neuron;
 
   QTimer* _cameraTimer;
   std::chrono::time_point< std::chrono::system_clock > _then;
 
   QString _lastSavedFileName;
+
+  const static float _colorFactor;
 
 };
 
