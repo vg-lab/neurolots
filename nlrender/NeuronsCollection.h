@@ -123,6 +123,7 @@ namespace nlrender
 
 #endif
 
+    NLRENDER_API
     bool SelectionChange( void );
 
     //Setters
