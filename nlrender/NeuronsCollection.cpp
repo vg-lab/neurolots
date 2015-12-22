@@ -31,6 +31,7 @@ namespace nlrender
     , _paintSelectedSoma( true )
     , _paintSelectedNeurites( true )
     , _dataSet( )
+    , _selectionChange( false )
 #ifdef NEUROLOTS_USE_ZEQ
     , _zeqConnection( false )
 #endif
@@ -623,6 +624,13 @@ namespace nlrender
 
 #endif
 
+  bool NeuronsCollection::SelectionChange( void )
+  {
+    bool result = _selectionChange;
+    _selectionChange = false;
+    return result;
+  }
+
   // SETTER
 
   void NeuronsCollection::lod( float lod_ )
@@ -938,6 +946,7 @@ namespace nlrender
     {
       _selectedNeurons.insert( selected[i] );
     }
+    _selectionChange = true;
   }
 
 

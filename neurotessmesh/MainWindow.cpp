@@ -85,7 +85,7 @@ void MainWindow::init( const std::string& zeqUri )
   }
   _openGLWidget->idleUpdate( _ui->actionUpdateOnIdle->isChecked( ));
 
-  _openGLWidget->createNeuronsCollection( );
+  _openGLWidget->createNeuronsCollection( zeqUri );
 
   connect( _ui->actionHome, SIGNAL( triggered( )),
            this, SLOT( home( )));

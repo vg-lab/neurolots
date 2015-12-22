@@ -123,6 +123,9 @@ namespace nlrender
 
 #endif
 
+    NLRENDER_API
+    bool SelectionChange( void );
+
     //Setters
 
     NLRENDER_API
@@ -208,6 +211,8 @@ namespace nlrender
     nsol::DataSet _dataSet;
 
     std::set<unsigned int> _selectedNeurons;
+
+    bool _selectionChange;
 
 #ifdef NEUROLOTS_USE_ZEQ
     bool _zeqConnection;

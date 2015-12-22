@@ -46,7 +46,6 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
 #ifdef NEUROLOTS_USE_ZEQ
   if ( zeqUri != "" )
   {
-    std::cout << zeqUri << std::endl;
     _camera = new nlrender::Camera( zeqUri );
   }
   else
@@ -77,11 +76,16 @@ OpenGLWidget::~OpenGLWidget( void )
   delete _camera;
 }
 
-void OpenGLWidget::createNeuronsCollection( void )
+void OpenGLWidget::createNeuronsCollection( const std::string& zeqUri )
 {
   makeCurrent( );
   nlrender::Config::init( );
   _neuronsCollection = new nlrender::NeuronsCollection( _camera );
+
+  if ( zeqUri != "" )
+  {
+    _neuronsCollection->setZeqUri( zeqUri );
+  }
 }
 
 void OpenGLWidget::loadData( const std::string& fileName,
@@ -406,7 +410,7 @@ void OpenGLWidget::toggleWireframe( void )
 
 void OpenGLWidget::timerUpdate( void )
 {
-  if( _camera->Anim( ))
+  if( _camera->Anim( ) || _neuronsCollection->SelectionChange( ))
     this->update( );
 }
 
