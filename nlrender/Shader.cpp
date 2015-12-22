@@ -139,9 +139,9 @@ namespace nlrender
         "  tcRadius[ID]= distance(vPosition[ID],vCenter[ID]);\n"
         "  float tcLod = (vlot[0]+vlot[1]+vlot[2])/3;\n"
         "  gl_TessLevelInner[0] = tcLod;\n"
-        "  gl_TessLevelOuter[0] = (vlot[0]+vlot[1])/2;\n"
-        "  gl_TessLevelOuter[1] = (vlot[1]+vlot[2])/2;\n"
-        "  gl_TessLevelOuter[2] = (vlot[2]+vlot[0])/2;}\n"
+        "  gl_TessLevelOuter[0] = (vlot[1]+vlot[2])/2;\n"
+        "  gl_TessLevelOuter[1] = (vlot[2]+vlot[0])/2;\n"
+        "  gl_TessLevelOuter[2] = (vlot[0]+vlot[1])/2;}\n"
         );
       break;
     case TRIANGLES_TESS_EVALUATION:
