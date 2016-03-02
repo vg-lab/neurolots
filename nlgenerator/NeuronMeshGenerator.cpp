@@ -404,26 +404,10 @@ namespace nlgenerator
     NodePtr node;
     Vec3f pos;
 
-    for( unsigned int i = 0; i < section->middleNodes( ).size( ); i++ )
+    for( unsigned int i = 1; i < section->nodes( ).size( ); i++ )
     {
       vNode = new VectorizedNode( );
-      node = section->middleNodes( )[i];
-      pos = node->point( );
-
-      vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
-      vNode->Radius( node->radius( ));
-      vNode->Id( int( vNodes.size( )));
-      vNode->Father( vFatherNode);
-      vNodes.push_back( vNode );
-
-      vFatherNode->AddChild( vNode );
-      vFatherNode = vNode;
-    }
-
-    if( section->lastNode( ))
-    {
-      vNode = new VectorizedNode( );
-      node = section->lastNode( );
+      node = section->nodes( )[i];
       pos = node->point( );
 
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
@@ -451,7 +435,7 @@ namespace nlgenerator
     for( unsigned int i = 0; i < neurites.size( ); i++ )
     {
       SectionPtr section = neurites[i]->firstSection( );
-      numNodes += _NumNodes(section);
+      numNodes += _NumNodes(section) + 1;
 
     }
 
@@ -460,7 +444,7 @@ namespace nlgenerator
 
   unsigned int NeuronMeshGenerator::_NumNodes( const nsol::SectionPtr& section )
   {
-    unsigned int numNodes = ( unsigned int )section->middleNodes( ).size( ) + 2;
+    unsigned int numNodes = ( unsigned int )section->nodes( ).size( ) - 1;
 
       Sections childs = section->children();
       for( unsigned int i = 0; i < childs.size(); i++ )
@@ -493,15 +477,9 @@ namespace nlgenerator
   {
       unsigned int maxId = 0;
 
-
-      if( section->firstNode()->id( ) > section->lastNode()->id( ))
-        maxId = section->firstNode( )->id( );
-      else
-        maxId = section->lastNode( )->id( );
-
-      for( unsigned int i = 0; i < section->middleNodes( ).size( ); i++ )
+      for( unsigned int i = 0; i < section->nodes( ).size( ); i++ )
       {
-        unsigned int id = section->middleNodes( )[i]->id( );
+        unsigned int id = section->nodes( )[i]->id( );
         if ( id > maxId )
           maxId = id;
       }
