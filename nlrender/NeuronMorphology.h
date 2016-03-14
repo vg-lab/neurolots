@@ -27,6 +27,9 @@ namespace nlrender
   public:
 
     NLRENDER_API
+    NeuronMorphology( void );
+
+    NLRENDER_API
     NeuronMorphology( nsol::SomaPtr soma );
 
     NLRENDER_API

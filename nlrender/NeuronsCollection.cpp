@@ -144,7 +144,7 @@ namespace nlrender
 
   void NeuronsCollection::loadSwc( const std::string& swcFile_ )
   {
-    _dataSet.loadNeuronFromSwc< nsol::Node,
+    _dataSet.loadNeuronFromFile< nsol::Node,
                                 nsol::Section,
                                 nsol::Dendrite,
                                 nsol::Axon,

@@ -134,14 +134,16 @@ namespace nlgenerator
     Vec3f c = soma->center( );
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
 
-    Nodes nodes = soma->nodes( );
-    float radius = std::numeric_limits< float >::max( );
-    for( unsigned int i = 0; i < ( unsigned int ) nodes.size(); i++ )
-    {
-      float r = (nodes[i]->point() - c).norm();
-      if ( r < radius )
-        radius = r;
-    }
+    float radius = soma->meanRadius( );
+
+    // Nodes nodes = soma->nodes( );
+    // float radius = std::numeric_limits< float >::max( );
+    // for( unsigned int i = 0; i < ( unsigned int ) nodes.size(); i++ )
+    // {
+    //   float r = (nodes[i]->point() - c).norm();
+    //   if ( r < radius )
+    //     radius = r;
+    // }
 
     if ( radius < EPSILON )
     {
