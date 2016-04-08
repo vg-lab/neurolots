@@ -113,17 +113,27 @@ namespace nlrender
 #ifdef NSOL_USE_BBPSDK
     loadFlags_ |= nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY;
     try{
-        _dataSet.loadFromBlueConfig< nsol::Node,
-                                     nsol::Section,
-                                     nsol::Dendrite,
-                                     nsol::Axon,
-                                     nsol::Soma,
-                                     NeuronMorphology,
-                                     Neuron,
-                                     nsol::MiniColumn,
-                                     nsol::Column >( blueConfig_,
-                                                     loadFlags_,
-                                                     target_ );
+        _dataSet.loadBlueConfigHierarchy< nsol::Node,
+                                          nsol::Section,
+                                          nsol::Dendrite,
+                                          nsol::Axon,
+                                          nsol::Soma,
+                                          NeuronMorphology,
+                                          Neuron,
+                                          nsol::MiniColumn,
+                                          nsol::Column >( blueConfig_,
+                                                          target_ );
+
+        _dataSet.loadAllMorphologies< nsol::Node,
+                                      nsol::Section,
+                                      nsol::Dendrite,
+                                      nsol::Axon,
+                                      nsol::Soma,
+                                      NeuronMorphology,
+                                      Neuron,
+                                      nsol::MiniColumn,
+                                      nsol::Column >( );
+
         _GenerateMeshes( );
         _Init( );
 
