@@ -41,7 +41,6 @@ namespace nlrender
   void Neuron::morphology( nsol::NeuronMorphologyPtr newMorphology )
   {
     this->nsol::Neuron::morphology( newMorphology );
-    std::cout << "Morphology attached" << std::endl;
     _calculateBoundingBox( );
   }
 
