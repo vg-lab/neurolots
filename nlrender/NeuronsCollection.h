@@ -165,8 +165,6 @@ namespace nlrender
 
     void _Init( void );
 
-    void _GenerateMeshes( void );
-
     bool _IsSelected( nsol::NeuronPtr neuron_ );
 
     void _DefaultCamera( void );

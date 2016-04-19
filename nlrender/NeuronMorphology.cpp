@@ -15,7 +15,6 @@ namespace nlrender
   NeuronMorphology::NeuronMorphology( void )
     : nsol::NeuronMorphology( )
     , _neuronMesh( nullptr )
-    , _meshGenerated( false )
   {
 
   }
@@ -23,14 +22,14 @@ namespace nlrender
   NeuronMorphology::NeuronMorphology( nsol::SomaPtr soma_ )
     : nsol::NeuronMorphology( soma_ )
     , _neuronMesh( nullptr )
-    , _meshGenerated( false )
   {
 
   }
 
   NeuronMorphology::~NeuronMorphology( void )
   {
-
+    if ( _neuronMesh )
+      delete _neuronMesh;
   }
 
   NeuronMeshPtr NeuronMorphology::NeuronMesh( void )
@@ -40,13 +39,12 @@ namespace nlrender
 
   bool NeuronMorphology::HasNeuronMesh( void )
   {
-    return _meshGenerated;
+    return _neuronMesh;
   }
 
   void NeuronMorphology::NeuronMesh( NeuronMeshPtr neuronMesh_ )
   {
     _neuronMesh = neuronMesh_;
-    _meshGenerated = true;
   }
 
 

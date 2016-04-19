@@ -133,8 +133,6 @@ namespace nlrender
                                       Neuron,
                                       nsol::MiniColumn,
                                       nsol::Column >( );
-
-        _GenerateMeshes( );
         _Init( );
 
         _DefaultCamera( );
@@ -161,7 +159,6 @@ namespace nlrender
                                 nsol::Soma,
                                 NeuronMorphology,
                                 Neuron >( swcFile_, 1 );
-    _GenerateMeshes( );
     _Init( );
 
     _DefaultCamera( );
@@ -178,7 +175,6 @@ namespace nlrender
                          nsol::Soma,
                          NeuronMorphology,
                          Neuron >( xmlFile_ );
-     _GenerateMeshes( );
      _Init( );
 
      _DefaultCamera( );
@@ -211,7 +207,9 @@ namespace nlrender
   void NeuronsCollection::Paint( void )
   {
     NeuronPtr neuron;
+    NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
+    
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
@@ -231,8 +229,12 @@ namespace nlrender
     for ( const auto& element: _dataSet.neurons( ))
     {
       neuron = dynamic_cast< NeuronPtr >( element.second );
-      neuronMesh = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
-        ->NeuronMesh( );
+      morpho = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ));
+      if ( !morpho )
+        continue;
+      neuronMesh = morpho->NeuronMesh( );
+      if( !neuronMesh )
+        continue;
 
 #ifdef NEUROLOTS_USE_ZEQ
       if( _zeqConnection )
@@ -269,7 +271,7 @@ namespace nlrender
         glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
         glUniform3fv( 3, 1, color.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-        neuronMesh->PaintSoma( );
+        neuronMesh->paintSoma( );
       }
       if( paintNeurites )
       {
@@ -277,7 +279,7 @@ namespace nlrender
         glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
         glUniform3fv( 3, 1, color.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-        neuronMesh->PaintNeurites( );
+        neuronMesh->paintNeurites( );
       }
     }
   }
@@ -285,53 +287,25 @@ namespace nlrender
   void NeuronsCollection::PaintNeuron( const unsigned int& id_ )
   {
     NeuronPtr neuron = nullptr;
-    NeuronMeshPtr neuronMesh = nullptr;
     nsol::NeuronsMap::iterator it;
-
     it = _dataSet.neurons( ).find( id_ );
     if ( it != _dataSet.neurons( ).end( ))
     {
       neuron = dynamic_cast< NeuronPtr >( it->second );
-      neuronMesh =  dynamic_cast< NeuronMorphologyPtr >(
-        it->second->morphology( ))->NeuronMesh( );
-    }
-    if ( neuronMesh && neuron )
-    {
-      if( _paintSoma )
-      {
-        glUseProgram( _programQuads->id( ));
-        glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-        glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-        glUniformMatrix4fv( 2, 1, GL_FALSE,
-                            neuron->vecTransform( ).data( ));
-        glUniform3fv( 3, 1, _neuronColor.data( ));
-        glUniform3fv( 4, 1,_camera->Position( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-        neuronMesh->PaintNeurites( );
-      }
-      if( _paintNeurites )
-      {
-        glUseProgram( _programTriangles->id( ));
-        glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
-        glUniformMatrix4fv( 1, 1, GL_FALSE, _camera->ViewMatrix( ));
-        glUniformMatrix4fv( 2, 1, GL_FALSE,
-                            neuron->vecTransform( ).data( ));
-        glUniform3fv( 3, 1, _neuronColor.data( ));
-        glUniform3fv( 4, 1,_camera->Position( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-        neuronMesh->PaintSoma( );
-      }
+      PaintNeuron( neuron );
     }
   }
 
   void NeuronsCollection::PaintNeuron( const NeuronPtr& neuron )
   {
-    NeuronMeshPtr neuronMesh;
+    NeuronMeshPtr neuronMesh = nullptr;
+    NeuronMorphologyPtr morpho = nullptr;
     if ( !neuron )
       return;
-    neuronMesh =
-      dynamic_cast< NeuronMorphologyPtr >(
-        neuron->morphology( ))->NeuronMesh( );
+    morpho = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ));
+    if( !morpho )
+      return;
+    neuronMesh = morpho->NeuronMesh( );
     if( !neuronMesh )
       return;
 
@@ -348,7 +322,7 @@ namespace nlrender
       glUniform1fv( 6, 1, &_tng );
       glUniform1fv( 7, 1, &_maxDist );
       glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-      neuronMesh->PaintSoma( );
+      neuronMesh->paintSoma( );
     }
     if( _paintNeurites )
     {
@@ -363,7 +337,7 @@ namespace nlrender
       glUniform1fv( 6, 1, &_tng );
       glUniform1fv( 7, 1, &_maxDist );
       glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-      neuronMesh->PaintNeurites( );
+      neuronMesh->paintNeurites( );
     }
   }
 
@@ -463,7 +437,7 @@ namespace nlrender
 
     glUseProgram( _programTrianglesFB->id( ));
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-    neuronMesh->PaintSoma( );
+    neuronMesh->paintSoma( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
     glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
@@ -488,7 +462,7 @@ namespace nlrender
 
     glUseProgram( _programTrianglesFB->id( ));
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-    neuronMesh->PaintSoma( );
+    neuronMesh->paintSoma( );
 
     glEndTransformFeedback( );
     glFlush( );
@@ -517,7 +491,7 @@ namespace nlrender
 
     glUseProgram( _programQuadsFB->id( ));
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-    neuronMesh->PaintNeurites( );
+    neuronMesh->paintNeurites( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
     glGetQueryObjectuiv( query, GL_QUERY_RESULT, &numPrimitives );
@@ -541,7 +515,7 @@ namespace nlrender
 
     glUseProgram( _programQuadsFB->id( ));
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
-    neuronMesh->PaintNeurites( );
+    neuronMesh->paintNeurites( );
 
     glEndTransformFeedback( );
     glFlush( );
@@ -575,7 +549,7 @@ namespace nlrender
 
     _backVertices.clear( );
     _backNormals.clear( );
-    neuronMesh->WriteOBJ( outFileName, vertices, facets );
+    neuronMesh->writeOBJ( outFileName, vertices, facets );
 
   }
 
@@ -732,33 +706,13 @@ namespace nlrender
   {
     NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
-    NeuronMeshPtr neuronMesh;
 
     for ( auto& element: _dataSet.neurons( ))
     {
       neuron = dynamic_cast< NeuronPtr >( element.second );
       morpho =  dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ));
-      neuronMesh = morpho->NeuronMesh( );
-
-      neuron->Init( );
-      neuronMesh->Init( );
-    }
-  }
-
-  void NeuronsCollection::_GenerateMeshes( void )
-  {
-    NeuronMorphologyPtr morpho;
-    NeuronMeshPtr neuronMesh;
-
-    for( auto& element: _dataSet.neurons( ))
-    {
-      morpho = dynamic_cast< NeuronMorphologyPtr >(
-        element.second->morphology( ));
-      if( !morpho->HasNeuronMesh( ) )
-      {
-        neuronMesh = new NeuronMesh( morpho );
-        morpho->NeuronMesh( neuronMesh );
-      }
+      if ( ! morpho->HasNeuronMesh( ))
+        morpho->NeuronMesh( new NeuronMesh( morpho ));
     }
   }
 

@@ -50,7 +50,6 @@ namespace nlrender
   private:
 
     NeuronMeshPtr _neuronMesh;
-    bool _meshGenerated;
   };
 
   typedef NeuronMorphology * NeuronMorphologyPtr;
