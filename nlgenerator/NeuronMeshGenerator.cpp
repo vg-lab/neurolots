@@ -32,13 +32,15 @@ namespace nlgenerator
 // PUBLIC METHODS
 
   void NeuronMeshGenerator::GenerateMesh(
-    const nsol::NeuronMorphologyPtr& morpho,
+    nsol::NeuronMorphologyPtr& morpho,
     vector< float > & vertices,
     vector< float > & centers,
     vector< float > & tangents,
     vector< unsigned int > & mesh,
     unsigned int& somaEnd )
   {
+
+    morpho = nsol::Simplifier::Instance( )->adaptSoma( morpho );
     vertices.clear( );
     centers.clear( );
     tangents.clear( );
@@ -134,7 +136,7 @@ namespace nlgenerator
     Vec3f c = soma->center( );
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
 
-    float radius = soma->meanRadius( );
+    float radius = soma->minRadius( );
 
     // Nodes nodes = soma->nodes( );
     // float radius = std::numeric_limits< float >::max( );
@@ -145,12 +147,12 @@ namespace nlgenerator
     //     radius = r;
     // }
 
-    if ( radius < EPSILON )
-    {
-      std::cerr << "Warning: using soma max radius for the icosphere"
-                << std::endl;
-      radius = soma->maxRadius( );
-    }
+    // if ( radius < EPSILON )
+    // {
+    //   std::cerr << "Warning: using soma max radius for the icosphere"
+    //             << std::endl;
+    //   radius = soma->maxRadius( );
+    // }
 
     Icosphere ico( center, radius, 3 );
 
@@ -173,21 +175,23 @@ namespace nlgenerator
   {
     Vec3f c = soma->center( );
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
+    float radius = soma->minRadius( );
 
-    Nodes nodes = soma->nodes( );
-    float radius = FLT_MAX;
-    for( unsigned int i = 0; i < nodes.size(); i++ )
-    {
-      float r = (nodes[i]->point() - c).norm();
-      if ( r < radius )
-        radius = r;
-    }
-    if ( radius < EPSILON )
-    {
-      std::cerr << "Warning: using soma max radius for the icosphere"
-                << std::endl;
-      radius = soma->maxRadius( );
-    }
+    // Nodes nodes = soma->nodes( );
+    // float radius = FLT_MAX;
+    // for( unsigned int i = 0; i < nodes.size(); i++ )
+    // {
+    //   float r = (nodes[i]->point() - c).norm();
+    //   if ( r < radius )
+    //     radius = r;
+    // }
+    // if ( radius < EPSILON )
+    // {
+    //   std::cerr << "Warning: using soma max radius for the icosphere"
+    //             << std::endl;
+    //   radius = soma->maxRadius( );
+    // }
+
     #ifdef DEBUG
     assert( alphaRadius != 0 );
     #endif
