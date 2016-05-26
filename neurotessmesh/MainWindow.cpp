@@ -8,7 +8,7 @@
  * Do not distribute without further notice.
  */
 
-#include "ui_mainwindow.h"
+
 #include "MainWindow.h"
 #include <neurotessmesh/version.h>
 #ifdef NEUROLOTS_USE_GMRVZEQ
