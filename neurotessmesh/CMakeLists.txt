@@ -6,6 +6,7 @@ set(namespace neurotessmesh)
 set(NAMESPACE NEUROTESSMESH)
 set(INCLUDE_NAME neurotessmesh)
 
+set(PROJECT_VERSION_ABI ${${PROJECT_NAME}_VERSION_ABI})
 # set(VERSION_ABI 0)
 
 configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/api.h
