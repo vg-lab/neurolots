@@ -34,19 +34,25 @@ common_find_package(nsol REQUIRED)
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol)
 
 if(NEUROLOTS_WITH_ZEQ)
+
   common_find_package(ZeroEQ)
   if ( ZEROEQ_FOUND )
+
     list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES ZeroEQ)
     common_find_package(Threads REQUIRED)
     list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Threads)
-  endif( )
-endif( )
 
-if(NEUROLOTS_WITH_GMRVZEQ)
-  common_find_package(gmrvzeq)
-  if ( GMRVZEQ_FOUND )
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvzeq)
+    common_find_package(Lexis REQUIRED)
+    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Lexis)
   endif( )
+
+  if(NEUROLOTS_WITH_GMRVZEQ)
+    common_find_package(gmrvlex)
+    if ( GMRVZEQ_FOUND )
+      list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvlex)
+    endif( )
+  endif( )
+
 endif( )
 
 if(NEUROLOTS_WITH_DEFLECT)

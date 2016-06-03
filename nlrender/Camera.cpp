@@ -11,6 +11,8 @@
 
 #include <cmath>
 
+#include <thread>
+
 namespace nlrender
 {
 
@@ -21,7 +23,7 @@ namespace nlrender
     , _farPlane( farPlane_ )
     , _pivot( pivot_ )
     , _radius( radius_ )
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     , _zeqConnection( false )
 #endif
     , _isAniming( false )
@@ -40,7 +42,7 @@ namespace nlrender
     _BuildViewMatrix( );
   }
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
   Camera::Camera( const std::string& uri_, float fov_, float ratio_,
       float nearPlane_, float farPlane_, Eigen::Vector3f pivot_, float radius_,
       float yaw_, float pitch_ )
@@ -65,13 +67,15 @@ namespace nlrender
 
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
 
-    _publisher = new zeq::Publisher( _uri );
-    _subscriber = new zeq::Subscriber( _uri );
+    _publisher = new zeroeq::Publisher( uri_ );
+    _subscriber = new zeroeq::Subscriber( uri_ );
 
-    _subscriber->registerHandler( zeq::hbp::EVENT_CAMERA,
-      boost::bind( &Camera::_OnCameraEvent , this, _1 ));
+    _subscriber->subscribe(
+        lexis::render::LookOut::ZEROBUF_TYPE_IDENTIFIER( ),
+        [ & ]( const void* data, size_t size )
+        { _OnCameraEvent( lexis::render::LookOut::create( data, size ));});
 
-    pthread_create( &_subscriberThread, NULL, _Subscriber, this );
+    std::thread subsThread( [&]() { while( true) _subscriber->receive( 10000 );});
 
     _BuildProjectionMatrix( );
     _BuildViewMatrix( );
@@ -184,8 +188,8 @@ namespace nlrender
     return _positionVec.data( );
   }
 
-#ifdef NEUROLOTS_USE_ZEQ
-  zeq::Subscriber* Camera::Subscriber( void )
+#ifdef NEUROLOTS_USE_ZEROEQ
+  zeroeq::Subscriber* Camera::Subscriber( void )
   {
     return _subscriber;
   }
@@ -260,9 +264,9 @@ namespace nlrender
 
   // PRIVATE
 
-#ifndef NEUROLOTS_USE_ZEQ
+#ifndef NEUROLOTS_USE_ZEROEQ
 
-  void Camera::_PositionVectorized( std::vector<float>& positionVec_ )
+  void Camera::_PositionVectorized( const std::vector<float>& positionVec_ )
   {
     _positionVec = positionVec_;
   }
@@ -279,21 +283,21 @@ namespace nlrender
 
 #else
 
-  void Camera::_PositionVectorized( std::vector<float>& positionVec_ )
+  void Camera::_PositionVectorized( const std::vector<float>& positionVec_ )
   {
     _positionMutex.lock( );
     _positionVec = positionVec_;
     _positionMutex.unlock( );
   }
 
-  void Camera::_Rotation( Eigen::Matrix3f rotation_ )
+  void Camera::_Rotation( const Eigen::Matrix3f& rotation_ )
   {
     _rotationMutex.lock( );
     _rotation = rotation_;
     _rotationMutex.unlock( );
   }
 
-  void Camera::_ViewMatrixVectorized( std::vector<float>& viewVec_ )
+  void Camera::_ViewMatrixVectorized( const std::vector<float>& viewVec_ )
   {
     _viewMatrixMutex.lock( );
     _viewVec = viewVec_;
@@ -365,10 +369,17 @@ namespace nlrender
     viewVec[13] = - pivot.y( );
     viewVec[14] = - pivot.z( ) - _radius;
     viewVec[15] = 1.0f;
-#ifdef NEUROLOTS_USE_ZEQ
+
+    _ViewMatrixVectorized( viewVec );
+
+#ifdef NEUROLOTS_USE_ZEROEQ
     if ( _zeqConnection )
     {
-      _publisher->publish( zeq::hbp::serializeCamera( viewVec ));
+      std::vector< double > viewm ( viewVec.begin( ), viewVec.end( ));
+
+      lexis::render::LookOut lookout;
+      lookout.setMatrix( viewm );
+      _publisher->publish( lookout );
 //      std::cout << "Evento publicado" << std::endl;
     }
 #endif
@@ -414,10 +425,11 @@ namespace nlrender
 
   }
 
-#ifdef NEUROLOTS_USE_ZEQ
-  void Camera::_OnCameraEvent( const zeq::Event& event_ )
+#ifdef NEUROLOTS_USE_ZEROEQ
+  void Camera::_OnCameraEvent( lexis::render::ConstLookOutPtr lookoutPtr_ )
   {
-    std::vector<float> viewMatrixVec = zeq::hbp::deserializeCamera( event_ );
+    std::vector< double > aux = std::move( lookoutPtr_->getMatrixVector( ));
+    std::vector<float> viewMatrixVec( aux.begin( ), aux.end( ));
     _ViewMatrixVectorized( viewMatrixVec );
 
     Eigen::Matrix3f rot;
@@ -427,26 +439,13 @@ namespace nlrender
 
     Eigen::Vector3f pos = - rot.inverse() * Eigen::Vector3f( viewMatrixVec[12],
                           viewMatrixVec[13], viewMatrixVec[14] );
-    std::vector<float> posVec;
-    posVec.resize( 3 );
+
+    std::vector<float> posVec( 3 );
     posVec[ 0 ] = pos.x( );
     posVec[ 1 ] = pos.y( );
     posVec[ 2 ] = pos.z( );
 
     _PositionVectorized( posVec );
-  }
-
-  void* Camera::_Subscriber( void* camera_ )
-  {
-    Camera* camera = ( Camera* )camera_;
-    zeq::Subscriber* subscriber = camera->Subscriber();
-    std::cout << "Waiting Camera Events..." << std::endl;
-    while ( true )
-    {
-      subscriber->receive( 10000 );
-    }
-
-    pthread_exit( NULL );
   }
 
 #endif
