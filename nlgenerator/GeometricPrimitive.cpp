@@ -21,59 +21,70 @@ namespace nlgenerator
 
   }
 
+  GeometricPrimitive::GeometricPrimitive( int a_, int b_, int c_, int d_,
+                                          int e_ )
+    : _a( a_ )
+    , _b( b_ )
+    , _c( c_ )
+    , _d( d_ )
+    , _e( e_ )
+  {
+
+  }
+
   GeometricPrimitive::~GeometricPrimitive( )
   {
 
   }
 
   //Setter
-  void GeometricPrimitive::A( int a_ )
+  void GeometricPrimitive::a( int a_ )
   {
     _a = a_;
   }
 
-  void GeometricPrimitive::B( int b_ )
+  void GeometricPrimitive::b( int b_ )
   {
     _b = b_;
   }
 
-  void GeometricPrimitive::C( int c_ )
+  void GeometricPrimitive::c( int c_ )
   {
     _c = c_;
   }
 
-  void GeometricPrimitive::D( int d_ )
+  void GeometricPrimitive::d( int d_ )
   {
     _d = d_;
   }
 
-  void GeometricPrimitive::E( int e_ )
+  void GeometricPrimitive::e( int e_ )
   {
     _e = e_;
   }
 
   //Getter
-  int GeometricPrimitive::A( void )
+  int GeometricPrimitive::a( void )
   {
     return _a;
   }
 
-  int GeometricPrimitive::B( void )
+  int GeometricPrimitive::b( void )
   {
     return _b;
   }
 
-  int GeometricPrimitive::C( void )
+  int GeometricPrimitive::c( void )
   {
     return _c;
   }
 
-  int GeometricPrimitive::D( void )
+  int GeometricPrimitive::d( void )
   {
     return _d;
   }
 
-  int GeometricPrimitive::E( void )
+  int GeometricPrimitive::e( void )
   {
     return _e;
   }

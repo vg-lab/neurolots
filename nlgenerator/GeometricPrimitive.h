@@ -24,41 +24,44 @@ namespace nlgenerator
     GeometricPrimitive( int a_, int b_, int c_, int d_ );
 
     NLGENERATOR_API
+    GeometricPrimitive( int a_, int b_, int c_, int d_, int e_ );
+
+    NLGENERATOR_API
     ~GeometricPrimitive( void );
 
     //Setters
 
     NLGENERATOR_API
-    void A( int a_ );
+    void a( int a_ );
 
     NLGENERATOR_API
-    void B( int b_ );
+    void b( int b_ );
 
     NLGENERATOR_API
-    void C( int c_ );
+    void c( int c_ );
 
     NLGENERATOR_API
-    void D( int d_ );
+    void d( int d_ );
 
     NLGENERATOR_API
-    void E( int e_ );
+    void e( int e_ );
 
     //Getters
 
     NLGENERATOR_API
-    int A( void );
+    int a( void );
 
     NLGENERATOR_API
-    int B( void );
+    int b( void );
 
     NLGENERATOR_API
-    int C( void );
+    int c( void );
 
     NLGENERATOR_API
-    int D( void );
+    int d( void );
 
     NLGENERATOR_API
-    int E( void );
+    int e( void );
 
     private:
 

@@ -66,10 +66,26 @@ namespace nlgenerator
                              vNode->Primitive(), mesh );
         if( vNode->Childs( ).size( ) == 0 )
         {
-          mesh.push_back( vNode->Primitive( )->A( ));
-          mesh.push_back( vNode->Primitive( )->B( ));
-          mesh.push_back( vNode->Primitive( )->D( ));
-          mesh.push_back( vNode->Primitive( )->C( ));
+          mesh.push_back( vNode->Primitive( )->a( ));
+          mesh.push_back( vNode->Primitive( )->b( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
+          mesh.push_back( vNode->Primitive( )->b( ));
+          mesh.push_back( vNode->Primitive( )->c( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
+          mesh.push_back( vNode->Primitive( )->c( ));
+          mesh.push_back( vNode->Primitive( )->d( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
+          mesh.push_back( vNode->Primitive( )->d( ));
+          mesh.push_back( vNode->Primitive( )->a( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
         }
       }
     }
@@ -114,10 +130,25 @@ namespace nlgenerator
                              vNode->Primitive(), mesh );
         if( vNode->Childs( ).size( ) == 0 )
         {
-          mesh.push_back( vNode->Primitive( )->A( ));
-          mesh.push_back( vNode->Primitive( )->B( ));
-          mesh.push_back( vNode->Primitive( )->D( ));
-          mesh.push_back( vNode->Primitive( )->C( ));
+          mesh.push_back( vNode->Primitive( )->a( ));
+          mesh.push_back( vNode->Primitive( )->b( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
+          mesh.push_back( vNode->Primitive( )->b( ));
+          mesh.push_back( vNode->Primitive( )->c( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
+          mesh.push_back( vNode->Primitive( )->c( ));
+          mesh.push_back( vNode->Primitive( )->d( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+
+          mesh.push_back( vNode->Primitive( )->d( ));
+          mesh.push_back( vNode->Primitive( )->a( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
+          mesh.push_back( vNode->Primitive( )->e( ));
         }
       }
     }
@@ -302,6 +333,7 @@ namespace nlgenerator
     Eigen::Vector3f vb( -1.0f, 0.0f, 0.0f );
     Eigen::Vector3f vc( 0.0f, -1.0f, 0.0f );
     Eigen::Vector3f vd( 1.0f, 0.0f, 0.0f );
+    Eigen::Vector3f ve;
 
     Eigen::Vector3f center;
     Eigen::Vector3f tangent;
@@ -312,7 +344,7 @@ namespace nlgenerator
     for ( unsigned int i = 0; i < vNodes.size(); i++ )
     {
       VectorizedNodePtr vNode = vNodes[i];
-
+      unsigned int numVertex = 4;
       if ( !vNode->FirstNode( ))
       {
         center = vNode->Position( );
@@ -326,18 +358,18 @@ namespace nlgenerator
 
         GeometricPrimitivePtr fatherGeom = father->Primitive();
 
-        int vecId = fatherGeom->A( ) * 3;
 
 
+        int vecId = fatherGeom->a( ) * 3;
         va = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
-        vecId = fatherGeom->B( ) * 3;
+        vecId = fatherGeom->b( ) * 3;
         vb = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] )- father->Position( )).normalized( ) ;
-        vecId = fatherGeom->C( ) * 3;
+        vecId = fatherGeom->c( ) * 3;
         vc = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
-        vecId = fatherGeom->D( ) * 3;
+        vecId = fatherGeom->d( ) * 3;
         vd = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
 
@@ -372,10 +404,23 @@ namespace nlgenerator
 
         if ( vNode->Childs( ).size( ) == 0 )
         {
-          center = center - tangent * 0.1f;
+          // center = center - tangent * 0.1f;
+          numVertex++;
+          int e = int( vertices.size( )) / 3;
+          position = tangent * vNode->Radius( )*0.3 + center;
+
+          vertices.push_back( position.x( ));
+          vertices.push_back( position.y( ));
+          vertices.push_back( position.z( ));
+
+          vNode->Primitive( new GeometricPrimitive( a, b, c, d, e ));
+        }
+        else
+        {
+          vNode->Primitive( new GeometricPrimitive( a, b, c, d ));
         }
 
-        for (unsigned int j = 0; j < 4; j++ )
+        for (unsigned int j = 0; j < numVertex; j++ )
         {
           centers.push_back( center.x( ));
           centers.push_back( center.y( ));
@@ -385,8 +430,6 @@ namespace nlgenerator
           tangents.push_back( tangent.y( ));
           tangents.push_back( tangent.z( ));
         }
-
-        vNode->Primitive( new GeometricPrimitive( a, b, c, d ));
       }
     }
   }
@@ -523,28 +566,28 @@ namespace nlgenerator
                                              vector< unsigned int >& mesh )
   {
     //AB
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom1->A() );
-    mesh.push_back( geom1->B() );
+    mesh.push_back( geom0->a() );
+    mesh.push_back( geom0->b() );
+    mesh.push_back( geom1->a() );
+    mesh.push_back( geom1->b() );
 
     //BC
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom1->B() );
-    mesh.push_back( geom1->C() );
+    mesh.push_back( geom0->b() );
+    mesh.push_back( geom0->c() );
+    mesh.push_back( geom1->b() );
+    mesh.push_back( geom1->c() );
 
     //CD
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom1->C() );
-    mesh.push_back( geom1->D() );
+    mesh.push_back( geom0->c() );
+    mesh.push_back( geom0->d() );
+    mesh.push_back( geom1->c() );
+    mesh.push_back( geom1->d() );
 
     //DA
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom1->D() );
-    mesh.push_back( geom1->A() );
+    mesh.push_back( geom0->d() );
+    mesh.push_back( geom0->a() );
+    mesh.push_back( geom1->d() );
+    mesh.push_back( geom1->a() );
   }
 } // end namespace nlgenerator
 
