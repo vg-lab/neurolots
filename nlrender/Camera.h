@@ -37,6 +37,8 @@
 #include <gmrvlex/gmrvlex.h>
 #endif
 
+#include <thread>
+
 #endif
 
 
@@ -172,7 +174,7 @@ namespace nlrender
 #ifdef NEUROLOTS_USE_ZEROEQ
     bool _zeqConnection;
 
-    servus::URI _uri;
+    std::string _uri;
     zeroeq::Publisher* _publisher;
     zeroeq::Subscriber* _subscriber;
 
@@ -180,7 +182,7 @@ namespace nlrender
     std::mutex _rotationMutex;
     std::mutex _viewMatrixMutex;
 
-    pthread_t _subscriberThread;
+    std::thread* _subscriberThread;
 #endif
 
     bool _isAniming;

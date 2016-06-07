@@ -11,8 +11,6 @@
 
 #include <cmath>
 
-#include <thread>
-
 namespace nlrender
 {
 
@@ -61,21 +59,21 @@ namespace nlrender
     _fov = fov_ * ( M_PI / 360.0f );
     _f = 1.0f / tan( _fov );
 
-    _uri = servus::URI(uri_);
+    _uri = uri_.empty( ) ? zeroeq::DEFAULT_SESSION : uri_;
 
     _previusTime = std::chrono::system_clock::now( );
 
     _Rotation( _RotationFromPY( pitch_, yaw_ ));
 
-    _publisher = new zeroeq::Publisher( uri_ );
-    _subscriber = new zeroeq::Subscriber( uri_ );
+    _publisher = new zeroeq::Publisher( _uri );
+    _subscriber = new zeroeq::Subscriber( _uri );
 
     _subscriber->subscribe(
         lexis::render::LookOut::ZEROBUF_TYPE_IDENTIFIER( ),
         [ & ]( const void* data, size_t size )
         { _OnCameraEvent( lexis::render::LookOut::create( data, size ));});
 
-    std::thread subsThread( [&]() { while( true) _subscriber->receive( 10000 );});
+    _subscriberThread = new std::thread( [&]() { while( _zeqConnection ) _subscriber->receive( 10000 );});
 
     _BuildProjectionMatrix( );
     _BuildViewMatrix( );
