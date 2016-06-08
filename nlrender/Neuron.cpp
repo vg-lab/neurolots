@@ -77,7 +77,7 @@ namespace nlrender
       for( int matrixCol = 0; matrixCol < 4; matrixCol++ )
       {
         _vecTransform[ matrixCol * 4 + matrixRow ] =
-          _transform[ matrixRow ][ matrixCol ];
+          _transform( matrixRow , matrixCol );
       }
     }
     _calculateBoundingBox( );
