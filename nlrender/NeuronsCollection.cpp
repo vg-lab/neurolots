@@ -174,6 +174,8 @@ namespace nlrender
      _DefaultCamera( );
      _camera->Pivot( _defaultPivot );
      _camera->Radius( _defaultRadius );
+
+     
   }
 
   void NeuronsCollection::setZeqUri( const std::string&

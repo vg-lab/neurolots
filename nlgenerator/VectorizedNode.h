@@ -11,6 +11,7 @@
 #define __NLGENERATOR_VECTORIZED_NODE__
 
 #include <Eigen/Dense>
+#include <unordered_map>
 
 #include "GeometricPrimitive.h"
 #include "Quad.h"
@@ -52,6 +53,9 @@ namespace nlgenerator
     void Primitive( GeometricPrimitivePtr primitive_ );
 
     NLGENERATOR_API
+    void AddChildPrimitive( unsigned int childId_,
+                            GeometricPrimitivePtr childGeom_ );
+    NLGENERATOR_API
     void Father( VectorizedNode* father_ );
 
     //Getters
@@ -72,6 +76,9 @@ namespace nlgenerator
     GeometricPrimitivePtr Primitive( void );
 
     NLGENERATOR_API
+    GeometricPrimitivePtr ChildPrimitive( unsigned int childId_ );
+
+    NLGENERATOR_API
     VectorizedNode* Father( void );
 
     NLGENERATOR_API
@@ -84,21 +91,22 @@ namespace nlgenerator
     bool FirstNode( void );
 
 
-    private:
+  private:
 
-      int _id;
-      Eigen::Vector3f _position;
-      Eigen::Vector3f _tangent;
-      float _radius;
+    int _id;
+    Eigen::Vector3f _position;
+    Eigen::Vector3f _tangent;
+    float _radius;
 
-      GeometricPrimitivePtr _primitive;
+    GeometricPrimitivePtr _primitive;
+    std::unordered_map< unsigned int,
+                        GeometricPrimitivePtr > _childPrimitives;
 
-      VectorizedNode* _father;
-      std::vector< VectorizedNode* > _childs;
+    VectorizedNode* _father;
+    std::vector< VectorizedNode* > _childs;
 
-      bool _bifurcation;
-      bool _firstNode;
-
+    bool _bifurcation;
+    bool _firstNode;
 
   };
 

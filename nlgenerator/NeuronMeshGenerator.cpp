@@ -60,10 +60,19 @@ namespace nlgenerator
     for ( unsigned int i = 0; i < vNodes.size(); i++ )
     {
       VectorizedNodePtr vNode = vNodes[i];
-      if( vNode->Father( ) != nullptr )
+      if ( vNode->Father( ) != nullptr )
       {
-        _CreateQuadPipe( vNode->Father( )->Primitive( ),
-                             vNode->Primitive(), mesh );
+        if ( vNode->Father( )->Bifurcation( ))
+        {
+          if ( vNode->Father( )->ChildPrimitive( vNode->Id( )))
+            _CreateQuadPipe( vNode->Father( )->ChildPrimitive( vNode->Id( )),
+                             vNode->Primitive( ), mesh );
+        }
+        else
+        {
+          _CreateQuadPipe( vNode->Father( )->Primitive( ),
+                           vNode->Primitive(), mesh );
+        }
         if( vNode->Childs( ).size( ) == 0 )
         {
           mesh.push_back( vNode->Primitive( )->a( ));
@@ -126,8 +135,17 @@ namespace nlgenerator
       VectorizedNodePtr vNode = vNodes[i];
       if( vNode->Father( ) != nullptr )
       {
-        _CreateQuadPipe( vNode->Father( )->Primitive( ),
-                             vNode->Primitive(), mesh );
+        if ( vNode->Father( )->Bifurcation( ))
+        {
+          if ( vNode->Father( )->ChildPrimitive( vNode->Id( )))
+            _CreateQuadPipe( vNode->Father( )->ChildPrimitive( vNode->Id( )),
+                             vNode->Primitive( ), mesh );
+        }
+        else
+        {
+          _CreateQuadPipe( vNode->Father( )->Primitive( ),
+                           vNode->Primitive(), mesh );
+        }
         if( vNode->Childs( ).size( ) == 0 )
         {
           mesh.push_back( vNode->Primitive( )->a( ));
@@ -149,6 +167,7 @@ namespace nlgenerator
           mesh.push_back( vNode->Primitive( )->a( ));
           mesh.push_back( vNode->Primitive( )->e( ));
           mesh.push_back( vNode->Primitive( )->e( ));
+
         }
       }
     }
@@ -337,7 +356,11 @@ namespace nlgenerator
 
     Eigen::Vector3f center;
     Eigen::Vector3f tangent;
-    Eigen::Vector3f position;
+    Eigen::Vector3f positionA;
+    Eigen::Vector3f positionB;
+    Eigen::Vector3f positionC;
+    Eigen::Vector3f positionD;
+    Eigen::Vector3f positionE;
 
     Eigen::Quaternion< float > q;
 
@@ -375,50 +398,117 @@ namespace nlgenerator
 
 
         int a = int( vertices.size( )) / 3;
-        position = q._transformVector( va ) * vNode->Radius( ) + center;
+        positionA = q._transformVector( va ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionA.x( ));
+        vertices.push_back( positionA.y( ));
+        vertices.push_back( positionA.z( ));
 
         int b = int( vertices.size( )) / 3;
-        position = q._transformVector( vb ) * vNode->Radius( ) + center;
+        positionB = q._transformVector( vb ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionB.x( ));
+        vertices.push_back( positionB.y( ));
+        vertices.push_back( positionB.z( ));
 
         int c = int( vertices.size( ) ) / 3;
-        position = q._transformVector( vc ) * vNode->Radius( ) + center;
+        positionC = q._transformVector( vc ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionC.x( ));
+        vertices.push_back( positionC.y( ));
+        vertices.push_back( positionC.z( ));
 
         int d = int( vertices.size( ) ) / 3;
-        position = q._transformVector( vd ) * vNode->Radius( ) + center;
+        positionD = q._transformVector( vd ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionD.x( ));
+        vertices.push_back( positionD.y( ));
+        vertices.push_back( positionD.z( ));
+
+        int e = -1;
 
         if ( vNode->Childs( ).size( ) == 0 )
         {
           // center = center - tangent * 0.1f;
           numVertex++;
-          int e = int( vertices.size( )) / 3;
-          position = tangent * vNode->Radius( )*0.3 + center;
+          e = int( vertices.size( )) / 3;
+          positionE = tangent * vNode->Radius( )*0.3 + center;
 
-          vertices.push_back( position.x( ));
-          vertices.push_back( position.y( ));
-          vertices.push_back( position.z( ));
-
-          vNode->Primitive( new GeometricPrimitive( a, b, c, d, e ));
+          vertices.push_back( positionE.x( ));
+          vertices.push_back( positionE.y( ));
+          vertices.push_back( positionE.z( ));
         }
-        else
+
+        if ( vNode->Bifurcation( ))
         {
-          vNode->Primitive( new GeometricPrimitive( a, b, c, d ));
+          numVertex++;
+          e = int( vertices.size( )) / 3;
+          positionE = tangent * vNode->Radius( ) + center;
+
+          vertices.push_back( positionE.x( ));
+          vertices.push_back( positionE.y( ));
+          vertices.push_back( positionE.z( ));
+
+
+          VectorizedNodePtr child0 = vNode->Childs( )[0];
+          VectorizedNodePtr child1 = vNode->Childs( )[1];
+
+          Eigen::Vector3f childCenter = child0->Position( );
+
+          unsigned int minor = 0;
+          float distance = ( childCenter - positionA ).norm( );
+          float minorDistance = distance;
+
+          distance = ( childCenter - positionB ).norm( );
+          if ( distance < minorDistance )
+          {
+            minorDistance = distance;
+            minor = 1;
+          }
+
+          distance = ( childCenter - positionC ).norm( );
+          if ( distance < minorDistance )
+          {
+            minorDistance = distance;
+            minor = 2;
+          }
+
+          distance = ( childCenter - positionD ).norm( );
+          if ( distance < minorDistance )
+          {
+            minorDistance = distance;
+            minor = 3;
+          }
+
+          switch( minor )
+          {
+          case 0:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, b, e, d ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( e, b, c, d ));
+            break;
+          case 1:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, b, c, e ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, e, c, d ));
+            break;
+          case 2:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( e, b, c, d ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, b, e, d ));
+            break;
+          case 3:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, e, c, d ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, b, c, e ));
+            break;
+          }
         }
+
 
         for (unsigned int j = 0; j < numVertex; j++ )
         {
@@ -430,6 +520,8 @@ namespace nlgenerator
           tangents.push_back( tangent.y( ));
           tangents.push_back( tangent.z( ));
         }
+
+        vNode->Primitive( new GeometricPrimitive( a, b, c, d, e ));
       }
     }
   }
