@@ -432,7 +432,7 @@ namespace nlgenerator
           // center = center - tangent * 0.1f;
           numVertex++;
           e = int( vertices.size( )) / 3;
-          positionE = tangent * vNode->Radius( )*0.3 + center;
+          positionE = tangent * vNode->Radius( )*0.3f + center;
 
           vertices.push_back( positionE.x( ));
           vertices.push_back( positionE.y( ));
