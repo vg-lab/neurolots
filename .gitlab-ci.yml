@@ -3,7 +3,7 @@ Win7-VS12-x64:
   script:
   - call %ENVFILESDIR%\Qt-5.4.bat
   - set BUILD_GENERATOR=Visual Studio 12 Win64
-  - set JAMBS_TARGETS=vmmlib;nsol;eigen
+  - set JAMBS_TARGETS=nsol;eigen
   - set GENERATOR_EXTRA_OPTIONS=
   - set CMAKE_EXTRA_ARGS=-DGLEW_INCLUDE_DIR=c:\libs\glew-1.11.0\include -DGLEW_LIBRARY=c:\libs\glew-1.11.0\lib\Release/x64/glew32.lib  -DGLUT_glut_LIBRARY=c:\libs\freeglut\lib\x64\freeglut.lib -DGLUT_INCLUDE_DIR=c:\libs\freeglut\include
   - '"c:\Program Files (x86)\Git\bin\bash.exe" --login  .gitlab-ci.sh'
@@ -16,7 +16,7 @@ Win7-VS12-x64:
 Ubuntu-RequiredDeps:
   script:
   - module load Qt-5.5
-  - export JAMBS_TARGETS="vmmlib;nsol;eigen"
+  - export JAMBS_TARGETS="nsol;eigen"
   - bash .gitlab-ci.sh
   tags:
   - ubuntu
@@ -38,7 +38,7 @@ Ubuntu-OptionalDeps:
 OSX-RequiredDeps:
   script:
   - module load Qt-5.4
-  - export JAMBS_TARGETS="vmmlib;nsol;eigen"
+  - export JAMBS_TARGETS="nsol;eigen"
   - bash .gitlab-ci.sh
   tags:
   - osx
@@ -49,7 +49,7 @@ OSX-RequiredDeps:
 OSX-OptionalDeps:
   script:
   - module load Qt-5.4
-  - export JAMBS_TARGETS="vmmlib;nsol;eigen;zeq;gmrvzeq;lunchbox;brion;bbpsdk"
+  - export JAMBS_TARGETS="nsol;eigen;zeq;gmrvzeq;lunchbox;brion;bbpsdk"
   - export CMAKE_EXTRA_ARGS="-DNEUROLOTS_WITH_ZEQ=ON -DNEUROLOTS_WITH_BBPSDK=ON"
   - bash .gitlab-ci.sh
   tags:

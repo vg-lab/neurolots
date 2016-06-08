@@ -8,6 +8,7 @@
  * Do not distribute without further notice.
  */
 
+#include "ui_mainwindow.h"
 #include <QMainWindow>
 #include "OpenGLWidget.h"
 #include "ColorSelectionWidget.h"

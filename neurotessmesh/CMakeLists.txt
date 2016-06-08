@@ -1,33 +1,20 @@
 if( QT5CORE_FOUND )
 
-set(Name neurotessmesh)
+set(Name Neurotessmesh)
 set(NAME NEUROTESSMESH)
 set(namespace neurotessmesh)
 set(NAMESPACE NEUROTESSMESH)
 set(INCLUDE_NAME neurotessmesh)
+
+set(PROJECT_VERSION_ABI ${${PROJECT_NAME}_VERSION_ABI})
+# set(VERSION_ABI 0)
+
 configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/api.h
   ${PROJECT_BINARY_DIR}/include/neurotessmesh/api.h @ONLY)
 configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/version.h
   ${PROJECT_BINARY_DIR}/include/neurotessmesh/version.h @ONLY)
 configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/version.cpp
   ${PROJECT_BINARY_DIR}/src/neurotessmesh/version.cpp @ONLY)
-
-
-
-set(UIDIR ${CMAKE_CURRENT_SOURCE_DIR}/ui)
-set(QRCDIR ${CMAKE_CURRENT_SOURCE_DIR}/qrc)
-
-set(Name Neurotessmesh)
-set(NAME NEUROTESSMESH)
-set(namespace neurotessmesh)
-set(NAMESPACE NEUROTESSMESH)
-set(INCLUDE_NAME neurotessmesh)
-configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/api.h
-  ${PROJECT_BINARY_DIR}/include/neurotessmesh/api.h @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/version.h
-  ${PROJECT_BINARY_DIR}/include/neurotessmesh/version.h @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/version.cpp
-  ${PROJECT_BINARY_DIR}/src/version.cpp @ONLY)
 
 set(NEUROTESSMESH_LINK_LIBRARIES nsol
   Qt5::Core Qt5::Concurrent Qt5::Network Qt5::Quick Qt5::Widgets)
@@ -48,9 +35,13 @@ if (FIRES_FOUND)
   list(APPEND NEUROTESSMESH_LINK_LIBRARIES fires)
 endif()
 
+set(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
 
 set(NEUROTESSMESH_SOURCES
   ${PROJECT_BINARY_DIR}/src/neurotessmesh/version.cpp
+  mainwindow.ui
+  resources.qrc
   neurotessmesh.cpp
   MainWindow.cpp
   OpenGLWidget.cpp
@@ -66,19 +57,9 @@ set(NEUROTESSMESH_MOC_HEADERS
   MainWindow.h
   OpenGLWidget.h
   ColorSelectionWidget.h
-  )
-
-set(NEUROTESSMESH_UI_FORMS
-  ${UIDIR}/mainwindow.ui
 )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-
-set(NEUROTESSMESH_RESOURCES
-  ${QRCDIR}/resources.qrc
-)
-
 
 set(NEUROTESSMESH_LINK_LIBRARIES
   ${OPENGL_LIBRARIES}
@@ -121,6 +102,6 @@ if ( MSVC )
   add_definitions( -DNEUROTESSMESH_STATIC )
 endif( )
 
-common_application( neurotessmesh )
+common_application(NeuroTessMesh GUI ${COMMON_APP_ARGS})
 
 endif(QT5CORE_FOUND)

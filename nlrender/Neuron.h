@@ -35,7 +35,7 @@ namespace nlrender
     Neuron( const nsol::NeuronMorphologyPtr neuronMorphology_ = nullptr,
             const unsigned short layer_ = 0,
             const unsigned int gid_ = 0,
-            const nsol::Matrix4_4f transform_ = nsol::Matrix4_4f::IDENTITY,
+            const nsol::Matrix4_4f transform_ = nsol::Matrix4_4fIdentity,
             const nsol::MiniColumnPtr miniColum_ = nullptr,
             const TMorphologicalType morphologicalType_ =
             nsol::Neuron::UNDEFINED,
