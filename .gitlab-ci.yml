@@ -16,7 +16,7 @@ Win7-VS12-x64:
 Ubuntu-RequiredDeps:
   script:
   - module load Qt-5.5
-  - export JAMBS_TARGETS="nsol;eigen"
+  - export JAMBS_TARGETS="nsol;brion;eigen"
   - bash .gitlab-ci.sh
   tags:
   - ubuntu
