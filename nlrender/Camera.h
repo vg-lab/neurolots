@@ -174,7 +174,7 @@ namespace nlrender
 #ifdef NEUROLOTS_USE_ZEROEQ
     bool _zeqConnection;
 
-    std::string _uri;
+    std::string _zeroeqSession;
     zeroeq::Publisher* _publisher;
     zeroeq::Subscriber* _subscriber;
 

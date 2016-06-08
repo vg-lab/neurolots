@@ -70,10 +70,10 @@ MainWindow::~MainWindow( void )
 
 // PUBLIC
 
-void MainWindow::init( const std::string& zeqUri )
+void MainWindow::init( const std::string& zeqSession )
 {
 
-  _openGLWidget = new OpenGLWidget( 0, 0, zeqUri );
+  _openGLWidget = new OpenGLWidget( 0, 0, zeqSession );
   this->setCentralWidget( _openGLWidget );
   _openGLWidget->setMinimumSize( QSize( 100, 100 ));
   qDebug( ) << _openGLWidget->format( );
@@ -85,7 +85,7 @@ void MainWindow::init( const std::string& zeqUri )
   }
   _openGLWidget->idleUpdate( _ui->actionUpdateOnIdle->isChecked( ));
 
-  _openGLWidget->createNeuronsCollection( zeqUri );
+  _openGLWidget->createNeuronsCollection( zeqSession );
 
   connect( _ui->actionHome, SIGNAL( triggered( )),
            this, SLOT( home( )));
@@ -301,10 +301,10 @@ void MainWindow::showAbout( void )
     tr ( "</li> " ) +
 
     tr( "<li>ZEQ " ) +
-#ifdef NEUROLOTS_USE_ZEQ
-    tr( zeq::Version::getString( ).c_str( )) +
+#ifdef NEUROLOTS_USE_ZEROEQ
+    tr( zeroeq::Version::getString( ).c_str( )) +
     tr( " (" ) +
-    tr( std::to_string( zeq::Version::getRevision( )).c_str( )) +
+    tr( std::to_string( zeroeq::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
 #else
     tr( "not built-in " ) +
@@ -312,10 +312,10 @@ void MainWindow::showAbout( void )
     tr ( "</li> " ) +
 
     tr( "<li>gmrvzeq " ) +
-#ifdef NEUROLOTS_USE_GMRVZEQ
-    tr( gmrvzeq::Version::getString( ).c_str( )) +
+#ifdef NEUROLOTS_USE_GMRVLEX
+    tr( gmrvlex::Version::getString( ).c_str( )) +
     tr( " (" ) +
-    tr( std::to_string( gmrvzeq::Version::getRevision( )).c_str( )) +
+    tr( std::to_string( gmrvlex::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
 #else
     tr( "not built-in " ) +

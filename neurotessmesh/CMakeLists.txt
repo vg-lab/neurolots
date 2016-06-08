@@ -19,12 +19,16 @@ configure_file(${CMAKE_SOURCE_DIR}/CMake/common/cpp/version.cpp
 set(NEUROTESSMESH_LINK_LIBRARIES nsol
   Qt5::Core Qt5::Concurrent Qt5::Network Qt5::Quick Qt5::Widgets)
 
-if (ZEQ_FOUND)
-  list(APPEND NEUROTESSMESH_LINK_LIBRARIES zeq zeqHBP)
+if (ZEROEQ_FOUND)
+  list(APPEND NEUROTESSMESH_LINK_LIBRARIES ZeroEQ)
 endif()
 
-if (GMRVZEQ_FOUND)
-  list(APPEND NEUROTESSMESH_LINK_LIBRARIES gmrvzeq)
+if (LEXIS_FOUND)
+  list(APPEND NEUROTESSMESH_LINK_LIBRARIES Lexis)
+endif()
+
+if (GMRVLEX_FOUND)
+  list(APPEND NEUROTESSMESH_LINK_LIBRARIES gmrvlex)
 endif()
 
 if (DEFLECT_FOUND)

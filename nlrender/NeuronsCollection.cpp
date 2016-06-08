@@ -15,10 +15,6 @@
 #include <cfloat>
 #include <iostream>
 
-#ifdef NEUROLOTS_USE_GMRVZEQ
-#include <gmrvzeq/gmrvzeq.h>
-#endif
-
 #include "../nlgeometry/SpatialHashTable.h"
 
 namespace nlrender
@@ -32,7 +28,7 @@ namespace nlrender
     , _paintSelectedNeurites( true )
     , _dataSet( )
     , _selectionChange( false )
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     , _zeqConnection( false )
 #endif
     , _tessMethod( HOMOGENEOUS )
@@ -177,24 +173,34 @@ namespace nlrender
   }
 
   void NeuronsCollection::setZeqUri( const std::string&
-#ifdef NEUROLOTS_USE_ZEQ
-                                     uri_
+#ifdef NEUROLOTS_USE_ZEROEQ
+                                     session
 #endif
     )
   {
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
+
     _zeqConnection = true;
-    _uri =  servus::URI( uri_ );
-    _subscriber = new zeq::Subscriber( _uri );
+    _zeroeqSession =  session.empty( ) ? zeroeq::DEFAULT_SESSION : session ;
+    _subscriber = new zeroeq::Subscriber( _zeroeqSession );
 
-    _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
-        boost::bind( &NeuronsCollection::_OnSelectionEvent , this, _1 ));
+    _subscriber->subscribe(
+        lexis::data::SelectedIDs::ZEROBUF_TYPE_IDENTIFIER( ),
+        [&]( const void* data, size_t size )
+        { _OnSelectionEvent( lexis::data::SelectedIDs::create( data, size ));});
 
-#ifdef NEUROLOTS_USE_GMRVZEQ
-    _subscriber->registerHandler( zeq::gmrv::EVENT_FOCUSEDIDS,
-        boost::bind( &NeuronsCollection::_OnFocusEvent , this, _1 ));
+#ifdef NEUROLOTS_USE_GMRVLEX
+
+    _subscriber->subscribe(
+        zeroeq::gmrv::FocusedIDs::ZEROBUF_TYPE_IDENTIFIER( ),
+        [&]( const void* data, size_t size )
+        { _OnFocusEvent( zeroeq::gmrv::FocusedIDs::create( data, size ));});
+
 #endif
-    pthread_create( &_subscriberThread, NULL, _Subscriber, this );
+
+    _subscriberThread =
+        new std::thread( [&](){ while ( true ) _subscriber->receive( 10000 ); });
+
 #endif
   }
 
@@ -224,7 +230,7 @@ namespace nlrender
       neuronMesh = dynamic_cast< NeuronMorphologyPtr >( neuron->morphology( ))
         ->NeuronMesh( );
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
       if( _zeqConnection )
       {
         if( _IsSelected( neuron ) )
@@ -615,9 +621,9 @@ namespace nlrender
 
 
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
-  zeq::Subscriber* NeuronsCollection::Subscriber( void )
+  zeroeq::Subscriber* NeuronsCollection::Subscriber( void )
   {
     return _subscriber;
   }
@@ -854,12 +860,14 @@ namespace nlrender
     spht.vertices( vertices_ );
   }
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
-  void NeuronsCollection::_OnFocusEvent( const zeq::Event& event_ )
+#ifdef NEUROLOTS_USE_GMRVLEX
+
+  void NeuronsCollection::_OnFocusEvent( zeroeq::gmrv::ConstFocusedIDsPtr event_ )
   {
-    std::vector<unsigned int> focus =
-        zeq::hbp::deserializeSelectedIDs( event_ );
+    std::vector< unsigned int > focus = std::move( event_->getIdsVector( ));
+
     std::set<unsigned int> focusedNeurons;
 
     focusedNeurons.clear();
@@ -937,11 +945,15 @@ namespace nlrender
     _camera->TargetPivotRadius( center, radius );
   }
 
-  void NeuronsCollection::_OnSelectionEvent( const zeq::Event& event_ )
+#endif // NEUROLOTS_USE_GMRVLEX
+
+#ifdef NEUROLOTS_USE_LEXIS
+  void NeuronsCollection::_OnSelectionEvent( lexis::data::ConstSelectedIDsPtr selection )
   {
-    std::vector<unsigned int> selected =
-        zeq::hbp::deserializeSelectedIDs( event_ );
+    std::vector<unsigned int> selected = std::move( selection->getIdsVector( ));
+
     _selectedNeurons.clear();
+
     for( unsigned int i = 0; i < selected.size(); i ++)
     {
       _selectedNeurons.insert( selected[i] );
@@ -950,11 +962,11 @@ namespace nlrender
   }
 
 
-  void NeuronsCollection::_OnSelectionFocusEvent( const zeq::Event& event_ )
+  void NeuronsCollection::_OnSelectionFocusEvent( lexis::data::ConstSelectedIDsPtr selFocus )
   {
     // Selection
-    std::vector<unsigned int> selected =
-        zeq::hbp::deserializeSelectedIDs( event_ );
+    std::vector<unsigned int> selected = std::move( selFocus->getIdsVector( ));
+
     _selectedNeurons.clear();
     for( unsigned int i = 0; i < selected.size(); i ++)
     {
@@ -1036,7 +1048,7 @@ namespace nlrender
   void* NeuronsCollection::_Subscriber( void* collection_ )
   {
     NeuronsCollection* collection = ( NeuronsCollection* )collection_;
-    zeq::Subscriber* subscriber = collection->Subscriber( );
+    zeroeq::Subscriber* subscriber = collection->Subscriber( );
     std::cout << "Waiting Selection Events..." << std::endl;
     while ( true )
     {
@@ -1045,6 +1057,8 @@ namespace nlrender
     pthread_exit( NULL );
   }
 
-#endif
+#endif // NEUROLOTS_USE_LEXIS
+
+#endif // NEUROLOTS_USE_ZEROEQ
 
 }
