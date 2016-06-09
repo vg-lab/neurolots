@@ -38,7 +38,7 @@ Ubuntu-OptionalDeps:
 OSX-RequiredDeps:
   script:
   - module load Qt-5.4
-  - export JAMBS_TARGETS="nsol;eigen"
+  - export JAMBS_TARGETS="nsol;brion;eigen"
   - bash .gitlab-ci.sh
   tags:
   - osx
