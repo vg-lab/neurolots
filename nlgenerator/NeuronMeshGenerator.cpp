@@ -57,9 +57,8 @@ namespace nlgenerator
     CalculateTangents( vNodes );
     CalculateGeometry( vNodes, vertices, centers, tangents);
 
-    for ( unsigned int i = 0; i < vNodes.size(); i++ )
+    for ( VectorizedNodePtr vNode: vNodes )
     {
-      VectorizedNodePtr vNode = vNodes[i];
       if ( vNode->Father( ) != nullptr )
       {
         if ( vNode->Father( )->Bifurcation( ))
