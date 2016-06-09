@@ -14,6 +14,8 @@ using namespace std;
 
 #define EPSILON 0.00001f
 
+#define END_NODE_DISPLACE 0.3f
+
 namespace nlgenerator
 {
 
@@ -428,10 +430,9 @@ namespace nlgenerator
 
         if ( vNode->Childs( ).size( ) == 0 )
         {
-          // center = center - tangent * 0.1f;
           numVertex++;
           e = int( vertices.size( )) / 3;
-          positionE = tangent * vNode->Radius( )*0.3f + center;
+          positionE = tangent * vNode->Radius( ) * END_NODE_DISPLACE + center;
 
           vertices.push_back( positionE.x( ));
           vertices.push_back( positionE.y( ));
