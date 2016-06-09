@@ -138,22 +138,6 @@ namespace nlgenerator
 
     float radius = soma->minRadius( );
 
-    // Nodes nodes = soma->nodes( );
-    // float radius = std::numeric_limits< float >::max( );
-    // for( unsigned int i = 0; i < ( unsigned int ) nodes.size(); i++ )
-    // {
-    //   float r = (nodes[i]->point() - c).norm();
-    //   if ( r < radius )
-    //     radius = r;
-    // }
-
-    // if ( radius < EPSILON )
-    // {
-    //   std::cerr << "Warning: using soma max radius for the icosphere"
-    //             << std::endl;
-    //   radius = soma->maxRadius( );
-    // }
-
     Icosphere ico( center, radius, 3 );
 
     ico.CalculateSoma( firstNodes );
@@ -177,24 +161,7 @@ namespace nlgenerator
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
     float radius = soma->minRadius( );
 
-    // Nodes nodes = soma->nodes( );
-    // float radius = FLT_MAX;
-    // for( unsigned int i = 0; i < nodes.size(); i++ )
-    // {
-    //   float r = (nodes[i]->point() - c).norm();
-    //   if ( r < radius )
-    //     radius = r;
-    // }
-    // if ( radius < EPSILON )
-    // {
-    //   std::cerr << "Warning: using soma max radius for the icosphere"
-    //             << std::endl;
-    //   radius = soma->maxRadius( );
-    // }
-
-    #ifdef DEBUG
     assert( alphaRadius != 0 );
-    #endif
 
     radius *= alphaRadius;
     Icosphere ico( center, radius, 3 );
