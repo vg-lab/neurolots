@@ -209,7 +209,6 @@ namespace nlrender
     NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
-    
 
     glUseProgram( _programQuads->id( ));
     glUniformMatrix4fv( 0, 1, GL_FALSE, _camera->ProjectionMatrix( ));
