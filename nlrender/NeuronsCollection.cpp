@@ -74,8 +74,8 @@ namespace nlrender
     tng( 0.5f );
     maxDist( 0.1f );
 
-    NeuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
-    SelectedNeuronColor( Eigen::Vector3f( 0.7f, 0.5f, 0.0f ));
+    neuronColor( Eigen::Vector3f( 0.0f, 0.5f, 0.7f ));
+    selectedNeuronColor( Eigen::Vector3f( 0.7f, 0.5f, 0.0f ));
 
     //Construcction of trasnform feeback buffers and object
 
@@ -133,9 +133,9 @@ namespace nlrender
                                       Neuron,
                                       nsol::MiniColumn,
                                       nsol::Column >( );
-        _Init( );
+        _init( );
 
-        _DefaultCamera( );
+        _defaultCamera( );
         _camera->Pivot( _defaultPivot );
         _camera->Radius( _defaultRadius );
       }
@@ -159,9 +159,9 @@ namespace nlrender
                                 nsol::Soma,
                                 NeuronMorphology,
                                 Neuron >( swcFile_, 1 );
-    _Init( );
+    _init( );
 
-    _DefaultCamera( );
+    _defaultCamera( );
     _camera->Pivot( _defaultPivot );
     _camera->Radius( _defaultRadius );
   }
@@ -175,9 +175,9 @@ namespace nlrender
                          nsol::Soma,
                          NeuronMorphology,
                          Neuron >( xmlFile_ );
-     _Init( );
+     _init( );
 
-     _DefaultCamera( );
+     _defaultCamera( );
      _camera->Pivot( _defaultPivot );
      _camera->Radius( _defaultRadius );
   }
@@ -194,17 +194,17 @@ namespace nlrender
     _subscriber = new zeq::Subscriber( _uri );
 
     _subscriber->registerHandler( zeq::hbp::EVENT_SELECTEDIDS,
-        boost::bind( &NeuronsCollection::_OnSelectionEvent , this, _1 ));
+        boost::bind( &NeuronsCollection::_onSelectionEvent , this, _1 ));
 
 #ifdef NEUROLOTS_USE_GMRVZEQ
     _subscriber->registerHandler( zeq::gmrv::EVENT_FOCUSEDIDS,
-        boost::bind( &NeuronsCollection::_OnFocusEvent , this, _1 ));
+        boost::bind( &NeuronsCollection::_onFocusEvent , this, _1 ));
 #endif
-    pthread_create( &_subscriberThread, NULL, _Subscriber, this );
+    pthread_create( &_subscriberThread, NULL, _subscriber, this );
 #endif
   }
 
-  void NeuronsCollection::Paint( void )
+  void NeuronsCollection::paint( void )
   {
     NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
@@ -222,8 +222,8 @@ namespace nlrender
 
 
     std::vector< float > color;
-    bool paintSoma = false;
-    bool paintNeurites = false;
+    bool pSoma = false;
+    bool pNeurites = false;
 
     for ( const auto& element: _dataSet.neurons( ))
     {
@@ -238,33 +238,33 @@ namespace nlrender
 #ifdef NEUROLOTS_USE_ZEQ
       if( _zeqConnection )
       {
-        if( _IsSelected( neuron ) )
+        if( _isSelected( neuron ) )
         {
           color = _selectedNeuronColor;
-          paintSoma = _paintSelectedSoma;
-          paintNeurites = _paintSelectedNeurites;
+          pSoma = _paintSelectedSoma;
+          pNeurites = _paintSelectedNeurites;
 
         }
         else
         {
           color = _neuronColor;
-          paintSoma = _paintSoma;
-          paintNeurites = _paintNeurites;
+          pSoma = _paintSoma;
+          pNeurites = _paintNeurites;
         }
       }
       else
       {
         color = _neuronColor;
-        paintSoma = _paintSoma;
-        paintNeurites = _paintNeurites;
+        pSoma = _paintSoma;
+        pNeurites = _paintNeurites;
       }
 #else
       color = _neuronColor;
-      paintSoma = _paintSoma;
-      paintNeurites = _paintNeurites;
+      pSoma = _paintSoma;
+      pNeurites = _paintNeurites;
 #endif
 
-      if( paintSoma )
+      if( pSoma )
       {
         glUseProgram( _programTriangles->id( ));
         glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
@@ -272,7 +272,7 @@ namespace nlrender
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
         neuronMesh->paintSoma( );
       }
-      if( paintNeurites )
+      if( pNeurites )
       {
         glUseProgram( _programQuads->id( ));
         glUniformMatrix4fv( 2, 1, GL_FALSE, neuron->vecTransform( ).data( ));
@@ -283,7 +283,7 @@ namespace nlrender
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const unsigned int& id_ )
+  void NeuronsCollection::paintNeuron( const unsigned int& id_ )
   {
     NeuronPtr neuron = nullptr;
     nsol::NeuronsMap::iterator it;
@@ -291,11 +291,11 @@ namespace nlrender
     if ( it != _dataSet.neurons( ).end( ))
     {
       neuron = dynamic_cast< NeuronPtr >( it->second );
-      PaintNeuron( neuron );
+      paintNeuron( neuron );
     }
   }
 
-  void NeuronsCollection::PaintNeuron( const NeuronPtr& neuron )
+  void NeuronsCollection::paintNeuron( const NeuronPtr& neuron )
   {
     NeuronMeshPtr neuronMesh = nullptr;
     NeuronMorphologyPtr morpho = nullptr;
@@ -544,7 +544,7 @@ namespace nlrender
     nlgeometry::Vertices vertices;
     nlgeometry::Facets facets;
 
-    _VectorToMesh( _backVertices, _backNormals, vertices, facets );
+    _vectorToMesh( _backVertices, _backNormals, vertices, facets );
 
     _backVertices.clear( );
     _backNormals.clear( );
@@ -554,20 +554,20 @@ namespace nlrender
 
   // GETTERS
 
-  Eigen::Vector3f NeuronsCollection::NeuronColor( void )
+  Eigen::Vector3f NeuronsCollection::neuronColor( void )
   {
     Eigen::Vector3f color( _neuronColor[0], _neuronColor[1], _neuronColor[2] );
     return color;
   }
 
-  Eigen::Vector3f NeuronsCollection::SelectedNeuronColor( void )
+  Eigen::Vector3f NeuronsCollection::selectedNeuronColor( void )
   {
     Eigen::Vector3f color( _selectedNeuronColor[0], _selectedNeuronColor[1],
                            _selectedNeuronColor[2] );
     return color;
   }
 
-  ColumnsPtr NeuronsCollection::Columns( void )
+  ColumnsPtr NeuronsCollection::columns( void )
   {
     return &_dataSet.columns( );
   }
@@ -600,14 +600,14 @@ namespace nlrender
 
 #ifdef NEUROLOTS_USE_ZEQ
 
-  zeq::Subscriber* NeuronsCollection::Subscriber( void )
+  zeq::Subscriber* NeuronsCollection::subscriber( void )
   {
     return _subscriber;
   }
 
 #endif
 
-  bool NeuronsCollection::SelectionChange( void )
+  bool NeuronsCollection::selectionChange( void )
   {
     bool result = _selectionChange;
     _selectionChange = false;
@@ -662,7 +662,7 @@ namespace nlrender
     glUniform1fv( 7, 1, &_maxDist );
   }
 
-  void NeuronsCollection::NeuronColor( const Eigen::Vector3f& neuronColor_ )
+  void NeuronsCollection::neuronColor( const Eigen::Vector3f& neuronColor_ )
   {
     _neuronColor.resize( 3 );
     _neuronColor[ 0 ] = neuronColor_.x( );
@@ -670,7 +670,7 @@ namespace nlrender
     _neuronColor[ 2 ] = neuronColor_.z( );
   }
 
-  void NeuronsCollection::SelectedNeuronColor(
+  void NeuronsCollection::selectedNeuronColor(
     const Eigen::Vector3f& neuronColor_ )
   {
     _selectedNeuronColor.resize( 3 );
@@ -679,29 +679,29 @@ namespace nlrender
     _selectedNeuronColor[ 2 ] = neuronColor_.z( );
   }
 
-  void NeuronsCollection::PaintSoma( bool paintSoma_ )
+  void NeuronsCollection::paintSoma( bool paintSoma_ )
   {
     _paintSoma = paintSoma_;
   }
 
-  void NeuronsCollection::PaintNeurites( bool paintNeurites_ )
+  void NeuronsCollection::paintNeurites( bool paintNeurites_ )
   {
     _paintNeurites = paintNeurites_;
   }
 
-  void NeuronsCollection::PaintSelectedSoma( bool paintSelectedSoma_ )
+  void NeuronsCollection::paintSelectedSoma( bool paintSelectedSoma_ )
   {
     _paintSelectedSoma = paintSelectedSoma_;
   }
 
-  void NeuronsCollection::PaintSelectedNeurites( bool paintSelectedNeurites_ )
+  void NeuronsCollection::paintSelectedNeurites( bool paintSelectedNeurites_ )
   {
     _paintSelectedNeurites = paintSelectedNeurites_;
   }
 
   // PRIVATE
 
-  void NeuronsCollection::_Init( void )
+  void NeuronsCollection::_init( void )
   {
     NeuronPtr neuron;
     NeuronMorphologyPtr morpho;
@@ -715,13 +715,13 @@ namespace nlrender
     }
   }
 
-  bool NeuronsCollection::_IsSelected( nsol::NeuronPtr neuron_ )
+  bool NeuronsCollection::_isSelected( nsol::NeuronPtr neuron_ )
   {
     return !( _selectedNeurons.find( neuron_->gid( )) ==
               _selectedNeurons.end( ));
   }
 
-  void NeuronsCollection::_DefaultCamera( void )
+  void NeuronsCollection::_defaultCamera( void )
   {
     NeuronPtr neuron;
     TBoundingBox boundingBox;
@@ -770,7 +770,7 @@ namespace nlrender
     // std::cout << "radius: " << radius << std::endl;
   }
 
-  void NeuronsCollection::_VectorToMesh(
+  void NeuronsCollection::_vectorToMesh(
     const std::vector< float >& vecVertices_,
     const std::vector< float >& vecNormals_,
     nlgeometry::Vertices& vertices_,
@@ -819,7 +819,7 @@ namespace nlrender
 
 #ifdef NEUROLOTS_USE_ZEQ
 
-  void NeuronsCollection::_OnFocusEvent( const zeq::Event& event_ )
+  void NeuronsCollection::_onFocusEvent( const zeq::Event& event_ )
   {
     std::vector<unsigned int> focus =
         zeq::hbp::deserializeSelectedIDs( event_ );
@@ -900,7 +900,7 @@ namespace nlrender
     _camera->TargetPivotRadius( center, radius );
   }
 
-  void NeuronsCollection::_OnSelectionEvent( const zeq::Event& event_ )
+  void NeuronsCollection::_onSelectionEvent( const zeq::Event& event_ )
   {
     std::vector<unsigned int> selected =
         zeq::hbp::deserializeSelectedIDs( event_ );
@@ -913,7 +913,7 @@ namespace nlrender
   }
 
 
-  void NeuronsCollection::_OnSelectionFocusEvent( const zeq::Event& event_ )
+  void NeuronsCollection::_onSelectionFocusEvent( const zeq::Event& event_ )
   {
     // Selection
     std::vector<unsigned int> selected =
@@ -996,7 +996,7 @@ namespace nlrender
     _camera->TargetPivotRadius( center, radius );
   }
 
-  void* NeuronsCollection::_Subscriber( void* collection_ )
+  void* NeuronsCollection::_subscriber( void* collection_ )
   {
     NeuronsCollection* collection = ( NeuronsCollection* )collection_;
     zeq::Subscriber* subscriber = collection->Subscriber( );

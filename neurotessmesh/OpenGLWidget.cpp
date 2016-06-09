@@ -149,9 +149,9 @@ void OpenGLWidget::paintGL( void )
   {
     if ( _neuron )
       //_neuronsCollection->extractMesh( _neuron );
-      _neuronsCollection->PaintNeuron( _neuron );
+      _neuronsCollection->paintNeuron( _neuron );
     else if ( _neuronsCollection )
-      _neuronsCollection->Paint( );
+      _neuronsCollection->paint( );
 
     glUseProgram( 0 );
     glFlush( );
@@ -315,7 +315,7 @@ void OpenGLWidget::changeClearColor( QColor color )
 void OpenGLWidget::changeNeuronColor( QColor color )
 {
   makeCurrent( );
-  _neuronsCollection->NeuronColor(
+  _neuronsCollection->neuronColor(
     Eigen::Vector3f( float( color.red( )) * _colorFactor,
                      float( color.green( )) * _colorFactor,
                      float( color.blue( )) * _colorFactor ));
@@ -325,7 +325,7 @@ void OpenGLWidget::changeNeuronColor( QColor color )
 void OpenGLWidget::changeSelectedNeuronColor(  QColor color )
 {
   makeCurrent( );
-  _neuronsCollection->SelectedNeuronColor(
+  _neuronsCollection->selectedNeuronColor(
     Eigen::Vector3f( float( color.red( )) * _colorFactor,
                      float( color.green( )) * _colorFactor,
                      float( color.blue( )) * _colorFactor ));
@@ -337,16 +337,16 @@ void OpenGLWidget::changeNeuronPiece( int index_ )
   switch( index_ )
   {
   case 0:
-    _neuronsCollection->PaintSoma( true );
-    _neuronsCollection->PaintNeurites( true );
+    _neuronsCollection->paintSoma( true );
+    _neuronsCollection->paintNeurites( true );
     break;
   case 1:
-    _neuronsCollection->PaintSoma( true );
-    _neuronsCollection->PaintNeurites( false );
+    _neuronsCollection->paintSoma( true );
+    _neuronsCollection->paintNeurites( false );
     break;
   case 2:
-    _neuronsCollection->PaintSoma( false );
-    _neuronsCollection->PaintNeurites( true );
+    _neuronsCollection->paintSoma( false );
+    _neuronsCollection->paintNeurites( true );
     break;
   }
   update( );
@@ -357,16 +357,16 @@ void OpenGLWidget::changeSelectedNeuronPiece( int index_ )
   switch( index_ )
   {
   case 0:
-    _neuronsCollection->PaintSelectedSoma( true );
-    _neuronsCollection->PaintSelectedNeurites( true );
+    _neuronsCollection->paintSelectedSoma( true );
+    _neuronsCollection->paintSelectedNeurites( true );
     break;
   case 1:
-    _neuronsCollection->PaintSelectedSoma( true );
-    _neuronsCollection->PaintSelectedNeurites( false );
+    _neuronsCollection->paintSelectedSoma( true );
+    _neuronsCollection->paintSelectedNeurites( false );
     break;
   case 2:
-    _neuronsCollection->PaintSelectedSoma( false );
-    _neuronsCollection->PaintSelectedNeurites( true );
+    _neuronsCollection->paintSelectedSoma( false );
+    _neuronsCollection->paintSelectedNeurites( true );
     break;
   }
   update( );
@@ -410,7 +410,7 @@ void OpenGLWidget::toggleWireframe( void )
 
 void OpenGLWidget::timerUpdate( void )
 {
-  if( _camera->Anim( ) || _neuronsCollection->SelectionChange( ))
+  if( _camera->Anim( ) || _neuronsCollection->selectionChange( ))
     this->update( );
 }
 

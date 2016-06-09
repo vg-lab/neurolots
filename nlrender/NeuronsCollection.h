@@ -78,13 +78,13 @@ namespace nlrender
     void setZeqUri( const std::string& uri_ );
 
     NLRENDER_API
-    void Paint( void );
+    void paint( void );
 
     NLRENDER_API
-    void PaintNeuron( const unsigned int& id_ );
+    void paintNeuron( const unsigned int& id_ );
 
     NLRENDER_API
-    void PaintNeuron( const NeuronPtr& neuron );
+    void paintNeuron( const NeuronPtr& neuron );
 
     NLRENDER_API
     void focusOnNeuron( unsigned int id );
@@ -102,13 +102,13 @@ namespace nlrender
     //Getters
 
     NLRENDER_API
-    Eigen::Vector3f NeuronColor( void );
+    Eigen::Vector3f neuronColor( void );
 
     NLRENDER_API
-    Eigen::Vector3f SelectedNeuronColor( void );
+    Eigen::Vector3f selectedNeuronColor( void );
 
     NLRENDER_API
-    ColumnsPtr Columns( void );
+    ColumnsPtr columns( void );
 
     NLRENDER_API
     std::vector< unsigned int > neuronIDs( void );
@@ -119,12 +119,12 @@ namespace nlrender
 #ifdef NEUROLOTS_USE_ZEQ
 
     NLRENDER_API
-    zeq::Subscriber* Subscriber( void );
+    zeq::Subscriber* subscriber( void );
 
 #endif
 
     NLRENDER_API
-    bool SelectionChange( void );
+    bool selectionChange( void );
 
     //Setters
 
@@ -138,22 +138,22 @@ namespace nlrender
     void maxDist( float maxDist_ );
 
     NLRENDER_API
-    void NeuronColor( const Eigen::Vector3f& neuronColor_ );
+    void neuronColor( const Eigen::Vector3f& neuronColor_ );
 
     NLRENDER_API
-    void SelectedNeuronColor( const Eigen::Vector3f& selectedNeuronColor_ );
+    void selectedNeuronColor( const Eigen::Vector3f& selectedNeuronColor_ );
 
     NLRENDER_API
-    void PaintSoma( bool paintSoma_ );
+    void paintSoma( bool paintSoma_ );
 
     NLRENDER_API
-    void PaintNeurites( bool paintNeurites_ );
+    void paintNeurites( bool paintNeurites_ );
 
     NLRENDER_API
-    void PaintSelectedSoma( bool paintSelectedSoma_ );
+    void paintSelectedSoma( bool paintSelectedSoma_ );
 
     NLRENDER_API
-    void PaintSelectedNeurites( bool paintSelectedNeurites_ );
+    void paintSelectedNeurites( bool paintSelectedNeurites_ );
 
     NLRENDER_API
     void tessMethod( const TTessMethod& tessMethod_ )
@@ -163,23 +163,23 @@ namespace nlrender
 
   private:
 
-    void _Init( void );
+    void _init( void );
 
-    bool _IsSelected( nsol::NeuronPtr neuron_ );
+    bool _isSelected( nsol::NeuronPtr neuron_ );
 
-    void _DefaultCamera( void );
+    void _defaultCamera( void );
 
-    void _VectorToMesh( const std::vector< float >& vecVertices_,
+    void _vectorToMesh( const std::vector< float >& vecVertices_,
                         const std::vector< float >& vecNormals_,
                         nlgeometry::Vertices& vertices_,
                         nlgeometry::Facets& facets_ ) const;
 
 #ifdef NEUROLOTS_USE_ZEQ
 
-    void _OnFocusEvent( const zeq::Event& event_ );
-    void _OnSelectionEvent( const zeq::Event& event_ );
-    void _OnSelectionFocusEvent( const zeq::Event& event_ );
-    static void* _Subscriber( void* collection_ );
+    void _onFocusEvent( const zeq::Event& event_ );
+    void _onSelectionEvent( const zeq::Event& event_ );
+    void _onSelectionFocusEvent( const zeq::Event& event_ );
+    static void* _subscriber( void* collection_ );
 
 #endif
 
