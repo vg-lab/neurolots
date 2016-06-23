@@ -22,14 +22,23 @@
 
 #include <nlrender/api.h>
 
-#ifdef NEUROLOTS_USE_ZEQ
-#include <zeq/zeq.h>
-#include <zeq/hbp/hbp.h>
+#ifdef NEUROLOTS_USE_ZEROEQ
+#include <zeroeq/zeroeq.h>
 #include <servus/uri.h>
 
-#include <pthread.h>
 #include <mutex>
 #include <boost/bind.hpp>
+
+#ifdef NEUROLOTS_USE_LEXIS
+#include <lexis/lexis.h>
+#endif
+
+#ifdef NEUROLOTS_USE_GMRVLEX
+#include <gmrvlex/gmrvlex.h>
+#endif
+
+#include <thread>
+
 #endif
 
 
@@ -47,9 +56,9 @@ namespace nlrender
             Eigen::Vector3f pivot_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
             float radius_ = 1000.0f, float yaw_ = 0.0f, float pitch_ = 0.0f );
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     NLRENDER_API
-    Camera( const std::string& uri_, float fov_ = 45.0f,
+    Camera( const std::string& session_, float fov_ = 45.0f,
             float ratio_ = ((float)16)/9, float nearPlane_ = 0.1f,
             float farPlane_ = 10000.0f,
             Eigen::Vector3f pivot_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
@@ -94,9 +103,9 @@ namespace nlrender
     NLRENDER_API
     float* Position( void );
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     NLRENDER_API
-    zeq::Subscriber* Subscriber( void );
+    zeroeq::Subscriber* Subscriber( void );
 #endif
 
       // SETTERS
@@ -127,17 +136,16 @@ namespace nlrender
 
     private:
 
-    void _PositionVectorized( std::vector<float>& positionVec_ );
-    void _Rotation( Eigen::Matrix3f rotation_ );
-    void _ViewMatrixVectorized( std::vector<float>& viewVec_ );
+    void _PositionVectorized( const std::vector<float>& positionVec_ );
+    void _Rotation( const Eigen::Matrix3f& rotation_ );
+    void _ViewMatrixVectorized( const std::vector<float>& viewVec_ );
 
     void _BuildProjectionMatrix( void );
     void _BuildViewMatrix( void );
     void _BuildViewProjectionMatrix( void );
 
-#ifdef NEUROLOTS_USE_ZEQ
-    void _OnCameraEvent( const zeq::Event& event_ );
-    static void* _Subscriber( void* camera_ );
+#ifdef NEUROLOTS_USE_ZEROEQ
+    void _OnCameraEvent( lexis::render::ConstLookOutPtr event_ );
 #endif
 
     Eigen::Matrix3f _RotationFromPY( float yaw_, float pitch_ );
@@ -163,18 +171,18 @@ namespace nlrender
 
 
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     bool _zeqConnection;
 
-    servus::URI _uri;
-    zeq::Publisher* _publisher;
-    zeq::Subscriber* _subscriber;
+    std::string _zeroeqSession;
+    zeroeq::Publisher* _publisher;
+    zeroeq::Subscriber* _subscriber;
 
     std::mutex _positionMutex;
     std::mutex _rotationMutex;
     std::mutex _viewMatrixMutex;
 
-    pthread_t _subscriberThread;
+    std::thread* _subscriberThread;
 #endif
 
     bool _isAniming;

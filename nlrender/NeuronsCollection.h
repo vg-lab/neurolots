@@ -23,11 +23,22 @@
 
 #include <set>
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
-#include <zeq/zeq.h>
-#include <zeq/hbp/hbp.h>
-#include <servus/uri.h>
+#include <zeroeq/zeroeq.h>
+#include <thread>
+
+#ifdef NEUROLOTS_USE_LEXIS
+
+#include <lexis/lexis.h>
+
+#ifdef NEUROLOTS_USE_GMRVLEX
+
+#include <gmrvlex/gmrvlex.h>
+
+#endif
+
+#endif
 
 #include <pthread.h>
 #include <mutex>
@@ -116,10 +127,10 @@ namespace nlrender
     NLRENDER_API
     NeuronPtr neuronById( unsigned int id );
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
     NLRENDER_API
-    zeq::Subscriber* Subscriber( void );
+    zeroeq::Subscriber* Subscriber( void );
 
 #endif
 
@@ -176,11 +187,17 @@ namespace nlrender
                         nlgeometry::Vertices& vertices_,
                         nlgeometry::Facets& facets_ ) const;
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
-    void _OnFocusEvent( const zeq::Event& event_ );
-    void _OnSelectionEvent( const zeq::Event& event_ );
-    void _OnSelectionFocusEvent( const zeq::Event& event_ );
+#ifdef NEUROLOTS_USE_GMRVLEX
+    void _OnFocusEvent( zeroeq::gmrv::ConstFocusedIDsPtr event_ );
+#endif
+
+#ifdef NEUROLOTS_USE_LEXIS
+    void _OnSelectionEvent( lexis::data::ConstSelectedIDsPtr event_ );
+    void _OnSelectionFocusEvent( lexis::data::ConstSelectedIDsPtr event_ );
+#endif
+
     static void* _Subscriber( void* collection_ );
 
 #endif
@@ -214,13 +231,13 @@ namespace nlrender
 
     bool _selectionChange;
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     bool _zeqConnection;
 
-    servus::URI _uri;
-    zeq::Subscriber* _subscriber;
+    std::string _zeroeqSession;
+    zeroeq::Subscriber* _subscriber;
 
-    pthread_t _subscriberThread;
+    std::thread* _subscriberThread;
 #endif
 
     Eigen::Vector3f _defaultPivot;

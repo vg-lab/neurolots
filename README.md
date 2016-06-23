@@ -21,8 +21,9 @@ physical deformation model that can be interactively adjusted.
 
 * Optional dependencies:
     * Qt5.4: enables building neurotessmesh viewer
-    * zeq: enables syncing selections and syncing camera
-    * gmrvzeq: enables sending focus messages
+    * ZeroEQ: enables syncing selections and syncing camera
+    * Lexis: provides de base vocabulary for ZeroEQ for sync operations
+    * gmrvLex: enables sending focus messages
 
 Note: nsol and vmmlib are automatically downloaded and built if not found by 
 CMake.
