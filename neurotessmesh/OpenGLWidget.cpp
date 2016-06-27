@@ -25,8 +25,8 @@ const float OpenGLWidget::_colorFactor = 1 / 255.0f;
 OpenGLWidget::OpenGLWidget( QWidget* parent_,
                             Qt::WindowFlags windowsFlags_,
                             const std::string&
-#ifdef NEUROLOTS_USE_ZEQ
-                            zeqUri
+#ifdef NEUROLOTS_USE_ZEROEQ
+                            zeqSession
 #endif
   )
   : QOpenGLWidget( parent_, windowsFlags_ )
@@ -43,14 +43,11 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   , _paint( false )
   , _neuron( nullptr )
 {
-#ifdef NEUROLOTS_USE_ZEQ
-  if ( zeqUri != "" )
-  {
-    _camera = new nlrender::Camera( zeqUri );
-  }
-  else
+#ifdef NEUROLOTS_USE_ZEROEQ
+  _camera = new nlrender::Camera( zeqSession );
+#else
+  _camera = new nlrender::Camera( );
 #endif
-    _camera = new nlrender::Camera( );
 
   _cameraTimer = new QTimer( );
   _cameraTimer->start(( 1.0f / 60.f ) * 100 );
@@ -76,16 +73,13 @@ OpenGLWidget::~OpenGLWidget( void )
   delete _camera;
 }
 
-void OpenGLWidget::createNeuronsCollection( const std::string& zeqUri )
+void OpenGLWidget::createNeuronsCollection( const std::string& zeqSession )
 {
   makeCurrent( );
   nlrender::Config::init( );
   _neuronsCollection = new nlrender::NeuronsCollection( _camera );
 
-  if ( zeqUri != "" )
-  {
-    _neuronsCollection->setZeqUri( zeqUri );
-  }
+  _neuronsCollection->setZeqUri( zeqSession );
 }
 
 void OpenGLWidget::loadData( const std::string& fileName,
