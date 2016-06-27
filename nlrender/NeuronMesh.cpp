@@ -16,71 +16,25 @@ namespace nlrender
 
   NeuronMesh::NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ )
     : _morpho( morpho_ )
-    , _isInit( false )
   {
-
+    _init( );
   }
 
   NeuronMesh::~NeuronMesh( void )
   {
-  }
-
-  void NeuronMesh::Init( void )
-  {
-    if( !_isInit )
+    if ( _vbos.size( ) > 0 )
     {
-      std::vector< float > vertices;
-      std::vector< float > centers;
-      std::vector< float > tangents;
-      std::vector< unsigned int > mesh;
+      glDeleteBuffers( _vbos.size( ), _vbos.data( ));
+    }
+    _vbos.clear( );
 
-      nlgenerator::NeuronMeshGenerator::GenerateMesh( _morpho, vertices,
-                                                      centers, tangents,
-                                                      mesh, _somaEnd );
-      // VAO Generation
-      glGenVertexArrays( 1, &vao_ );
-      glBindVertexArray( vao_ );
-
-      _size = ( unsigned int ) mesh.size( );
-
-
-      vbo_ = ( GLuint * )malloc( sizeof( GLuint ) * 4 );
-      glGenBuffers(4,vbo_);
-
-      glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
-      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
-                    vertices.data( ), GL_STATIC_DRAW );
-      glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( 0 );
-
-      glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
-      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
-                    centers.data( ), GL_STATIC_DRAW );
-      glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( 1 );
-
-      glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
-      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
-                    tangents.data( ), GL_STATIC_DRAW );
-      glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-      glEnableVertexAttribArray( 2 );
-
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
-      glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
-                    mesh.data( ), GL_STATIC_DRAW );
-
-
-      glBindVertexArray( 0 );
-
-      vertices.clear( );
-      centers.clear( );
-      tangents.clear( );
-      mesh.clear( );
-      _isInit= true;
+    if ( _vao > 0 )
+    {
+      glDeleteVertexArrays( 1, &_vao );
     }
   }
 
-  void NeuronMesh::Regenerate( const float& alphaRadius_,
+  void NeuronMesh::regenerate( const float& alphaRadius_,
                                const std::vector< float >& alphaNeurites_ )
   {
     std::vector< float > vertices;
@@ -94,26 +48,26 @@ namespace nlrender
                                                     tangents, mesh,
                                                     _somaEnd );
     // VAO Generation
-    glBindVertexArray( vao_ );
+    glBindVertexArray( _vao );
 
     _size = ( unsigned int ) mesh.size( );
 
-    glBindBuffer( GL_ARRAY_BUFFER, vbo_[0]);
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[0]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
                   vertices.data( ), GL_STATIC_DRAW );
 
 
-    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 1 ]);
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[ 1 ]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
                   centers.data( ), GL_STATIC_DRAW );
 
 
-    glBindBuffer( GL_ARRAY_BUFFER, vbo_[ 2 ]);
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[ 2 ]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
                   tangents.data( ), GL_STATIC_DRAW );
 
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo_[ 3 ]);
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _vbos[ 3 ]);
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
                   mesh.data( ), GL_STATIC_DRAW );
 
@@ -126,23 +80,23 @@ namespace nlrender
     mesh.clear( );
   }
 
-  void NeuronMesh::PaintSoma( void ) const
+  void NeuronMesh::paintSoma( void ) const
   {
-    glBindVertexArray(vao_);
+    glBindVertexArray(_vao);
     glPatchParameteri( GL_PATCH_VERTICES, 3 );
     glDrawElements( GL_PATCHES, _somaEnd, GL_UNSIGNED_INT, 0 );
   }
 
-  void NeuronMesh::PaintNeurites( void ) const
+  void NeuronMesh::paintNeurites( void ) const
   {
-    glBindVertexArray(vao_);
+    glBindVertexArray(_vao);
     glPatchParameteri( GL_PATCH_VERTICES, 4 );
     glDrawElements( GL_PATCHES,  _size -_somaEnd, GL_UNSIGNED_INT,
                  (void *) (_somaEnd * sizeof(unsigned int)));
   }
 
 
-  void NeuronMesh::WriteOBJ( const std::string& fileName_,
+  void NeuronMesh::writeOBJ( const std::string& fileName_,
                              nlgeometry::Vertices& vertices_,
                              const nlgeometry::Facets& facets_ ) const
   {
@@ -179,6 +133,56 @@ namespace nlrender
               << vertices_.size() << " vertices and " << facets_.size()
               << " facets." << std::endl;
 
+  }
+
+  void NeuronMesh::_init( void )
+  {
+    std::vector< float > vertices;
+    std::vector< float > centers;
+    std::vector< float > tangents;
+    std::vector< unsigned int > mesh;
+
+    nlgenerator::NeuronMeshGenerator::GenerateMesh( _morpho, vertices,
+                                                    centers, tangents,
+                                                    mesh, _somaEnd );
+    // VAO Generation
+    glGenVertexArrays( 1, &_vao );
+    glBindVertexArray( _vao );
+
+    _size = ( unsigned int ) mesh.size( );
+
+    _vbos.resize( 4 );
+    glGenBuffers(4,_vbos.data( ));
+
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[0]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * vertices.size( ),
+                  vertices.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( 0 );
+
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[ 1 ]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * centers.size( ),
+                  centers.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( 1 );
+
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[ 2 ]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * tangents.size( ),
+                  tangents.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( 2 );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _vbos[ 3 ]);
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( int ) * _size,
+                  mesh.data( ), GL_STATIC_DRAW );
+
+
+    glBindVertexArray( 0 );
+
+    vertices.clear( );
+    centers.clear( );
+    tangents.clear( );
+    mesh.clear( );
   }
 
 } // end namespace nlrender

@@ -32,13 +32,15 @@ namespace nlgenerator
 // PUBLIC METHODS
 
   void NeuronMeshGenerator::GenerateMesh(
-    const nsol::NeuronMorphologyPtr& morpho,
+    nsol::NeuronMorphologyPtr& morpho,
     vector< float > & vertices,
     vector< float > & centers,
     vector< float > & tangents,
     vector< unsigned int > & mesh,
     unsigned int& somaEnd )
   {
+
+    morpho = nsol::Simplifier::Instance( )->adaptSoma( morpho );
     vertices.clear( );
     centers.clear( );
     tangents.clear( );
@@ -134,21 +136,7 @@ namespace nlgenerator
     Vec3f c = soma->center( );
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
 
-    Nodes nodes = soma->nodes( );
-    float radius = std::numeric_limits< float >::max( );
-    for( unsigned int i = 0; i < ( unsigned int ) nodes.size(); i++ )
-    {
-      float r = (nodes[i]->point() - c).norm();
-      if ( r < radius )
-        radius = r;
-    }
-
-    if ( radius < EPSILON )
-    {
-      std::cerr << "Warning: using soma max radius for the icosphere"
-                << std::endl;
-      radius = soma->maxRadius( );
-    }
+    float radius = soma->minRadius( );
 
     Icosphere ico( center, radius, 3 );
 
@@ -171,24 +159,9 @@ namespace nlgenerator
   {
     Vec3f c = soma->center( );
     Eigen::Vector3f center( c.x( ), c.y( ), c.z( ) );
+    float radius = soma->minRadius( );
 
-    Nodes nodes = soma->nodes( );
-    float radius = FLT_MAX;
-    for( unsigned int i = 0; i < nodes.size(); i++ )
-    {
-      float r = (nodes[i]->point() - c).norm();
-      if ( r < radius )
-        radius = r;
-    }
-    if ( radius < EPSILON )
-    {
-      std::cerr << "Warning: using soma max radius for the icosphere"
-                << std::endl;
-      radius = soma->maxRadius( );
-    }
-    #ifdef DEBUG
     assert( alphaRadius != 0 );
-    #endif
 
     radius *= alphaRadius;
     Icosphere ico( center, radius, 3 );
@@ -404,26 +377,10 @@ namespace nlgenerator
     NodePtr node;
     Vec3f pos;
 
-    for( unsigned int i = 0; i < section->middleNodes( ).size( ); i++ )
+    for( unsigned int i = 1; i < section->nodes( ).size( ); i++ )
     {
       vNode = new VectorizedNode( );
-      node = section->middleNodes( )[i];
-      pos = node->point( );
-
-      vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
-      vNode->Radius( node->radius( ));
-      vNode->Id( int( vNodes.size( )));
-      vNode->Father( vFatherNode);
-      vNodes.push_back( vNode );
-
-      vFatherNode->AddChild( vNode );
-      vFatherNode = vNode;
-    }
-
-    if( section->lastNode( ))
-    {
-      vNode = new VectorizedNode( );
-      node = section->lastNode( );
+      node = section->nodes( )[i];
       pos = node->point( );
 
       vNode->Position( Eigen::Vector3f( pos.x(), pos.y(), pos.z( )));
@@ -451,7 +408,7 @@ namespace nlgenerator
     for( unsigned int i = 0; i < neurites.size( ); i++ )
     {
       SectionPtr section = neurites[i]->firstSection( );
-      numNodes += _NumNodes(section);
+      numNodes += _NumNodes(section) + 1;
 
     }
 
@@ -460,7 +417,7 @@ namespace nlgenerator
 
   unsigned int NeuronMeshGenerator::_NumNodes( const nsol::SectionPtr& section )
   {
-    unsigned int numNodes = ( unsigned int )section->middleNodes( ).size( ) + 2;
+    unsigned int numNodes = ( unsigned int )section->nodes( ).size( ) - 1;
 
       Sections childs = section->children();
       for( unsigned int i = 0; i < childs.size(); i++ )
@@ -493,15 +450,9 @@ namespace nlgenerator
   {
       unsigned int maxId = 0;
 
-
-      if( section->firstNode()->id( ) > section->lastNode()->id( ))
-        maxId = section->firstNode( )->id( );
-      else
-        maxId = section->lastNode( )->id( );
-
-      for( unsigned int i = 0; i < section->middleNodes( ).size( ); i++ )
+      for( unsigned int i = 0; i < section->nodes( ).size( ); i++ )
       {
-        unsigned int id = section->middleNodes( )[i]->id( );
+        unsigned int id = section->nodes( )[i]->id( );
         if ( id > maxId )
           maxId = id;
       }

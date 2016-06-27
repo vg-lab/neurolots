@@ -270,7 +270,7 @@ namespace nlrender
     _positionVec = positionVec_;
   }
 
-  void Camera::_Rotation( const Eigen::Matrix3f rotation_ )
+  void Camera::_Rotation( const Eigen::Matrix3f& rotation_ )
   {
     _rotation = rotation_;
   }

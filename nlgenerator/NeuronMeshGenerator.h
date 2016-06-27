@@ -40,7 +40,7 @@ namespace nlgenerator
 
     NLGENERATOR_API
     static void GenerateMesh(
-      const nsol::NeuronMorphologyPtr& morpho,
+      nsol::NeuronMorphologyPtr& morpho,
       std::vector< float >& vertices,
       std::vector< float >& centers,
       std::vector< float >& tangents,
