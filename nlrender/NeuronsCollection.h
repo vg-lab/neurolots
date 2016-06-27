@@ -23,11 +23,22 @@
 
 #include <set>
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
-#include <zeq/zeq.h>
-#include <zeq/hbp/hbp.h>
-#include <servus/uri.h>
+#include <zeroeq/zeroeq.h>
+#include <thread>
+
+#ifdef NEUROLOTS_USE_LEXIS
+
+#include <lexis/lexis.h>
+
+#ifdef NEUROLOTS_USE_GMRVLEX
+
+#include <gmrvlex/gmrvlex.h>
+
+#endif
+
+#endif
 
 #include <pthread.h>
 #include <mutex>
@@ -78,13 +89,13 @@ namespace nlrender
     void setZeqUri( const std::string& uri_ );
 
     NLRENDER_API
-    void Paint( void );
+    void paint( void );
 
     NLRENDER_API
-    void PaintNeuron( const unsigned int& id_ );
+    void paintNeuron( const unsigned int& id_ );
 
     NLRENDER_API
-    void PaintNeuron( const NeuronPtr& neuron );
+    void paintNeuron( const NeuronPtr& neuron );
 
     NLRENDER_API
     void focusOnNeuron( unsigned int id );
@@ -102,13 +113,13 @@ namespace nlrender
     //Getters
 
     NLRENDER_API
-    Eigen::Vector3f NeuronColor( void );
+    Eigen::Vector3f neuronColor( void );
 
     NLRENDER_API
-    Eigen::Vector3f SelectedNeuronColor( void );
+    Eigen::Vector3f selectedNeuronColor( void );
 
     NLRENDER_API
-    ColumnsPtr Columns( void );
+    ColumnsPtr columns( void );
 
     NLRENDER_API
     std::vector< unsigned int > neuronIDs( void );
@@ -116,15 +127,15 @@ namespace nlrender
     NLRENDER_API
     NeuronPtr neuronById( unsigned int id );
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
     NLRENDER_API
-    zeq::Subscriber* Subscriber( void );
+    zeroeq::Subscriber* Subscriber( void );
 
 #endif
 
     NLRENDER_API
-    bool SelectionChange( void );
+    bool selectionChange( void );
 
     //Setters
 
@@ -138,22 +149,22 @@ namespace nlrender
     void maxDist( float maxDist_ );
 
     NLRENDER_API
-    void NeuronColor( const Eigen::Vector3f& neuronColor_ );
+    void neuronColor( const Eigen::Vector3f& neuronColor_ );
 
     NLRENDER_API
-    void SelectedNeuronColor( const Eigen::Vector3f& selectedNeuronColor_ );
+    void selectedNeuronColor( const Eigen::Vector3f& selectedNeuronColor_ );
 
     NLRENDER_API
-    void PaintSoma( bool paintSoma_ );
+    void paintSoma( bool paintSoma_ );
 
     NLRENDER_API
-    void PaintNeurites( bool paintNeurites_ );
+    void paintNeurites( bool paintNeurites_ );
 
     NLRENDER_API
-    void PaintSelectedSoma( bool paintSelectedSoma_ );
+    void paintSelectedSoma( bool paintSelectedSoma_ );
 
     NLRENDER_API
-    void PaintSelectedNeurites( bool paintSelectedNeurites_ );
+    void paintSelectedNeurites( bool paintSelectedNeurites_ );
 
     NLRENDER_API
     void tessMethod( const TTessMethod& tessMethod_ )
@@ -163,26 +174,27 @@ namespace nlrender
 
   private:
 
-    void _Init( void );
+    void _init( void );
 
-    void _GenerateMeshes( void );
+    bool _isSelected( nsol::NeuronPtr neuron_ );
 
-    bool _IsSelected( nsol::NeuronPtr neuron_ );
+    void _defaultCamera( void );
 
-    void _DefaultCamera( void );
-
-    void _VectorToMesh( const std::vector< float >& vecVertices_,
+    void _vectorToMesh( const std::vector< float >& vecVertices_,
                         const std::vector< float >& vecNormals_,
                         nlgeometry::Vertices& vertices_,
                         nlgeometry::Facets& facets_ ) const;
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
 
-    void _OnFocusEvent( const zeq::Event& event_ );
-    void _OnSelectionEvent( const zeq::Event& event_ );
-    void _OnSelectionFocusEvent( const zeq::Event& event_ );
-    static void* _Subscriber( void* collection_ );
+#ifdef NEUROLOTS_USE_GMRVLEX
+    void _onFocusEvent( zeroeq::gmrv::ConstFocusedIDsPtr event_ );
+#endif
 
+#ifdef NEUROLOTS_USE_LEXIS
+    void _onSelectionEvent( lexis::data::ConstSelectedIDsPtr event_ );
+    void _onSelectionFocusEvent( lexis::data::ConstSelectedIDsPtr event_ );
+#endif
 #endif
 
     Program* _programTriangles;
@@ -214,13 +226,13 @@ namespace nlrender
 
     bool _selectionChange;
 
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
     bool _zeqConnection;
 
-    servus::URI _uri;
-    zeq::Subscriber* _subscriber;
+    std::string _zeroeqSession;
+    zeroeq::Subscriber* _subscriber;
 
-    pthread_t _subscriberThread;
+    std::thread* _subscriberThread;
 #endif
 
     Eigen::Vector3f _defaultPivot;

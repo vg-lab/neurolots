@@ -27,6 +27,9 @@ namespace nlrender
   public:
 
     NLRENDER_API
+    NeuronMorphology( void );
+
+    NLRENDER_API
     NeuronMorphology( nsol::SomaPtr soma );
 
     NLRENDER_API
@@ -47,7 +50,6 @@ namespace nlrender
   private:
 
     NeuronMeshPtr _neuronMesh;
-    bool _meshGenerated;
   };
 
   typedef NeuronMorphology * NeuronMorphologyPtr;

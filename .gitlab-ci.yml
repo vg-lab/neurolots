@@ -16,7 +16,7 @@ Win7-VS12-x64:
 Ubuntu-RequiredDeps:
   script:
   - module load Qt-5.5
-  - export JAMBS_TARGETS="nsol;eigen"
+  - export JAMBS_TARGETS="nsol;brion;eigen"
   - bash .gitlab-ci.sh
   tags:
   - ubuntu
@@ -27,7 +27,7 @@ Ubuntu-RequiredDeps:
 Ubuntu-OptionalDeps:
   script:
   - module load Qt-5.5
-  - export JAMBS_TARGETS="vmmlib;nsol;eigen;zeq;gmrvzeq;lunchbox;brion;bbpsdk;deflect"
+  - export JAMBS_TARGETS="vmmlib;nsol;eigen;zeroeq;lexis;gmrvlex;lunchbox;brion;bbpsdk;deflect"
   - export CMAKE_EXTRA_ARGS="-DNEUROLOTS_WITH_ZEQ=ON -DNEUROLOTS_WITH_BBPSDK=ON"
   - bash .gitlab-ci.sh
   tags:
@@ -38,7 +38,7 @@ Ubuntu-OptionalDeps:
 OSX-RequiredDeps:
   script:
   - module load Qt-5.4
-  - export JAMBS_TARGETS="nsol;eigen"
+  - export JAMBS_TARGETS="nsol;brion;eigen"
   - bash .gitlab-ci.sh
   tags:
   - osx
@@ -49,7 +49,7 @@ OSX-RequiredDeps:
 OSX-OptionalDeps:
   script:
   - module load Qt-5.4
-  - export JAMBS_TARGETS="nsol;eigen;zeq;gmrvzeq;lunchbox;brion;bbpsdk"
+  - export JAMBS_TARGETS="nsol;eigen;zeroeq;lexis;gmrvlex;lunchbox;brion;bbpsdk"
   - export CMAKE_EXTRA_ARGS="-DNEUROLOTS_WITH_ZEQ=ON -DNEUROLOTS_WITH_BBPSDK=ON"
   - bash .gitlab-ci.sh
   tags:

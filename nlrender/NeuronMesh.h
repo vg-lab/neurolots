@@ -55,35 +55,34 @@ namespace nlrender
     NLRENDER_API
     ~NeuronMesh( void );
 
-    NLRENDER_API
-    void Init( void );
+
 
     NLRENDER_API
-    void Regenerate( const float& alphaRadius_,
+    void regenerate( const float& alphaRadius_,
                      const std::vector< float >& alphaNeurites_ );
 
     NLRENDER_API
-    void PaintSoma( void ) const;
+    void paintSoma( void ) const;
 
     NLRENDER_API
-    void PaintNeurites( void ) const;
+    void paintNeurites( void ) const;
 
     NLRENDER_API
-    void WriteOBJ( const std::string& fileName_,
+    void writeOBJ( const std::string& fileName_,
                    nlgeometry::Vertices& vertices_,
                    const nlgeometry::Facets& facets_ ) const;
 
   private:
 
+    void _init( void );
+
     nsol::NeuronMorphologyPtr _morpho;
 
-    GLuint vao_;
-    GLuint * vbo_;
+    unsigned int _vao;
+    std::vector< unsigned int > _vbos;
 
     unsigned int _size;
     unsigned int _somaEnd;
-
-    bool _isInit;
   };
 
   typedef NeuronMesh * NeuronMeshPtr;

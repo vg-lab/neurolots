@@ -46,7 +46,10 @@ namespace nlrender
     ~Neuron( void );
 
     NLRENDER_API
-    void Init( void );
+    nsol::NeuronMorphologyPtr morphology( void ) const;
+
+    NLRENDER_API
+    void morphology( nsol::NeuronMorphologyPtr newMorphology );
 
     NLRENDER_API
     std::vector< float >& vecTransform( void );
@@ -54,7 +57,6 @@ namespace nlrender
     NLRENDER_API
     void regenerateMesh( const float& alphaRadius_,
                          const std::vector< float >& alphaNeurites_ );
-
 
     // GETTERS
     NLRENDER_API
@@ -64,7 +66,9 @@ namespace nlrender
 
   private:
 
-    void _CalculateBoundingBox( void );
+    void _init( void );
+
+    void _calculateBoundingBox( void );
 
     std::vector< float > _vecTransform;
     TBoundingBox _boundingBox;

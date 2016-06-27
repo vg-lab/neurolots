@@ -53,9 +53,9 @@ int main( int argc, char** argv )
       dumpVersion( );
       return 0;
     }
-    if( std::strcmp( argv[ i ], "-zeq" ) == 0 )
+    if( std::strcmp( argv[ i ], "-zeroeq" ) == 0 )
     {
-#ifdef NEUROLOTS_USE_ZEQ
+#ifdef NEUROLOTS_USE_ZEROEQ
       if( ++i < argc )
       {
         zeqUri = std::string( argv[ i ]);
@@ -199,7 +199,7 @@ void usageMessage( char* progName )
             << std::endl
             << "\t[ -target target_label ] "
             << std::endl
-            << "\t[ -zeq schema* ]"
+            << "\t[ -zeroeq schema* ]"
             << std::endl
             << "\t[ -ws | --window-size ] width height ]"
             << std::endl
@@ -250,7 +250,7 @@ void dumpVersion( void )
   std::cerr << std::endl;
 
   std::cerr << "zeq support built-in: ";
-  #ifdef NEUROLOTS_USE_ZEQ
+  #ifdef NEUROLOTS_USE_ZEROEQ
   std::cerr << "\t\tyes";
   #else
   std::cerr << "\t\tno";
@@ -258,7 +258,7 @@ void dumpVersion( void )
   std::cerr << std::endl;
 
   std::cerr << "GmrvZeq support built-in: ";
-  #ifdef NEUROLOTS_USE_GMRVZEQ
+  #ifdef NEUROLOTS_USE_GMRVLEX
   std::cerr << "\tyes";
   #else
   std::cerr << "\tno";
