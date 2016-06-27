@@ -195,7 +195,6 @@ namespace nlrender
     void _onSelectionEvent( lexis::data::ConstSelectedIDsPtr event_ );
     void _onSelectionFocusEvent( lexis::data::ConstSelectedIDsPtr event_ );
 #endif
-    static void* _Subscriber( void* collection_ );
 #endif
 
     Program* _programTriangles;

@@ -606,11 +606,7 @@ namespace nlrender
 
 #ifdef NEUROLOTS_USE_ZEROEQ
 
-<<<<<<< HEAD
-  zeq::Subscriber* NeuronsCollection::subscriber( void )
-=======
   zeroeq::Subscriber* NeuronsCollection::Subscriber( void )
->>>>>>> master
   {
     return _subscriber;
   }
@@ -931,7 +927,7 @@ namespace nlrender
   }
 
 
-  void NeuronsCollection::_OnSelectionFocusEvent(
+  void NeuronsCollection::_onSelectionFocusEvent(
     lexis::data::ConstSelectedIDsPtr selFocus )
   {
     // Selection
@@ -1013,18 +1009,6 @@ namespace nlrender
     }
 
     _camera->TargetPivotRadius( center, radius );
-  }
-
-  void* NeuronsCollection::_subscriber( void* collection_ )
-  {
-    NeuronsCollection* collection = ( NeuronsCollection* )collection_;
-    zeroeq::Subscriber* subscriber = collection->Subscriber( );
-    std::cout << "Waiting Selection Events..." << std::endl;
-    while ( true )
-    {
-      subscriber->receive( 10000 );
-    }
-    pthread_exit( NULL );
   }
 
 #endif // NEUROLOTS_USE_LEXIS
