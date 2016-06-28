@@ -21,7 +21,12 @@ namespace nlgenerator
   public:
 
     NLGENERATOR_API
-    GeometricPrimitive( int a_, int b_, int c_, int d_ );
+    GeometricPrimitive( int vertexA_, int vertexB_, int vertexC_,
+                        int vertexD_ );
+
+    NLGENERATOR_API
+    GeometricPrimitive( int vertexA_, int vertexB_, int vertexC_,
+                        int vertexD_, int vertexE_ );
 
     NLGENERATOR_API
     ~GeometricPrimitive( void );
@@ -29,44 +34,44 @@ namespace nlgenerator
     //Setters
 
     NLGENERATOR_API
-    void A( int a_ );
+    void vertexA( int vertexA_ );
 
     NLGENERATOR_API
-    void B( int b_ );
+    void vertexB( int vertexB_ );
 
     NLGENERATOR_API
-    void C( int c_ );
+    void vertexC( int vertexC_ );
 
     NLGENERATOR_API
-    void D( int d_ );
+    void vertexD( int vertexD_ );
 
     NLGENERATOR_API
-    void E( int e_ );
+    void vertexE( int vertexE_ );
 
     //Getters
 
     NLGENERATOR_API
-    int A( void );
+    int vertexA( void );
 
     NLGENERATOR_API
-    int B( void );
+    int vertexB( void );
 
     NLGENERATOR_API
-    int C( void );
+    int vertexC( void );
 
     NLGENERATOR_API
-    int D( void );
+    int vertexD( void );
 
     NLGENERATOR_API
-    int E( void );
+    int vertexE( void );
 
     private:
 
-      int _a;
-      int _b;
-      int _c;
-      int _d;
-      int _e;
+      int _vertexA;
+      int _vertexB;
+      int _vertexC;
+      int _vertexD;
+      int _vertexE;
 
   };
 

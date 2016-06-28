@@ -12,11 +12,24 @@
 namespace nlgenerator
 {
 
-  GeometricPrimitive::GeometricPrimitive( int a_, int b_, int c_, int d_ )
-    : _a( a_ )
-    , _b( b_ )
-    , _c( c_ )
-    , _d( d_ )
+  GeometricPrimitive::GeometricPrimitive( int vertexA_, int vertexB_,
+                                          int vertexC_, int vertexD_ )
+    : _vertexA( vertexA_ )
+    , _vertexB( vertexB_ )
+    , _vertexC( vertexC_ )
+    , _vertexD( vertexD_ )
+  {
+
+  }
+
+  GeometricPrimitive::GeometricPrimitive( int vertexA_, int vertexB_,
+                                          int vertexC_, int vertexD_,
+                                          int vertexE_ )
+    : _vertexA( vertexA_ )
+    , _vertexB( vertexB_ )
+    , _vertexC( vertexC_ )
+    , _vertexD( vertexD_ )
+    , _vertexE( vertexE_ )
   {
 
   }
@@ -27,55 +40,55 @@ namespace nlgenerator
   }
 
   //Setter
-  void GeometricPrimitive::A( int a_ )
+  void GeometricPrimitive::vertexA( int vertexA_ )
   {
-    _a = a_;
+    _vertexA = vertexA_;
   }
 
-  void GeometricPrimitive::B( int b_ )
+  void GeometricPrimitive::vertexB( int vertexB_ )
   {
-    _b = b_;
+    _vertexB = vertexB_;
   }
 
-  void GeometricPrimitive::C( int c_ )
+  void GeometricPrimitive::vertexC( int vertexC_ )
   {
-    _c = c_;
+    _vertexC = vertexC_;
   }
 
-  void GeometricPrimitive::D( int d_ )
+  void GeometricPrimitive::vertexD( int vertexD_ )
   {
-    _d = d_;
+    _vertexD = vertexD_;
   }
 
-  void GeometricPrimitive::E( int e_ )
+  void GeometricPrimitive::vertexE( int vertexE_ )
   {
-    _e = e_;
+    _vertexE = vertexE_;
   }
 
   //Getter
-  int GeometricPrimitive::A( void )
+  int GeometricPrimitive::vertexA( void )
   {
-    return _a;
+    return _vertexA;
   }
 
-  int GeometricPrimitive::B( void )
+  int GeometricPrimitive::vertexB( void )
   {
-    return _b;
+    return _vertexB;
   }
 
-  int GeometricPrimitive::C( void )
+  int GeometricPrimitive::vertexC( void )
   {
-    return _c;
+    return _vertexC;
   }
 
-  int GeometricPrimitive::D( void )
+  int GeometricPrimitive::vertexD( void )
   {
-    return _d;
+    return _vertexD;
   }
 
-  int GeometricPrimitive::E( void )
+  int GeometricPrimitive::vertexE( void )
   {
-    return _e;
+    return _vertexE;
   }
 
 } // end namespace nlgenerator

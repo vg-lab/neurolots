@@ -66,6 +66,13 @@ namespace nlgenerator
     _primitive = primitive_;
   }
 
+  void VectorizedNode::AddChildPrimitive( unsigned int childId_,
+                                          GeometricPrimitivePtr childGeom_ )
+  {
+    _childPrimitives.insert( std::pair< unsigned int, GeometricPrimitivePtr >(
+                                childId_, childGeom_ ));
+  }
+
   void VectorizedNode::Father( VectorizedNode* father_)
   {
     _father = father_;
@@ -96,6 +103,19 @@ namespace nlgenerator
   GeometricPrimitivePtr VectorizedNode::Primitive( void )
   {
     return _primitive;
+  }
+
+  GeometricPrimitivePtr VectorizedNode::ChildPrimitive( unsigned int childId_ )
+  {
+    GeometricPrimitivePtr chGeom = nullptr;
+    std::unordered_map< unsigned int,
+                        GeometricPrimitivePtr >::iterator it;
+    it = _childPrimitives.find( childId_ );
+
+    if( it != _childPrimitives.end( ))
+      chGeom = it->second;
+
+    return chGeom;
   }
 
   VectorizedNode* VectorizedNode::Father( void )
