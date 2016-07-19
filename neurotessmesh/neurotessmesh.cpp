@@ -241,8 +241,8 @@ void dumpVersion( void )
             << " (" << neurotessmesh::Version::getRevision( ) << ")"
             << std::endl << std::endl;
 
-  std::cerr << "BBPSDK support built-in: ";
-  #ifdef NSOL_USE_BBPSDK
+  std::cerr << "Brion support built-in: ";
+  #ifdef NSOL_USE_BRION
   std::cerr << "\tyes";
   #else
   std::cerr << "\tno";
