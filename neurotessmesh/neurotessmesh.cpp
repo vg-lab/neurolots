@@ -23,6 +23,11 @@ bool atLeastTwo( bool a, bool b, bool c );
 
 int main( int argc, char** argv )
 {
+
+#ifndef _WINDOWS
+  //WAR for Brion swc reader
+  setenv("LANG", "C", 1);
+#endif
   QApplication application(argc,argv);
 
   std::string blueConfig;
