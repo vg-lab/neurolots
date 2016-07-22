@@ -95,7 +95,7 @@ namespace nlrender
   // PUBLIC
 
   void NeuronsCollection::loadBlueConfig(
-#ifdef NSOL_USE_BBPSDK
+#ifdef NSOL_USE_BRION
                                           const std::string& blueConfig_,
                                           const std::string& target_,
                                           int loadFlags_
@@ -106,7 +106,8 @@ namespace nlrender
 #endif
     )
   {
-#ifdef NSOL_USE_BBPSDK
+    _dataSet.close( );
+#ifdef NSOL_USE_BRION
     loadFlags_ |= nsol::MORPHOLOGY | nsol::CORTICAL_HIERARCHY;
     try{
         _dataSet.loadBlueConfigHierarchy< nsol::Node,
@@ -141,13 +142,14 @@ namespace nlrender
         exit(-1);
       }
 #else
-    std::cerr << "Error: Bbpsdk support not built-in" << std::endl;
+    std::cerr << "Error: Brion support not built-in" << std::endl;
     exit( -1 );
 #endif
   }
 
   void NeuronsCollection::loadSwc( const std::string& swcFile_ )
   {
+    _dataSet.close( );
     _dataSet.loadNeuronFromFile< nsol::Node,
                                 nsol::Section,
                                 nsol::Dendrite,
@@ -164,20 +166,19 @@ namespace nlrender
 
   void NeuronsCollection::loadScene( const std::string& xmlFile_ )
   {
-     _dataSet.loadScene< nsol::Node,
-                         nsol::Section,
-                         nsol::Dendrite,
-                         nsol::Axon,
-                         nsol::Soma,
-                         NeuronMorphology,
-                         Neuron >( xmlFile_ );
-     _init( );
+    _dataSet.close( );
+    _dataSet.loadXmlScene< nsol::Node,
+                           nsol::Section,
+                           nsol::Dendrite,
+                           nsol::Axon,
+                           nsol::Soma,
+                           NeuronMorphology,
+                           Neuron >( xmlFile_ );
+    _init( );
 
-     _defaultCamera( );
-     _camera->Pivot( _defaultPivot );
-     _camera->Radius( _defaultRadius );
-
-     
+    _defaultCamera( );
+    _camera->Pivot( _defaultPivot );
+    _camera->Radius( _defaultRadius );
   }
 
   void NeuronsCollection::setZeqUri( const std::string&

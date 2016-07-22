@@ -24,7 +24,7 @@ namespace nlrender
   {
     if ( _vbos.size( ) > 0 )
     {
-      glDeleteBuffers( _vbos.size( ), _vbos.data( ));
+      glDeleteBuffers( (GLsizei)_vbos.size( ), _vbos.data( ));
     }
     _vbos.clear( );
 

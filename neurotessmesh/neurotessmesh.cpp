@@ -23,6 +23,11 @@ bool atLeastTwo( bool a, bool b, bool c );
 
 int main( int argc, char** argv )
 {
+
+#ifndef _WINDOWS
+  //WAR for Brion swc reader
+  setenv("LANG", "C", 1);
+#endif
   QApplication application(argc,argv);
 
   std::string blueConfig;
@@ -241,8 +246,8 @@ void dumpVersion( void )
             << " (" << neurotessmesh::Version::getRevision( ) << ")"
             << std::endl << std::endl;
 
-  std::cerr << "BBPSDK support built-in: ";
-  #ifdef NSOL_USE_BBPSDK
+  std::cerr << "Brion support built-in: ";
+  #ifdef NSOL_USE_BRION
   std::cerr << "\tyes";
   #else
   std::cerr << "\tno";
