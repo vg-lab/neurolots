@@ -164,7 +164,7 @@ namespace nlrender
 
   void NeuronsCollection::loadScene( const std::string& xmlFile_ )
   {
-     _dataSet.loadScene< nsol::Node,
+     _dataSet.loadXmlScene< nsol::Node,
                          nsol::Section,
                          nsol::Dendrite,
                          nsol::Axon,
