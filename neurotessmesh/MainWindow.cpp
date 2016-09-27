@@ -39,7 +39,7 @@ MainWindow::MainWindow( QWidget* parent_,
   _ui->actionUpdateOnIdle->setChecked( updateOnIdle );
   _ui->actionShowFPSOnIdleUpdate->setChecked( false );
 
-#ifdef NSOL_USE_BBPSDK
+#ifdef NSOL_USE_BRION
   _ui->actionOpenBlueConfig->setEnabled( true );
 #else
   _ui->actionOpenBlueConfig->setEnabled( false );
@@ -209,7 +209,7 @@ void MainWindow::home( void )
 
 void MainWindow::openBlueConfigThroughDialog( void )
 {
-#ifdef NSOL_USE_BBPSDK
+#ifdef NSOL_USE_BRION
 
   QString path = QFileDialog::getOpenFileName(
     this, tr( "Open BlueConfig" ), _lastOpenedFileName,
@@ -289,11 +289,11 @@ void MainWindow::showAbout( void )
     tr( std::to_string( nsol::Version::getRevision( )).c_str( )) +
     tr( ")</li> " ) +
 
-    tr( "<li>BBPSDK " ) +
-#ifdef NSOL_USE_BBPSDK
-    tr( bbp::Version::getString( ).c_str( )) +
+    tr( "<li>Brion " ) +
+#ifdef NSOL_USE_BRION
+    tr( brion::Version::getString( ).c_str( )) +
     tr( " (" ) +
-    tr( std::to_string( bbp::Version::getRevision( )).c_str( )) +
+    tr( std::to_string( brion::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
 #else
     tr( "not built-in " ) +

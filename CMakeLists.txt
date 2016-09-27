@@ -16,66 +16,55 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
+
+option( NEUROLOTS_OPTIONALS_AS_REQUIRED
+  "Force optional dependencies as required" OFF )
+
+if ( NEUROLOTS_OPTIONALS_AS_REQUIRED )
+  set( NEUROLOTS_OPTS_FIND_ARGS "REQUIRED" )
+else()
+  set( NEUROLOTS_OPTS_FIND_ARGS "" )
+endif()
+
+
 include(GitExternal)
 
 set(COMMON_PROJECT_DOMAIN gmrv.es)
 set(NEUROLOTS_DESCRIPTION "NeuroLOTs")
 
-option(NEUROLOTS_WITH_ZEQ "NEUROLOTS_WITH_ZEQ" ON)
-option(NEUROLOTS_WITH_GMRVZEQ "NEUROLOTS_WITH_GMRVZEQ" ON)
-option(NEUROLOTS_WITH_DEFLECT "NEUROLOTS_WITH_DEFLECT" ON)
-
 include(Common)
-
-common_find_package(OpenGL REQUIRED SYSTEM)
-common_find_package(GLEW REQUIRED SYSTEM)
-common_find_package(Eigen3 REQUIRED SYSTEM)
-common_find_package(nsol REQUIRED)
-list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol)
-
-if(NEUROLOTS_WITH_ZEQ)
-
-  common_find_package(ZeroEQ)
-  if ( ZEROEQ_FOUND )
-
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES ZeroEQ)
-    common_find_package(Threads REQUIRED)
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Threads)
-
-    common_find_package(Lexis REQUIRED)
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Lexis)
-  endif( )
-
-  if(NEUROLOTS_WITH_GMRVZEQ)
-    common_find_package(gmrvlex)
-    if ( GMRVZEQ_FOUND )
-      list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvlex)
-    endif( )
-  endif( )
-
-endif( )
-
-if(NEUROLOTS_WITH_DEFLECT)
-  common_find_package(Deflect SYSTEM)
-  if (DEFLECT_FOUND)
-    list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
-  endif( )
-endif( )
 
 common_find_package(Qt5Core 5.4 SYSTEM )
 common_find_package(Qt5Widgets 5.4 SYSTEM )
 common_find_package(Qt5OpenGL 5.4 SYSTEM )
+common_find_package(OpenGL REQUIRED SYSTEM)
+common_find_package(GLEW REQUIRED SYSTEM)
+common_find_package(Eigen3 REQUIRED SYSTEM)
+common_find_package(nsol REQUIRED)
+# common_find_package(Deflect ${NEUROLOTS_OPTS_FIND_ARGS})
+common_find_package(Lexis ${NEUROLOTS_OPTS_FIND_ARGS})
+common_find_package(ZeroEQ ${NEUROLOTS_OPTS_FIND_ARGS})
+common_find_package(gmrvlex ${NEUROLOTS_OPTS_FIND_ARGS})
 
-if (QT5CORE_FOUND)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Core)
+list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Core Qt5Widget Qt5OpenGL
+  OpenGL GLEW GLUT Eigen3 nsol)
+
+
+if (DEFLECT_FOUND)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
 endif( )
 
-if (QT5WIDGETS_FOUND)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Widgets)
+if (LEXIS_FOUND)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Lexis)
 endif( )
 
-if (QT5OPENGL_FOUND)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5OpenGL)
+if ( ZEROEQ_FOUND )
+  common_find_package(Threads REQUIRED)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES ZeroEQ)
+endif( )
+
+if ( GMRVLEX_FOUND )
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvlex)
 endif( )
 
 common_find_package_post()

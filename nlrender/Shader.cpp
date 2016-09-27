@@ -102,6 +102,7 @@ namespace nlrender
         "layout( location = 0 ) subroutine uniform levelDistType levelDist;\n "
         "layout( location = 0 ) in vec3 inVertex;\n "
         "layout( location = 1 ) in vec3 inCenter;\n "
+        "layout( location = 2 ) in vec3 inTangent;\n "
         "out vec3 vPosition;\n"
         "out vec3 vCenter;\n"
         "out float vlot;\n"
@@ -115,11 +116,11 @@ namespace nlrender
         "layout( index = 1 ) subroutine( levelDistType )\n "
         "float linear( vec3 position ){\n "
         "  return ( lod - 1 ) * clamp( ( 1.0 - length( position\n"
-        "    - cameraPos ) / maxDist ), 0.0, 1.0 ) + 1;}\n "
+        "    - cameraPos ) / maxDist ), 0.0, 1.0 );}\n "
         "void main( void ){\n"
         "  vPosition = ( model * vec4(inVertex, 1.0 )).xyz;\n"
         "  vCenter = ( model * vec4( inCenter, 1.0 )).xyz;\n"
-        "  vlot = levelDist( vCenter );}\n"
+        "  vlot = levelDist( vCenter ) * length( inTangent ) + 1.0;}\n"
         );
       break;
     case TRIANGLES_TESS_CONTROL:
@@ -133,10 +134,11 @@ namespace nlrender
         "out vec3 tcNormal[];\n"
         "out float tcRadius[];\n"
         "#define ID gl_InvocationID\n"
+
         "void main(){\n"
         "  tcCenter[ID] = vCenter[ID];\n"
-        "  tcNormal[ID] = normalize(vPosition[ID]-vCenter[ID]);\n"
-        "  tcRadius[ID]= distance(vPosition[ID],vCenter[ID]);\n"
+        "  tcNormal[ID] = normalize( vPosition[ID]-vCenter[ID] );\n"
+        "  tcRadius[ID] = distance( vPosition[ID], vCenter[ID]);\n"
         "  float tcLod = (vlot[0]+vlot[1]+vlot[2])/3;\n"
         "  gl_TessLevelInner[0] = tcLod;\n"
         "  gl_TessLevelOuter[0] = (vlot[1]+vlot[2])/2;\n"
@@ -157,6 +159,7 @@ namespace nlrender
         "layout( location = 0 ) uniform mat4 proy;\n"
         "layout( location = 1 ) uniform mat4 view;\n"
         "layout( location = 4 ) uniform vec3 cameraPos;\n"
+
         "void main(){\n"
         "  vec3 tePosition;\n"
         "  vec3 teCenter;\n"
@@ -244,12 +247,12 @@ namespace nlrender
         "layout( index = 1 ) subroutine( levelDistType )\n "
         "float linear( vec3 position ){\n "
         "  return ( lod - 1 ) * clamp( ( 1.0 - length( position\n"
-        "    - cameraPos ) / maxDist ), 0.0, 1.0 ) + 1;}\n "
+        "    - cameraPos ) / maxDist ), 0.0, 1.0 );}\n "
         "void main( void ){\n"
         "  vPosition = ( model * vec4(inVertex, 1.0 )).xyz;\n"
         "  vCenter = ( model * vec4( inCenter, 1.0 )).xyz;\n"
         "  vTangent = ( model * vec4( inTangent, 0.0 )).xyz;\n"
-        "  vlot = levelDist( vCenter );}\n"
+        "  vlot = levelDist( vCenter ) + 1.0;}\n"
         );
       break;
     case QUADS_TESS_CONTROL:

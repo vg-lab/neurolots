@@ -122,7 +122,10 @@ namespace nlrender
     ColumnsPtr columns( void );
 
     NLRENDER_API
-    nsol::DataSet DataSet( void );
+    nsol::DataSet & DataSet( void );
+
+    NLRENDER_API
+    const nsol::DataSet & DataSet( void ) const;
 
     NLRENDER_API
     std::vector< unsigned int > neuronIDs( void );

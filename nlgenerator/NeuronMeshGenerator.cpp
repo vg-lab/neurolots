@@ -14,6 +14,8 @@ using namespace std;
 
 #define EPSILON 0.00001f
 
+#define END_NODE_DISPLACE 0.3f
+
 namespace nlgenerator
 {
 
@@ -59,19 +61,43 @@ namespace nlgenerator
     CalculateTangents( vNodes );
     CalculateGeometry( vNodes, vertices, centers, tangents);
 
-    for ( unsigned int i = 0; i < vNodes.size(); i++ )
+    for ( VectorizedNodePtr vNode: vNodes )
     {
-      VectorizedNodePtr vNode = vNodes[i];
-      if( vNode->Father( ) != nullptr )
+      if ( vNode->Father( ) != nullptr )
       {
-        _CreateQuadPipe( vNode->Father( )->Primitive( ),
-                             vNode->Primitive(), mesh );
+        if ( vNode->Father( )->Bifurcation( ))
+        {
+          if ( vNode->Father( )->ChildPrimitive( vNode->Id( )))
+            _CreateQuadPipe( vNode->Father( )->ChildPrimitive( vNode->Id( )),
+                             vNode->Primitive( ), mesh );
+        }
+        else
+        {
+          _CreateQuadPipe( vNode->Father( )->Primitive( ),
+                           vNode->Primitive(), mesh );
+        }
         if( vNode->Childs( ).size( ) == 0 )
         {
-          mesh.push_back( vNode->Primitive( )->A( ));
-          mesh.push_back( vNode->Primitive( )->B( ));
-          mesh.push_back( vNode->Primitive( )->D( ));
-          mesh.push_back( vNode->Primitive( )->C( ));
+          mesh.push_back( vNode->Primitive( )->vertexA( ));
+          mesh.push_back( vNode->Primitive( )->vertexB( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
+          mesh.push_back( vNode->Primitive( )->vertexB( ));
+          mesh.push_back( vNode->Primitive( )->vertexC( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
+          mesh.push_back( vNode->Primitive( )->vertexC( ));
+          mesh.push_back( vNode->Primitive( )->vertexD( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
+          mesh.push_back( vNode->Primitive( )->vertexD( ));
+          mesh.push_back( vNode->Primitive( )->vertexA( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
         }
       }
     }
@@ -112,14 +138,39 @@ namespace nlgenerator
       VectorizedNodePtr vNode = vNodes[i];
       if( vNode->Father( ) != nullptr )
       {
-        _CreateQuadPipe( vNode->Father( )->Primitive( ),
-                             vNode->Primitive(), mesh );
+        if ( vNode->Father( )->Bifurcation( ))
+        {
+          if ( vNode->Father( )->ChildPrimitive( vNode->Id( )))
+            _CreateQuadPipe( vNode->Father( )->ChildPrimitive( vNode->Id( )),
+                             vNode->Primitive( ), mesh );
+        }
+        else
+        {
+          _CreateQuadPipe( vNode->Father( )->Primitive( ),
+                           vNode->Primitive(), mesh );
+        }
         if( vNode->Childs( ).size( ) == 0 )
         {
-          mesh.push_back( vNode->Primitive( )->A( ));
-          mesh.push_back( vNode->Primitive( )->B( ));
-          mesh.push_back( vNode->Primitive( )->D( ));
-          mesh.push_back( vNode->Primitive( )->C( ));
+          mesh.push_back( vNode->Primitive( )->vertexA( ));
+          mesh.push_back( vNode->Primitive( )->vertexB( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
+          mesh.push_back( vNode->Primitive( )->vertexB( ));
+          mesh.push_back( vNode->Primitive( )->vertexC( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
+          mesh.push_back( vNode->Primitive( )->vertexC( ));
+          mesh.push_back( vNode->Primitive( )->vertexD( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
+          mesh.push_back( vNode->Primitive( )->vertexD( ));
+          mesh.push_back( vNode->Primitive( )->vertexA( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+          mesh.push_back( vNode->Primitive( )->vertexE( ));
+
         }
       }
     }
@@ -275,17 +326,22 @@ namespace nlgenerator
     Eigen::Vector3f vb( -1.0f, 0.0f, 0.0f );
     Eigen::Vector3f vc( 0.0f, -1.0f, 0.0f );
     Eigen::Vector3f vd( 1.0f, 0.0f, 0.0f );
+    Eigen::Vector3f ve;
 
     Eigen::Vector3f center;
     Eigen::Vector3f tangent;
-    Eigen::Vector3f position;
+    Eigen::Vector3f positionA;
+    Eigen::Vector3f positionB;
+    Eigen::Vector3f positionC;
+    Eigen::Vector3f positionD;
+    Eigen::Vector3f positionE;
 
     Eigen::Quaternion< float > q;
 
     for ( unsigned int i = 0; i < vNodes.size(); i++ )
     {
       VectorizedNodePtr vNode = vNodes[i];
-
+      unsigned int numVertex = 4;
       if ( !vNode->FirstNode( ))
       {
         center = vNode->Position( );
@@ -299,56 +355,135 @@ namespace nlgenerator
 
         GeometricPrimitivePtr fatherGeom = father->Primitive();
 
-        int vecId = fatherGeom->A( ) * 3;
 
 
+        int vecId = fatherGeom->vertexA( ) * 3;
         va = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
-        vecId = fatherGeom->B( ) * 3;
+        vecId = fatherGeom->vertexB( ) * 3;
         vb = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] )- father->Position( )).normalized( ) ;
-        vecId = fatherGeom->C( ) * 3;
+        vecId = fatherGeom->vertexC( ) * 3;
         vc = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
-        vecId = fatherGeom->D( ) * 3;
+        vecId = fatherGeom->vertexD( ) * 3;
         vd = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
 
 
         int a = int( vertices.size( )) / 3;
-        position = q._transformVector( va ) * vNode->Radius( ) + center;
+        positionA = q._transformVector( va ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionA.x( ));
+        vertices.push_back( positionA.y( ));
+        vertices.push_back( positionA.z( ));
 
         int b = int( vertices.size( )) / 3;
-        position = q._transformVector( vb ) * vNode->Radius( ) + center;
+        positionB = q._transformVector( vb ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionB.x( ));
+        vertices.push_back( positionB.y( ));
+        vertices.push_back( positionB.z( ));
 
         int c = int( vertices.size( ) ) / 3;
-        position = q._transformVector( vc ) * vNode->Radius( ) + center;
+        positionC = q._transformVector( vc ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionC.x( ));
+        vertices.push_back( positionC.y( ));
+        vertices.push_back( positionC.z( ));
 
         int d = int( vertices.size( ) ) / 3;
-        position = q._transformVector( vd ) * vNode->Radius( ) + center;
+        positionD = q._transformVector( vd ) * vNode->Radius( ) + center;
 
-        vertices.push_back( position.x( ));
-        vertices.push_back( position.y( ));
-        vertices.push_back( position.z( ));
+        vertices.push_back( positionD.x( ));
+        vertices.push_back( positionD.y( ));
+        vertices.push_back( positionD.z( ));
+
+        int e = -1;
 
         if ( vNode->Childs( ).size( ) == 0 )
         {
-          center = center - tangent * 0.1f;
+          numVertex++;
+          e = int( vertices.size( )) / 3;
+          positionE = tangent * vNode->Radius( ) * END_NODE_DISPLACE + center;
+
+          vertices.push_back( positionE.x( ));
+          vertices.push_back( positionE.y( ));
+          vertices.push_back( positionE.z( ));
         }
 
-        for (unsigned int j = 0; j < 4; j++ )
+        if ( vNode->Bifurcation( ))
+        {
+          numVertex++;
+          e = int( vertices.size( )) / 3;
+          positionE = tangent * vNode->Radius( ) + center;
+
+          vertices.push_back( positionE.x( ));
+          vertices.push_back( positionE.y( ));
+          vertices.push_back( positionE.z( ));
+
+
+          VectorizedNodePtr child0 = vNode->Childs( )[0];
+          VectorizedNodePtr child1 = vNode->Childs( )[1];
+
+          Eigen::Vector3f childCenter = child0->Position( );
+
+          unsigned int minor = 0;
+          float distance = ( childCenter - positionA ).norm( );
+          float minorDistance = distance;
+
+          distance = ( childCenter - positionB ).norm( );
+          if ( distance < minorDistance )
+          {
+            minorDistance = distance;
+            minor = 1;
+          }
+
+          distance = ( childCenter - positionC ).norm( );
+          if ( distance < minorDistance )
+          {
+            minorDistance = distance;
+            minor = 2;
+          }
+
+          distance = ( childCenter - positionD ).norm( );
+          if ( distance < minorDistance )
+          {
+            minorDistance = distance;
+            minor = 3;
+          }
+
+          switch( minor )
+          {
+          case 0:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, b, e, d ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( e, b, c, d ));
+            break;
+          case 1:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, b, c, e ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, e, c, d ));
+            break;
+          case 2:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( e, b, c, d ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, b, e, d ));
+            break;
+          case 3:
+            vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, e, c, d ));
+            vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, b, c, e ));
+            break;
+          }
+        }
+
+
+        for (unsigned int j = 0; j < numVertex; j++ )
         {
           centers.push_back( center.x( ));
           centers.push_back( center.y( ));
@@ -359,7 +494,7 @@ namespace nlgenerator
           tangents.push_back( tangent.z( ));
         }
 
-        vNode->Primitive( new GeometricPrimitive( a, b, c, d ));
+        vNode->Primitive( new GeometricPrimitive( a, b, c, d, e ));
       }
     }
   }
@@ -474,28 +609,28 @@ namespace nlgenerator
                                              vector< unsigned int >& mesh )
   {
     //AB
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom1->A() );
-    mesh.push_back( geom1->B() );
+    mesh.push_back( geom0->vertexA() );
+    mesh.push_back( geom0->vertexB() );
+    mesh.push_back( geom1->vertexA() );
+    mesh.push_back( geom1->vertexB() );
 
     //BC
-    mesh.push_back( geom0->B() );
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom1->B() );
-    mesh.push_back( geom1->C() );
+    mesh.push_back( geom0->vertexB() );
+    mesh.push_back( geom0->vertexC() );
+    mesh.push_back( geom1->vertexB() );
+    mesh.push_back( geom1->vertexC() );
 
     //CD
-    mesh.push_back( geom0->C() );
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom1->C() );
-    mesh.push_back( geom1->D() );
+    mesh.push_back( geom0->vertexC() );
+    mesh.push_back( geom0->vertexD() );
+    mesh.push_back( geom1->vertexC() );
+    mesh.push_back( geom1->vertexD() );
 
     //DA
-    mesh.push_back( geom0->D() );
-    mesh.push_back( geom0->A() );
-    mesh.push_back( geom1->D() );
-    mesh.push_back( geom1->A() );
+    mesh.push_back( geom0->vertexD() );
+    mesh.push_back( geom0->vertexA() );
+    mesh.push_back( geom1->vertexD() );
+    mesh.push_back( geom1->vertexA() );
   }
 } // end namespace nlgenerator
 
