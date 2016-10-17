@@ -33,32 +33,68 @@ namespace nlrender
     } TProgram;
 
     NLRENDER_API
-    Program( TProgram type_, const std::string& path_ = std::string( "" ));
+    Program( TProgram type_ );
 
     NLRENDER_API
     ~Program( void );
 
     NLRENDER_API
-    void Init( void );
+    void init( void );
 
     NLRENDER_API
     unsigned int& id( void );
 
+    NLRENDER_API
+    void projectionMatrix( float* projMat_ );
+
+    NLRENDER_API
+    void viewMatrix( float* viewMat_ );
+
+    NLRENDER_API
+    void modelMatrix( float* modelMat_ );
+
+    NLRENDER_API
+    void color( float* colorVec_ );
+
+    NLRENDER_API
+    void cameraPosition( float* cameraPos_ );
+
+    NLRENDER_API
+    void levelOfTessellation( float* levelTess_ );
+
+    NLRENDER_API
+    void alphaTangentModule( float* alphaTangentMod_ );
+
+    NLRENDER_API
+    void maximumDistance( float* maxDistance_ );
+
+    NLRENDER_API
+    void tessellationDistanceFunc( unsigned int* tessDistanceFunc_ );
+
+
 
   private:
 
-    std::string _LoadShader( const std::string& fileName_  );
+    std::string _loadShader( const std::string& fileName_  );
 
     TProgram _type;
 
-    unsigned int id_;
+    unsigned int _id;
 
-    ShaderPtr vshader_;
-    ShaderPtr teshader_;
-    ShaderPtr tcshader_;
-    ShaderPtr fshader_;
+    ShaderPtr _vshader;
+    ShaderPtr _teshader;
+    ShaderPtr _tcshader;
+    ShaderPtr _gshader;
+    ShaderPtr _fshader;
 
-    std::string _path;
+    unsigned int _projMat;
+    unsigned int _viewMat;
+    unsigned int _modelMat;
+    unsigned int _colorVec;
+    unsigned int _cameraPos;
+    unsigned int _levelTess;
+    unsigned int _alphaTangentMod;
+    unsigned int _maxDistance;
   };
 
 }// end namespace nlrender

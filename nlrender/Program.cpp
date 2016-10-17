@@ -52,22 +52,32 @@
 namespace nlrender
 {
 
-  Program::Program( TProgram type_, const std::string& path_ )
+  Program::Program( TProgram type_ )
     : _type( type_ )
-    , id_( 0 )
-    , vshader_( nullptr )
-    , teshader_( nullptr )
-    , tcshader_( nullptr )
-    , fshader_( nullptr )
-    , _path( path_ )
+    , _id( 0 )
+    , _vshader( nullptr )
+    , _teshader( nullptr )
+    , _tcshader( nullptr )
+    , _gshader( nullptr )
+    , _fshader( nullptr )
+    , _projMat( 0 )
+    , _viewMat( 0 )
+    , _modelMat( 0 )
+    , _colorVec( 0 )
+    , _cameraPos( 0 )
+    , _levelTess( 0 )
+    , _alphaTangentMod( 0 )
+    , _maxDistance( 0 )
   {
+
   }
 
   Program::~Program( void )
   {
+
   }
 
-  void Program::Init( void )
+  void Program::init( void )
   {
     if ( !nlrender::Config::isInitialized( ))
     {
@@ -75,110 +85,108 @@ namespace nlrender
       return;
     }
 
-    id_ = glCreateProgram( );
+    _id = glCreateProgram( );
 
-    std::string vsource;
-    std::string tcsource;
-    std::string tesource;
-    std::string fsource;
-
-    const char* fbVaryings[ ] = { "outValue0", "outValue1" };
-
-    if ( _path.size( ) > 0 )  // Shaders from NEUROLOTS_SHADERS_PATH
+    switch( _type )
     {
-      vsource =  _LoadShader( std::string( _path + "/vshader.glsl" ));
-      tcsource = _LoadShader( std::string( _path + "/tcshader.glsl" ));
-      tesource = _LoadShader( std::string( _path + "/teshader.glsl" ));
-
-      if( _type == TRIANGLES || _type == QUADS )
-      {
-        fsource = _LoadShader( std::string( _path + "/fshader.glsl" ));
-      }
-      else
-      {
-        fsource = _LoadShader( std::string( _path + "/gshader.glsl" ));
-      }
-    }
-    else // Sahders from source code
-    {
-      if( _type == TRIANGLES || _type == TRIANGLES_FB )
-      {
-        vsource = Shader::sourceCode( Shader::TRIANGLES_VERTEX );
-        tcsource = Shader::sourceCode( Shader::TRIANGLES_TESS_CONTROL );
-        tesource = Shader::sourceCode( Shader::TRIANGLES_TESS_EVALUATION );
-        if( _type == TRIANGLES )
-        {
-          fsource = Shader::sourceCode( Shader::TRIANGLES_FRAGMENT );
-        }
-        else
-        {
-          fsource = Shader::sourceCode( Shader::TRIANGLES_GEOMETRY );
-        }
-      }
-      else
-      {
-        vsource = Shader::sourceCode( Shader::QUADS_VERTEX );
-        tcsource = Shader::sourceCode( Shader::QUADS_TESS_CONTROL );
-        tesource = Shader::sourceCode( Shader::QUADS_TESS_EVALUATION );
-        if( _type == QUADS )
-        {
-          fsource = Shader::sourceCode( Shader::QUADS_FRAGMENT );
-        }
-        else
-        {
-          fsource = Shader::sourceCode( Shader::QUADS_GEOMETRY );
-        }
-      }
+    case TRIANGLES:
+      _vshader = new Shader( GL_VERTEX_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_VERTEX ));
+      _tcshader = new Shader( GL_TESS_CONTROL_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_TESS_CONTROL ));
+      _teshader = new Shader( GL_TESS_EVALUATION_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_TESS_EVALUATION ));
+      _fshader = new Shader( GL_FRAGMENT_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_FRAGMENT ));
+      break;
+    case TRIANGLES_FB:
+      _vshader = new Shader( GL_VERTEX_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_VERTEX ));
+      _tcshader = new Shader( GL_TESS_CONTROL_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_TESS_CONTROL ));
+      _teshader = new Shader( GL_TESS_EVALUATION_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_TESS_EVALUATION ));
+      _gshader = new Shader( GL_GEOMETRY_SHADER,
+        Shader::sourceCode( Shader::TRIANGLES_GEOMETRY ));
+      break;
+    case QUADS:
+      _vshader = new Shader( GL_VERTEX_SHADER,
+        Shader::sourceCode( Shader::QUADS_VERTEX ));
+      _tcshader = new Shader( GL_TESS_CONTROL_SHADER,
+        Shader::sourceCode( Shader::QUADS_TESS_CONTROL ));
+      _teshader = new Shader( GL_TESS_EVALUATION_SHADER,
+        Shader::sourceCode( Shader::QUADS_TESS_EVALUATION ));
+      _fshader = new Shader( GL_FRAGMENT_SHADER,
+        Shader::sourceCode( Shader::QUADS_FRAGMENT ));
+      break;
+    case QUADS_FB:
+      _vshader = new Shader( GL_VERTEX_SHADER,
+        Shader::sourceCode( Shader::QUADS_VERTEX ));
+      _tcshader = new Shader( GL_TESS_CONTROL_SHADER,
+        Shader::sourceCode( Shader::QUADS_TESS_CONTROL ));
+      _teshader = new Shader( GL_TESS_EVALUATION_SHADER,
+        Shader::sourceCode( Shader::QUADS_TESS_EVALUATION ));
+      _fshader = new Shader( GL_GEOMETRY_SHADER,
+        Shader::sourceCode( Shader::QUADS_GEOMETRY ));
     }
 
-    vshader_ = new Shader( GL_VERTEX_SHADER, vsource );
-    tcshader_ = new Shader( GL_TESS_CONTROL_SHADER, tcsource );
-    teshader_ = new Shader( GL_TESS_EVALUATION_SHADER, tesource );
-
-    if( _type == TRIANGLES || _type == QUADS )
-    {
-      fshader_ = new Shader( GL_FRAGMENT_SHADER, fsource );
-    }
-    else
-    {
-      fshader_ = new Shader( GL_GEOMETRY_SHADER, fsource );
-    }
-
-    glAttachShader( id_, vshader_->id( ));
-    glAttachShader( id_, tcshader_->id( ));
-    glAttachShader( id_, teshader_->id( ));
-    glAttachShader( id_, fshader_->id( ));
+    if ( _vshader )
+      glAttachShader( _id, _vshader->id( ));
+    if ( _tcshader )
+      glAttachShader( _id, _tcshader->id( ));
+    if ( _teshader )
+      glAttachShader( _id, _teshader->id( ));
+    if ( _gshader )
+      glAttachShader( _id, _gshader->id( ));
+    if ( _fshader )
+      glAttachShader( _id, _fshader->id( ));
 
     if( _type == TRIANGLES_FB || _type == QUADS_FB )
-      glTransformFeedbackVaryings( id_, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
+    {
+      const char* fbVaryings[ ] = { "outValue0", "outValue1" };
+      glTransformFeedbackVaryings( _id, 2, fbVaryings, GL_SEPARATE_ATTRIBS );
+    }
 
-    glLinkProgram( id_ );
+    glBindAttribLocation( _id,  0,  "inVertex" );
+    glBindAttribLocation( _id,  1,  "inCenter" );
+    glBindAttribLocation( _id,  2,  "inTangent" );
+
+    glLinkProgram( _id );
     //Comprobacion de lincado
     int linked;
-    glGetProgramiv( id_, GL_LINK_STATUS, &linked );
+    glGetProgramiv( _id, GL_LINK_STATUS, &linked );
     if( !linked )
     {
       GLint logLen;
-      glGetProgramiv( id_, GL_INFO_LOG_LENGTH, &logLen );
+      glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &logLen );
 
       char * logString = new char[ logLen ];
-      glGetProgramInfoLog( id_, logLen, NULL, logString );
+      glGetProgramInfoLog( _id, logLen, NULL, logString );
       std::cout << "Error: " << logString << std::endl;
       delete logString;
 
-      glDeleteProgram( id_ );
-      id_ = 0;
+      glDeleteProgram( _id );
+      _id = 0;
       return;
     }
+
+    _projMat = glGetUniformLocation( _id, "proy" );
+    _viewMat = glGetUniformLocation( _id, "view" );
+    _modelMat = glGetUniformLocation( _id, "model" );
+    _colorVec = glGetUniformLocation( _id, "color" );
+    _cameraPos = glGetUniformLocation( _id, "cameraPos" );
+    _levelTess = glGetUniformLocation( _id, "lod" );
+    _alphaTangentMod = glGetUniformLocation( _id, "tng" );
+    _maxDistance = glGetUniformLocation( _id, "maxDist" );
 
   }
 
   unsigned int& Program::id( void )
   {
-    return id_;
+    return _id;
   }
 
-  std::string Program::_LoadShader( const std::string& fileName_ )
+  std::string Program::_loadShader( const std::string& fileName_ )
   {
     std::string source;
 
@@ -196,6 +204,60 @@ namespace nlrender
     file.close( );
 
     return source;
+  }
+
+  void Program::projectionMatrix( float* projMat_ )
+  {
+    glUseProgram( _id );
+    glUniformMatrix4fv( _projMat, 1, GL_FALSE, projMat_ );
+  }
+
+  void Program::viewMatrix( float* viewMat_ )
+  {
+    glUseProgram( _id );
+    glUniformMatrix4fv( _viewMat, 1, GL_FALSE, viewMat_ );
+  }
+
+  void Program::modelMatrix( float* modelMat_ )
+  {
+    glUseProgram( _id );
+    glUniformMatrix4fv( _modelMat, 1, GL_FALSE, modelMat_ );
+  }
+
+  void Program::color( float* colorVec_ )
+  {
+    glUseProgram( _id );
+    glUniform3fv( _colorVec, 1, colorVec_ );
+  }
+
+  void Program::cameraPosition( float* cameraPos_ )
+  {
+    glUseProgram( _id );
+    glUniform3fv( _cameraPos, 1, cameraPos_ );
+  }
+
+  void Program::levelOfTessellation( float* levelTess_ )
+  {
+    glUseProgram( _id );
+    glUniform1fv( _levelTess, 1, levelTess_ );
+  }
+
+  void Program::alphaTangentModule( float* alphaTangentMod_ )
+  {
+    glUseProgram( _id );
+    glUniform1fv( _alphaTangentMod, 1, alphaTangentMod_ );
+  }
+
+  void Program::maximumDistance( float* maxDistance_ )
+  {
+    glUseProgram( _id );
+    glUniform1fv( _maxDistance, 1, maxDistance_ );
+  }
+
+  void Program::tessellationDistanceFunc( unsigned int* tessDistanceFunc_ )
+  {
+    glUseProgram( _id );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, tessDistanceFunc_ );
   }
 
 } // end namespace nlrender
