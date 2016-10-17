@@ -581,6 +581,16 @@ namespace nlrender
     return &_dataSet.columns( );
   }
 
+  nsol::DataSet &NeuronsCollection::DataSet( void )
+  {
+    return _dataSet;
+  }
+
+  const nsol::DataSet &NeuronsCollection::DataSet( void ) const
+  {
+    return _dataSet;
+  }
+
   std::vector< unsigned int > NeuronsCollection::neuronIDs( void )
   {
     std::vector< unsigned int > ids;
