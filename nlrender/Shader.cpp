@@ -68,7 +68,7 @@ namespace nlrender
                     ( const int* )& sourceLen );
 
     glCompileShader( _id );
-    delete source;
+    delete[] source;
 
     //Compilation checking
     int compiled;
@@ -81,7 +81,7 @@ namespace nlrender
       char *logString = new char[ logLen ];
       glGetShaderInfoLog( _id, logLen, NULL, logString );
       std::cout << "Error: " << logString << std::endl;
-      delete logString;
+      delete[] logString;
 
       glDeleteShader( _id );
       _id = 0;
