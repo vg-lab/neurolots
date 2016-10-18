@@ -12,10 +12,16 @@
 #include "MainWindow.h"
 #include <QDebug>
 #include <QOpenGLWidget>
+#include <QErrorMessage>
 
 #include <neurotessmesh/version.h>
+#include <sstream>
 
-void setFormat( int ctxOpenGLMajor, int ctxOpenGLMinor,
+#define GL_MINIMUM_REQUIRED_MAJOR 4
+#define GL_MINIMUM_REQUIRED_MINOR 0
+
+
+bool setFormat( int ctxOpenGLMajor, int ctxOpenGLMinor,
                 int ctxOpenGLSamples, int ctxOpenGLVSync );
 void usageMessage(  char* progName );
 void dumpVersion( void );
@@ -154,41 +160,59 @@ int main( int argc, char** argv )
     }
   }
 
-
-  setFormat( ctxOpenGLMajor, ctxOpenGLMinor,
-             ctxOpenGLSamples, ctxOpenGLVSync );
-  MainWindow mainWindow;
-  mainWindow.setWindowTitle("NeuroTessMesh");
-
-  if ( initWindowSize )
-    mainWindow.resize( initWindowWidth, initWindowHeight );
-
-  if ( initWindowMaximized )
-    mainWindow.showMaximized( );
-
-  if ( fullscreen )
-    mainWindow.showFullScreen( );
-
-  mainWindow.show( );
-  mainWindow.init( zeqUri );
-
-  if ( atLeastTwo( !blueConfig.empty( ),
-                   !swcFile.empty( ),
-                   !sceneFile.empty( )))
+  if ( setFormat( ctxOpenGLMajor, ctxOpenGLMinor,
+                  ctxOpenGLSamples, ctxOpenGLVSync ) )
   {
-    std::cerr << "Error: -swc, -xml and -bc options are exclusive" << std::endl;
-    usageMessage( argv[0] );
+    MainWindow* mainWindow;
+    mainWindow = new MainWindow( );
+    mainWindow->setWindowTitle("NeuroTessMesh");
+
+    if ( initWindowSize )
+      mainWindow->resize( initWindowWidth, initWindowHeight );
+
+    if ( initWindowMaximized )
+      mainWindow->showMaximized( );
+
+    if ( fullscreen )
+      mainWindow->showFullScreen( );
+
+    mainWindow->show( );
+    mainWindow->init( zeqUri );
+
+    if ( atLeastTwo( !blueConfig.empty( ),
+                     !swcFile.empty( ),
+                     !sceneFile.empty( )))
+    {
+      std::cerr << "Error: -swc, -xml and -bc options are exclusive"
+                << std::endl;
+      usageMessage( argv[0] );
+    }
+
+    if ( blueConfig != "" )
+      mainWindow->openBlueConfig( blueConfig, target );
+
+    if ( swcFile != "" )
+      mainWindow->openSWCFile( swcFile );
+
+    if ( sceneFile != "" )
+      mainWindow->openXMLScene( sceneFile );
   }
-
-  if ( blueConfig != "" )
-    mainWindow.openBlueConfig( blueConfig, target );
-
-  if ( swcFile != "" )
-    mainWindow.openSWCFile( swcFile );
-
-  if ( sceneFile != "" )
-    mainWindow.openXMLScene( sceneFile );
-
+  else
+  {
+    QMainWindow* mainWindow = new QMainWindow( );
+    QErrorMessage* errorMessage = new QErrorMessage( );
+    std::ostringstream oss;
+    oss << "Minimum OpenGL version required "
+        << GL_MINIMUM_REQUIRED_MAJOR << "." << GL_MINIMUM_REQUIRED_MINOR
+        << " not supported";
+    std::string  message = oss.str();
+    errorMessage->showMessage( message.c_str( ));
+    errorMessage->show( );
+    mainWindow->setCentralWidget( errorMessage );
+    mainWindow->show( );
+    mainWindow->connect( errorMessage, SIGNAL( accepted( )),
+             mainWindow, SLOT( close( )));
+  }
 
   return application.exec();
 
@@ -283,7 +307,7 @@ void dumpVersion( void )
 }
 
 
-void setFormat( int ctxOpenGLMajor,
+bool setFormat( int ctxOpenGLMajor,
                 int ctxOpenGLMinor,
                 int ctxOpenGLSamples,
                 int ctxOpenGLVSync )
@@ -318,6 +342,9 @@ void setFormat( int ctxOpenGLMajor,
     format.setProfile( QSurfaceFormat::CompatibilityProfile );
   else
     format.setProfile( QSurfaceFormat::CoreProfile );
+
+  return ( format.majorVersion() >= GL_MINIMUM_REQUIRED_MAJOR ) &&
+    ( format.minorVersion( ) >= GL_MINIMUM_REQUIRED_MINOR );
 }
 
 bool atLeastTwo( bool a, bool b, bool c )

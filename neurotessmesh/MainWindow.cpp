@@ -76,7 +76,6 @@ void MainWindow::init( const std::string& zeqSession )
   _openGLWidget = new OpenGLWidget( 0, 0, zeqSession );
   this->setCentralWidget( _openGLWidget );
   _openGLWidget->setMinimumSize( QSize( 100, 100 ));
-  qDebug( ) << _openGLWidget->format( );
 
   if( _openGLWidget->format( ).version( ).first < 4 )
   {
