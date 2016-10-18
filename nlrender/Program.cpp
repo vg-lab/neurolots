@@ -163,7 +163,7 @@ namespace nlrender
       char * logString = new char[ logLen ];
       glGetProgramInfoLog( _id, logLen, NULL, logString );
       std::cout << "Error: " << logString << std::endl;
-      delete logString;
+      delete[] logString;
 
       glDeleteProgram( _id );
       _id = 0;
