@@ -68,7 +68,7 @@ namespace nlrender
                     ( const int* )& sourceLen );
 
     glCompileShader( _id );
-    delete source;
+    delete[] source;
 
     //Compilation checking
     int compiled;
@@ -81,7 +81,7 @@ namespace nlrender
       char *logString = new char[ logLen ];
       glGetShaderInfoLog( _id, logLen, NULL, logString );
       std::cout << "Error: " << logString << std::endl;
-      delete logString;
+      delete[] logString;
 
       glDeleteShader( _id );
       _id = 0;
@@ -97,26 +97,26 @@ namespace nlrender
 // TRIANGLES
     case TRIANGLES_VERTEX:
       code = std::string(
-        "#version 440\n "
+        "#version 400\n "
         "subroutine float levelDistType( vec3 position );\n "
-        "layout( location = 0 ) subroutine uniform levelDistType levelDist;\n "
-        "layout( location = 0 ) in vec3 inVertex;\n "
-        "layout( location = 1 ) in vec3 inCenter;\n "
-        "layout( location = 2 ) in vec3 inTangent;\n "
+        "subroutine uniform levelDistType levelDist;\n "
+        "in vec3 inVertex;\n "
+        "in vec3 inCenter;\n "
+        "in vec3 inTangent;\n "
         "out vec3 vPosition;\n"
         "out vec3 vCenter;\n"
         "out float vlot;\n"
-        "layout( location = 2 ) uniform mat4 model;\n"
-        "layout( location = 4 ) uniform vec3 cameraPos;\n"
-        "layout( location = 5 ) uniform float lod;\n"
-        "layout( location = 7 ) uniform float maxDist;\n"
-        "layout( index = 0 ) subroutine( levelDistType )\n "
-        "float homogeneous( vec3 postion ){\n "
-        "  return lod;}\n "
-        "layout( index = 1 ) subroutine( levelDistType )\n "
+        "uniform mat4 model;\n"
+        "uniform vec3 cameraPos;\n"
+        "uniform float lod;\n"
+        "uniform float maxDist;\n"
+        "subroutine( levelDistType )\n "
         "float linear( vec3 position ){\n "
         "  return ( lod - 1 ) * clamp( ( 1.0 - length( position\n"
         "    - cameraPos ) / maxDist ), 0.0, 1.0 );}\n "
+        "subroutine( levelDistType )\n "
+        "float homogeneous( vec3 postion ){\n "
+        "  return lod;}\n "
         "void main( void ){\n"
         "  vPosition = ( model * vec4(inVertex, 1.0 )).xyz;\n"
         "  vCenter = ( model * vec4( inCenter, 1.0 )).xyz;\n"
@@ -125,7 +125,7 @@ namespace nlrender
       break;
     case TRIANGLES_TESS_CONTROL:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "layout(vertices=3) out;\n"
         "in vec3 vPosition[];\n"
         "in vec3 vCenter[];\n"
@@ -148,7 +148,7 @@ namespace nlrender
       break;
     case TRIANGLES_TESS_EVALUATION:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "layout(triangles) in;\n"
         "in vec3 tcCenter[];\n"
         "in vec3 tcNormal[];\n"
@@ -156,9 +156,9 @@ namespace nlrender
         "out vec3 position;\n"
         "out vec3 normal;\n"
         "out vec3 L;\n"
-        "layout( location = 0 ) uniform mat4 proy;\n"
-        "layout( location = 1 ) uniform mat4 view;\n"
-        "layout( location = 4 ) uniform vec3 cameraPos;\n"
+        "uniform mat4 proy;\n"
+        "uniform mat4 view;\n"
+        "uniform vec3 cameraPos;\n"
 
         "void main(){\n"
         "  vec3 tePosition;\n"
@@ -178,7 +178,7 @@ namespace nlrender
       break;
     case TRIANGLES_GEOMETRY:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "layout( triangles ) in;\n"
         "layout( triangle_strip, max_vertices = 3 ) out;\n"
         "in vec3 position[3];\n"
@@ -212,11 +212,11 @@ namespace nlrender
       break;
     case TRIANGLES_FRAGMENT:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "out vec4 oColor;\n"
         "in vec3 normal;\n"
         "in vec3 L;\n"
-        "layout( location = 3 ) uniform vec3 color;\n"
+        "uniform vec3 color;\n"
         "void main(){\n"
         "  vec3 N=normalize(normal);\n"
         "  float dif=dot(N,L);\n"
@@ -227,27 +227,27 @@ namespace nlrender
 // QUADS
     case QUADS_VERTEX:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "subroutine float levelDistType( vec3 position );\n "
-        "layout( location = 0 ) subroutine uniform levelDistType levelDist;\n "
-        "layout( location = 0 ) in vec3 inVertex;\n"
-        "layout( location = 1 ) in vec3 inCenter;\n"
-        "layout( location = 2 ) in vec3 inTangent;\n"
+        "subroutine uniform levelDistType levelDist;\n "
+        "in vec3 inVertex;\n"
+        "in vec3 inCenter;\n"
+        "in vec3 inTangent;\n"
         "out vec3 vPosition;\n"
         "out vec3 vCenter;\n"
         "out vec3 vTangent;\n"
         "out float vlot;\n"
-        "layout( location = 2 ) uniform mat4 model;\n"
-        "layout( location = 4 ) uniform vec3 cameraPos;\n"
-        "layout( location = 5 ) uniform float lod;\n"
-        "layout( location = 7 ) uniform float maxDist;\n"
-        "layout( index = 0 ) subroutine( levelDistType )\n "
-        "float homogeneous( vec3 postion ){\n "
-        "  return lod;}\n "
-        "layout( index = 1 ) subroutine( levelDistType )\n "
+        "uniform mat4 model;\n"
+        "uniform vec3 cameraPos;\n"
+        "uniform float lod;\n"
+        "uniform float maxDist;\n"
+        "subroutine( levelDistType )\n "
         "float linear( vec3 position ){\n "
         "  return ( lod - 1 ) * clamp( ( 1.0 - length( position\n"
         "    - cameraPos ) / maxDist ), 0.0, 1.0 );}\n "
+        "subroutine( levelDistType )\n "
+        "float homogeneous( vec3 postion ){\n "
+        "  return lod;}\n "
         "void main( void ){\n"
         "  vPosition = ( model * vec4(inVertex, 1.0 )).xyz;\n"
         "  vCenter = ( model * vec4( inCenter, 1.0 )).xyz;\n"
@@ -257,7 +257,7 @@ namespace nlrender
       break;
     case QUADS_TESS_CONTROL:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "layout(vertices=4) out;\n"
         "in vec3 vPosition[];\n"
         "in vec3 vCenter[];\n"
@@ -267,7 +267,7 @@ namespace nlrender
         "out float r[];\n"
         "out vec3 tcNormal[];\n"
         "out vec3 m[];\n"
-        "layout( location = 6 )uniform float tng;\n"
+        "uniform float tng;\n"
         "#define ID gl_InvocationID\n"
         "void main(){\n"
         "  tcCenter[ID] = vCenter[ID];\n"
@@ -286,7 +286,7 @@ namespace nlrender
       break;
     case QUADS_TESS_EVALUATION:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "layout(quads) in;\n"
         "in vec3 tcCenter[];\n"
         "in float r[];\n"
@@ -295,10 +295,10 @@ namespace nlrender
         "out vec3 position;\n"
         "out vec3 normal;\n"
         "out vec3 L;\n"
-        "layout( location = 0 ) uniform mat4 proy;\n"
-        "layout( location = 1 ) uniform mat4 view;\n"
-        "layout( location = 2 ) uniform mat4 model;\n"
-        "layout( location = 4 ) uniform vec3 cameraPos;\n"
+        "uniform mat4 proy;\n"
+        "uniform mat4 view;\n"
+        "uniform mat4 model;\n"
+        "uniform vec3 cameraPos;\n"
         "void main( ){\n"
         "  vec3 tePosition;\n"
         "  vec3 teCenter;\n"
@@ -324,7 +324,7 @@ namespace nlrender
       break;
     case QUADS_GEOMETRY:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "layout( triangles ) in;\n"
         "layout( triangle_strip, max_vertices = 3 ) out;\n"
         "in vec3 position[3];\n"
@@ -358,11 +358,11 @@ namespace nlrender
       break;
     case QUADS_FRAGMENT:
       code = std::string(
-        "#version 440\n"
+        "#version 400\n"
         "out vec4 oColor;\n"
         "in vec3 normal;\n"
         "in vec3 L;\n"
-        "layout( location = 3 )uniform vec3 color;\n"
+        "uniform vec3 color;\n"
         "void main(){\n"
         "  vec3 N=normalize(normal);\n"
         "  float dif=dot(N,L);\n"
