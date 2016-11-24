@@ -42,7 +42,8 @@ MainWindow::MainWindow( QWidget* parent_,
 #ifdef NSOL_USE_BRION
   _ui->actionOpenBlueConfig->setEnabled( true );
 #else
-  _ui->actionOpenBlueConfig->setEnabled( false );
+  //_ui->actionOpenBlueConfig->setEnabled( false );
+  _ui->actionOpenBlueConfig->setVisible(false);
 #endif
 
 #ifdef NSOL_USE_QT5CORE
@@ -287,51 +288,38 @@ void MainWindow::showAbout( void )
     tr( " (" ) +
     tr( std::to_string( nsol::Version::getRevision( )).c_str( )) +
     tr( ")</li> " ) +
-
-    tr( "<li>Brion " ) +
 #ifdef NSOL_USE_BRION
+    tr( "<li>Brion " ) +
     tr( brion::Version::getString( ).c_str( )) +
     tr( " (" ) +
     tr( std::to_string( brion::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
-#else
-    tr( "not built-in " ) +
-#endif
     tr ( "</li> " ) +
-
-    tr( "<li>ZEQ " ) +
+#endif
 #ifdef NEUROLOTS_USE_ZEROEQ
+    tr( "<li>ZEQ " ) +
     tr( zeroeq::Version::getString( ).c_str( )) +
     tr( " (" ) +
     tr( std::to_string( zeroeq::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
-#else
-    tr( "not built-in " ) +
-#endif
     tr ( "</li> " ) +
-
-    tr( "<li>gmrvzeq " ) +
+#endif
 #ifdef NEUROLOTS_USE_GMRVLEX
+    tr( "<li>gmrvzeq " ) +
     tr( gmrvlex::Version::getString( ).c_str( )) +
     tr( " (" ) +
     tr( std::to_string( gmrvlex::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
-#else
-    tr( "not built-in " ) +
-#endif
     tr ( "</li> " ) +
-
-    tr( "<li>Deflect " ) +
+#endif
 #ifdef NEUROLOTS_USE_DEFLECT
+    tr( "<li>Deflect " ) +
     tr( deflect::Version::getString( ).c_str( )) +
     tr( " (" ) +
     tr( std::to_string( deflect::Version::getRevision( )).c_str( )) +
     tr( ")" ) +
-#else
-    tr( "not built-in " ) +
-#endif
     tr ( "</li> " ) +
-
+#endif    
     tr ( "</ul>" ) +
     tr( "<br>GMRV - Universidad Rey Juan Carlos<br>"
        "<a href=www.gmrv.es>www.gmrv.es</a><br>"
