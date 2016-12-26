@@ -1,0 +1,40 @@
+#version 400
+layout(quads) in;
+
+in vec3 tcCenter[];
+in float r[];
+in vec3 tcNormal[];
+in vec3 m[];
+
+out vec3 position;
+out vec3 normal;
+out vec3 L;
+
+uniform mat4 proy;
+uniform mat4 view;
+uniform mat4 model;
+uniform vec3 cameraPos;
+
+void main( )
+{
+  vec3 tePosition;
+  vec3 teCenter;
+  vec3 teNormal;
+  float u=gl_TessCoord.x;
+  float u_2=u*u;
+  float u_3=u_2*u;
+  float v=gl_TessCoord.y;
+  float v_2=v*v;
+  float v_3=v_2*v;
+  teCenter = (2*v_3-3*v_2+1)*tcCenter[0]+(v_3-2*v_2+v)*m[0]+
+    (v_3-v_2)*m[2]+(-2*v_3+3*v_2)*tcCenter[2];
+  vec3 a_t=mix(tcNormal[0],tcNormal[1],u);
+  vec3 b_t=mix(tcNormal[2],tcNormal[3],u);
+  teNormal = normalize(mix(a_t,b_t,v));
+  float radius=mix(r[0],r[2],v);
+  tePosition = (radius*teNormal+teCenter);
+  normal = teNormal;
+  L = normalize(cameraPos-tePosition);
+  position = tePosition;
+  gl_Position = proy*view*vec4(tePosition,1.0);
+}

@@ -41,13 +41,14 @@ common_find_package(OpenGL REQUIRED SYSTEM)
 common_find_package(GLEW REQUIRED SYSTEM)
 common_find_package(Eigen3 REQUIRED SYSTEM)
 common_find_package(nsol REQUIRED)
+common_find_package(ReTo REQUIRED)
 # common_find_package(Deflect ${NEUROLOTS_OPTS_FIND_ARGS})
 common_find_package(Lexis ${NEUROLOTS_OPTS_FIND_ARGS})
 common_find_package(ZeroEQ ${NEUROLOTS_OPTS_FIND_ARGS})
 common_find_package(gmrvlex ${NEUROLOTS_OPTS_FIND_ARGS})
 
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Core Qt5Widget Qt5OpenGL
-  OpenGL GLEW GLUT Eigen3 nsol)
+  OpenGL GLEW GLUT Eigen3 nsol ReTo)
 
 
 if (DEFLECT_FOUND)

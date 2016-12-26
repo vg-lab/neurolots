@@ -11,7 +11,6 @@
 #define __NLRENDER_NEURONS_COLLECTION__
 
 
-#include "Program.h"
 #include <reto/reto.h>
 
 #include <nsol/nsol.h>
@@ -203,11 +202,11 @@ namespace nlrender
 #endif
 #endif
 
-    Program* _programTriangles;
-    Program* _programQuads;
+    reto::ShaderProgram* _programTriangles;
+    reto::ShaderProgram* _programQuads;
 
-    Program* _programTrianglesFB;
-    Program* _programQuadsFB;
+    reto::ShaderProgram* _programTrianglesFB;
+    reto::ShaderProgram* _programQuadsFB;
 
     unsigned int _tfo;
     std::vector< unsigned int > _tbos;
