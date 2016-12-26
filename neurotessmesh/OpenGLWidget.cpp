@@ -42,11 +42,13 @@ OpenGLWidget::OpenGLWidget( QWidget* parent_,
   , _idleUpdate( true )
   , _paint( false )
   , _neuron( nullptr )
+  , _translationScale( 0.1f )
+  , _rotationScale( 0.01f )
 {
 #ifdef NEUROLOTS_USE_ZEROEQ
-  _camera = new nlrender::Camera( zeqSession );
+  _camera = new reto::Camera( zeqSession );
 #else
-  _camera = new nlrender::Camera( );
+  _camera = new reto::Camera( );
 #endif
 
   _cameraTimer = new QTimer( );
@@ -201,7 +203,7 @@ void OpenGLWidget::paintGL( void )
 
 void OpenGLWidget::resizeGL( int w , int h )
 {
-  _camera->Ratio((( double ) w ) / h );
+  _camera->ratio((( double ) w ) / h );
   glViewport( 0, 0, w, h );
 
 
@@ -249,15 +251,20 @@ void OpenGLWidget::mouseMoveEvent( QMouseEvent* event_ )
 {
   if( _rotation )
   {
-    _camera->LocalRotation( -( _mouseX - event_->x( )) * 0.01,
-                            -( _mouseY - event_->y( )) * 0.01 );
-    _mouseX = event_->x( );
-    _mouseY = event_->y( );
+      _camera->localRotation( -( _mouseX - event_->x( )) * _rotationScale,
+                              -( _mouseY - event_->y( )) * _rotationScale );
+
+      _mouseX = event_->x( );
+      _mouseY = event_->y( );
   }
   if( _translation )
   {
-    _mouseX = event_->x( );
-    _mouseY = event_->y( );
+      float xDis = ( event_->x() - _mouseX ) * _translationScale;
+      float yDis = ( event_->y() - _mouseY ) * _translationScale;
+
+      _camera->localTranslation( Eigen::Vector3f( -xDis, yDis, 0.0f ));
+      _mouseX = event_->x( );
+      _mouseY = event_->y( );
   }
 
   this->update( );
@@ -270,9 +277,9 @@ void OpenGLWidget::wheelEvent( QWheelEvent* event_ )
   int delta = event_->angleDelta( ).y( );
 
   if ( delta > 0 )
-    _camera->Radius( _camera->Radius( ) / 1.1f );
+    _camera->radius( _camera->radius( ) / 1.1f );
   else
-    _camera->Radius( _camera->Radius( ) * 1.1f );
+    _camera->radius( _camera->radius( ) * 1.1f );
 
   update( );
 
@@ -287,9 +294,9 @@ void OpenGLWidget::keyPressEvent( QKeyEvent* event_ )
   switch ( event_->key( ))
   {
   case Qt::Key_C:
-    _camera->Pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-    _camera->Radius( 1000.0f );
-    _camera->Rotation( 0.0f, 0.0f );
+    _camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    _camera->radius( 1000.0f );
+    _camera->rotation( 0.0f, 0.0f );
     update( );
     break;
   }
@@ -404,7 +411,7 @@ void OpenGLWidget::toggleWireframe( void )
 
 void OpenGLWidget::timerUpdate( void )
 {
-  if( _camera->Anim( ) || _neuronsCollection->selectionChange( ))
+  if( _camera->anim( ) || _neuronsCollection->selectionChange( ))
     this->update( );
 }
 

@@ -12,7 +12,7 @@
 
 
 #include "Program.h"
-#include "Camera.h"
+#include <reto/reto.h>
 
 #include <nsol/nsol.h>
 #include <nsol/DataSet.h>
@@ -67,7 +67,7 @@ namespace nlrender
     }TTessMethod;
 
     NLRENDER_API
-    NeuronsCollection( Camera* camera_ );
+    NeuronsCollection( reto::Camera* camera_ );
 
     NLRENDER_API
     ~NeuronsCollection( void );
@@ -212,7 +212,7 @@ namespace nlrender
     unsigned int _tfo;
     std::vector< unsigned int > _tbos;
 
-    Camera* _camera;
+    reto::Camera* _camera;
 
     float _lod;
     float _tng;

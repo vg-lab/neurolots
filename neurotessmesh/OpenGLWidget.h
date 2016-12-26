@@ -19,7 +19,7 @@
 #include <chrono>
 
 #define NEUROLOTS_SKIP_GLEW_INCLUDE 1
-#include "../nlrender/Camera.h"
+#include <reto/reto.h>
 #include "../nlrender/NeuronsCollection.h"
 #include "../nlrender/Neuron.h"
 
@@ -138,7 +138,7 @@ protected:
 
   bool _wireframe;
 
-  nlrender::Camera* _camera;
+  reto::Camera* _camera;
   nlrender::NeuronsCollection* _neuronsCollection;
   unsigned int _frameCount;
 
@@ -156,6 +156,10 @@ protected:
   QString _lastSavedFileName;
 
   const static float _colorFactor;
+
+
+  float _translationScale;
+  float _rotationScale;
 
 };
 

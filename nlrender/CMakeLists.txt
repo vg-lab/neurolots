@@ -1,7 +1,6 @@
 include_directories( ../nlgenerator ../nlgeometry )
 
 set(NLRENDER_PUBLIC_HEADERS
-  Camera.h
   Config.h
   Morphologies.h
   Neuron.h
@@ -16,7 +15,6 @@ set(NLRENDER_HEADERS
 )
 
 set(NLRENDER_SOURCES
-  Camera.cpp
   Config.cpp
   Morphologies.cpp
   Neuron.cpp
@@ -34,6 +32,7 @@ set(NLRENDER_LINK_LIBRARIES
   nsol
   nlgeometry
   nlgenerator
+  ReTo
 )
 
 if (ZEROEQ_FOUND)

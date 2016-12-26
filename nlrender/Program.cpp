@@ -41,7 +41,7 @@
 // 2 Model Matrix4f
 
 // 3 Color vec3
-// 4 Camera Position vec3
+// 4 reto::reto::Camera Position vec3
 
 // 5 Level Of Tesselation uint
 // 6 Alpha Tangent Module float

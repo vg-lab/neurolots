@@ -20,7 +20,7 @@
 namespace nlrender
 {
 
-  NeuronsCollection::NeuronsCollection( Camera* camera_ )
+  NeuronsCollection::NeuronsCollection( reto::Camera* camera_ )
     : _camera( camera_ )
     , _paintSoma( true )
     , _paintNeurites( true )
@@ -112,8 +112,8 @@ namespace nlrender
         _init( );
 
         _defaultCamera( );
-        _camera->Pivot( _defaultPivot );
-        _camera->Radius( _defaultRadius );
+        _camera->pivot( _defaultPivot );
+        _camera->radius( _defaultRadius );
       }
       catch( ... )
       {
@@ -139,8 +139,8 @@ namespace nlrender
     _init( );
 
     _defaultCamera( );
-    _camera->Pivot( _defaultPivot );
-    _camera->Radius( _defaultRadius );
+    _camera->pivot( _defaultPivot );
+    _camera->radius( _defaultRadius );
   }
 
   void NeuronsCollection::loadScene( const std::string& xmlFile_ )
@@ -156,8 +156,8 @@ namespace nlrender
     _init( );
 
     _defaultCamera( );
-    _camera->Pivot( _defaultPivot );
-    _camera->Radius( _defaultRadius );
+    _camera->pivot( _defaultPivot );
+    _camera->radius( _defaultRadius );
   }
 
   void NeuronsCollection::setZeqUri( const std::string&
@@ -198,13 +198,13 @@ namespace nlrender
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
 
-    _programQuads->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programQuads->viewMatrix( _camera->ViewMatrix( ));
-    _programQuads->cameraPosition( _camera->Position( ));
+    _programQuads->projectionMatrix( _camera->projectionMatrix( ));
+    _programQuads->viewMatrix( _camera->viewMatrix( ));
+    _programQuads->cameraPosition( _camera->position( ));
 
-    _programTriangles->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programTriangles->viewMatrix( _camera->ViewMatrix( ));
-    _programTriangles->cameraPosition( _camera->Position( ));
+    _programTriangles->projectionMatrix( _camera->projectionMatrix( ));
+    _programTriangles->viewMatrix( _camera->viewMatrix( ));
+    _programTriangles->cameraPosition( _camera->position( ));
 
 
 
@@ -295,11 +295,11 @@ namespace nlrender
 
     if( _paintSoma )
     {
-      _programTriangles->projectionMatrix( _camera->ProjectionMatrix( ));
-      _programTriangles->viewMatrix( _camera->ViewMatrix( ));
+      _programTriangles->projectionMatrix( _camera->projectionMatrix( ));
+      _programTriangles->viewMatrix( _camera->viewMatrix( ));
       _programTriangles->modelMatrix( neuron->vecTransform( ).data( ));
       _programTriangles->color( _neuronColor.data( ));
-      _programTriangles->cameraPosition( _camera->Position( ));
+      _programTriangles->cameraPosition( _camera->position( ));
       _programTriangles->levelOfTessellation( &_lod );
       _programTriangles->alphaTangentModule( &_tng );
       _programTriangles->maximumDistance( &_maxDist);
@@ -308,11 +308,11 @@ namespace nlrender
     }
     if( _paintNeurites )
     {
-      _programQuads->projectionMatrix( _camera->ProjectionMatrix( ));
-      _programQuads->viewMatrix( _camera->ViewMatrix( ));
+      _programQuads->projectionMatrix( _camera->projectionMatrix( ));
+      _programQuads->viewMatrix( _camera->viewMatrix( ));
       _programQuads->modelMatrix( neuron->vecTransform( ).data( ));
       _programQuads->color( _neuronColor.data( ));
-      _programQuads->cameraPosition( _camera->Position( ));
+      _programQuads->cameraPosition( _camera->position( ));
       _programQuads->levelOfTessellation( &_lod );
       _programQuads->alphaTangentModule( &_tng );
       _programQuads->maximumDistance( &_maxDist);
@@ -340,8 +340,8 @@ namespace nlrender
                                                ( bb.zMin + bb.zMax ) / 2 );
       Eigen::Vector3f corner( bb.xMin, bb.yMin, bb.zMin );
 
-      float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
-      _camera->TargetPivotRadius( center, radius );
+      float radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
+      _camera->targetPivotRadius( center, radius );
     }
   }
 
@@ -355,13 +355,13 @@ namespace nlrender
                                              ( bb.zMin + bb.zMax ) / 2 );
     Eigen::Vector3f corner( bb.xMin, bb.yMin, bb.zMin );
 
-    float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
-    _camera->TargetPivotRadius( center, radius );
+    float radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
+    _camera->targetPivotRadius( center, radius );
   }
 
   void NeuronsCollection::focusAll( void )
   {
-    _camera->TargetPivotRadius( _defaultPivot, _defaultRadius );
+    _camera->targetPivotRadius( _defaultPivot, _defaultRadius );
   }
 
   void NeuronsCollection::extractMesh(
@@ -377,18 +377,18 @@ namespace nlrender
     if( !neuronMesh )
       return;
 
-    _programTrianglesFB->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programTrianglesFB->viewMatrix( _camera->ViewMatrix( ));
+    _programTrianglesFB->projectionMatrix( _camera->projectionMatrix( ));
+    _programTrianglesFB->viewMatrix( _camera->viewMatrix( ));
     _programTrianglesFB->modelMatrix( neuron_->vecTransform( ).data( ));
-    _programTrianglesFB->cameraPosition( _camera->Position( ));
+    _programTrianglesFB->cameraPosition( _camera->position( ));
     _programTrianglesFB->levelOfTessellation( &_lod );
     _programTrianglesFB->alphaTangentModule( &_tng );
     _programTrianglesFB->maximumDistance( &_maxDist);
 
-    _programQuadsFB->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programQuadsFB->viewMatrix( _camera->ViewMatrix( ));
+    _programQuadsFB->projectionMatrix( _camera->projectionMatrix( ));
+    _programQuadsFB->viewMatrix( _camera->viewMatrix( ));
     _programQuadsFB->modelMatrix( neuron_->vecTransform( ).data( ));
-    _programQuadsFB->cameraPosition( _camera->Position( ));
+    _programQuadsFB->cameraPosition( _camera->position( ));
     _programQuadsFB->levelOfTessellation( &_lod );
     _programQuadsFB->alphaTangentModule( &_tng );
     _programQuadsFB->maximumDistance( &_maxDist);
@@ -626,11 +626,11 @@ namespace nlrender
   void NeuronsCollection::maxDist( float maxDist_ )
   {
     if ( maxDist_ > 1.0f )
-      _maxDist = _camera->FarPlane( );
+      _maxDist = _camera->farPlane( );
     else if ( maxDist_ < 0.0f )
       _maxDist = 0.0f;
     else
-      _maxDist = maxDist_ * _camera->FarPlane( );
+      _maxDist = maxDist_ * _camera->farPlane( );
 
     _programQuads->maximumDistance( &_maxDist );
     _programTriangles->maximumDistance( &_maxDist );
@@ -734,7 +734,7 @@ namespace nlrender
         ( boundingBox.zMin + boundingBox.zMax ) / 2 );
     Eigen::Vector3f corner( boundingBox.xMin, boundingBox.yMin,
          boundingBox.zMin );
-    float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+    float radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
 
     _defaultPivot = center;
     _defaultRadius = radius;
@@ -864,7 +864,7 @@ namespace nlrender
       Eigen::Vector3f corner( boundingBox.xMin, boundingBox.yMin,
              boundingBox.zMin );
 
-      radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+      radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
 
 
     }
@@ -874,7 +874,7 @@ namespace nlrender
       radius = _defaultRadius;
     }
 
-    _camera->TargetPivotRadius( center, radius );
+    _camera->targetPivotRadius( center, radius );
   }
 
 #endif // NEUROLOTS_USE_GMRVLEX
@@ -966,7 +966,7 @@ namespace nlrender
       Eigen::Vector3f corner( boundingBox.xMin, boundingBox.yMin,
              boundingBox.zMin );
 
-      radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+      radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
 
 
     }
@@ -976,7 +976,7 @@ namespace nlrender
       radius = _defaultRadius;
     }
 
-    _camera->TargetPivotRadius( center, radius );
+    _camera->targetPivotRadius( center, radius );
   }
 
 #endif // NEUROLOTS_USE_LEXIS
