@@ -7,8 +7,8 @@ include( reto_generate_shaders )
 reto_generate_shaders(
   NLRENDER_SHADERS
   nlrender
-  ${CMAKE_SOURCE_DIR}/shaders/
-  ${CMAKE_SOURCE_DIR}/nlrender/Shaders.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/
+  ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
 )
 ########## RETO ##########
 
