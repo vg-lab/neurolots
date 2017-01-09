@@ -15,8 +15,8 @@ uniform vec3 cameraPos;
 uniform float lod;
 uniform float maxDist;
 
-#include("_partials/_homogeneousDist.glsl")
 #include("_partials/_linearDist.glsl")
+#include("_partials/_homogeneousDist.glsl")
 
 void main( void )
 {
