@@ -8,3 +8,5 @@ CMake/common
 .ciscript
 ci.*
 jambs*
+
+nlrender/Shaders.h

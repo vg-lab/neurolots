@@ -16,18 +16,8 @@ uniform vec3 cameraPos;
 uniform float lod;
 uniform float maxDist;
 
-subroutine( levelDistType )
-float linear( vec3 position )
-{
-  return ( lod - 1 ) * clamp( ( 1.0 - length( position
-    - cameraPos ) / maxDist ), 0.0, 1.0 );
-}
-
-subroutine( levelDistType )
-float homogeneous( vec3 postion )
-{
-  return lod;
-}
+#include("_partials/_homogeneousDist.glsl")
+#include("_partials/_linearDist.glsl")
 
 void main( void )
 {
