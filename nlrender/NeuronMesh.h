@@ -24,7 +24,6 @@
 #endif
 
 //Neurolots
-#include "Program.h"
 #include "../nlgenerator/NeuronMeshGenerator.h"
 #include "../nlgenerator/Icosphere.h"
 #include "../nlgeometry/Facet.h"

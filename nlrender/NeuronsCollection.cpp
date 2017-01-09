@@ -12,6 +12,8 @@
 #include "NeuronMorphology.h"
 #include "NeuronMesh.h"
 
+#include "Shaders.h"
+
 #include <cfloat>
 #include <iostream>
 
@@ -20,7 +22,7 @@
 namespace nlrender
 {
 
-  NeuronsCollection::NeuronsCollection( Camera* camera_ )
+  NeuronsCollection::NeuronsCollection( reto::Camera* camera_ )
     : _camera( camera_ )
     , _paintSoma( true )
     , _paintNeurites( true )
@@ -35,15 +37,57 @@ namespace nlrender
   {
     _selectedNeurons.clear( );
 
-    _programQuads = new Program( Program::QUADS );
-    _programQuadsFB = new Program( Program::QUADS_FB );
-    _programTriangles = new Program( Program::TRIANGLES );
-    _programTrianglesFB = new Program( Program::TRIANGLES_FB );
+    _programQuads = new reto::ShaderProgram(  );
+    _programQuadsFB = new reto::ShaderProgram(  );
+    _programTriangles = new reto::ShaderProgram(  );
+    _programTrianglesFB = new reto::ShaderProgram(  );
 
-    _programQuads->init();
-    _programQuadsFB->init( );
-    _programTriangles->init( );
-    _programTrianglesFB->init( );
+    _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
+    _programQuads->loadTesselationControlShaderFromText(
+      nlrender::quad_tcs );
+    _programQuads->loadTesselationEvaluationShaderFromText(
+      nlrender::quad_tes );
+    _programQuads->loadFragmentShaderFromText( nlrender::quad_frag );
+    _programQuads->compileAndLink( );
+    _programQuads->autocatching( );
+
+
+    const char* fbVaryings[ ] = { "outValue0", "outValue1" };
+    _programQuadsFB->loadVertexShaderFromText( nlrender::quad_vert );
+    _programQuadsFB->loadTesselationControlShaderFromText(
+      nlrender::quad_tcs );
+    _programQuadsFB->loadTesselationEvaluationShaderFromText(
+      nlrender::quad_tes );
+    _programQuadsFB->loadGeometryShaderFromText( nlrender::quad_geom );
+
+    _programQuadsFB->create( );
+    _programQuadsFB->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    _programQuadsFB->link( );
+    _programQuadsFB->autocatching( );
+
+
+    _programTriangles->loadVertexShaderFromText( nlrender::triangle_vert );
+    _programTriangles->loadTesselationControlShaderFromText(
+      nlrender::triangle_tcs );
+    _programTriangles->loadTesselationEvaluationShaderFromText(
+      nlrender::triangle_tes );
+    _programTriangles->loadFragmentShaderFromText( nlrender::triangle_frag );
+    _programTriangles->compileAndLink( );
+    _programTriangles->autocatching( );
+
+
+    _programTrianglesFB->loadVertexShaderFromText( nlrender::triangle_vert );
+    _programTrianglesFB->loadTesselationControlShaderFromText(
+      nlrender::triangle_tcs );
+    _programTrianglesFB->loadTesselationEvaluationShaderFromText(
+      nlrender::triangle_tes );
+    _programTrianglesFB->loadGeometryShaderFromText( nlrender::triangle_geom );
+
+    _programTrianglesFB->create( );
+    _programTrianglesFB->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    _programTrianglesFB->link( );
+    _programTrianglesFB->autocatching( );
+
 
     lod( 3.0f );
     tng( 0.5f );
@@ -112,8 +156,8 @@ namespace nlrender
         _init( );
 
         _defaultCamera( );
-        _camera->Pivot( _defaultPivot );
-        _camera->Radius( _defaultRadius );
+        _camera->pivot( _defaultPivot );
+        _camera->radius( _defaultRadius );
       }
       catch( ... )
       {
@@ -139,8 +183,8 @@ namespace nlrender
     _init( );
 
     _defaultCamera( );
-    _camera->Pivot( _defaultPivot );
-    _camera->Radius( _defaultRadius );
+    _camera->pivot( _defaultPivot );
+    _camera->radius( _defaultRadius );
   }
 
   void NeuronsCollection::loadScene( const std::string& xmlFile_ )
@@ -156,8 +200,8 @@ namespace nlrender
     _init( );
 
     _defaultCamera( );
-    _camera->Pivot( _defaultPivot );
-    _camera->Radius( _defaultRadius );
+    _camera->pivot( _defaultPivot );
+    _camera->radius( _defaultRadius );
   }
 
   void NeuronsCollection::setZeqUri( const std::string&
@@ -198,13 +242,15 @@ namespace nlrender
     NeuronMorphologyPtr morpho;
     NeuronMeshPtr neuronMesh;
 
-    _programQuads->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programQuads->viewMatrix( _camera->ViewMatrix( ));
-    _programQuads->cameraPosition( _camera->Position( ));
+    _programQuads->use( );
+    _programQuads->sendUniform4m("proy", _camera->projectionMatrix( ));
+    _programQuads->sendUniform4m("view", _camera->viewMatrix( ));
+    _programQuads->sendUniform3v("cameraPos", _camera->position( ));
 
-    _programTriangles->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programTriangles->viewMatrix( _camera->ViewMatrix( ));
-    _programTriangles->cameraPosition( _camera->Position( ));
+    _programTriangles->use( );
+    _programTriangles->sendUniform4m("proy", _camera->projectionMatrix( ));
+    _programTriangles->sendUniform4m("view", _camera->viewMatrix( ));
+    _programTriangles->sendUniform3v("cameraPos", _camera->position( ));
 
 
 
@@ -253,16 +299,19 @@ namespace nlrender
 
       if( pSoma )
       {
-        _programTriangles->modelMatrix( neuron->vecTransform( ).data( ));
-        _programTriangles->color( color.data( ));
-        _programTriangles->tessellationDistanceFunc( &_tessMethod );
+        _programTriangles->use( );
+        _programTriangles->sendUniform3v("color", color.data( ));
+        _programTriangles->sendUniform4m("model", neuron->vecTransform( ).data( ));
+
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
         neuronMesh->paintSoma( );
       }
       if( pNeurites )
       {
-        _programQuads->modelMatrix( neuron->vecTransform( ).data( ));
-        _programQuads->color( color.data( ));
-        _programQuads->tessellationDistanceFunc( &_tessMethod );
+        _programQuads->use( );
+        _programQuads->sendUniform3v("color", color.data( ));
+        _programQuads->sendUniform4m("model", neuron->vecTransform( ).data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
         neuronMesh->paintNeurites( );
       }
     }
@@ -295,28 +344,32 @@ namespace nlrender
 
     if( _paintSoma )
     {
-      _programTriangles->projectionMatrix( _camera->ProjectionMatrix( ));
-      _programTriangles->viewMatrix( _camera->ViewMatrix( ));
-      _programTriangles->modelMatrix( neuron->vecTransform( ).data( ));
-      _programTriangles->color( _neuronColor.data( ));
-      _programTriangles->cameraPosition( _camera->Position( ));
-      _programTriangles->levelOfTessellation( &_lod );
-      _programTriangles->alphaTangentModule( &_tng );
-      _programTriangles->maximumDistance( &_maxDist);
-      _programTriangles->tessellationDistanceFunc( &_tessMethod );
+      _programTriangles->use( );
+      _programTriangles->sendUniform4m("proy", _camera->projectionMatrix( ));
+      _programTriangles->sendUniform4m("view", _camera->viewMatrix( ));
+      _programTriangles->sendUniform4m("model", neuron->vecTransform( ).data( ));
+      _programTriangles->sendUniform3v("color", _neuronColor.data( ));
+      _programTriangles->sendUniform3v("cameraPos", _camera->position( ));
+      _programTriangles->sendUniformf("lod", _lod);
+      _programTriangles->sendUniformf("maxDist", _maxDist);
+      _programTriangles->sendUniformf("tng", _tng);
+
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
       neuronMesh->paintSoma( );
     }
     if( _paintNeurites )
     {
-      _programQuads->projectionMatrix( _camera->ProjectionMatrix( ));
-      _programQuads->viewMatrix( _camera->ViewMatrix( ));
-      _programQuads->modelMatrix( neuron->vecTransform( ).data( ));
-      _programQuads->color( _neuronColor.data( ));
-      _programQuads->cameraPosition( _camera->Position( ));
-      _programQuads->levelOfTessellation( &_lod );
-      _programQuads->alphaTangentModule( &_tng );
-      _programQuads->maximumDistance( &_maxDist);
-      _programQuads->tessellationDistanceFunc( &_tessMethod );
+      _programQuads->use( );
+      _programQuads->sendUniform4m("proy", _camera->projectionMatrix( ));
+      _programQuads->sendUniform4m("view", _camera->viewMatrix( ));
+      _programQuads->sendUniform4m("model", neuron->vecTransform( ).data( ));
+      _programQuads->sendUniform3v("color", _neuronColor.data( ));
+      _programQuads->sendUniform3v("cameraPos", _camera->position( ));
+      _programQuads->sendUniformf("lod", _lod);
+      _programQuads->sendUniformf("maxDist", _maxDist);
+      _programQuads->sendUniformf("tng", _tng);
+
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
       neuronMesh->paintNeurites( );
     }
   }
@@ -340,8 +393,8 @@ namespace nlrender
                                                ( bb.zMin + bb.zMax ) / 2 );
       Eigen::Vector3f corner( bb.xMin, bb.yMin, bb.zMin );
 
-      float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
-      _camera->TargetPivotRadius( center, radius );
+      float radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
+      _camera->targetPivotRadius( center, radius );
     }
   }
 
@@ -355,13 +408,13 @@ namespace nlrender
                                              ( bb.zMin + bb.zMax ) / 2 );
     Eigen::Vector3f corner( bb.xMin, bb.yMin, bb.zMin );
 
-    float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
-    _camera->TargetPivotRadius( center, radius );
+    float radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
+    _camera->targetPivotRadius( center, radius );
   }
 
   void NeuronsCollection::focusAll( void )
   {
-    _camera->TargetPivotRadius( _defaultPivot, _defaultRadius );
+    _camera->targetPivotRadius( _defaultPivot, _defaultRadius );
   }
 
   void NeuronsCollection::extractMesh(
@@ -377,21 +430,25 @@ namespace nlrender
     if( !neuronMesh )
       return;
 
-    _programTrianglesFB->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programTrianglesFB->viewMatrix( _camera->ViewMatrix( ));
-    _programTrianglesFB->modelMatrix( neuron_->vecTransform( ).data( ));
-    _programTrianglesFB->cameraPosition( _camera->Position( ));
-    _programTrianglesFB->levelOfTessellation( &_lod );
-    _programTrianglesFB->alphaTangentModule( &_tng );
-    _programTrianglesFB->maximumDistance( &_maxDist);
+    _programTrianglesFB->use( );
+    _programTrianglesFB->sendUniform4m("proy", _camera->projectionMatrix( ));
+    _programTrianglesFB->sendUniform4m("view", _camera->viewMatrix( ));
+    _programTrianglesFB->sendUniform4m("model", neuron_->vecTransform( ).data( ));
+    _programTrianglesFB->sendUniform3v("color", _neuronColor.data( ));
+    _programTrianglesFB->sendUniform3v("cameraPos", _camera->position( ));
+    _programTrianglesFB->sendUniformf("lod", _lod);
+    _programTrianglesFB->sendUniformf("maxDist", _maxDist);
+    _programTrianglesFB->sendUniformf("tng", _tng);
 
-    _programQuadsFB->projectionMatrix( _camera->ProjectionMatrix( ));
-    _programQuadsFB->viewMatrix( _camera->ViewMatrix( ));
-    _programQuadsFB->modelMatrix( neuron_->vecTransform( ).data( ));
-    _programQuadsFB->cameraPosition( _camera->Position( ));
-    _programQuadsFB->levelOfTessellation( &_lod );
-    _programQuadsFB->alphaTangentModule( &_tng );
-    _programQuadsFB->maximumDistance( &_maxDist);
+    _programQuadsFB->use( );
+    _programQuadsFB->sendUniform4m("proy", _camera->projectionMatrix( ));
+    _programQuadsFB->sendUniform4m("view", _camera->viewMatrix( ));
+    _programQuadsFB->sendUniform4m("model", neuron_->vecTransform( ).data( ));
+    _programQuadsFB->sendUniform3v("color", _neuronColor.data( ));
+    _programQuadsFB->sendUniform3v("cameraPos", _camera->position( ));
+    _programQuadsFB->sendUniformf("lod", _lod);
+    _programQuadsFB->sendUniformf("maxDist", _maxDist);
+    _programQuadsFB->sendUniformf("tng", _tng);
 
     glDisable( GL_CULL_FACE );
     glEnable( GL_RASTERIZER_DISCARD );
@@ -411,7 +468,8 @@ namespace nlrender
 
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
-    _programTrianglesFB->tessellationDistanceFunc( &_tessMethod );
+    _programTrianglesFB->use( );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->paintSoma( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
@@ -435,7 +493,8 @@ namespace nlrender
     glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
     glBeginTransformFeedback( GL_TRIANGLES );
 
-    _programTrianglesFB->tessellationDistanceFunc( &_tessMethod );
+    _programTrianglesFB->use( );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->paintSoma( );
 
     glEndTransformFeedback( );
@@ -463,7 +522,9 @@ namespace nlrender
 // Quads
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
 
-    _programQuadsFB->tessellationDistanceFunc( &_tessMethod );
+
+    _programQuadsFB->use( );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->paintNeurites( );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
@@ -486,7 +547,8 @@ namespace nlrender
     glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
     glBeginTransformFeedback( GL_TRIANGLES );
 
-    _programQuadsFB->tessellationDistanceFunc( &_tessMethod );
+    _programQuadsFB->use( );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &_tessMethod );
     neuronMesh->paintNeurites( );
 
     glEndTransformFeedback( );
@@ -606,8 +668,11 @@ namespace nlrender
     else
       _lod = lod_;
 
-    _programQuads->levelOfTessellation( &_lod );
-    _programTriangles->levelOfTessellation( &_lod );
+    _programQuads->use( );
+    _programQuads->sendUniformf("lod", _lod);
+
+    _programTriangles->use( );
+    _programTriangles->sendUniformf("lod", _lod);
   }
 
   void NeuronsCollection::tng( float tng_ )
@@ -619,21 +684,27 @@ namespace nlrender
     else
       _tng = tng_ * 20.0f;
 
-    _programQuads->alphaTangentModule( &_tng );
-    _programTriangles->alphaTangentModule( &_tng );
+    _programQuads->use( );
+    _programQuads->sendUniformf("tng", _tng);
+
+    _programTriangles->use( );
+    _programTriangles->sendUniformf("tng", _tng);
   }
 
   void NeuronsCollection::maxDist( float maxDist_ )
   {
     if ( maxDist_ > 1.0f )
-      _maxDist = _camera->FarPlane( );
+      _maxDist = _camera->farPlane( );
     else if ( maxDist_ < 0.0f )
       _maxDist = 0.0f;
     else
-      _maxDist = maxDist_ * _camera->FarPlane( );
+      _maxDist = maxDist_ * _camera->farPlane( );
 
-    _programQuads->maximumDistance( &_maxDist );
-    _programTriangles->maximumDistance( &_maxDist );
+    _programQuads->use( );
+    _programQuads->sendUniformf("maxDist", _maxDist);
+
+    _programTriangles->use( );
+    _programTriangles->sendUniformf("maxDist", _maxDist);
   }
 
   void NeuronsCollection::neuronColor( const Eigen::Vector3f& neuronColor_ )
@@ -734,7 +805,7 @@ namespace nlrender
         ( boundingBox.zMin + boundingBox.zMax ) / 2 );
     Eigen::Vector3f corner( boundingBox.xMin, boundingBox.yMin,
          boundingBox.zMin );
-    float radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+    float radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
 
     _defaultPivot = center;
     _defaultRadius = radius;
@@ -864,7 +935,7 @@ namespace nlrender
       Eigen::Vector3f corner( boundingBox.xMin, boundingBox.yMin,
              boundingBox.zMin );
 
-      radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+      radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
 
 
     }
@@ -874,7 +945,7 @@ namespace nlrender
       radius = _defaultRadius;
     }
 
-    _camera->TargetPivotRadius( center, radius );
+    _camera->targetPivotRadius( center, radius );
   }
 
 #endif // NEUROLOTS_USE_GMRVLEX
@@ -966,7 +1037,7 @@ namespace nlrender
       Eigen::Vector3f corner( boundingBox.xMin, boundingBox.yMin,
              boundingBox.zMin );
 
-      radius = ( center - corner ).norm( ) /  sin( _camera->Fov( ));
+      radius = ( center - corner ).norm( ) /  sin( _camera->fov( ));
 
 
     }
@@ -976,7 +1047,7 @@ namespace nlrender
       radius = _defaultRadius;
     }
 
-    _camera->TargetPivotRadius( center, radius );
+    _camera->targetPivotRadius( center, radius );
   }
 
 #endif // NEUROLOTS_USE_LEXIS

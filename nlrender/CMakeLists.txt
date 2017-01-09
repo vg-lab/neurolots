@@ -1,30 +1,38 @@
 include_directories( ../nlgenerator ../nlgeometry )
 
+
+########## RETO ##########
+include( reto_generate_shaders )
+
+reto_generate_shaders(
+  NLRENDER_SHADERS
+  nlrender
+  ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/
+  ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
+)
+########## RETO ##########
+
+
 set(NLRENDER_PUBLIC_HEADERS
-  Camera.h
+  Shaders.h
   Config.h
   Morphologies.h
   Neuron.h
   NeuronMesh.h
   NeuronMorphology.h
   NeuronsCollection.h
-  Program.h
-  Shader.h
 )
 
 set(NLRENDER_HEADERS
 )
 
 set(NLRENDER_SOURCES
-  Camera.cpp
   Config.cpp
   Morphologies.cpp
   Neuron.cpp
   NeuronMesh.cpp
   NeuronMorphology.cpp
   NeuronsCollection.cpp
-  Program.cpp
-  Shader.cpp
 )
 
 set(NLRENDER_LINK_LIBRARIES
@@ -34,6 +42,7 @@ set(NLRENDER_LINK_LIBRARIES
   nsol
   nlgeometry
   nlgenerator
+  ReTo
 )
 
 if (ZEROEQ_FOUND)

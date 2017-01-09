@@ -1,0 +1,31 @@
+#version 400
+layout(triangles) in;
+
+in vec3 tcCenter[];
+in vec3 tcNormal[];
+in float tcRadius[];
+
+out vec3 position;
+out vec3 normal;
+out vec3 L;
+
+uniform mat4 proy;
+uniform mat4 view;
+uniform vec3 cameraPos;
+
+void main( )
+{
+  vec3 tePosition;
+  vec3 teCenter;
+  float teRadius;
+  float u=gl_TessCoord.x;
+  float v=gl_TessCoord.y;
+  float w=gl_TessCoord.z;
+  normal = normalize(tcNormal[0]*u+tcNormal[1]*v+tcNormal[2]*w);
+  teCenter = tcCenter[0]*u+tcCenter[1]*v+tcCenter[2]*w;
+  teRadius = tcRadius[0]*u+tcRadius[1]*v+tcRadius[2]*w;
+  tePosition = teCenter+normal*teRadius;
+  L = normalize(cameraPos-tePosition);
+  position = tePosition;
+  gl_Position = proy*view*vec4(tePosition,1);
+}

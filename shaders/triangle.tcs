@@ -1,0 +1,24 @@
+#version 400
+layout(vertices = 3) out;
+
+in vec3 vPosition[];
+in vec3 vCenter[];
+in float vlot[];
+
+out vec3 tcCenter[];
+out vec3 tcNormal[];
+out float tcRadius[];
+
+#define ID gl_InvocationID
+
+void main( void )
+{
+  tcCenter[ID] = vCenter[ID];
+  tcNormal[ID] = normalize( vPosition[ID]-vCenter[ID] );
+  tcRadius[ID] = distance( vPosition[ID], vCenter[ID] );
+  float tcLod = (vlot[0]+vlot[1]+vlot[2])/3;
+  gl_TessLevelInner[0] = tcLod;
+  gl_TessLevelOuter[0] = (vlot[1]+vlot[2])/2;
+  gl_TessLevelOuter[1] = (vlot[2]+vlot[0])/2;
+  gl_TessLevelOuter[2] = (vlot[0]+vlot[1])/2;
+}
