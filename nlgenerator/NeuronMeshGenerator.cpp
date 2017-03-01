@@ -282,33 +282,45 @@ namespace nlgenerator
         }
         else //Bifurcation and normal node
         {
-
           Eigen::Vector3f localTangent;
-          for ( unsigned int j = 0; j < childNodes.size(); j++ )
+          if ( childNodes.size( ) == 1 )
           {
-            localTangent = childNodes[j]->Position( ) - vNode->Position( );
-            if( localTangent.norm( ) > EPSILON )
+            localTangent = childNodes[0]->Position( ) - vNode->Position( );
+            if ( localTangent.norm( ) > EPSILON )
             {
-              localTangent.normalize( );
+              tangent += localTangent.normalized( );
             }
-            tangent += localTangent;
+            localTangent = vNode->Position( ) - vNodeFather->Position( );
+            if ( localTangent.norm( ) > EPSILON )
+            {
+              tangent += localTangent.normalized( );
+              tangent.normalize( );
+            }
           }
-          if( tangent.norm() > EPSILON )
+          else if ( childNodes.size( ) == 2 )
           {
-            tangent.normalize( );
-          }
-          localTangent = vNode->Position( ) - vNodeFather->Position( );
-          if( localTangent.norm( ) > EPSILON )
-          {
-            localTangent.normalize( );
-          }
-          tangent  += localTangent;
-          if( tangent.norm() > EPSILON )
-          {
-            tangent.normalize( );
+            Eigen::Vector3f v0 =
+              ( childNodes[0]->Position( ) - vNode->Position( )).normalized( );
+            Eigen::Vector3f v1 =
+              ( childNodes[1]->Position( ) - vNode->Position( )).normalized( );
+            localTangent = ( v0 + v1 );
+            if ( localTangent.norm( ) < EPSILON )
+            {
+              localTangent =
+                ( vNode->Position( ) - vNodeFather->Position( )).normalized( );
+              Eigen::Vector3f v01 = ( v1 - v0 ).normalized( );
+              if ( v01.norm( ) < EPSILON )
+                v01 = v1;
+              tangent = localTangent - ( localTangent.dot( v01 ) * v01 );
+              if ( tangent.norm( ) > EPSILON )
+                tangent.normalize( );
+            }
+            else
+            {
+              tangent = localTangent.normalized( );
+            }
           }
         }
-
         vNode->Tangent(tangent);
       }
     }
@@ -425,32 +437,32 @@ namespace nlgenerator
 
           VectorizedNodePtr child0 = vNode->Childs( )[0];
           VectorizedNodePtr child1 = vNode->Childs( )[1];
+          Eigen::Vector3f v0 = ( child0->Position( ) -
+                                 vNode->Position( )).normalized( );
+          Eigen::Vector3f v1 = ( child1->Position( ) -
+                                 vNode->Position( )).normalized( );
 
-          Eigen::Vector3f childCenter = child0->Position( );
+          Eigen::Vector3f v01 = (v1 - v0).normalized( );
+          Eigen::Vector3f vCA = ( positionA - positionC ).normalized( );
+          Eigen::Vector3f vBD = ( positionD - positionB ).normalized( );
+
+          float projectionCA = v01.dot( vCA );
+          float projectionBD = v01.dot( vBD );
 
           unsigned int minor = 0;
-          float distance = ( childCenter - positionA ).norm( );
-          float minorDistance = distance;
-
-          distance = ( childCenter - positionB ).norm( );
-          if ( distance < minorDistance )
+          if ( abs( projectionCA ) >= abs( projectionBD ))
           {
-            minorDistance = distance;
-            minor = 1;
+            if ( projectionCA > 0 )
+              minor = 2;
+            else
+              minor = 0;
           }
-
-          distance = ( childCenter - positionC ).norm( );
-          if ( distance < minorDistance )
+          else
           {
-            minorDistance = distance;
-            minor = 2;
-          }
-
-          distance = ( childCenter - positionD ).norm( );
-          if ( distance < minorDistance )
-          {
-            minorDistance = distance;
-            minor = 3;
+            if ( projectionBD > 0 )
+              minor = 1;
+            else
+              minor = 3;
           }
 
           switch( minor )

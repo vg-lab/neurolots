@@ -15,8 +15,12 @@ namespace nlrender
 {
 
   NeuronMesh::NeuronMesh( const nsol::NeuronMorphologyPtr& morpho_ )
-    : _morpho( morpho_ )
   {
+    _morpho = nsol::Simplifier::Instance( )
+      ->simplify( morpho_, nsol::Simplifier::DIST_NODES_RADIUS );
+    _morpho = nsol::Simplifier::Instance( )
+      ->simplify( _morpho, nsol::Simplifier::ANGLE_MIN,
+                  (( float ) M_PI) * 0.5f );
     _init( );
   }
 
