@@ -402,6 +402,13 @@ void MainWindow::_generateNeuritesLayout( void )
     _neuriteSlider->setMinimum(0);
     _neuriteSlider->setMaximum(200);
     _neuriteSlider->setValue(100);
+    _neuriteSlider->setToolTip(
+      "Scales the distance between the position of the first tracing point of\n"
+      "neurite n and the surface of the initial sphere used to generate the\n"
+      "soma [0-2], 0 means that the first tracing point is placed on the\n"
+      "surface and 2 means that the point is placed at a distance twice as\n"
+      "big as the initial distance between the point and the surface." );
+    
     _neuritesLayout->addWidget( new QLabel( QString( "Neurite " ) +
                                             QString::number( i ) +
                                             QString( " factor" )));
@@ -460,6 +467,9 @@ void MainWindow::_initExtractionDock( void )
   _radiusSlider->setMinimum( 25 );
   _radiusSlider->setMaximum( 100 );
   _radiusSlider->setValue( 100 );
+  _radiusSlider->setToolTip(
+    "Scales the radius of the initial sphere used to generate the soma. [0-1]."
+    );
 
   _somaGroupLayout->addWidget( new QLabel( QString( "Radius factor" )));
   _somaGroupLayout->addWidget( _radiusSlider );
@@ -527,6 +537,9 @@ void MainWindow::_initConfigurationDock( void )
   _lotSlider->setMinimum( 1 );
   _lotSlider->setMaximum( 30 );
   _lotSlider->setValue( 4 );
+  _lotSlider->setToolTip(
+    "Maximum level of subdivisions for the visualization [1-30]."
+    );
   vbox->addWidget(
     new QLabel( QString( "Subdivision Level" )));
   vbox->addWidget( _lotSlider );
@@ -535,14 +548,21 @@ void MainWindow::_initConfigurationDock( void )
   _distanceSlider->setMinimum( 0 );
   _distanceSlider->setMaximum( 1000 );
   _distanceSlider->setValue( 10 );
+  _distanceSlider->setToolTip(
+     "Further distance to which the subdivision is applied [0-1], being 1\n"
+     "the camera maximum visibility distance." );
   vbox->addWidget(
-    new QLabel( QString( "Maximum Distance" )));
+    new QLabel( QString( "Distance threshold" )));
   vbox->addWidget( _distanceSlider );
 
   _tangSlider = new QSlider( Qt::Horizontal );
   _tangSlider->setMinimum( 0 );
   _tangSlider->setMaximum( 50 );
   _tangSlider->setValue( 10 );
+  _tangSlider->setToolTip(
+    "Scales the modulus of the orientation vectors applied to smooth\n"
+    "the neurite trajectories [0-1], being 0 no smoothing and 1 the\n"
+    "maximum smoothing." );
   vbox->addWidget(
     new QLabel( QString( "Tangent smoothing" )));
   vbox->addWidget( _tangSlider );
