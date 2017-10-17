@@ -1,5 +1,5 @@
 subroutine( levelDistType )
-float homogeneous( vec3 postion )
+float homogeneous( vec3 position )
 {
   return lod;
 }

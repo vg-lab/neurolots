@@ -37,7 +37,7 @@ command can be used:
 
 ## Building
 
-NeuroTessMesh has been succesfully built and used on Ubuntu 14.04, Mac OSX Yosemite
+NeuroTessMesh has been successfully built and used on Ubuntu 14.04, Mac OSX Yosemite
 and Windows 7/8 Visual Studio 2013 Win64. Please ensure that Release version is
 built in order to get the best performance possible.
 
