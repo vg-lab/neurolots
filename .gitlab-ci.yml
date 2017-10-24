@@ -9,7 +9,7 @@ Ubuntu-OptionalDeps:
   - uname -a
   - export CMAKE_EXTRA_TARGETS="install"
   - export BUILD_OPTIONALS_SUBPROJECTS=1
-  - export CMAKE_EXTRA_ARGS=-DNEUROLOTS_OPTIONALS_AS_REQUIRED=ON
+  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DNEUROLOTS_OPTIONALS_AS_REQUIRED=ON"
   - export BUILD_GENERATOR="Ninja"
   - bash .gitlab-ci.sh
  tags:
@@ -21,6 +21,7 @@ Ubuntu-Subproject:
   - date
   - hostname
   - uname -a
+  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
   - export BUILD_GENERATOR="Ninja"
   - bash .gitlab-ci.sh
  tags:
@@ -34,7 +35,7 @@ OSX-OptionalDeps:
   - uname -a
   - module load Qt-5.4
   - export BUILD_OPTIONALS_SUBPROJECTS=1
-  - export CMAKE_EXTRA_ARGS="-DNEUROLOTS_OPTIONALS_AS_REQUIRED=ON DLibJpegTurbo_INCLUDE_DIR=/usr/local/opt/jpeg-turbo/include -DLibJpegTurbo_LIBRARY=/usr/local/opt/jpeg-turbo/lib/libturbojpeg.dylib -DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/2.8.1/lib/libglut.dylib"
+  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DNEUROLOTS_OPTIONALS_AS_REQUIRED=ON DLibJpegTurbo_INCLUDE_DIR=/usr/local/opt/jpeg-turbo/include -DLibJpegTurbo_LIBRARY=/usr/local/opt/jpeg-turbo/lib/libturbojpeg.dylib -DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/2.8.1/lib/libglut.dylib"
   - export BUILD_GENERATOR="Ninja"
   - export CMAKE_OSX_ARCHITECTURES=x86_64
   - bash .gitlab-ci.sh
@@ -50,7 +51,7 @@ OSX-Subproject:
   - module load Qt-5.4
   - export BUILD_GENERATOR="Ninja"
   - export CMAKE_OSX_ARCHITECTURES=x86_64
-  - export CMAKE_EXTRA_ARGS=-DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/2.8.1/lib/libglut.dylib
+  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/2.8.1/lib/libglut.dylib"
   - bash .gitlab-ci.sh
  tags:
   - osx
@@ -61,7 +62,7 @@ Win7:
   - call %ENVFILESDIR%\Qt-5.4.bat
   - set JAMBS_TARGETS=nsol;eigen
   - set BUILD_GENERATOR=Visual Studio 12 Win64
-  - set CMAKE_EXTRA_ARGS=-DGLEW_INCLUDE_DIR=c:\libs\glew-1.11.0\include -DGLEW_LIBRARY=c:\libs\glew-1.11.0\lib\Release/x64/glew32.lib  -DGLUT_glut_LIBRARY=c:\libs\freeglut\lib\x64\freeglut.lib -DGLUT_INCLUDE_DIR=c:\libs\freeglut\include
+  - set CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DGLEW_INCLUDE_DIR=c:\libs\glew-1.11.0\include -DGLEW_LIBRARY=c:\libs\glew-1.11.0\lib\Release/x64/glew32.lib  -DGLUT_glut_LIBRARY=c:\libs\freeglut\lib\x64\freeglut.lib -DGLUT_INCLUDE_DIR=c:\libs\freeglut\include"
   - set PATH=%PATH%;"c:\Program Files (x86)\Git\bin"
   - bash.exe --login .gitlab-ci.sh
  tags:
