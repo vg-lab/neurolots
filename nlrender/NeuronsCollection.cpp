@@ -869,7 +869,7 @@ namespace nlrender
   void NeuronsCollection::_onFocusEvent(
     zeroeq::gmrv::ConstFocusedIDsPtr event_ )
   {
-    std::vector< unsigned int > focus = std::move( event_->getIdsVector( ));
+    std::vector< unsigned int > focus = event_->getIdsVector( );
 
     std::set<unsigned int> focusedNeurons;
 
@@ -954,7 +954,7 @@ namespace nlrender
   void NeuronsCollection::_onSelectionEvent(
     lexis::data::ConstSelectedIDsPtr selection )
   {
-    std::vector<unsigned int> selected = std::move( selection->getIdsVector( ));
+    std::vector<unsigned int> selected = selection->getIdsVector( );
 
     _selectedNeurons.clear();
 
@@ -970,7 +970,7 @@ namespace nlrender
     lexis::data::ConstSelectedIDsPtr selFocus )
   {
     // Selection
-    std::vector<unsigned int> selected = std::move( selFocus->getIdsVector( ));
+    std::vector<unsigned int> selected = selFocus->getIdsVector( );
 
     _selectedNeurons.clear();
     for( unsigned int i = 0; i < selected.size(); i ++)
