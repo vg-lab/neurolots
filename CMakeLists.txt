@@ -8,14 +8,18 @@ cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(neurolots VERSION 0.0.1)
 set(neurolots_VERSION_ABI 0)
 
+# Disable in source building
+if( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" )
+  message( FATAL "no in source building allowed." )
+endif()
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake
-  ${CMAKE_SOURCE_DIR}/CMake/common)
+list( APPEND CMAKE_MODULE_PATH
+  ${PROJECT_SOURCE_DIR}/CMake
+  ${CMAKE_SOURCE_DIR}/CMake/common )
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif(NOT CMAKE_BUILD_TYPE)
-
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/CMake/common/Common.cmake)
+  message(FATAL_ERROR "CMake/common missing, run: git submodule update --init")
+endif()
 
 option( NEUROLOTS_OPTIONALS_AS_REQUIRED
   "Force optional dependencies as required" OFF )
