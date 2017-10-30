@@ -348,6 +348,8 @@ namespace nlgenerator
     Eigen::Vector3f positionD;
     Eigen::Vector3f positionE;
 
+    int a, b, c, d, e;
+
     Eigen::Quaternion< float > q;
 
     for ( unsigned int i = 0; i < vNodes.size(); i++ )
@@ -358,15 +360,10 @@ namespace nlgenerator
       {
         center = vNode->Position( );
         tangent = vNode->Tangent();
-
         VectorizedNodePtr father = vNode->Father( );
-
         exe = father->Tangent( );
-
         q.setFromTwoVectors(exe,tangent);
-
         GeometricPrimitivePtr fatherGeom = father->Primitive();
-
 
 
         int vecId = fatherGeom->vertexA( ) * 3;
@@ -382,36 +379,31 @@ namespace nlgenerator
         vd = ( Eigen::Vector3f( vertices[vecId], vertices[vecId + 1],
              vertices[vecId + 2] ) - father->Position( )).normalized( );
 
-
-        int a = int( vertices.size( )) / 3;
+        a = int( vertices.size( )) / 3;
         positionA = q._transformVector( va ) * vNode->Radius( ) + center;
-
         vertices.push_back( positionA.x( ));
         vertices.push_back( positionA.y( ));
         vertices.push_back( positionA.z( ));
 
-        int b = int( vertices.size( )) / 3;
+        b = int( vertices.size( )) / 3;
         positionB = q._transformVector( vb ) * vNode->Radius( ) + center;
-
         vertices.push_back( positionB.x( ));
         vertices.push_back( positionB.y( ));
         vertices.push_back( positionB.z( ));
 
-        int c = int( vertices.size( ) ) / 3;
+        c = int( vertices.size( ) ) / 3;
         positionC = q._transformVector( vc ) * vNode->Radius( ) + center;
-
         vertices.push_back( positionC.x( ));
         vertices.push_back( positionC.y( ));
         vertices.push_back( positionC.z( ));
 
-        int d = int( vertices.size( ) ) / 3;
+        d = int( vertices.size( ) ) / 3;
         positionD = q._transformVector( vd ) * vNode->Radius( ) + center;
-
         vertices.push_back( positionD.x( ));
         vertices.push_back( positionD.y( ));
         vertices.push_back( positionD.z( ));
 
-        int e = -1;
+        e = -1;
 
         if ( vNode->Childs( ).size( ) == 0 )
         {
@@ -424,77 +416,6 @@ namespace nlgenerator
           vertices.push_back( positionE.z( ));
         }
 
-        if ( vNode->Bifurcation( ))
-        {
-          numVertex++;
-          e = int( vertices.size( )) / 3;
-          positionE = tangent * vNode->Radius( ) + center;
-
-          vertices.push_back( positionE.x( ));
-          vertices.push_back( positionE.y( ));
-          vertices.push_back( positionE.z( ));
-
-
-          VectorizedNodePtr child0 = vNode->Childs( )[0];
-          VectorizedNodePtr child1 = vNode->Childs( )[1];
-          Eigen::Vector3f v0 = ( child0->Position( ) -
-                                 vNode->Position( )).normalized( );
-          Eigen::Vector3f v1 = ( child1->Position( ) -
-                                 vNode->Position( )).normalized( );
-
-          Eigen::Vector3f v01 = (v1 - v0).normalized( );
-          Eigen::Vector3f vCA = ( positionA - positionC ).normalized( );
-          Eigen::Vector3f vBD = ( positionD - positionB ).normalized( );
-
-          float projectionCA = v01.dot( vCA );
-          float projectionBD = v01.dot( vBD );
-
-          unsigned int minor = 0;
-          if ( abs( projectionCA ) >= abs( projectionBD ))
-          {
-            if ( projectionCA > 0 )
-              minor = 2;
-            else
-              minor = 0;
-          }
-          else
-          {
-            if ( projectionBD > 0 )
-              minor = 1;
-            else
-              minor = 3;
-          }
-
-          switch( minor )
-          {
-          case 0:
-            vNode->AddChildPrimitive( child0->Id( ),
-                                    new GeometricPrimitive( a, b, e, d ));
-            vNode->AddChildPrimitive( child1->Id( ),
-                                    new GeometricPrimitive( e, b, c, d ));
-            break;
-          case 1:
-            vNode->AddChildPrimitive( child0->Id( ),
-                                    new GeometricPrimitive( a, b, c, e ));
-            vNode->AddChildPrimitive( child1->Id( ),
-                                    new GeometricPrimitive( a, e, c, d ));
-            break;
-          case 2:
-            vNode->AddChildPrimitive( child0->Id( ),
-                                    new GeometricPrimitive( e, b, c, d ));
-            vNode->AddChildPrimitive( child1->Id( ),
-                                    new GeometricPrimitive( a, b, e, d ));
-            break;
-          case 3:
-            vNode->AddChildPrimitive( child0->Id( ),
-                                    new GeometricPrimitive( a, e, c, d ));
-            vNode->AddChildPrimitive( child1->Id( ),
-                                    new GeometricPrimitive( a, b, c, e ));
-            break;
-          }
-        }
-
-
         for (unsigned int j = 0; j < numVertex; j++ )
         {
           centers.push_back( center.x( ));
@@ -505,8 +426,86 @@ namespace nlgenerator
           tangents.push_back( tangent.y( ));
           tangents.push_back( tangent.z( ));
         }
-
         vNode->Primitive( new GeometricPrimitive( a, b, c, d, e ));
+      }
+      else
+      {
+        center = vNode->Position( );
+        tangent = vNode->Tangent();
+        a = vNode->Primitive( )->vertexA( );
+        b = vNode->Primitive( )->vertexB( );
+        c = vNode->Primitive( )->vertexC( );
+        d = vNode->Primitive( )->vertexD( );
+      }
+      if ( vNode->Bifurcation( ))
+      {
+        e = int( vertices.size( )) / 3;
+        positionE = tangent * vNode->Radius( ) + center;
+        vertices.push_back( positionE.x( ));
+        vertices.push_back( positionE.y( ));
+        vertices.push_back( positionE.z( ));
+        centers.push_back( center.x( ));
+        centers.push_back( center.y( ));
+        centers.push_back( center.z( ));
+        tangents.push_back( tangent.x( ));
+        tangents.push_back( tangent.y( ));
+        tangents.push_back( tangent.z( ));
+
+        VectorizedNodePtr child0 = vNode->Childs( )[0];
+        VectorizedNodePtr child1 = vNode->Childs( )[1];
+        Eigen::Vector3f v0 = ( child0->Position( ) -
+                               vNode->Position( )).normalized( );
+        Eigen::Vector3f v1 = ( child1->Position( ) -
+                               vNode->Position( )).normalized( );
+
+        Eigen::Vector3f v01 = (v1 - v0).normalized( );
+        Eigen::Vector3f vCA = ( positionA - positionC ).normalized( );
+        Eigen::Vector3f vBD = ( positionD - positionB ).normalized( );
+        float projectionCA = v01.dot( vCA );
+        float projectionBD = v01.dot( vBD );
+
+        unsigned int minor = 0;
+        if ( abs( projectionCA ) >= abs( projectionBD ))
+        {
+          if ( projectionCA > 0 )
+            minor = 2;
+          else
+            minor = 0;
+        }
+        else
+        {
+          if ( projectionBD > 0 )
+            minor = 1;
+          else
+            minor = 3;
+        }
+        switch( minor )
+        {
+        case 0:
+          vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, b, e, d ));
+          vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( e, b, c, d ));
+          break;
+        case 1:
+          vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, b, c, e ));
+          vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, e, c, d ));
+          break;
+        case 2:
+          vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( e, b, c, d ));
+          vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, b, e, d ));
+          break;
+        case 3:
+          vNode->AddChildPrimitive( child0->Id( ),
+                                    new GeometricPrimitive( a, e, c, d ));
+          vNode->AddChildPrimitive( child1->Id( ),
+                                    new GeometricPrimitive( a, b, c, e ));
+          break;
+        }
       }
     }
   }
