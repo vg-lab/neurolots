@@ -80,7 +80,12 @@ add_subdirectory( nlgeometry )
 add_subdirectory( nlfem )
 add_subdirectory( nlgenerator )
 add_subdirectory( nlrender )
-add_subdirectory( neurotessmesh )
+
+if ( Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5OpenGL_FOUND )
+  add_subdirectory( neurotessmesh )
+else()  
+  message(WARNING "neurotessmesh build is skipped because it needs Qt 5.4 or above." )
+endif( )
 
 install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h
   DESTINATION include/neurolots )
