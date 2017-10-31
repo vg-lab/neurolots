@@ -86,6 +86,15 @@ if ( MSVC )
   add_definitions( -DNEUROTESSMESH_STATIC )
 endif( )
 
+if ( APPLE )
+  set( NEUROTESSMESH_ICON neurotessmesh.icns )
+endif()
+
+if ( UNIX AND NOT APPLE )
+  set( NEUROTESSMESH_ICON neurotessmesh.png )
+endif( )
+
+
 common_application(NeuroTessMesh GUI ${COMMON_APP_ARGS})
 
 endif(QT5CORE_FOUND)
