@@ -1,4 +1,4 @@
-NeuroTessMesh 
+NeuroLOTs and NeuroTessMesh 
 =====================================================
 
 ## Introduction
@@ -7,10 +7,14 @@ visualizing them at different levels of detail using GPU-based tessellation.
 As a part of NeuroLOTS, NeuroTessMesh provides a visual environment for the 
 generation of 3D polygonal meshes that approximate the membrane of neuronal 
 cells, from the morphological tracings that describe the morphology of the 
-neurons. The 3D models can be tesselated at different levels of detail, 
-providing either homogeneus or adaptive resolution along the model. The soma 
+neurons. The 3D models can be tessellated at different levels of detail, 
+providing either homogeneous or adaptive resolution along the model. The soma 
 shape is recovered from the incomplete information of the tracings, applying a 
 physical deformation model that can be interactively adjusted.
+
+See [NeuroTessMesh web page](http://gmrv.es/neurotessmesh/) and 
+[NeuroTessMesh  manual](http://gmrv.es/neurotessmesh/NeuroTessMeshUserManual.pdf)
+for a complete description and sample data tests.
 
 ## Dependencies
 
@@ -21,7 +25,7 @@ physical deformation model that can be interactively adjusted.
 * Optional dependencies:
     * Qt5.4: enables building NeuroTessMesh viewer (*)
     * ZeroEQ: enables syncing selections and syncing camera
-    * Lexis: provides de base vocabulary for ZeroEQ for sync operations
+    * Lexis: provides the base vocabulary for ZeroEQ for sync operations
     * gmrvLex: enables sending focus messages
 
 Note: nsol library is automatically downloaded and built if not found by cmake.  
@@ -43,13 +47,13 @@ make
 
 ## Running
 
-If building process was ok, you can try NeuroTessMesh with the command:
+If building process was OK, you can try NeuroTessMesh with the command:
 
 ```bash 
 ./bin/NeuroTessMesh -swc nsol/tests/ExampleNeuron.swc
 ```
 
-All the features can be accesed using the NeuroTessMesh GUI but some of them
+All the features can be accessed using the NeuroTessMesh GUI but some of them
 are also available through CLI. Running the following can provide a list of
 the CLI arguments NeuroTessMesh accepts:
 
