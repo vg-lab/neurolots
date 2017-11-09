@@ -35,15 +35,7 @@ int main( int argc, char** argv )
   //WAR for Brion swc reader
   setenv("LANG", "C", 1);
 #endif
-#ifdef __APPLE__
-  //Plugins finding for OSX app bundle
-  QDir dir( QFileInfo( argv[0] ).dir( )); // e.g. appdir/Contents/MacOS/appname
-  assert( dir.cdUp( ));
-  assert( dir.cdUp( ));
-  assert( dir.cd( "PlugIns")); // e.g. appdir/Contents/PlugIns
-  QCoreApplication::setLibraryPaths(
-    QStringList( dir.absolutePath( ) + QString( "/../Plugins" )));
-#endif
+
   QApplication application(argc,argv);
 
   std::string blueConfig;
