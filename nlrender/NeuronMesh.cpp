@@ -116,20 +116,21 @@ namespace nlrender
       vertices_[i]->id( ) = i + 1;
       outStream << "v " << vertices_[i]->position( ).x( ) << " "
                 << vertices_[i]->position( ).y( ) << " "
-                << vertices_[i]->position( ).z( ) << std::endl;
+                << vertices_[i]->position( ).z( ) << "\n";
     }
     for( nlgeometry::VertexPtr vertex: vertices_ )
     {
       outStream << "vn " << vertex->normal( ).x( ) << " "
                 << vertex->normal( ).y( ) << " "
-                << vertex->normal( ).z( ) << std::endl;
+                << vertex->normal( ).z( ) << "\n";
     }
     for( nlgeometry::FacetPtr facet: facets_ )
     {
-      outStream << "f " << facet->v0( )->id( ) << "//" <<  facet->v0( )->id( )
-                << " " << facet->v1( )->id( ) << "//" <<  facet->v1( )->id( )
-                << " " << facet->v2( )->id( ) << "//" <<  facet->v2( )->id( )
-                << std::endl;
+      outStream << "f " << facet->vertex0( )->id( ) << "//"
+                <<  facet->vertex0( )->id( ) << " " << facet->vertex1( )->id( )
+                << "//" <<  facet->vertex1( )->id( ) << " "
+                << facet->vertex2( )->id( )<< "//" <<  facet->vertex2( )->id( )
+                << "\n";
     }
 
     outStream.close();
