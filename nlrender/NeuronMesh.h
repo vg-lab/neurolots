@@ -15,8 +15,8 @@
 #include <GL/glew.h>
 #endif
 #ifdef Darwin
-#include <gl.h>
-#include <glu.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #else
 #include <GL/gl.h>
