@@ -38,6 +38,7 @@ set(NEUROLOTS_DESCRIPTION "NeuroLOTs")
 
 include(Common)
 
+common_find_package(Boost COMPONENTS unit_test_framework)
 common_find_package(Qt5Core 5.4 SYSTEM )
 common_find_package(Qt5Widgets 5.4 SYSTEM )
 common_find_package(Qt5OpenGL 5.4 SYSTEM )
@@ -46,6 +47,7 @@ common_find_package(GLEW REQUIRED SYSTEM)
 common_find_package(Eigen3 REQUIRED SYSTEM)
 common_find_package(nsol REQUIRED)
 common_find_package(ReTo REQUIRED)
+common_find_package(GLUT)
 # common_find_package(Deflect ${NEUROLOTS_OPTS_FIND_ARGS})
 common_find_package(Lexis ${NEUROLOTS_OPTS_FIND_ARGS})
 common_find_package(ZeroEQ ${NEUROLOTS_OPTS_FIND_ARGS})
@@ -83,8 +85,12 @@ add_subdirectory( nlrender )
 
 if ( Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5OpenGL_FOUND )
   add_subdirectory( neurotessmesh )
-else()  
+else( )
   message(WARNING "neurotessmesh build is skipped because it needs Qt 5.4 or above." )
+endif( )
+
+if ( GLUT_FOUND )
+  add_subdirectory( examples )
 endif( )
 
 install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h

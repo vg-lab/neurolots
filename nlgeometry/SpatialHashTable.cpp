@@ -1,46 +1,64 @@
 /**
- * @file    SpatialHashtable.cpp
- * @brief
- * @author  Juan José García <juanjose.garcia@urjc.es>
- * @date    2015
- * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
- * Do not distribute without further notice.
+ * Copyright (c) 2015-2017 GMRV/URJC.
+ *
+ * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
+ *
+ * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 
 #include "SpatialHashTable.h"
 
-#include <iostream>
-
 namespace nlgeometry
 {
-  SpatialHashTable::SpatialHashTable( unsigned int size_ , float cellSize_,
-                                      float tolerance_,
-                                      unsigned int prime1_,
-                                      unsigned int prime2_,
-                                      unsigned int prime3_ )
+
+  SpatialHashTable::SpatialHashTable(
+    unsigned int size_ , float cellSize_, float tolerance_,
+    unsigned int primeX_, unsigned int primeY_, unsigned int primeZ_ )
     : _size( size_ )
     , _cellSize( cellSize_ )
     , _tolerance( tolerance_ )
-    , _prime1( prime1_ )
-    , _prime2( prime2_ )
-    , _prime3( prime3_ )
+    , _primeX( primeX_ )
+    , _primeY( primeY_ )
+    , _primeZ( primeZ_ )
   {
     _table.resize( _size );
   }
 
   SpatialHashTable::~SpatialHashTable( void )
   {
-
+    for ( auto& cell: _table )
+      cell.clear( );
+    _table.clear( );
   }
 
   VertexPtr SpatialHashTable::insert( const VertexPtr& vertex_ )
   {
     VertexPtr v = vertex_;
-    unsigned int i = floor( v->position( ).x( ) / _cellSize );
-    unsigned int j = floor( v->position( ).y( ) / _cellSize );
-    unsigned int k = floor( v->position( ).z( ) / _cellSize );
+    if ( std::isnan( v->position( ).x( )) | std::isnan( v->position( ).y( )) |
+         std::isnan( v->position( ).z( )))
+    {
+      delete v;
+      return nullptr;
+    }
+    unsigned int i = floor( std::abs( v->position( ).x( )) / _cellSize );
+    unsigned int j = floor( std::abs( v->position( ).y( )) / _cellSize );
+    unsigned int k = floor( std::abs( v->position( ).z( )) / _cellSize );
 
-    unsigned int tableId = ( i * _prime1 + j * _prime2 + k * _prime3 ) % _size;
+    unsigned int tableId = ( i * _primeX + j * _primeY + k * _primeZ ) % _size;
 
     Vertices& list = _table[ tableId ];
 
@@ -66,16 +84,9 @@ namespace nlgeometry
   void SpatialHashTable::vertices( Vertices& vertices_ ) const
   {
     vertices_.clear( );
-    unsigned int id = 1;
     for ( const Vertices& list: _table )
-    {
       for ( const VertexPtr& vertex: list )
-      {
-        vertex->id( ) = id;
-        id ++;
         vertices_.push_back( vertex );
-      }
-    }
   }
 
   bool SpatialHashTable::_equal( const VertexPtr v0, const VertexPtr v1 ) const
@@ -90,4 +101,4 @@ namespace nlgeometry
              pos.z( ) <= vpos.z( ) && pos.z( ) >= vneg.z( ) );
   }
 
-}// end namespace nlgeometry
+} // end namespace nlgeometry

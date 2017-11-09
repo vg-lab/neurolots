@@ -126,9 +126,10 @@ namespace nlrender
     }
     for( nlgeometry::FacetPtr facet: facets_ )
     {
-      outStream << "f " << facet->v0( )->id( ) << "//" <<  facet->v0( )->id( )
-                << " " << facet->v1( )->id( ) << "//" <<  facet->v1( )->id( )
-                << " " << facet->v2( )->id( ) << "//" <<  facet->v2( )->id( )
+      outStream << "f " << facet->vertex0( )->id( ) << "//"
+                <<  facet->vertex0( )->id( ) << " " << facet->vertex1( )->id( )
+                << "//" <<  facet->vertex1( )->id( ) << " "
+                << facet->vertex2( )->id( )<< "//" <<  facet->vertex2( )->id( )
                 << std::endl;
     }
 
