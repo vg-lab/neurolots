@@ -15,7 +15,6 @@ add_executable(nlgeometryObjRender objRender.cpp Shaders.h)
 target_link_libraries(nlgeometryObjRender
   ReTo
   nlgeometry
-  nlrender
   ${GLUT_LIBRARIES}
   )
 
@@ -23,6 +22,5 @@ add_executable(nlgeometryCubeRender cubeRender.cpp Cube.h Shaders.h)
 target_link_libraries(nlgeometryCubeRender
   ReTo
   nlgeometry
-  nlrender
   ${GLUT_LIBRARIES}
   )

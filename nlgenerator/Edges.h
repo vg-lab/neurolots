@@ -12,7 +12,7 @@
 
 //Eigen
 
-#include "../nlfem/Node.h"
+#include "../nlphysics/Node.h"
 
 #include <iostream>
 #include <vector>

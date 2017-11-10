@@ -1,22 +1,21 @@
 #include <iostream>
 
 #include <nlgeometry/nlgeometry.h>
-#include <nlrender/nlrender.h>
 #include <reto/reto.h>
 
 //OpenGL
 #ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
-#include <GL/glew.h>
+  #include <GL/glew.h>
 #endif
 #ifdef Darwin
-#include <gl.h>
-#include <glu.h>
-#include <GLUT/glut.h>
-#include <GL/freeglut.h>
+  #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glu.h>
+  #include <GL/freeglut.h>
 #else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+  #include <GL/freeglut.h>
 #endif
 
 #include "Shaders.h"
@@ -126,7 +125,8 @@ void initContext( int argc, char* argv[ ])
   glutInitWindowPosition( 0, 0 );
   glutCreateWindow( " Neurolots example: Obj Render" );
 
-  nlrender::Config::init( );
+  glewExperimental = GL_TRUE;
+  glewInit( );
 
   glutDisplayFunc( renderFunc );
   glutIdleFunc( idleFunc );

@@ -23,7 +23,8 @@ set(NLGENERATOR_SOURCES
 
 set(NLGENERATOR_LINK_LIBRARIES
   nsol
-  nlfem )
+  nlphysics
+  )
 
 set(NLGENERATOR_INCLUDE_NAME nlgenerator)
 set(NLGENERATOR_NAMESPACE nlgenerator)

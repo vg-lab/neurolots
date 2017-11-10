@@ -13,9 +13,9 @@
 //Eigen
 #include <Eigen/Dense>
 
-#include "../nlfem/Node.h"
-#include "../nlfem/Tetrahedron.h"
-#include "../nlfem/Fem.h"
+#include "../nlphysics/Node.h"
+#include "../nlphysics/Tetrahedron.h"
+#include "../nlphysics/Fem.h"
 
 #include "Edges.h"
 #include "Quad.h"
@@ -72,8 +72,8 @@ namespace nlgenerator
       Eigen::Vector3f _center;
       float _radius;
 
-      std::vector< nlfem::NodePtr > _nodes;
-      std::vector< nlfem::TetrahedronPtr > _tetrahedra;
+      std::vector< nlphysics::NodePtr > _nodes;
+      std::vector< nlphysics::TetrahedronPtr > _tetrahedra;
       std::vector< QuadPtr > _quads;
 
   };
