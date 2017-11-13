@@ -43,22 +43,22 @@ namespace nlgeometry
 
   }
 
-  OrbitalVertexPtr SectionQuad::vertex0( void )
+  OrbitalVertexPtr& SectionQuad::vertex0( void )
   {
     return _vertex0;
   }
 
-  OrbitalVertexPtr SectionQuad::vertex1( void )
+  OrbitalVertexPtr& SectionQuad::vertex1( void )
   {
     return _vertex1;
   }
 
-  OrbitalVertexPtr SectionQuad::vertex2( void )
+  OrbitalVertexPtr& SectionQuad::vertex2( void )
   {
     return _vertex2;
   }
 
-  OrbitalVertexPtr SectionQuad::vertex3( void )
+  OrbitalVertexPtr& SectionQuad::vertex3( void )
   {
     return _vertex3;
   }

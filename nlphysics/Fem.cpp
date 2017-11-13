@@ -21,6 +21,8 @@
  */
 #include "Fem.h"
 
+#include <iostream>
+
 namespace nlphysics
 {
 
@@ -51,10 +53,18 @@ namespace nlphysics
   void Fem::solve( void )
   {
     _computeTetrahedra( );
+
+    for ( unsigned int i=0; i < _nodes.size( ); i++ )
+    {
+      if ( _nodes[i]->fixed( ))
+        _nodes[i]->displacement( ) = _nodes[i]->position( ) -
+          _nodes[i]->initialPosition( );
+    }
     _conformMatrixSystem( );
+
     _u = _solver.solve( _b );
 
-    for ( unsigned int i=0; i < _nodes.size(); i++)
+    for ( unsigned int i=0; i < _nodes.size(); i++ )
     {
       if ( !_nodes[i]->fixed( ))
       {

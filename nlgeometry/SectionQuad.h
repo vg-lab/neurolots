@@ -60,28 +60,28 @@ namespace nlgeometry
      * @return the first section quad vertex
      */
     NLGEOMETRY_API
-    OrbitalVertexPtr vertex0( void );
+    OrbitalVertexPtr& vertex0( void );
 
     /**
      * Method that return the second section quad vertex
      * @return the second section quad vertex
      */
     NLGEOMETRY_API
-    OrbitalVertexPtr vertex1( void );
+    OrbitalVertexPtr& vertex1( void );
 
     /**
      * Method that return the third section quad vertex
      * @return the third section quad vertex
      */
     NLGEOMETRY_API
-    OrbitalVertexPtr vertex2( void );
+    OrbitalVertexPtr& vertex2( void );
 
     /**
      * Method that return the fourth section quad vertex
      * @return the fourth section quad vertex
      */
     NLGEOMETRY_API
-    OrbitalVertexPtr vertex3( void );
+    OrbitalVertexPtr& vertex3( void );
 
     /**
      * Method that inverse the section quad

@@ -4,5 +4,5 @@
 # git_subproject(gmrvlex git@gitlab.gmrv.es:nsviz/gmrvlex.git c20b194)
 # git_subproject(Deflect https://github.com/BlueBrain/Deflect 3328e67)
 # git_subproject(Brion https://github.com/BlueBrain/Brion.git 5396f1e)
-git_subproject(nsol ssh://git@gitlab.gmrv.es/nsviz/nsol.git 5d4cdac)
+git_subproject(nsol ssh://git@gitlab.gmrv.es/nsviz/nsol.git ef6de63a)
 git_subproject(ReTo ssh://git@gitlab.gmrv.es/nsviz/ReTo.git 6051c98)

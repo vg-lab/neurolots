@@ -24,3 +24,21 @@ target_link_libraries(nlgeometryCubeRender
   nlgeometry
   ${GLUT_LIBRARIES}
   )
+
+add_executable(nlrenderCubeRenderer cubeRenderer.cpp Cube.h Shaders.h)
+target_link_libraries(nlrenderCubeRenderer
+  ReTo
+  nlgeometry
+  nlrender
+  ${GLUT_LIBRARIES}
+  )
+
+add_executable(nlrenderMorphologyRenderer morphologyRenderer.cpp Shaders.h)
+target_link_libraries(nlrenderMorphologyRenderer
+  ReTo
+  nsol
+  nlgeometry
+  nlgenerator
+  nlrender
+  ${GLUT_LIBRARIES}
+  )

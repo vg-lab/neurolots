@@ -80,8 +80,8 @@ set(PROJECT_INCLUDE_NAME neurolots)
 
 add_subdirectory( nlgeometry )
 add_subdirectory( nlphysics )
-# add_subdirectory( nlgenerator )
-# add_subdirectory( nlrender )
+add_subdirectory( nlgenerator )
+add_subdirectory( nlrender )
 
 # if ( Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5OpenGL_FOUND )
 #   add_subdirectory( neurotessmesh )

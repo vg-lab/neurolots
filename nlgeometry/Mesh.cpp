@@ -34,6 +34,8 @@
 #include <GL/glu.h>
 #endif
 
+#include <iostream>
+
 namespace nlgeometry
 {
 
@@ -41,6 +43,7 @@ namespace nlgeometry
     : _vao( GL_INVALID_VALUE )
     , _trianglesSize( 0 )
     , _quadsSize( 0 )
+    , _facetType( Facet::TRIANGLES )
   {
     _modelMatrix = Eigen::Matrix4f::Identity( );
   }
@@ -105,14 +108,17 @@ namespace nlgeometry
 
   void Mesh::uploadGPU( AttribsFormat format_, Facet::TFacetType facetType_ )
   {
+    _facetType = facetType_;
     clearGPUData( );
 
     Attribs attribs;
     attribs.resize( format_.size( ));
     std::vector< unsigned int > indices;
 
-    for ( auto vertex: _vertices )
-      vertex->store( attribs, format_ );
+    for( auto triangle: _triangles )
+      triangle->store( attribs, format_ );
+    for( auto quad: _quads )
+      quad->store( attribs, format_ );
 
     for ( auto triangle: _triangles )
       triangle->addIndicesAs( facetType_, indices );
@@ -216,9 +222,9 @@ namespace nlgeometry
     }
   }
 
-  void Mesh::renderTriangles( Facet::TFacetType facetType_ )
+  void Mesh::renderTriangles( void )
   {
-    switch( facetType_ )
+    switch( _facetType )
     {
     case Facet::TRIANGLES:
       glBindVertexArray( _vao );
@@ -234,9 +240,9 @@ namespace nlgeometry
     }
   }
 
-  void Mesh::renderQuads( Facet::TFacetType facetType_ )
+  void Mesh::renderQuads( void )
   {
-    switch( facetType_ )
+    switch( _facetType )
     {
     case Facet::TRIANGLES:
       glBindVertexArray( _vao );
@@ -270,6 +276,7 @@ namespace nlgeometry
       numComponents = 3;
       break;
     }
+
     glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),
                   buffer_.data( ), GL_STATIC_DRAW );
