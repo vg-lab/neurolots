@@ -1,13 +1,37 @@
+/**
+ * Copyright (c) 2015-2017 GMRV/URJC.
+ *
+ * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
+ *
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ */
 #include <iostream>
 
 #include <nlgeometry/nlgeometry.h>
 #include <reto/reto.h>
 
+#include "DemoCallbacks.h"
+
 //OpenGL
 #ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
-#include <GL/glew.h>
+  #include <GL/glew.h>
 #endif
 #ifdef Darwin
+  #define __gl_h_
   #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
   #include <OpenGL/gl.h>
   #include <OpenGL/glu.h>
@@ -25,31 +49,7 @@ reto::Camera* camera;
 reto::ShaderProgram* program;
 nlgeometry::Meshes meshes;
 
-// X Y mouse position.
-int previousX;
-int previousY;
-
-// States.
-bool wireframe = false;
-bool mouseDown = false;
-bool mouseScrolling = false;
-bool rotation = false;
-bool traslation = false;
-
-// Constants.
-
-const float mouseWheelFactor = 1.2f;
-const float rotationScale = 0.01f;
-const float traslationScale = 0.2f;
-
-
-void idleFunc( void );
 void renderFunc( void );
-void keyboardFunc( unsigned char key, int x, int y );
-void mouseFunc( int button, int state, int x, int y );
-void mouseMotionFunc( int x, int y );
-void resizeFunc( int width, int height );
-
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
 
@@ -61,6 +61,7 @@ int main( int argc, char* argv[] )
   initOGL( );
 
   camera = new reto::Camera( );
+  DemoCallbacks::camera( camera );
 
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::MeshPtr mesh;
@@ -85,9 +86,6 @@ int main( int argc, char* argv[] )
   camera->pivot( aabb.center( ));
   camera->radius( aabb.radius( ) / sin( camera->fov( )));
 
-  // camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-  // camera->radius( 10.0f );
-
   glutMainLoop( );
   return 0;
 }
@@ -100,17 +98,18 @@ void initContext( int argc, char* argv[ ])
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
   glutInitWindowSize( 600, 600 );
   glutInitWindowPosition( 0, 0 );
-  glutCreateWindow( " Neurolots example: Obj Render" );
+
+  glutCreateWindow( "Neurolots example: Cube Render" );
 
   glewExperimental = GL_TRUE;
   glewInit( );
 
   glutDisplayFunc( renderFunc );
-  glutIdleFunc( idleFunc );
-  glutKeyboardFunc( keyboardFunc );
-  glutMouseFunc( mouseFunc );
-  glutMotionFunc( mouseMotionFunc );
-  glutReshapeFunc( resizeFunc );
+  glutIdleFunc( DemoCallbacks::idleFunc );
+  glutKeyboardFunc( DemoCallbacks::keyboardFunc );
+  glutMouseFunc( DemoCallbacks::mouseFunc );
+  glutMotionFunc( DemoCallbacks::mouseMotionFunc );
+  glutReshapeFunc( DemoCallbacks::resizeFunc );
 }
 
 void initOGL( void )
@@ -124,13 +123,7 @@ void initOGL( void )
   program->autocatching( );
 
   glEnable( GL_DEPTH_TEST );
-  // glEnable( GL_CULL_FACE );
   glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-}
-
-void idleFunc( void )
-{
-  glutPostRedisplay( );
 }
 
 void renderFunc( void )
@@ -150,102 +143,4 @@ void renderFunc( void )
 
   glFlush( );
   glutSwapBuffers( );
-}
-
-void keyboardFunc( unsigned char key, int, int )
-{
-  switch( key )
-  {
-    // Camera control.
-    case 'c':
-    case 'C':
-      camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-      camera->radius( 1000.0f );
-      camera->rotation( 0.0f, 0.0f );
-      std::cout << "Centering." << std::endl;
-      glutPostRedisplay( );
-      break;
-    case 'm':
-    case 'M':
-      wireframe = !wireframe;
-      if ( wireframe )
-      {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        std::cout << "Wireframe ON." << std::endl;
-      }
-      else
-      {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        std::cout << "Wireframe OFF." << std::endl;
-      }
-      glutPostRedisplay( );
-      break;
-  }
-}
-
-void mouseFunc( int button, int state, int x, int y )
-{
-  /**
-   * GLUT
-   * button: 0 (left), 1 (central), 2 (right), 3 (wheel up), 4 (wheel down).
-   * state: GLUT_DOWN (button down), GLUT_UP (button released).
-   */
-  if ( state == GLUT_DOWN )
-  {
-    mouseDown = true;
-    if( button == 0 ) rotation = true;
-    if( button == 1 ) traslation = true;
-    if ( (button == 3) || (button == 4) )
-    {
-      //std::cout << "Scrolling." << std::endl;
-      mouseScrolling = true;
-      float newRadius = ( button == 3 ) ?
-                        camera->radius() / mouseWheelFactor :
-                        camera->radius() * mouseWheelFactor;
-      camera->radius( newRadius );
-      glutPostRedisplay();
-    }
-    // We save X and Y previous positions.
-    previousX = x;
-    previousY = y;
-  }
-  else
-  {
-    mouseDown = false;
-    if( button == 0 ) rotation = false;
-    if( button == 1 ) traslation = false;
-    if ( (button == 3) || (button == 4) )
-    {
-      mouseScrolling = false;
-    }
-  }
-}
-
-void mouseMotionFunc( int x, int y )
-{
-  if( mouseDown )
-  {
-    float deltaX = x - previousX;
-    float deltaY = y - previousY;
-    if( rotation )
-    {
-      camera->localRotation( deltaX * rotationScale,
-                             deltaY * rotationScale );
-    }
-    if( traslation )
-    {
-      camera->localTranslation( Eigen::Vector3f ( -deltaX * traslationScale,
-                                                  deltaY * traslationScale,
-                                                  0.0f ) );
-    }
-    previousX = x;
-    previousY = y;
-    glutPostRedisplay();
-  }
-}
-
-void resizeFunc( int width, int height )
-{
-  camera->ratio((( double ) width ) / height );
-  glViewport( 0, 0, width, height );
 }

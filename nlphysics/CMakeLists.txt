@@ -12,8 +12,6 @@ set(NLPHYSICS_HEADERS
 
 set(NLPHYSICS_SOURCES
   Fem.cpp
-  Node.cpp
-  Tetrahedron.cpp
 )
 
 set(NLPHYSICS_INCLUDE_NAME nlphysics)

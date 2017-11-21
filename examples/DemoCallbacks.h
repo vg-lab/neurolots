@@ -19,37 +19,46 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __NLGEOMETRY_OBJ_WRITER__
-#define __NLGEOMETRY_OBJ_WRITER__
+#ifndef __EXAMPLES_DEMO_CALLBACKS__
+#define __EXAMPLES_DEMO_CALLBACKS__
 
-#include "../Mesh.h"
+#include <reto/reto.h>
 
-#include <nlgeometry/api.h>
-
-namespace nlgeometry
+class DemoCallbacks
 {
 
-  /* \class ObjWriter */
-  class ObjWriter
-  {
+public:
 
-  public:
+  static void camera( reto::Camera* camera_ );
 
-    /**
-     * Static method to write mesh to a obj file
-     */
-    NLGEOMETRY_API
-    static void writeMesh( MeshPtr mesh, const std::string& fileName_ );
+  static void idleFunc( void );
 
-    /**
-     * Static method to write a vector of facets and vertices to a obj file
-     */
-    NLGEOMETRY_API
-    static void writeMesh( Facets& facets_, Vertices& vertices_,
-                           const std::string& fileName_ );
+  static void keyboardFunc( unsigned char key_, int x_, int y_ );
 
-  }; // class ObjWriter
+  static void mouseFunc( int button_, int state_, int x_, int y_ );
 
-} // namespace nlgeometry
+  static void mouseMotionFunc( int x_, int y_ );
+
+  static void resizeFunc( int width_, int height_ );
+
+protected:
+
+  static reto::Camera* _camera;
+
+  // X Y mouse position.
+  static int _previousX;
+  static int _previousY;
+
+  static bool _wireframe;
+  static bool _mouseDown;
+  static bool _mouseScrolling;
+  static bool _rotation;
+  static bool _traslation;
+
+  static float _mouseWheelFactor;
+  static float _rotationScale;
+  static float _traslationScale;
+
+}; // class DemosCallBacks
 
 #endif

@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -39,42 +39,42 @@ namespace nlgeometry
 
   }
 
-  VertexPtr Facet::vertex0( void )
+  VertexPtr& Facet::vertex0( void )
   {
     return _vertex0;
   }
 
-  VertexPtr Facet::vertex0( void ) const
+  const VertexPtr& Facet::vertex0( void ) const
   {
     return _vertex0;
   }
 
-  VertexPtr Facet::vertex1( void )
+  VertexPtr& Facet::vertex1( void )
   {
     return _vertex1;
   }
 
-  VertexPtr Facet::vertex1( void ) const
+  const VertexPtr& Facet::vertex1( void ) const
   {
     return _vertex1;
   }
 
-  VertexPtr Facet::vertex2( void )
+  VertexPtr& Facet::vertex2( void )
   {
     return _vertex2;
   }
 
-  VertexPtr Facet::vertex2( void ) const
+  const VertexPtr& Facet::vertex2( void ) const
   {
     return _vertex2;
   }
 
-  VertexPtr Facet::vertex3( void )
+  VertexPtr& Facet::vertex3( void )
   {
     return _vertex3;
   }
 
-  VertexPtr Facet::vertex3( void ) const
+  const VertexPtr& Facet::vertex3( void ) const
   {
     return _vertex3;
   }

@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -67,7 +67,7 @@ namespace nlgeometry
     Eigen::Vector3f& minimum( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f minimum( void ) const;
+    const Eigen::Vector3f& minimum( void ) const;
 
     /**
      * Method that returns the maximum axis aligned bounding box position
@@ -77,7 +77,7 @@ namespace nlgeometry
     Eigen::Vector3f& maximum( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f maximum( void ) const;
+    const Eigen::Vector3f& maximum( void ) const;
 
     /**
      * Method that computes and return the axis aligned bounding box center
@@ -96,7 +96,7 @@ namespace nlgeometry
   protected:
 
     //! Left bottom back axis aligned bounding box position
-     Eigen::Vector3f _minimum;
+    Eigen::Vector3f _minimum;
 
     //! Rigth top front axis aligned bounding box position
     Eigen::Vector3f _maximum;

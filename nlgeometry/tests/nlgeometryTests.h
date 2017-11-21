@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -23,7 +23,7 @@
 #ifndef __NLGEOMETRY_TESTS_H__
 #define __NLGEOMETRY_TESTS_H__
 
-#define BOOST_TEST_MODULE nsol
+#define BOOST_TEST_MODULE nlgeometry
 #include <boost/test/unit_test.hpp>
 
 

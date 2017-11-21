@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -43,22 +43,42 @@ namespace nlgeometry
 
   }
 
-  OrbitalVertexPtr SectionQuad::vertex0( void )
+  OrbitalVertexPtr& SectionQuad::vertex0( void )
   {
     return _vertex0;
   }
 
-  OrbitalVertexPtr SectionQuad::vertex1( void )
+  const OrbitalVertexPtr& SectionQuad::vertex0( void ) const
+  {
+    return _vertex0;
+  }
+
+  OrbitalVertexPtr& SectionQuad::vertex1( void )
   {
     return _vertex1;
   }
 
-  OrbitalVertexPtr SectionQuad::vertex2( void )
+  const OrbitalVertexPtr& SectionQuad::vertex1( void ) const
+  {
+    return _vertex1;
+  }
+
+  OrbitalVertexPtr& SectionQuad::vertex2( void )
   {
     return _vertex2;
   }
 
-  OrbitalVertexPtr SectionQuad::vertex3( void )
+  const OrbitalVertexPtr& SectionQuad::vertex2( void ) const
+  {
+    return _vertex2;
+  }
+
+  OrbitalVertexPtr& SectionQuad::vertex3( void )
+  {
+    return _vertex3;
+  }
+
+  const OrbitalVertexPtr& SectionQuad::vertex3( void ) const
   {
     return _vertex3;
   }
@@ -134,23 +154,23 @@ namespace nlgeometry
 
   void SectionQuad::normalize( void )
   {
-    Eigen::Vector3f axis0, axis1;
+    Eigen::Vector3f axisA, axisB;
 
-    axis0 = this->axis0( );
-    axis1 = this->axis1( );
+    axisA = this->axis0( );
+    axisB = this->axis1( );
 
-    _vertex0->normalize( axis0 );
-    _vertex1->normalize( axis1 );
-    _vertex2->normalize( -axis0 );
-    _vertex3->normalize( -axis1 );
+    _vertex0->normalize( axisA );
+    _vertex1->normalize( axisB );
+    _vertex2->normalize( -axisA );
+    _vertex3->normalize( -axisB );
   }
 
   Eigen::Vector3f SectionQuad::normal( void ) const
   {
-    Eigen::Vector3f axis0, axis1;
-    axis0 = this->axis0( );
-    axis1 = this->axis1( );
-    return axis0.cross( axis1 );
+    Eigen::Vector3f axisA, axisB;
+    axisA = this->axis0( );
+    axisB = this->axis1( );
+    return axisA.cross( axisB );
   }
 
   SectionQuadPtr SectionQuad::clone( void ) const
