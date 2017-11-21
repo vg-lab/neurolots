@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -72,7 +72,7 @@ namespace nlgeometry
     Eigen::Vector3f& center( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f center( void ) const;
+    const Eigen::Vector3f& center( void ) const;
 
     /**
      * Method that returns the orbital vertex tangent
@@ -81,7 +81,7 @@ namespace nlgeometry
     Eigen::Vector3f& tangent( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f tangent( void ) const;
+    const Eigen::Vector3f& tangent( void ) const;
 
     /**
      * Method to displace the orbital vertex position
@@ -143,4 +143,4 @@ namespace nlgeometry
 
 } // namespace nlgeomtry
 
-#endif 
+#endif

@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -51,7 +51,7 @@ namespace nlgeometry
     return _minimum;
   }
 
-  Eigen::Vector3f AxisAlignedBoundingBox::minimum( void ) const
+  const Eigen::Vector3f& AxisAlignedBoundingBox::minimum( void ) const
   {
     return _minimum;
   }
@@ -61,7 +61,7 @@ namespace nlgeometry
     return _maximum;
   }
 
-  Eigen::Vector3f AxisAlignedBoundingBox::maximum( void ) const
+  const Eigen::Vector3f& AxisAlignedBoundingBox::maximum( void ) const
   {
     return _maximum;
   }

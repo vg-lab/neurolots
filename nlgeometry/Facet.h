@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -67,40 +67,40 @@ namespace nlgeometry
      * @return first triangle/quad vertex pointer
      */
     NLGEOMETRY_API
-    VertexPtr vertex0( void );
+    VertexPtr& vertex0( void );
 
     NLGEOMETRY_API
-    VertexPtr vertex0( void ) const;
+    const VertexPtr& vertex0( void ) const;
 
     /**
      * Method to get the second triangle/quad vertex pointer
      * @return second triangle/quad vertex pointer
      */
     NLGEOMETRY_API
-    VertexPtr vertex1( void );
+    VertexPtr& vertex1( void );
 
     NLGEOMETRY_API
-    VertexPtr vertex1( void ) const;
+    const VertexPtr& vertex1( void ) const;
 
     /**
      * Method to get the third triangle/quad vertex pointer
      * @return first triangle/quad vertex pointer
      */
     NLGEOMETRY_API
-    VertexPtr vertex2( void );
+    VertexPtr& vertex2( void );
 
     NLGEOMETRY_API
-    VertexPtr vertex2( void ) const;
+    const VertexPtr& vertex2( void ) const;
 
     /**
      * Method to get the fourth triangle/quad vertex pointer
      * @return fourth quad vertex pointer
      */
     NLGEOMETRY_API
-    VertexPtr vertex3( void );
+    VertexPtr& vertex3( void );
 
     NLGEOMETRY_API
-    VertexPtr vertex3( void ) const;
+    const VertexPtr& vertex3( void ) const;
 
     /**
      * Method that store the facet vertices attribs and assigns the vertices ids

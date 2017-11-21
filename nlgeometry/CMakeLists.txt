@@ -6,7 +6,7 @@ set( NLGEOMETRY_PUBLIC_HEADERS
   Facet.h
   Mesh.h
   OrbitalVertex.h
-  Reader/ObjReader.h
+  Reader/ObjReaderTemplated.h
   SectionQuad.h
   SpatialHashTable.h
   Vertex.h
@@ -21,7 +21,6 @@ set( NLGEOMETRY_SOURCES
   Facet.cpp
   Mesh.cpp
   OrbitalVertex.cpp
-  Reader/ObjReader.cpp
   SectionQuad.cpp
   SpatialHashTable.cpp
   Vertex.cpp
@@ -29,6 +28,7 @@ set( NLGEOMETRY_SOURCES
 )
 
 set( NLGEOMETRY_LINK_LIBRARIES
+  ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
 )
 

@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neuroltos <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -49,7 +49,7 @@ namespace nlphysics
      * @param contour_ condition of inner or contour node
      */
     NLPHYSICS_API
-    Node( Eigen::Vector3f& initialPostition_, unsigned int id_,
+    Node( Eigen::Vector3f initialPostition_, unsigned int id_ = 0,
           bool contour_ = false );
 
     /**
@@ -66,7 +66,7 @@ namespace nlphysics
     unsigned int& id( void );
 
     NLPHYSICS_API
-    unsigned int id( void ) const;
+    const unsigned int& id( void ) const;
 
     /**
      * Method that returns the node initial position
@@ -76,7 +76,7 @@ namespace nlphysics
     Eigen::Vector3f& initialPosition( void );
 
     NLPHYSICS_API
-    Eigen::Vector3f initialPosition( void )  const;
+    const Eigen::Vector3f& initialPosition( void )  const;
 
     /**
      * Method that returns the node displacement
@@ -86,7 +86,7 @@ namespace nlphysics
     Eigen::Vector3f& displacement( void );
 
     NLPHYSICS_API
-    Eigen::Vector3f displacement( void )  const;
+    const Eigen::Vector3f& displacement( void )  const;
 
     /**
      * Method that returns the node position
@@ -96,7 +96,7 @@ namespace nlphysics
     Eigen::Vector3f& position( void );
 
     NLPHYSICS_API
-    Eigen::Vector3f position( void )  const;
+    const Eigen::Vector3f& position( void )  const;
 
     /**
      * Method that returns the node center
@@ -106,7 +106,7 @@ namespace nlphysics
     Eigen::Vector3f& center( void );
 
     NLPHYSICS_API
-    Eigen::Vector3f center( void )  const;
+    const Eigen::Vector3f& center( void )  const;
 
     /**
      * Method that returns the node tangent
@@ -116,7 +116,7 @@ namespace nlphysics
     Eigen::Vector3f& tangent( void );
 
     NLPHYSICS_API
-    Eigen::Vector3f tangent( void )  const;
+    const Eigen::Vector3f& tangent( void )  const;
 
     /**
      * Method that returns the node force
@@ -126,7 +126,7 @@ namespace nlphysics
     Eigen::Vector3f& force( void );
 
     NLPHYSICS_API
-    Eigen::Vector3f force( void )  const;
+    const Eigen::Vector3f& force( void )  const;
 
     /**
      * Method that returns the node fixed condition
@@ -136,7 +136,7 @@ namespace nlphysics
     bool& fixed( void );
 
     NLPHYSICS_API
-    bool fixed( void )  const;
+    const bool& fixed( void )  const;
 
     /**
      * Method that returns the node contour condition
@@ -146,7 +146,7 @@ namespace nlphysics
     bool& contour( void );
 
     NLPHYSICS_API
-    bool contour( void )  const;
+    const bool& contour( void )  const;
 
   protected:
 

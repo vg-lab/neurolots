@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -24,7 +24,7 @@
 namespace nlphysics
 {
 
-  Node::Node( Eigen::Vector3f& initialPosition_, unsigned int id_,
+  Node::Node( Eigen::Vector3f initialPosition_, unsigned int id_,
               bool contour_ )
     : _id( id_ )
     , _initialPosition( initialPosition_ )
@@ -49,7 +49,7 @@ namespace nlphysics
     return _id;
   }
 
-  unsigned int Node::id( void ) const
+  const unsigned int& Node::id( void ) const
   {
     return _id;
   }
@@ -59,7 +59,7 @@ namespace nlphysics
     return _initialPosition;
   }
 
-  Eigen::Vector3f Node::initialPosition( void ) const
+  const Eigen::Vector3f& Node::initialPosition( void ) const
   {
     return _initialPosition;
   }
@@ -69,7 +69,7 @@ namespace nlphysics
     return _displacement;
   }
 
-  Eigen::Vector3f Node::displacement( void ) const
+  const Eigen::Vector3f& Node::displacement( void ) const
   {
     return _displacement;
   }
@@ -79,7 +79,7 @@ namespace nlphysics
     return _position;
   }
 
-  Eigen::Vector3f Node::position( void ) const
+  const Eigen::Vector3f& Node::position( void ) const
   {
     return _position;
   }
@@ -89,7 +89,7 @@ namespace nlphysics
     return _center;
   }
 
-  Eigen::Vector3f Node::center( void ) const
+  const Eigen::Vector3f& Node::center( void ) const
   {
     return _center;
   }
@@ -99,19 +99,17 @@ namespace nlphysics
     return _tangent;
   }
 
-  Eigen::Vector3f Node::tangent( void ) const
+  const Eigen::Vector3f& Node::tangent( void ) const
   {
     return _tangent;
   }
-
-
 
   Eigen::Vector3f& Node::force( void )
   {
     return _force;
   }
 
-  Eigen::Vector3f Node::force( void ) const
+  const Eigen::Vector3f& Node::force( void ) const
   {
     return _force;
   }
@@ -121,7 +119,7 @@ namespace nlphysics
     return _fixed;
   }
 
-  bool Node::fixed( void ) const
+  const bool& Node::fixed( void ) const
   {
     return _fixed;
   }
@@ -131,7 +129,7 @@ namespace nlphysics
     return _contour;
   }
 
-  bool Node::contour( void ) const
+  const bool& Node::contour( void ) const
   {
     return _contour;
   }
