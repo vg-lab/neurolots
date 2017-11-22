@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -62,12 +62,18 @@ namespace nlgeometry
     NLGEOMETRY_API
     OrbitalVertexPtr& vertex0( void );
 
+    NLGEOMETRY_API
+    const OrbitalVertexPtr& vertex0( void ) const;
+
     /**
      * Method that return the second section quad vertex
      * @return the second section quad vertex
      */
     NLGEOMETRY_API
     OrbitalVertexPtr& vertex1( void );
+
+    NLGEOMETRY_API
+    const OrbitalVertexPtr& vertex1( void ) const;
 
     /**
      * Method that return the third section quad vertex
@@ -76,12 +82,18 @@ namespace nlgeometry
     NLGEOMETRY_API
     OrbitalVertexPtr& vertex2( void );
 
+    NLGEOMETRY_API
+    const OrbitalVertexPtr& vertex2( void ) const;
+
     /**
      * Method that return the fourth section quad vertex
      * @return the fourth section quad vertex
      */
     NLGEOMETRY_API
     OrbitalVertexPtr& vertex3( void );
+
+    NLGEOMETRY_API
+    const OrbitalVertexPtr& vertex3( void ) const;
 
     /**
      * Method that inverse the section quad

@@ -29,7 +29,7 @@ bool operator==( const MyPair& lhs, const MyPair& rhs )
 namespace nlgenerator
 {
 
-  Icosphere::Icosphere(  Eigen::Vector3f center_, float radius_,
+  Icosphere::Icosphere(  const Eigen::Vector3f& center_, float radius_,
                          unsigned int subdivisionlevel_ )
     : _center( center_ )
     , _radius( radius_ )
@@ -94,7 +94,8 @@ namespace nlgenerator
 
   }
 
-  nlgeometry::Facets Icosphere::compute( std::vector< JointNodePtr > joints_  )
+  nlgeometry::Facets Icosphere::compute(
+    const std::vector< JointNodePtr >& joints_  )
   {
     nlgeometry::Facets facets;
     std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr > vertices;
@@ -144,11 +145,48 @@ namespace nlgenerator
     _femSystem = new nlphysics::Fem( _nodes, _tetrahedra, 0.3, 1.0 );
     _femSystem->solve( );
     _computeCenters( );
-    surface( facets, vertices );
+    _surface( facets, vertices );
     return facets;
   }
 
-  void Icosphere::surface( nlgeometry::Facets& facets_,
+  nlgeometry::Facets Icosphere::surface( void )
+  {
+    nlgeometry::Facets facets;
+    std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr > vertices;
+    _surface( facets, vertices );
+    return facets;
+  }
+
+  nlgeometry::Facets Icosphere::structure( void )
+  {
+    nlgeometry::Facets facets;
+    std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr > vertices;
+    for ( auto tetrahedron: _tetrahedra )
+    {
+      auto vertex0 = _nodeToVertex( tetrahedron->node0( ), vertices );
+      auto vertex1 = _nodeToVertex( tetrahedron->node2( ), vertices );
+      auto vertex2 = _nodeToVertex( tetrahedron->node1( ), vertices );
+      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
+
+      vertex0 = _nodeToVertex( tetrahedron->node0( ), vertices );
+      vertex1 = _nodeToVertex( tetrahedron->node3( ), vertices );
+      vertex2 = _nodeToVertex( tetrahedron->node2( ), vertices );
+      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
+
+      vertex0 = _nodeToVertex( tetrahedron->node0( ), vertices );
+      vertex1 = _nodeToVertex( tetrahedron->node1( ), vertices );
+      vertex2 = _nodeToVertex( tetrahedron->node3( ), vertices );
+      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
+
+      vertex0 = _nodeToVertex( tetrahedron->node1( ), vertices );
+      vertex1 = _nodeToVertex( tetrahedron->node2( ), vertices );
+      vertex2 = _nodeToVertex( tetrahedron->node3( ), vertices );
+      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
+    }
+    return facets;
+  }
+
+  void Icosphere::_surface( nlgeometry::Facets& facets_,
       std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr >&
       vertices_ )
   {
@@ -193,37 +231,8 @@ namespace nlgenerator
     }
   }
 
-  nlgeometry::Facets Icosphere::structure( void )
-  {
-    nlgeometry::Facets facets;
-    std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr > vertices;
-    for ( auto tetrahedron: _tetrahedra )
-    {
-      auto vertex0 = _nodeToVertex( tetrahedron->node0( ), vertices );
-      auto vertex1 = _nodeToVertex( tetrahedron->node2( ), vertices );
-      auto vertex2 = _nodeToVertex( tetrahedron->node1( ), vertices );
-      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
-
-      vertex0 = _nodeToVertex( tetrahedron->node0( ), vertices );
-      vertex1 = _nodeToVertex( tetrahedron->node3( ), vertices );
-      vertex2 = _nodeToVertex( tetrahedron->node2( ), vertices );
-      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
-
-      vertex0 = _nodeToVertex( tetrahedron->node0( ), vertices );
-      vertex1 = _nodeToVertex( tetrahedron->node1( ), vertices );
-      vertex2 = _nodeToVertex( tetrahedron->node3( ), vertices );
-      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
-
-      vertex0 = _nodeToVertex( tetrahedron->node1( ), vertices );
-      vertex1 = _nodeToVertex( tetrahedron->node2( ), vertices );
-      vertex2 = _nodeToVertex( tetrahedron->node3( ), vertices );
-      facets.push_back( new nlgeometry::Facet( vertex0, vertex1, vertex2 ));
-    }
-    return facets;
-  }
-
   nlphysics::NodePtr Icosphere::_nearestSurfaceNode(
-    const Eigen::Vector3f& point_ )
+    const Eigen::Vector3f& point_ ) const
   {
     nlphysics::NodePtr nearestNode = nullptr;
     float minimumDistance = std::numeric_limits< float >::max( );
@@ -242,7 +251,7 @@ namespace nlgenerator
     return nearestNode;
   }
 
-  QuadPtr Icosphere::_nearestSurfaceQuad( const Eigen::Vector3f& point_ )
+  QuadPtr Icosphere::_nearestSurfaceQuad( const Eigen::Vector3f& point_ ) const
   {
     QuadPtr nearestQuad = nullptr;
     float minimumDistance = std::numeric_limits< float >::max( );

@@ -96,6 +96,92 @@ namespace nlgenerator
     return mesh;
   }
 
+  nlgeometry::MeshPtr MeshGenerator::generateMesh(
+    nsol::NeuronMorphologyPtr& morphology_,
+    float alphaRadius_,
+    const std::vector< float >& alphaNeurites_ )
+  {
+    auto mesh = new nlgeometry::Mesh( );
+
+    nsol::Sections sections;
+    for ( auto neurite: morphology_->neurites(  ))
+    {
+      auto section = neurite->firstSection( );
+      if ( section->nodes( ).size( ) == 1 )
+      {
+        auto firstSecNode = section->firstNode( );
+        Eigen::Vector3f position =
+          ( morphology_->soma( )->center( ) - firstSecNode->point( )
+            ).normalized( ) * firstSecNode->radius( ) + firstSecNode->point( );
+        auto newNode = new nsol::Node( position, firstSecNode->id( ),
+                                       firstSecNode->radius( ));
+        section->addBackwardNode( newNode );
+      }
+      sections.push_back( neurite->firstSection( ));
+    }
+
+    auto joints = _vectorizeJoints( sections );
+
+    JointNodes firstJoints;
+    float somaRadius = morphology_->soma( )->meanRadius( );
+    Eigen::Vector3f somaCenter = morphology_->soma( )->center( );
+    for ( unsigned int i = 0; i < morphology_->neurites(  ).size( ); i++ )
+    {
+      auto neurite = morphology_->neurites( )[i];
+      auto joint = joints[neurite->firstSection( )->firstNode( )];
+      joint->connectedSoma( ) = true;
+      Eigen::Vector3f axis = joint->position( ) - somaCenter;
+      float module = axis.norm( ) - somaRadius;
+      module = module * alphaNeurites_[i] + somaRadius;
+      joint->position( ) = somaCenter + axis.normalized( ) * module;
+      firstJoints.push_back( joint );
+    }
+    for ( auto element: joints )
+    {
+      auto joint = element.second;
+      joint->computeGeometry( );
+    }
+
+    Icosphere icosphere( somaCenter, somaRadius * alphaRadius_, 3 );
+
+    mesh->triangles( ) = icosphere.compute( firstJoints );
+
+    auto facets = _meshSections( sections, joints );
+
+    for ( auto element: joints )
+    {
+      auto joint = element.second;
+      if ( joint->numberNeighbors( ) == 1 && !joint->connectedSoma( ))
+      {
+        auto sectionQuad = joint->sectionQuad( );
+        auto node = joint->neighbour( );
+        Eigen::Vector3f center = joint->position( );
+        Eigen::Vector3f position = ( center - node->point( )
+          ).normalized( ) * joint->radius( ) + center;
+        auto vertex = new nlgeometry::OrbitalVertex( position, center );
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex0( ),
+                                 sectionQuad->vertex1( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex1( ),
+                                 sectionQuad->vertex2( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex2( ),
+                                 sectionQuad->vertex3( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex3( ),
+                                 sectionQuad->vertex0( ),
+                                 vertex, vertex ));
+      }
+    }
+
+    mesh->quads( ) = facets;
+    return mesh;
+  }
+
   std::unordered_map< nsol::NodePtr, JointNodePtr >
   MeshGenerator::_vectorizeJoints( const nsol::Sections& sections_ )
   {
@@ -219,7 +305,8 @@ namespace nlgenerator
               Eigen::Vector3f exe1 = ( nodes[nodeId+1]->point( ) -
                                        center ).normalized( );
               Eigen::Quaternion< float > q;
-              Eigen::Quaternion< float > qI = Eigen::Quaternion<float>::Identity( );
+              Eigen::Quaternion< float > qI =
+                Eigen::Quaternion<float>::Identity( );
               Eigen::Quaternion< float > qSlerp;
               q.setFromTwoVectors( exe, exe1 );
               qSlerp = q.slerp( 0.5f, qI );
@@ -230,8 +317,8 @@ namespace nlgenerator
               quad->rotate( q );
             }
 
-            totalDist +=
-              (nodes[numNodes - 1]->point( ) - nodes[numNodes-2]->point( )).norm( );
+            totalDist += (nodes[numNodes - 1]->point( ) -
+                          nodes[numNodes-2]->point( )).norm( );
 
             float offsetAngle = quad->getZAngle( prim1->inversed( ));
 
@@ -248,7 +335,8 @@ namespace nlgenerator
               Eigen::Vector3f exe1 = ( nodes[nodeId+1]->point( ) -
                                        center ).normalized( );
               Eigen::Quaternion< float > q;
-              Eigen::Quaternion< float > qI = Eigen::Quaternion<float>::Identity( );
+              Eigen::Quaternion< float > qI =
+                Eigen::Quaternion<float>::Identity( );
               Eigen::Quaternion< float > qSlerp;
               q.setFromTwoVectors( exe, exe1 );
               qSlerp = q.slerp( 0.5f, qI );

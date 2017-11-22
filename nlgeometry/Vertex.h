@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -90,7 +90,7 @@ namespace nlgeometry
     unsigned int& id( void );
 
     NLGEOMETRY_API
-    unsigned int id( void ) const;
+    const unsigned int& id( void ) const;
 
     /**
      * Method to get the vertex position
@@ -100,7 +100,7 @@ namespace nlgeometry
     Eigen::Vector3f& position( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f position( void ) const;
+    const Eigen::Vector3f& position( void ) const;
 
     /**
      * Method to get the vertex normal
@@ -110,7 +110,7 @@ namespace nlgeometry
     Eigen::Vector3f& normal( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f normal( void ) const;
+    const Eigen::Vector3f& normal( void ) const;
 
     /**
      * Method to get the vertex color
@@ -120,7 +120,7 @@ namespace nlgeometry
     Eigen::Vector3f& color( void );
 
     NLGEOMETRY_API
-    Eigen::Vector3f color( void ) const;
+    const Eigen::Vector3f& color( void ) const;
 
     /**
      * Method to get the vertex uv coordinates
@@ -130,7 +130,7 @@ namespace nlgeometry
     Eigen::Vector2f& uv( void );
 
     NLGEOMETRY_API
-    Eigen::Vector2f uv( void ) const;
+    const Eigen::Vector2f& uv( void ) const;
 
     /**
      * Method to displace the vertex position

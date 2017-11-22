@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -59,7 +59,7 @@ namespace nlgeometry
     return _id;
   }
 
-  unsigned int Vertex::id( void ) const
+  const unsigned int& Vertex::id( void ) const
   {
     return _id;
   }
@@ -69,7 +69,7 @@ namespace nlgeometry
     return _position;
   }
 
-  Eigen::Vector3f Vertex::position( void ) const
+  const Eigen::Vector3f& Vertex::position( void ) const
   {
     return _position;
   }
@@ -79,7 +79,7 @@ namespace nlgeometry
     return _normal;
   }
 
-  Eigen::Vector3f Vertex::normal( void ) const
+  const Eigen::Vector3f& Vertex::normal( void ) const
   {
     return _normal;
   }
@@ -89,7 +89,7 @@ namespace nlgeometry
     return _color;
   }
 
-  Eigen::Vector3f Vertex::color( void ) const
+  const Eigen::Vector3f& Vertex::color( void ) const
   {
     return _color;
   }
@@ -99,7 +99,7 @@ namespace nlgeometry
     return _uv;
   }
 
-  Eigen::Vector2f Vertex::uv( void ) const
+  const Eigen::Vector2f& Vertex::uv( void ) const
   {
     return _uv;
   }

@@ -1,3 +1,5 @@
+option( NLGENERATOR_WITH_TESTS "NLGENERATOR_WITH_TESTS" ON )
+
 set(NLGENERATOR_PUBLIC_HEADERS
   Icosphere.h
   JointNode.h
@@ -23,3 +25,5 @@ set(NLGENERATOR_INCLUDE_NAME nlgenerator)
 set(NLGENERATOR_NAMESPACE nlgenerator)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlgenerator )
+
+add_subdirectory(tests)

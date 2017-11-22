@@ -1,4 +1,3 @@
-option( NLGEOMETRY_WITH_EXAMPLES "NLGEOMETRY_WITH_EXAMPLES" ON )
 option( NLGEOMETRY_WITH_TESTS "NLGEOMETRY_WITH_TESTS" ON )
 
 set( NLGEOMETRY_PUBLIC_HEADERS
@@ -6,7 +5,7 @@ set( NLGEOMETRY_PUBLIC_HEADERS
   Facet.h
   Mesh.h
   OrbitalVertex.h
-  Reader/ObjReader.h
+  Reader/ObjReaderTemplated.h
   SectionQuad.h
   SpatialHashTable.h
   Vertex.h
@@ -21,7 +20,6 @@ set( NLGEOMETRY_SOURCES
   Facet.cpp
   Mesh.cpp
   OrbitalVertex.cpp
-  Reader/ObjReader.cpp
   SectionQuad.cpp
   SpatialHashTable.cpp
   Vertex.cpp

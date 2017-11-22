@@ -147,7 +147,8 @@ namespace nlgenerator
      * Default constructor
      */
     NLGENERATOR_API
-    Icosphere( Eigen::Vector3f center_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
+    Icosphere( const Eigen::Vector3f& center_ =
+               Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
                float radius_ = 1.0f,
                unsigned int subdivisionlevel_ = 3 );
 
@@ -162,16 +163,14 @@ namespace nlgenerator
      * @param joints_ joint nodes that conects to the icospehere
      */
     NLGENERATOR_API
-    nlgeometry::Facets compute( std::vector< JointNodePtr > joints_ );
+    nlgeometry::Facets compute( const std::vector< JointNodePtr >& joints_ );
 
     /**
      * Method that return the final icoshepre shape as facets
      * @return the final icospehere shape as facets
      */
     NLGENERATOR_API
-    void surface( nlgeometry::Facets& facets_,
-      std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr >&
-      vertices_ );
+    nlgeometry::Facets surface( void );
 
     /**
      * Method that return the final icoshepre structure as facets
@@ -183,14 +182,19 @@ namespace nlgenerator
 
   protected:
 
-    nlphysics::NodePtr _nearestSurfaceNode( const Eigen::Vector3f& point_ );
+    void _surface( nlgeometry::Facets& facets_,
+                   std::unordered_map< unsigned int,
+                   nlgeometry::OrbitalVertexPtr >& vertices_ );
 
-    QuadPtr _nearestSurfaceQuad( const Eigen::Vector3f& point_ );
+    nlphysics::NodePtr _nearestSurfaceNode( const Eigen::Vector3f& point_ )
+      const;
+
+    QuadPtr _nearestSurfaceQuad( const Eigen::Vector3f& point_ ) const;
 
     void _subdivideSphere( unsigned int subdivisionlevel_ );
 
     void _computeCenters( void );
-    
+
     nlphysics::NodePtr _middleNode(
       nlphysics::NodePtr node0_, nlphysics::NodePtr node1_,
       std::unordered_map< MyPair, nlphysics::NodePtr,

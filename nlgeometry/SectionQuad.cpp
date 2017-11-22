@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -48,7 +48,17 @@ namespace nlgeometry
     return _vertex0;
   }
 
+  const OrbitalVertexPtr& SectionQuad::vertex0( void ) const
+  {
+    return _vertex0;
+  }
+
   OrbitalVertexPtr& SectionQuad::vertex1( void )
+  {
+    return _vertex1;
+  }
+
+  const OrbitalVertexPtr& SectionQuad::vertex1( void ) const
   {
     return _vertex1;
   }
@@ -58,7 +68,17 @@ namespace nlgeometry
     return _vertex2;
   }
 
+  const OrbitalVertexPtr& SectionQuad::vertex2( void ) const
+  {
+    return _vertex2;
+  }
+
   OrbitalVertexPtr& SectionQuad::vertex3( void )
+  {
+    return _vertex3;
+  }
+
+  const OrbitalVertexPtr& SectionQuad::vertex3( void ) const
   {
     return _vertex3;
   }

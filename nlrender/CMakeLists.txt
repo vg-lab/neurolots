@@ -1,3 +1,5 @@
+option( NLRENDER_WITH_TESTS "NLRENDER_WITH_TESTS" ON )
+
 ########## RETO ##########
 include( reto_generate_shaders )
 
@@ -25,8 +27,6 @@ set(NLRENDER_SOURCES
 )
 
 set(NLRENDER_LINK_LIBRARIES
-  ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES}
   nlgeometry
   ReTo
 )
@@ -35,3 +35,5 @@ set(NLRENDER_INCLUDE_NAME nlrender)
 set(NLRENDER_NAMESPACE nlrender)
 add_definitions(-DNEUROLOTS_SHARED)
 common_library( nlrender )
+
+add_subdirectory(tests)

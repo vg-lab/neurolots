@@ -24,7 +24,7 @@
 namespace nlgenerator
 {
 
-  JointNode::JointNode( Eigen::Vector3f position_, float radius_ )
+  JointNode::JointNode( const Eigen::Vector3f& position_, float radius_ )
     : _position( position_ )
     , _radius( radius_ )
     , _connectedSoma( false )

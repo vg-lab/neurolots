@@ -19,37 +19,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __NLGEOMETRY_OBJ_WRITER__
-#define __NLGEOMETRY_OBJ_WRITER__
 
-#include "../Mesh.h"
+#ifndef __NLGENERATOR_TESTS_H__
+#define __NLGENERATOR_TESTS_H__
 
-#include <nlgeometry/api.h>
+#define BOOST_TEST_MODULE nlgenerator
+#include <boost/test/unit_test.hpp>
 
-namespace nlgeometry
-{
-
-  /* \class ObjWriter */
-  class ObjWriter
-  {
-
-  public:
-
-    /**
-     * Static method to write mesh to a obj file
-     */
-    NLGEOMETRY_API
-    static void writeMesh( MeshPtr mesh, const std::string& fileName_ );
-
-    /**
-     * Static method to write a vector of facets and vertices to a obj file
-     */
-    NLGEOMETRY_API
-    static void writeMesh( Facets& facets_, Vertices& vertices_,
-                           const std::string& fileName_ );
-
-  }; // class ObjWriter
-
-} // namespace nlgeometry
-
-#endif
+#endif // __NLGENERATOR_TESTS_H__

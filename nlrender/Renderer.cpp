@@ -148,7 +148,7 @@ namespace nlrender
                          const Eigen::Matrix4f& modelMatrix_,
                          const Eigen::Vector3f& color_,
                          bool renderTriangles_,
-                         bool renderQuads_ )
+                         bool renderQuads_ ) const
   {
     if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
@@ -190,7 +190,7 @@ namespace nlrender
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_,
       bool renderTriangles_,
-      bool renderQuads_ )
+      bool renderQuads_ ) const
   {
     if ( meshes_.size( ) != modelMatrices_.size( ))
       throw std::runtime_error(
@@ -206,7 +206,7 @@ namespace nlrender
     const std::vector< Eigen::Matrix4f >& modelMatrices_,
     const std::vector< Eigen::Vector3f >& colors_,
     bool renderTriangles_,
-    bool renderQuads_ )
+    bool renderQuads_ ) const
   {
     if ( meshes_.size( ) != modelMatrices_.size( ) ||
          modelMatrices_.size( ) != colors_.size( ))
@@ -219,7 +219,7 @@ namespace nlrender
 
   nlgeometry::MeshPtr Renderer::extract(
     nlgeometry::MeshPtr mesh_, const Eigen::Matrix4f& modelMatrix_,
-    bool extractTriangles_, bool extractQuads_ )
+    bool extractTriangles_, bool extractQuads_ ) const
   {
     if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
@@ -354,8 +354,8 @@ namespace nlrender
     return mesh;
   }
 
-  nlgeometry::MeshPtr Renderer::_vectorToMesh( std::vector< float > positions_,
-                                               std::vector< float > normals_ )
+  nlgeometry::MeshPtr Renderer::_vectorToMesh(
+    std::vector< float > positions_, std::vector< float > normals_ ) const
   {
     nlgeometry::Vertices vertices;
     nlgeometry::Facets facets;

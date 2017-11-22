@@ -3,7 +3,7 @@
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
- * This file is part of nsol <https://github.com/gmrvvis/neurolots>
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published
@@ -53,13 +53,13 @@ namespace nlgeometry
       vertices_[i]->id( ) = i + 1;
       outStream << "v " << vertices_[i]->position( ).x( ) << " "
                 << vertices_[i]->position( ).y( ) << " "
-                << vertices_[i]->position( ).z( ) << std::endl;
+                << vertices_[i]->position( ).z( ) << "\n";
     }
     for( nlgeometry::VertexPtr vertex: vertices_ )
     {
       outStream << "vn " << vertex->normal( ).x( ) << " "
                 << vertex->normal( ).y( ) << " "
-                << vertex->normal( ).z( ) << std::endl;
+                << vertex->normal( ).z( ) << "\n";
     }
     for( nlgeometry::FacetPtr facet: facets_ )
     {
@@ -67,7 +67,7 @@ namespace nlgeometry
                 <<  facet->vertex0( )->id( ) << " " << facet->vertex1( )->id( )
                 << "//" <<  facet->vertex1( )->id( ) << " "
                 << facet->vertex2( )->id( ) << "//" <<  facet->vertex2( )->id( )
-                << std::endl;
+                << "\n";
     }
 
     outStream.close();

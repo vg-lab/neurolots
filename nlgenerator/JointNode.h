@@ -47,7 +47,7 @@ namespace nlgenerator
      * @param radius_ radius of the joint node
      */
     NLGENERATOR_API
-    JointNode( Eigen::Vector3f position_, float radius_ );
+    JointNode( const Eigen::Vector3f& position_, float radius_ );
 
     /**
      * Default destructor

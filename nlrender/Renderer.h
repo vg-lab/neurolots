@@ -106,7 +106,7 @@ namespace nlrender
       nlgeometry::MeshPtr mesh_,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
       const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true );
+      bool renderTriangles_ = true, bool renderQuads_ = true ) const;
 
     /**
      * Method that renderize the given meshes
@@ -117,7 +117,7 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true );
+      bool renderTriangles_ = true, bool renderQuads_ = true ) const;
 
     /**
      * Method that renderize the given meshes
@@ -128,7 +128,7 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const std::vector< Eigen::Vector3f >& colors_,
-      bool renderTriangles_ = true, bool renderQuads_ = true  );
+      bool renderTriangles_ = true, bool renderQuads_ = true  ) const;
 
     /**
      * Method that extract the given mesh
@@ -139,7 +139,7 @@ namespace nlrender
     nlgeometry::MeshPtr extract(
       nlgeometry::MeshPtr mesh_,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
-      bool extractTriangles_ = true, bool extractQuads_ = true );
+      bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
     /**
      * Method that extract the given meshes
@@ -150,13 +150,13 @@ namespace nlrender
     nlgeometry::Meshes& extract(
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
-      bool extractTriangles_ = true, bool extractQuads_ = true );
+      bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
 
   protected:
 
     nlgeometry::MeshPtr _vectorToMesh( std::vector< float > positions_,
-                                       std::vector< float > normals_  );
+                                       std::vector< float > normals_  ) const;
 
     //! Variable to determine if keep the OpenGL server status
     bool _keepOpenGLServerStack;

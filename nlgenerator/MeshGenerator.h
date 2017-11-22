@@ -50,32 +50,22 @@ namespace nlgenerator
     static nlgeometry::MeshPtr
     generateMesh( nsol::NeuronMorphologyPtr& morphology_ );
 
-    // /**
-    //  * Static method that return a mesh generated from the given morphology
-    //  * changing some morphology params
-    //  * @param moprholgy_ to be reconstructed
-    //  * @param alphaRadius_ param to change the morphology soma radius
-    //  * @param alphaNeurites_ param to change the distance of the morphology
-    //  * neurites with the morphology soma
-    //  * @return a mesh generated from the given morphology
-    //  */
-    // NLGENERATOR_API
-    // static nlgeometry::MeshPtr
-    // generateMesh( const nsol::NeuronMorphologyPtr& morphology_,
-    //               const float& alphaRadius_,
-    //               const std::vector< float >& alphaNeurites_ );
+    /**
+     * Static method that return a mesh generated from the given morphology
+     * changing some morphology params
+     * @param moprholgy_ to be reconstructed
+     * @param alphaRadius_ param to change the morphology soma radius
+     * @param alphaNeurites_ param to change the distance of the morphology
+     * neurites with the morphology soma
+     * @return a mesh generated from the given morphology
+     */
+    NLGENERATOR_API
+    static nlgeometry::MeshPtr
+    generateMesh( nsol::NeuronMorphologyPtr& morphology_,
+                  float alphaRadius_,
+                  const std::vector< float >& alphaNeurites_ );
 
   protected:
-
-    // static nlgeometry::MeshPtr
-    // _generateSoma( const nsol::SomaPtr& soma_,
-    //   std::vector< VectorizedNodePtr >& firstNodes_ );
-
-    // static nlgeometry::MeshPtr
-    // _generateSoma( const nsol::SomaPtr& soma_,
-    //                const float& alphaRadius_,
-    //                const std::vector< VectorizedNodePtr >& firstNodes_,
-    //                const std::vector< float >& alphaNeurites_ );
 
     static std::unordered_map< nsol::NodePtr, JointNodePtr >
     _vectorizeJoints( const nsol::Sections& sections_ );

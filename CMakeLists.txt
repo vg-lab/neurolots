@@ -1,12 +1,12 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 #   neurolots
-#   2014 (c) Universidad Rey Juan Carlos
+#   2015 (c) Universidad Rey Juan Carlos
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-project(neurolots VERSION 0.0.1)
-set(neurolots_VERSION_ABI 0)
+project(neurolots VERSION 0.0.2)
+set(neurolots_VERSION_ABI 1)
 
 # Disable in source building
 if( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" )
@@ -30,49 +30,24 @@ else()
   set( NEUROLOTS_OPTS_FIND_ARGS "" )
 endif()
 
-
 include(GitExternal)
 
 set(COMMON_PROJECT_DOMAIN gmrv.es)
 set(NEUROLOTS_DESCRIPTION "NeuroLOTs")
 
+option( NEUROLOTS_WITH_EXAMPLES "NEUROLOTS_WITH_EXAMPLES" ON )
+
 include(Common)
 
 common_find_package(Boost COMPONENTS unit_test_framework)
-common_find_package(Qt5Core 5.4 SYSTEM )
-common_find_package(Qt5Widgets 5.4 SYSTEM )
-common_find_package(Qt5OpenGL 5.4 SYSTEM )
 common_find_package(OpenGL REQUIRED SYSTEM)
 common_find_package(GLEW REQUIRED SYSTEM)
 common_find_package(Eigen3 REQUIRED SYSTEM)
 common_find_package(nsol REQUIRED)
 common_find_package(ReTo REQUIRED)
 common_find_package(GLUT)
-# common_find_package(Deflect ${NEUROLOTS_OPTS_FIND_ARGS})
-common_find_package(Lexis ${NEUROLOTS_OPTS_FIND_ARGS})
-common_find_package(ZeroEQ ${NEUROLOTS_OPTS_FIND_ARGS})
-common_find_package(gmrvlex ${NEUROLOTS_OPTS_FIND_ARGS})
 
-list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Core Qt5Widget Qt5OpenGL
-  OpenGL GLEW GLUT Eigen3 nsol ReTo)
-
-
-if (DEFLECT_FOUND)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Deflect)
-endif( )
-
-if (LEXIS_FOUND)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Lexis)
-endif( )
-
-if ( ZEROEQ_FOUND )
-  common_find_package(Threads REQUIRED)
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES ZeroEQ)
-endif( )
-
-if ( GMRVLEX_FOUND )
-  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES gmrvlex)
-endif( )
+list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol ReTo)
 
 common_find_package_post()
 
@@ -82,16 +57,7 @@ add_subdirectory( nlgeometry )
 add_subdirectory( nlphysics )
 add_subdirectory( nlgenerator )
 add_subdirectory( nlrender )
-
-# if ( Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5OpenGL_FOUND )
-#   add_subdirectory( neurotessmesh )
-# else( )
-#   message(WARNING "neurotessmesh build is skipped because it needs Qt 5.4 or above." )
-# endif( )
-
-if ( GLUT_FOUND )
-  add_subdirectory( examples )
-endif( )
+add_subdirectory( examples )
 
 install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h
   DESTINATION include/neurolots )

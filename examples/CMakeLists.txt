@@ -1,44 +1,47 @@
-########## RETO ##########
-include( reto_generate_shaders )
+if ( NEUROLOTS_WITH_EXAMPLES )
 
-reto_generate_shaders(
-  EXAMPLES_SHADERS
-  examples
-  ${CMAKE_CURRENT_SOURCE_DIR}/shaders/
-  ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
-  )
+  ########## RETO ##########
+  include( reto_generate_shaders )
 
-message(${CMAKE_CURRENT_SOURCE_DIR}/../exampleShaders/ )
-########## RETO ##########
+  reto_generate_shaders(
+    EXAMPLES_SHADERS
+    examples
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders/
+    ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
+    )
 
-add_executable(nlgeometryObjRender objRender.cpp Shaders.h)
-target_link_libraries(nlgeometryObjRender
-  ReTo
-  nlgeometry
-  ${GLUT_LIBRARIES}
-  )
+  message(${CMAKE_CURRENT_SOURCE_DIR}/../exampleShaders/ )
+  ########## RETO ##########
 
-add_executable(nlgeometryCubeRender cubeRender.cpp Cube.h Shaders.h)
-target_link_libraries(nlgeometryCubeRender
-  ReTo
-  nlgeometry
-  ${GLUT_LIBRARIES}
-  )
+  if ( GLUT_FOUND )
+    if( NOT APPLE )
+      add_executable(nlgeometryObjRender objRender.cpp Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      target_link_libraries(nlgeometryObjRender
+        ReTo
+        nlgeometry
+        ${GLUT_LIBRARIES}
+        )
 
-add_executable(nlrenderCubeRenderer cubeRenderer.cpp Cube.h Shaders.h)
-target_link_libraries(nlrenderCubeRenderer
-  ReTo
-  nlgeometry
-  nlrender
-  ${GLUT_LIBRARIES}
-  )
+      add_executable(nlgeometryCubeRender cubeRender.cpp Cube.h Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      target_link_libraries(nlgeometryCubeRender
+        ReTo
+        nlgeometry
+        ${GLUT_LIBRARIES}
+        )
 
-add_executable(nlrenderMorphologyRenderer morphologyRenderer.cpp Shaders.h)
-target_link_libraries(nlrenderMorphologyRenderer
-  ReTo
-  nsol
-  nlgeometry
-  nlgenerator
-  nlrender
-  ${GLUT_LIBRARIES}
-  )
+
+      add_executable(nlrenderMorphologyRenderer morphologyRenderer.cpp
+        Shaders.h  DemoCallbacks.cpp DemoCallbacks.h )
+      target_link_libraries(nlrenderMorphologyRenderer
+        ReTo
+        nsol
+        nlgeometry
+        nlgenerator
+        nlrender
+        ${GLUT_LIBRARIES}
+        )
+    endif( )
+  endif( )
+endif( )

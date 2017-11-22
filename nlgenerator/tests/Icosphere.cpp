@@ -19,37 +19,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __NLGEOMETRY_OBJ_WRITER__
-#define __NLGEOMETRY_OBJ_WRITER__
 
-#include "../Mesh.h"
+#include <nlgenerator/nlgenerator.h>
+#include <nsol/nsol.h>
 
-#include <nlgeometry/api.h>
+#include "nlgeneratorTests.h"
 
-namespace nlgeometry
+using namespace nlgenerator;
+
+BOOST_AUTO_TEST_CASE( icosphere_constructor )
 {
-
-  /* \class ObjWriter */
-  class ObjWriter
   {
-
-  public:
-
-    /**
-     * Static method to write mesh to a obj file
-     */
-    NLGEOMETRY_API
-    static void writeMesh( MeshPtr mesh, const std::string& fileName_ );
-
-    /**
-     * Static method to write a vector of facets and vertices to a obj file
-     */
-    NLGEOMETRY_API
-    static void writeMesh( Facets& facets_, Vertices& vertices_,
-                           const std::string& fileName_ );
-
-  }; // class ObjWriter
-
-} // namespace nlgeometry
-
-#endif
+    Icosphere icosphere;
+    auto facets = icosphere.surface( );
+    BOOST_CHECK_EQUAL( facets.size( ), 512 );
+    facets = icosphere.structure( );
+    BOOST_CHECK_EQUAL( facets.size( ), 16384 );
+  }
+  {
+    Icosphere icosphere( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ), 2.0f, 2 );
+    auto facets = icosphere.surface( );
+    BOOST_CHECK_EQUAL( facets.size( ), 128 );
+    facets = icosphere.structure( );
+    BOOST_CHECK_EQUAL( facets.size( ), 2048 );
+  }
+}
