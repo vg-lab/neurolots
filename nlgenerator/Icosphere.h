@@ -47,7 +47,7 @@ public:
 
 namespace std {
   template<>
-  class hash<MyPair> {
+  struct hash<MyPair> {
   public:
     size_t operator()(const MyPair &myPair) const
     {

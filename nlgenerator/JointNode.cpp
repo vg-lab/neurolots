@@ -53,14 +53,17 @@ namespace nlgenerator
 
   nlgeometry::SectionQuadPtr JointNode::sectionQuad( nsol::NodePtr neighbour_ )
   {
-    if ( _neighbors.find( neighbour_ ) != _neighbors.end( ) )
-      return _neighbors[ neighbour_ ];
+    auto neigh = _neighbors.find( neighbour_ );
+    if ( neigh != _neighbors.end( ))
+      return neigh->second;
     else
       return nullptr;
   }
 
-  nlgeometry::SectionQuadPtr& JointNode::sectionQuad( void )
+  nlgeometry::SectionQuadPtr JointNode::sectionQuad( void )
   {
+    if ( _neighbors.empty( ))
+      return nullptr;
     return _neighbors.begin( )->second;
   }
 
@@ -74,7 +77,7 @@ namespace nlgenerator
 
   unsigned int JointNode::numberNeighbors( void )
   {
-    return _neighbors.size( );
+    return ( unsigned int )_neighbors.size( );
   }
 
   void JointNode::addNeighbour( nsol::NodePtr neighbour_ )
@@ -93,8 +96,8 @@ namespace nlgenerator
 
     if ( _neighbors.size( ) == 1 )
     {
-      auto neighbour = _neighbors.begin( );
-      tangent = ( neighbour->first->point( ) - _position).normalized( );
+      auto neigh = _neighbors.begin( );
+      tangent = ( neigh->first->point( ) - _position).normalized( );
       exe = Eigen::Vector3f( 0.0f, 1.0f, 0.0f );
       q.setFromTwoVectors(exe,tangent);
 
@@ -102,14 +105,14 @@ namespace nlgenerator
       quad->rotate( q );
       quad->place( _position );
       quad->norm( _radius );
-      _neighbors[ neighbour->first ] = quad;
+      _neighbors[ neigh->first ] = quad;
     }
     else if ( _neighbors.size( ) == 2 )
     {
-      auto neighbour = _neighbors.begin( );
-      exe = ( _position - neighbour->first->point( )  ).normalized( );
-      neighbour ++;
-      exe1 = ( neighbour->first->point( ) - _position ).normalized( );
+      auto neigh = _neighbors.begin( );
+      exe = ( _position - neigh->first->point( )  ).normalized( );
+      neigh ++;
+      exe1 = ( neigh->first->point( ) - _position ).normalized( );
       q.setFromTwoVectors( exe, exe1 );
       qSlerp = q.slerp( 0.5f, qI );
       tangent = qSlerp * exe ;
@@ -121,17 +124,17 @@ namespace nlgenerator
       quad->place( _position );
       quad->norm( _radius );
       _neighbors[ _neighbors.begin( )->first ] = quad->inversed( );
-      _neighbors[ neighbour->first ] = quad;
+      _neighbors[ neigh->first ] = quad;
     }
     else if ( _neighbors.size( ) > 2 )
     {
       Eigen::MatrixXf A( _neighbors.size( ), 3 );
 
-      auto neighbour = _neighbors.begin( );
+      auto neigh = _neighbors.begin( );
       for ( unsigned int i = 0; i < _neighbors.size( ); i++ )
       {
-        Eigen::Vector3f pos = neighbour->first->point( );
-        neighbour ++;
+        Eigen::Vector3f pos = neigh->first->point( );
+        neigh ++;
         A( i, 0 ) = pos.x( );
         A( i, 1 ) = pos.y( );
         A( i, 2 ) = pos.z( );
@@ -146,20 +149,20 @@ namespace nlgenerator
 
       std::vector< std::tuple< float, Eigen::Vector3f, nsol::NodePtr >>
         orderedNodes;
-      for ( neighbour = _neighbors.begin( ); neighbour != _neighbors.end( );
-            neighbour++ )
+      for ( neigh = _neighbors.begin( ); neigh != _neighbors.end( );
+            neigh++ )
       {
-        auto point = neighbour->first->point( );
+        auto point = neigh->first->point( );
         auto v = point - _position;
         auto dist = v.dot( normal );
         auto projectDirection =
           ( point - dist * normal - _position ).normalized( );
         Eigen::Vector3f referenceDirection;
-        if ( neighbour == _neighbors.begin( ))
+        if ( neigh == _neighbors.begin( ))
         {
           referenceDirection = projectDirection;
           auto tuple =
-            std::make_tuple( 0.0f, projectDirection, neighbour->first );
+            std::make_tuple( 0.0f, projectDirection, neigh->first );
           orderedNodes.push_back( tuple );
         }
         else
@@ -174,10 +177,10 @@ namespace nlgenerator
           float angle = atan2( sinNormalAxis,
                                referenceDirection.dot( projectDirection ));
           if ( angle < 0.0f )
-            angle += 2*M_PI;
+            angle += 2.0f * ( float )M_PI;
 
           auto tuple =
-            std::make_tuple( angle, projectDirection, neighbour->first );
+            std::make_tuple( angle, projectDirection, neigh->first );
 
           bool found = false;
           for ( auto orderedNode = orderedNodes.begin( );
@@ -203,10 +206,10 @@ namespace nlgenerator
 
 
       std::vector< nlgeometry::OrbitalVertexPtr > vertices;
-      int size = orderedNodes.size( );
-      for ( unsigned int id = 0; id < orderedNodes.size( ); id++ )
+      unsigned int size = ( unsigned int )orderedNodes.size( );
+      for ( unsigned int id = 0; id < size; id++ )
       {
-        int idPost = ( id + 1 ) % size;
+        unsigned int idPost = ( id + 1 ) % size;
 
 
         auto dir = std::get<1>( orderedNodes[id] );
@@ -227,9 +230,8 @@ namespace nlgenerator
         q = Eigen::Quaternion<float>(
           Eigen::AngleAxis<float>( angle*0.5f, normal ));
         auto halfDir = q * dir;
-        float radius = _radius;
-        auto position = halfDir * radius + _position;
-        auto vertex = new nlgeometry::OrbitalVertex( position, _position );
+        auto vertex = new nlgeometry::OrbitalVertex( halfDir * _radius +
+                                                     _position, _position );
         vertices.push_back( vertex );
       }
 

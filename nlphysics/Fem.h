@@ -43,12 +43,12 @@ namespace nlphysics
      * Constructor
      * @param nodes_ geometry nodes of the FEM system
      * @param tetrahedra_ geometry tetrahedra of the FEM system
-     * @param v_ Cauchy coefficient
-     * @param E_ Young modulus
+     * @param poissonRatio_ Poisson's ratio
+     * @param youngModulus_ Young modulus
      */
     NLPHYSICS_API
     Fem( Nodes& nodes_, Tetrahedra& tetrahedra_,
-         float v_ = 0.3f, float E_ = 1.0f );
+         float poissonRatio_ = 0.3f, float youngModulus_ = 1.0f );
 
     /*
      * Default destructor
@@ -64,10 +64,10 @@ namespace nlphysics
 
   private:
 
-    void _addTokMatrix( unsigned int id0, unsigned int id1,
-                        Eigen::Matrix3f sum );
+    void _addTokMatrix( unsigned int id0_, unsigned int id1_,
+                        const Eigen::Matrix3f& sum_ );
 
-    void _addToB( unsigned int id, Eigen::Vector3f sum);
+    void _addToB( unsigned int id_, const Eigen::Vector3f& sum_ );
 
     void _computeTetrahedra( void );
 
@@ -82,11 +82,11 @@ namespace nlphysics
     //! Vector of indices
     std::vector< unsigned int > _indices;
 
-    //! Cauchy coefficient
-    float _v;
+    //! Poisson's ratio
+    float _poissonRatio;
 
     //! Young modulus
-    float _E;
+    float _youngModulus;
 
     //! Material matrix
     Eigen::MatrixXf _material;

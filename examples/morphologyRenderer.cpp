@@ -142,9 +142,10 @@ void renderFunc( void )
   renderer->viewMatrix( ) = view.transpose( );
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection.transpose( );
-  for ( auto m: meshes )
-    renderer->render( m, m->modelMatrix( ),
-                      Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
+  renderer->render( meshes, models, Eigen::Vector3f( 0.5f, 0.2f, 0.8f ));
+  // for ( auto m: meshes )
+  //   renderer->render( m, m->modelMatrix( ),
+  //                     Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
   glFlush( );
   glutSwapBuffers( );
 }

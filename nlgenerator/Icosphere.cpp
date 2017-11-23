@@ -142,7 +142,7 @@ namespace nlgenerator
       sectionQuad->vertex3( ) = _nodeToVertex( node, vertices );
     }
 
-    _femSystem = new nlphysics::Fem( _nodes, _tetrahedra, 0.3, 1.0 );
+    _femSystem = new nlphysics::Fem( _nodes, _tetrahedra, 0.3f, 1.0f );
     _femSystem->solve( );
     _computeCenters( );
     _surface( facets, vertices );
@@ -464,12 +464,14 @@ namespace nlgenerator
       if ( node0_->contour( ) && node1_->contour( ))
       {
         position = ( position - _center ).normalized( ) * _radius + _center;
-        newNode = new nlphysics::Node( position, _nodes.size( ), true );
+        newNode =
+          new nlphysics::Node( position, ( unsigned int )_nodes.size( ), true );
         _surfaceNodes.push_back( newNode );
       }
       else
       {
-        newNode = new nlphysics::Node( position, _nodes.size( ));
+        newNode =
+          new nlphysics::Node( position, ( unsigned int )_nodes.size( ));
       }
         newNodes_[pair] = newNode;
       _nodes.push_back( newNode );

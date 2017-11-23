@@ -205,7 +205,7 @@ namespace nlgenerator
     if ( uniqueSections_.find( section_ ) == uniqueSections_.end( ))
     {
       uniqueSections_.insert( section_ );
-      unsigned int numNodes = section_->nodes( ).size( );
+      unsigned int numNodes = ( unsigned int )section_->nodes( ).size( );
       if ( numNodes > 1 )
       {
         nsol::NodePtr nsolJoint;
@@ -263,7 +263,7 @@ namespace nlgenerator
       uniqueSections_.insert( section_ );
 
       auto nodes = section_->nodes( );
-      unsigned int numNodes = nodes.size( );
+      unsigned int numNodes = ( unsigned int )nodes.size( );
 
 
       auto startJointIt = joints_.find( nodes.front( ));

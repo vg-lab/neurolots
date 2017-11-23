@@ -9,39 +9,37 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/
     ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
     )
-
-  message(${CMAKE_CURRENT_SOURCE_DIR}/../exampleShaders/ )
   ########## RETO ##########
 
   if ( GLUT_FOUND )
     if( NOT APPLE )
-      add_executable(nlgeometryObjRender objRender.cpp Shaders.h
+
+      set( NEUROLOTSOBJRENDER_SOURCES objRender.cpp Shaders.h DemoCallbacks.cpp
+        DemoCallbacks.h )
+      set( NEUROLOTSOBJRENDER_LINK_LIBRARIES ReTo nlgeometry ${GLUT_LIBRARIES} )
+      common_application( neurolotsObjRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSOBJRENDER_SOURCES} )
+
+      set( NEUROLOTSCUBERENDER_SOURCES cubeRender.cpp Cube.h Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
-      target_link_libraries(nlgeometryObjRender
-        ReTo
-        nlgeometry
-        ${GLUT_LIBRARIES}
-        )
+      set( NEUROLOTSCUBERENDER_LINK_LIBRARIES ReTo nlgeometry
+        ${GLUT_LIBRARIES} )
+      common_application( neurolotsCubeRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSCUBERENDER_SOURCES} )
 
-      add_executable(nlgeometryCubeRender cubeRender.cpp Cube.h Shaders.h
+      set( NEUROLOTSMORPHOLOGYRENDER_SOURCES morphologyRenderer.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
-      target_link_libraries(nlgeometryCubeRender
-        ReTo
-        nlgeometry
-        ${GLUT_LIBRARIES}
-        )
+      set( NEUROLOTSMORPHOLOGYRENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${GLUT_LIBRARIES} )
+      common_application( neurolotsMorphologyRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSMORPHOLOGYRENDER_SOURCES} )
 
-
-      add_executable(nlrenderMorphologyRenderer morphologyRenderer.cpp
-        Shaders.h  DemoCallbacks.cpp DemoCallbacks.h )
-      target_link_libraries(nlrenderMorphologyRenderer
-        ReTo
-        nsol
-        nlgeometry
-        nlgenerator
-        nlrender
-        ${GLUT_LIBRARIES}
-        )
     endif( )
   endif( )
-endif( )
+
+  include(InstallFiles)
+  install_files( share/neurolots/examples FILES ${NEUROLOTS_EXAMPLES_FILES}
+    COMPONENT examples )
+
+endif( NEUROLOTS_WITH_EXAMPLES )

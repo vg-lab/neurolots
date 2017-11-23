@@ -27,17 +27,19 @@ namespace nlphysics
 {
 
   Fem::Fem( Nodes& nodes_, Tetrahedra& tetrahedra_,
-            float v_, float E_ )
+            float poissonRatio_, float youngModulus_ )
     : _nodes( nodes_ )
     , _tetrahedra( tetrahedra_ )
-    , _v( v_ )
-    , _E( E_ )
+    , _poissonRatio( poissonRatio_ )
+    , _youngModulus( youngModulus_ )
     , _size( 0 )
   {
     _material = Eigen::MatrixXf( 6, 6 );
-    float a = _E * ( 1 - _v ) / (( 1 + _v ) * ( 1 - 2 * _v ));
-    float b = _E * _v / (( 1 + _v ) * ( 1 - 2 * _v ));
-    float c = _E / ( 2 * ( 1 + _v ));
+    float a = _youngModulus * ( 1 - _poissonRatio ) /
+      (( 1 + _poissonRatio ) * ( 1 - 2 * _poissonRatio ));
+    float b = _youngModulus * _poissonRatio /
+      (( 1 + _poissonRatio ) * ( 1 - 2 * _poissonRatio ));
+    float c = _youngModulus / ( 2 * ( 1 + _poissonRatio ));
     _material <<  a,    b,    b,    0.0f, 0.0f, 0.0f,
       b,    a,    b,    0.0f, 0.0f, 0.0f,
       b,    b,    a,    0.0f, 0.0f, 0.0f,
@@ -81,11 +83,11 @@ namespace nlphysics
     }
   }
 
-  void Fem::_addTokMatrix( unsigned int id0, unsigned int id1,
-                          Eigen::Matrix3f sum )
+  void Fem::_addTokMatrix( unsigned int id0_, unsigned int id1_,
+                           const Eigen::Matrix3f& sum_ )
   {
-    unsigned int row = _indices[id0] * 3;
-    unsigned int col = _indices[id1] * 3;
+    unsigned int row = _indices[id0_] * 3;
+    unsigned int col = _indices[id1_] * 3;
     unsigned int localCol;
     for ( unsigned int i = 0; i < 3; i++ )
     {
@@ -93,18 +95,18 @@ namespace nlphysics
       for( unsigned int j = 0; j < 3; j++ )
       {
         _triplets.push_back( Eigen::Triplet< float >( row + i, localCol + j,
-                                                      sum( i, j )));
+                                                      sum_( i, j )));
       }
     }
 
   }
 
-  void Fem::_addToB( unsigned int id, Eigen::Vector3f sum )
+  void Fem::_addToB( unsigned int id_, const Eigen::Vector3f& sum_ )
   {
-    unsigned int row = _indices[id] * 3;
+    unsigned int row = _indices[id_] * 3;
     for( unsigned int i = 0; i < 3; i++ )
     {
-      _b[row + i] += sum[i];
+      _b[row + i] += sum_[i];
     }
   }
 

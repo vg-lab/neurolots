@@ -49,104 +49,117 @@ namespace nlphysics
      * @param contour_ condition of inner or contour node
      */
     NLPHYSICS_API
-    Node( Eigen::Vector3f initialPostition_, unsigned int id_ = 0,
-          bool contour_ = false );
+    Node( const Eigen::Vector3f& initialPosition_, unsigned int id_ = 0,
+          bool contour_ = false )
+      : _id( id_ )
+      , _initialPosition( initialPosition_ )
+      , _displacement( Eigen::Vector3f::Zero( ))
+      , _position( initialPosition_ )
+      , _center( Eigen::Vector3f::Zero( ))
+      , _tangent( Eigen::Vector3f::Zero( ))
+      , _force( Eigen::Vector3f::Zero( ))
+      , _fixed( false )
+      , _contour( contour_ )
+    {
+
+    }
 
     /**
      * Default destructor
      */
     NLPHYSICS_API
-    ~Node( void );
+    ~Node( void ) { }
 
     /**
      * Method that returns the node id
      * @return the node id
      */
     NLPHYSICS_API
-    unsigned int& id( void );
+    unsigned int& id( void ) { return _id; }
 
     NLPHYSICS_API
-    const unsigned int& id( void ) const;
+    unsigned int id( void ) const { return _id; }
 
     /**
      * Method that returns the node initial position
      * @return the node initial position
      */
     NLPHYSICS_API
-    Eigen::Vector3f& initialPosition( void );
+    Eigen::Vector3f& initialPosition( void ) { return _initialPosition; }
 
     NLPHYSICS_API
-    const Eigen::Vector3f& initialPosition( void )  const;
+    const Eigen::Vector3f& initialPosition( void )  const
+    { return _initialPosition; }
 
     /**
      * Method that returns the node displacement
      * @return the node displacement
      */
     NLPHYSICS_API
-    Eigen::Vector3f& displacement( void );
+    Eigen::Vector3f& displacement( void ) { return _displacement; }
 
     NLPHYSICS_API
-    const Eigen::Vector3f& displacement( void )  const;
+    const Eigen::Vector3f& displacement( void )  const { return _displacement; }
 
     /**
      * Method that returns the node position
      * @return the node position
      */
     NLPHYSICS_API
-    Eigen::Vector3f& position( void );
+    Eigen::Vector3f& position( void ) { return _position; }
 
     NLPHYSICS_API
-    const Eigen::Vector3f& position( void )  const;
+    const Eigen::Vector3f& position( void )  const { return _position; }
 
     /**
      * Method that returns the node center
      * @return the node center
      */
     NLPHYSICS_API
-    Eigen::Vector3f& center( void );
+    Eigen::Vector3f& center( void ) { return _center; }
 
     NLPHYSICS_API
-    const Eigen::Vector3f& center( void )  const;
+    const Eigen::Vector3f& center( void )  const { return _center; }
 
     /**
      * Method that returns the node tangent
      * @return the node tangent
      */
     NLPHYSICS_API
-    Eigen::Vector3f& tangent( void );
+    Eigen::Vector3f& tangent( void ) { return _tangent; }
 
     NLPHYSICS_API
-    const Eigen::Vector3f& tangent( void )  const;
+    const Eigen::Vector3f& tangent( void )  const { return _tangent; }
 
     /**
      * Method that returns the node force
      * @return the node force
      */
     NLPHYSICS_API
-    Eigen::Vector3f& force( void );
+    Eigen::Vector3f& force( void ) { return _force; }
 
     NLPHYSICS_API
-    const Eigen::Vector3f& force( void )  const;
+    const Eigen::Vector3f& force( void )  const { return _force; }
 
     /**
      * Method that returns the node fixed condition
      * @return the node fixed condition
      */
     NLPHYSICS_API
-    bool& fixed( void );
+    bool& fixed( void ) { return _fixed; }
 
     NLPHYSICS_API
-    const bool& fixed( void )  const;
+    bool fixed( void )  const { return _fixed; }
 
     /**
      * Method that returns the node contour condition
      * @return the node contour condition
      */
     NLPHYSICS_API
-    bool& contour( void );
+    bool& contour( void ) { return _contour; }
 
     NLPHYSICS_API
-    const bool& contour( void )  const;
+    bool contour( void )  const { return _contour; }
 
   protected:
 

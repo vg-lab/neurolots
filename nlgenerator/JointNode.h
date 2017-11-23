@@ -90,7 +90,7 @@ namespace nlgenerator
      * @return the first section quad
      */
     NLGENERATOR_API
-    nlgeometry::SectionQuadPtr& sectionQuad( void );
+    nlgeometry::SectionQuadPtr sectionQuad( void );
 
     /**
      * Method that return the first neighbour node
