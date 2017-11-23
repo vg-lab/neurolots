@@ -62,7 +62,7 @@ namespace nlgeometry
      * Static method that return a mesh pointer with the geometric data loaded
      */
     MeshPtr readMesh( const std::string& fileName_,
-                             bool quadsToTriangles_ = true ) const;
+                      bool quadsToTriangles_ = true ) const;
   protected:
 
     static std::vector< std::string > _split( std::string& s_, char splitter_ );

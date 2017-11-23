@@ -11,7 +11,6 @@ reto_generate_shaders(
 message(${CMAKE_CURRENT_SOURCE_DIR}/../exampleShaders/ )
 ########## RETO ##########
 
-
 if ( GLUT_FOUND )
   if( NOT APPLE )
     add_executable(nlgeometryObjRender objRender.cpp Shaders.h
@@ -19,7 +18,6 @@ if ( GLUT_FOUND )
     target_link_libraries(nlgeometryObjRender
       ReTo
       nlgeometry
-      nlrender
       ${GLUT_LIBRARIES}
       )
 
@@ -28,7 +26,6 @@ if ( GLUT_FOUND )
     target_link_libraries(nlgeometryCubeRender
       ReTo
       nlgeometry
-      nlrender
       ${GLUT_LIBRARIES}
       )
 

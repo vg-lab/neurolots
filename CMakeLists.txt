@@ -5,8 +5,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-project(neurolots VERSION 0.0.2)
-set(neurolots_VERSION_ABI 1)
+project(neurolots VERSION 0.0.3)
+set(neurolots_VERSION_ABI 2)
 
 # Disable in source building
 if( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" )
@@ -79,17 +79,8 @@ common_find_package_post()
 set(PROJECT_INCLUDE_NAME neurolots)
 
 add_subdirectory( nlgeometry )
-add_subdirectory( nlfem )
-add_subdirectory( nlgenerator )
-add_subdirectory( nlrender )
+add_subdirectory( nlphysics )
 add_subdirectory( examples )
-
-if ( Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5OpenGL_FOUND )
-  add_subdirectory( neurotessmesh )
-else( )
-  message(WARNING "neurotessmesh build is skipped because it needs Qt 5.4 or above." )
-endif( )
-
 
 install(FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h
   DESTINATION include/neurolots )

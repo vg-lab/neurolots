@@ -265,9 +265,9 @@ namespace nlgeometry
     {
     case UV:
       numComponents = 2;
+      break;
     default:
       numComponents = 3;
-      break;
     }
     glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
     glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),

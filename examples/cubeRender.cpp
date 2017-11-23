@@ -22,7 +22,6 @@
 #include <iostream>
 
 #include <nlgeometry/nlgeometry.h>
-#include <nlrender/nlrender.h>
 #include <reto/reto.h>
 
 #include "DemoCallbacks.h"
@@ -50,7 +49,6 @@ reto::Camera* camera;
 reto::ShaderProgram* program;
 nlgeometry::Meshes meshes;
 
-void idleFunc( void );
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
@@ -100,9 +98,11 @@ void initContext( int argc, char* argv[ ])
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
   glutInitWindowSize( 600, 600 );
   glutInitWindowPosition( 0, 0 );
+
   glutCreateWindow( "Neurolots example: Cube Render" );
 
-  nlrender::Config::init( );
+  glewExperimental = GL_TRUE;
+  glewInit( );
 
   glutDisplayFunc( renderFunc );
   glutIdleFunc( DemoCallbacks::idleFunc );

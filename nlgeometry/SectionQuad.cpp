@@ -154,23 +154,23 @@ namespace nlgeometry
 
   void SectionQuad::normalize( void )
   {
-    Eigen::Vector3f axis0, axis1;
+    Eigen::Vector3f axisA, axisB;
 
-    axis0 = this->axis0( );
-    axis1 = this->axis1( );
+    axisA = this->axis0( );
+    axisB = this->axis1( );
 
-    _vertex0->normalize( axis0 );
-    _vertex1->normalize( axis1 );
-    _vertex2->normalize( -axis0 );
-    _vertex3->normalize( -axis1 );
+    _vertex0->normalize( axisA );
+    _vertex1->normalize( axisB );
+    _vertex2->normalize( -axisA );
+    _vertex3->normalize( -axisB );
   }
 
   Eigen::Vector3f SectionQuad::normal( void ) const
   {
-    Eigen::Vector3f axis0, axis1;
-    axis0 = this->axis0( );
-    axis1 = this->axis1( );
-    return axis0.cross( axis1 );
+    Eigen::Vector3f axisA, axisB;
+    axisA = this->axis0( );
+    axisB = this->axis1( );
+    return axisA.cross( axisB );
   }
 
   SectionQuadPtr SectionQuad::clone( void ) const

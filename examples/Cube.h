@@ -77,4 +77,4 @@ public:
 
 }; // class Cube
 
-#endif 
+#endif

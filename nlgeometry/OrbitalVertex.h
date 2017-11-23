@@ -143,4 +143,4 @@ namespace nlgeometry
 
 } // namespace nlgeomtry
 
-#endif 
+#endif

@@ -22,7 +22,6 @@
 #include <iostream>
 
 #include <nlgeometry/nlgeometry.h>
-#include <nlrender/nlrender.h>
 #include <reto/reto.h>
 
 #include "DemoCallbacks.h"
@@ -32,7 +31,7 @@
   #include <GL/glew.h>
 #endif
 #ifdef Darwin
-  #define __gl_h_
+#define __gl_h_
   #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
   #include <OpenGL/gl.h>
   #include <OpenGL/glu.h>
@@ -49,8 +48,6 @@ reto::Camera* camera;
 reto::ShaderProgram* program;
 nlgeometry::Meshes meshes;
 
-
-void idleFunc( void );
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
@@ -63,6 +60,7 @@ int main( int argc, char* argv[] )
     std::cerr << "Usage error: " << argv[0] << " file[.obj]" << std::endl;
     return -1;
   }
+
   initContext( argc, argv );
   initOGL( );
 
@@ -79,7 +77,7 @@ int main( int argc, char* argv[] )
 
   for ( int i = 1; i < argc; i++ )
   {
- 
+
     mesh = objr.readMesh( std::string( argv[i] ), false );
 
     if ( mesh->vertices( ).size( ) > 0  && mesh->triangles( ).size( ) > 0 )
@@ -132,7 +130,8 @@ void initContext( int argc, char* argv[ ])
   glutInitWindowPosition( 0, 0 );
   glutCreateWindow( "Neurolots example: Obj Render" );
 
-  nlrender::Config::init( );
+  glewExperimental = GL_TRUE;
+  glewInit( );
 
   glutDisplayFunc( renderFunc );
   glutIdleFunc( DemoCallbacks::idleFunc );
