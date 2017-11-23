@@ -48,76 +48,83 @@ namespace nlphysics
      */
     NLPHYSICS_API
     Tetrahedron( NodePtr node0_, NodePtr node1_, NodePtr node2_,
-                 NodePtr node3_ );
+                 NodePtr node3_ )
+      : _node0( node0_ )
+      , _node1( node1_ )
+      , _node2( node2_ )
+      , _node3( node3_ )
+      , _volume( 0.0f )
+    {
+
+    }
 
     /**
      * Default destructor
      */
     NLPHYSICS_API
-    ~Tetrahedron( void );
-
+    ~Tetrahedron( void ) { }
     /**
      * Method that returns the first tetrahedron node
      * @return the first tetrahedron node
      */
     NLPHYSICS_API
-    NodePtr& node0( void );
+    NodePtr& node0( void ) {  return _node0; }
 
     /**
      * Method that returns the second tetrahedron node
      * @return the second tetrahedron node
      */
     NLPHYSICS_API
-    NodePtr& node1( void );
+    NodePtr& node1( void ) { return _node1; }
 
     /**
      * Method that returns the third tetrahedron node
      * @return the third tetrahedron node
      */
     NLPHYSICS_API
-    NodePtr& node2( void );
+    NodePtr& node2( void ) { return _node2; }
 
     /**
      * Method that returns the fourth tetrahedron node
      * @return the fourth tetrahedron node
      */
     NLPHYSICS_API
-    NodePtr& node3( void );
+    NodePtr& node3( void ) { return _node3; }
 
     /**
      * Method that returns the b0 matrix
      * @return the b0 matrix
      */
     NLPHYSICS_API
-    Eigen::MatrixXf& b0( void );
+    Eigen::MatrixXf& b0( void ) { return _b0; }
 
     /**
      * Method that returns the b1 matrix
      * @return the b1 matrix
      */
     NLPHYSICS_API
-    Eigen::MatrixXf& b1( void );
+    Eigen::MatrixXf& b1( void ) { return _b1; }
 
     /**
      * Method that returns the b2 matrix
      * @return the b2 matrix
      */
     NLPHYSICS_API
-    Eigen::MatrixXf& b2( void );
+    Eigen::MatrixXf& b2( void ) { return _b2; }
 
     /**
      * Method that returns the b3 matrix
      * @return the b3 matrix
      */
     NLPHYSICS_API
-    Eigen::MatrixXf& b3( void );
+    Eigen::MatrixXf& b3( void ) { return _b3; }
 
     /**
      * Method that returns the tetrahedron volume
      * @return the tetrahedron volume
      */
     NLPHYSICS_API
-    float& volume( void );
+    float& volume( void ) { return _volume; }
 
     /**
      * Method that check and return if the 0 face of the tetrahedron is a
@@ -125,7 +132,10 @@ namespace nlphysics
      * @return true if the 0 face of the tetrahedron is a contour face
      */
     NLPHYSICS_API
-    bool face0( void ) const;
+    bool face0( void ) const
+    {
+      return _node0->contour( ) && _node1->contour( ) && _node2->contour( );
+    }
 
     /**
      * Method that check and return if the 1 face of the tetrahedron is a
@@ -133,7 +143,10 @@ namespace nlphysics
      * @return true if the 1 face of the tetrahedron is a contour face
      */
     NLPHYSICS_API
-    bool face1( void ) const;
+    bool face1( void ) const
+    {
+      return _node0->contour( ) && _node2->contour( ) && _node3->contour( );
+    }
 
     /**
      * Method that check and return if the 2 face of the tetrahedron is a
@@ -141,7 +154,10 @@ namespace nlphysics
      * @return true if the 2 face of the tetrahedron is a contour face
      */
     NLPHYSICS_API
-    bool face2( void ) const;
+    bool face2( void ) const
+    {
+      return _node0->contour( ) && _node3->contour( ) && _node1->contour( );
+    }
 
     /**
      * Method that check and return if the 3 face of the tetrahedron is a
@@ -149,7 +165,10 @@ namespace nlphysics
      * @return true if the 3 face of the tetrahedron is a contour face
      */
     NLPHYSICS_API
-    bool face3( void ) const;
+    bool face3( void ) const
+    {
+      return _node1->contour( ) && _node3->contour( ) && _node2->contour( );
+    }
 
   protected:
 

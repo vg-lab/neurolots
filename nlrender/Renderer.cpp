@@ -172,7 +172,7 @@ namespace nlrender
     if ( renderQuads_ )
     {
       _programQuads->use( );
-      _programQuads->sendUniform4m( "proy", projection.data() );
+      _programQuads->sendUniform4m( "proy", projection.data( ));
       _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
       _programQuads->sendUniform3v( "color", color_.data( ));
       _programQuads->sendUniformf( "lod", _lod);
@@ -195,9 +195,49 @@ namespace nlrender
     if ( meshes_.size( ) != modelMatrices_.size( ))
       throw std::runtime_error(
         "Meshes and model matrices have differents size" );
-    for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
-      render( meshes_[i], modelMatrices_[i], color_, renderTriangles_,
-              renderQuads_ );
+
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    Eigen::Matrix4f viewModel;
+    Eigen::Matrix4f projection = _projectionMatrix.transpose( );
+    unsigned int criteria = _tessCriteria;
+
+    if( renderTriangles_ )
+    {
+      _programTriangles->use( );
+      _programTriangles->sendUniform4m( "proy", projection.data( ));
+      _programTriangles->sendUniform3v( "color", color_.data( ));
+      _programTriangles->sendUniformf( "lod", _lod );
+      _programTriangles->sendUniformf( "maxDist", _maximumDistance );
+      _programTriangles->sendUniformf( "tng", _tng );
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        meshes_[i]->renderTriangles( );
+      }
+    }
+    if ( renderQuads_ )
+    {
+      _programQuads->use( );
+      _programQuads->sendUniform4m( "proy", projection.data( ));
+      _programQuads->sendUniform3v( "color", color_.data( ));
+      _programQuads->sendUniformf( "lod", _lod);
+      _programQuads->sendUniformf( "maxDist", _maximumDistance);
+      _programQuads->sendUniformf( "tng", _tng);
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        meshes_[i]->renderQuads( );
+      }
+    }
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
   }
 
 
@@ -212,9 +252,48 @@ namespace nlrender
          modelMatrices_.size( ) != colors_.size( ))
       throw std::runtime_error(
         "Meshes, model matrices and colors have differents size" );
-    for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
-      render( meshes_[i], modelMatrices_[i], colors_[i], renderTriangles_,
-              renderQuads_ );
+ if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    Eigen::Matrix4f viewModel;
+    Eigen::Matrix4f projection = _projectionMatrix.transpose( );
+    unsigned int criteria = _tessCriteria;
+
+    if( renderTriangles_ )
+    {
+      _programTriangles->use( );
+      _programTriangles->sendUniform4m( "proy", projection.data( ));
+      _programTriangles->sendUniformf( "lod", _lod );
+      _programTriangles->sendUniformf( "maxDist", _maximumDistance );
+      _programTriangles->sendUniformf( "tng", _tng );
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
+        _programTriangles->sendUniform3v( "color", colors_[i].data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        meshes_[i]->renderTriangles( );
+      }
+    }
+    if ( renderQuads_ )
+    {
+      _programQuads->use( );
+      _programQuads->sendUniform4m( "proy", projection.data( ));
+      _programQuads->sendUniformf( "lod", _lod);
+      _programQuads->sendUniformf( "maxDist", _maximumDistance);
+      _programQuads->sendUniformf( "tng", _tng);
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
+        _programQuads->sendUniform3v( "color", colors_[i].data( ));
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        meshes_[i]->renderQuads( );
+      }
+    }
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
   }
 
   nlgeometry::MeshPtr Renderer::extract(

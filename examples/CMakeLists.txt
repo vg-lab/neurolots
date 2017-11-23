@@ -9,12 +9,11 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/
     ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
     )
-
-  message(${CMAKE_CURRENT_SOURCE_DIR}/../exampleShaders/ )
   ########## RETO ##########
 
   if ( GLUT_FOUND )
     if( NOT APPLE )
+
       add_executable(nlgeometryObjRender objRender.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       target_link_libraries(nlgeometryObjRender
@@ -31,7 +30,6 @@ if ( NEUROLOTS_WITH_EXAMPLES )
         ${GLUT_LIBRARIES}
         )
 
-
       add_executable(nlrenderMorphologyRenderer morphologyRenderer.cpp
         Shaders.h  DemoCallbacks.cpp DemoCallbacks.h )
       target_link_libraries(nlrenderMorphologyRenderer
@@ -42,6 +40,7 @@ if ( NEUROLOTS_WITH_EXAMPLES )
         nlrender
         ${GLUT_LIBRARIES}
         )
+
     endif( )
   endif( )
 endif( )

@@ -46,4 +46,6 @@ BOOST_AUTO_TEST_CASE( joint_compute_geometry)
   joint.computeGeometry( );
   BOOST_CHECK( joint.sectionQuad( node0 ));
   BOOST_CHECK( joint.sectionQuad( node1 ));
+  delete node0;
+  delete node1;
 }
