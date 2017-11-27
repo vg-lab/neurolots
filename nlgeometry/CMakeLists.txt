@@ -10,6 +10,7 @@ set( NLGEOMETRY_PUBLIC_HEADERS
   SpatialHashTable.h
   Vertex.h
   Writer/ObjWriter.h
+  Writer/OffWriter.h
 )
 
 set( NLGEOMETRY_HEADERS
@@ -24,6 +25,7 @@ set( NLGEOMETRY_SOURCES
   SpatialHashTable.cpp
   Vertex.cpp
   Writer/ObjWriter.cpp
+  Writer/OffWriter.cpp
 )
 
 set( NLGEOMETRY_LINK_LIBRARIES

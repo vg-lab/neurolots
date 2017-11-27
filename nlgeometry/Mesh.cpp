@@ -34,6 +34,7 @@
 #endif
 
 #include <iostream>
+#include <set>
 
 namespace nlgeometry
 {
@@ -157,30 +158,58 @@ namespace nlgeometry
 
   void Mesh::computeBoundingBox( void )
   {
-    Eigen::Vector4f pos;
-    for ( auto vertex: _vertices )
+    std::set< nlgeometry::VertexPtr > uniqueVertices;
+    if ( _vertices.empty( ))
     {
-      pos = _modelMatrix * Eigen::Vector4f( vertex->position( ).x( ),
-                                            vertex->position( ).y( ),
-                                            vertex->position( ).z( ), 1.0f );
-      _aaBoundingBox.minimum( ).x( ) =
-        ( pos.x( ) < _aaBoundingBox.minimum( ).x( )) ?
-        pos.x( ): _aaBoundingBox.minimum( ).x( );
-      _aaBoundingBox.minimum( ).y( ) =
-        ( pos.y( ) < _aaBoundingBox.minimum( ).y( )) ?
-        pos.y( ): _aaBoundingBox.minimum( ).y( );
-      _aaBoundingBox.minimum( ).z( ) =
-        ( pos.z( ) < _aaBoundingBox.minimum( ).z( )) ?
-        pos.z( ): _aaBoundingBox.minimum( ).z( );
-      _aaBoundingBox.maximum( ).x( ) =
-        ( pos.x( ) > _aaBoundingBox.maximum( ).x( )) ?
-        pos.x( ): _aaBoundingBox.maximum( ).x( );
-      _aaBoundingBox.maximum( ).y( ) =
-        ( pos.y( ) > _aaBoundingBox.maximum( ).y( )) ?
-        pos.y( ): _aaBoundingBox.maximum( ).y( );
-      _aaBoundingBox.maximum( ).z( ) =
-        ( pos.z( ) > _aaBoundingBox.maximum( ).z( )) ?
-        pos.z( ): _aaBoundingBox.maximum( ).z( );
+      for ( auto facet: _triangles )
+      {
+        uniqueVertices.insert( facet->vertex0( ));
+        uniqueVertices.insert( facet->vertex1( ));
+        uniqueVertices.insert( facet->vertex2( ));
+      }
+      for ( auto facet: _quads )
+      {
+        uniqueVertices.insert( facet->vertex0( ));
+        uniqueVertices.insert( facet->vertex1( ));
+        uniqueVertices.insert( facet->vertex2( ));
+        uniqueVertices.insert( facet->vertex3( ));
+      }
+      _vertices.insert( _vertices.begin( ), uniqueVertices.begin( ),
+                        uniqueVertices.end( ));
+    }
+
+    if ( !_vertices.empty( ))
+    {
+      Eigen::Vector4f pos;
+      for ( auto vertex: _vertices )
+      {
+        pos = _modelMatrix * Eigen::Vector4f( vertex->position( ).x( ),
+                                              vertex->position( ).y( ),
+                                              vertex->position( ).z( ), 1.0f );
+        _aaBoundingBox.minimum( ).x( ) =
+          ( pos.x( ) < _aaBoundingBox.minimum( ).x( )) ?
+          pos.x( ): _aaBoundingBox.minimum( ).x( );
+        _aaBoundingBox.minimum( ).y( ) =
+          ( pos.y( ) < _aaBoundingBox.minimum( ).y( )) ?
+          pos.y( ): _aaBoundingBox.minimum( ).y( );
+        _aaBoundingBox.minimum( ).z( ) =
+          ( pos.z( ) < _aaBoundingBox.minimum( ).z( )) ?
+          pos.z( ): _aaBoundingBox.minimum( ).z( );
+        _aaBoundingBox.maximum( ).x( ) =
+          ( pos.x( ) > _aaBoundingBox.maximum( ).x( )) ?
+          pos.x( ): _aaBoundingBox.maximum( ).x( );
+        _aaBoundingBox.maximum( ).y( ) =
+          ( pos.y( ) > _aaBoundingBox.maximum( ).y( )) ?
+          pos.y( ): _aaBoundingBox.maximum( ).y( );
+        _aaBoundingBox.maximum( ).z( ) =
+          ( pos.z( ) > _aaBoundingBox.maximum( ).z( )) ?
+          pos.z( ): _aaBoundingBox.maximum( ).z( );
+      }
+    }
+    else
+    {
+      _aaBoundingBox.minimum( ) = Eigen::Vector3f::Zero( );
+      _aaBoundingBox.maximum( ) = Eigen::Vector3f::Zero( );
     }
   }
 

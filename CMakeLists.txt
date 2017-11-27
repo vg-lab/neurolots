@@ -50,6 +50,8 @@ common_find_package(Eigen3 REQUIRED SYSTEM)
 common_find_package(nsol REQUIRED)
 common_find_package(ReTo REQUIRED)
 common_find_package(GLUT)
+common_find_package(CGAL)
+common_find_package(GMP)
 
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol ReTo)
 

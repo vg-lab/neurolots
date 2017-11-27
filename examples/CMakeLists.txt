@@ -41,6 +41,21 @@ if ( NEUROLOTS_WITH_EXAMPLES )
         ${GLUT_LIBRARIES}
         )
 
+      if( CGAL_FOUND AND GMP_FOUND )
+        add_executable(nlrenderMorphologyMeasure morphologyMeasure.cpp
+          Shaders.h )
+        target_link_libraries(nlrenderMorphologyMeasure
+          ReTo
+          nsol
+          nlgeometry
+          nlgenerator
+          nlrender
+          CGAL
+          ${GLUT_LIBRARIES}
+          ${GMP_LIBRARIES}
+          )
+      endif( )
+
     endif( )
   endif( )
 endif( )

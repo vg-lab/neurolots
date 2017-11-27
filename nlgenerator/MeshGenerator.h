@@ -48,7 +48,7 @@ namespace nlgenerator
      */
     NLGENERATOR_API
     static nlgeometry::MeshPtr
-    generateMesh( nsol::NeuronMorphologyPtr& morphology_ );
+    generateMesh( nsol::MorphologyPtr morphology_ );
 
     /**
      * Static method that return a mesh generated from the given morphology
@@ -61,11 +61,16 @@ namespace nlgenerator
      */
     NLGENERATOR_API
     static nlgeometry::MeshPtr
-    generateMesh( nsol::NeuronMorphologyPtr& morphology_,
+    generateMesh( nsol::NeuronMorphologyPtr morphology_,
                   float alphaRadius_,
                   const std::vector< float >& alphaNeurites_ );
 
   protected:
+    static nlgeometry::MeshPtr
+    _generateMorphology( nsol::MorphologyPtr morphology_ );
+
+    static nlgeometry::MeshPtr
+    _generateMophology( nsol::NeuronMorphologyPtr morphology_ );
 
     static std::unordered_map< nsol::NodePtr, JointNodePtr >
     _vectorizeJoints( const nsol::Sections& sections_ );

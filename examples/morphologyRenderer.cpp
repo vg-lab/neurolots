@@ -25,6 +25,7 @@
 #include <nlgenerator/nlgenerator.h>
 #include <nlrender/nlrender.h>
 #include <reto/reto.h>
+#include <nsol/nsol.h>
 
 #include "DemoCallbacks.h"
 
@@ -50,17 +51,34 @@ reto::Camera* camera;
 nlgeometry::Meshes meshes;
 nlrender::Renderer* renderer;
 std::vector< Eigen::Matrix4f > models;
+nlgeometry::OffWriter offw;
 nlgeometry::ObjWriter objw;
 
 bool wireframe = false;
+bool adaptiveCriteria = false; 
 
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
 void keyboardFunc( unsigned char key, int, int );
 
+std::vector< std::string > split( const std::string& string_, char splitter_ )
+{
+  std::vector< std::string > strings;
+  std::istringstream f( string_ );
+  std::string s;
+  while(( getline( f, s, splitter_ )))
+  {
+    strings.push_back( s );
+  }
+  return strings;
+}
+
 int main( int argc, char* argv[] )
 {
+  if ( argc < 2 )
+    std::cerr << "Error: Usage: " << argv[0]
+              << " morphology_file[.swc|.h5]" << std::endl;
   std::cout << "nlrender example: Morphology Render" << std::endl;
 
   initContext( argc, argv );
@@ -70,7 +88,8 @@ int main( int argc, char* argv[] )
   DemoCallbacks::camera( camera );
   renderer = new nlrender::Renderer( );
 
-  renderer->lod( ) = 0;
+  renderer->lod( ) = 0.3f;
+  renderer->maximumDistance( ) = 1000.0f;
   nlgeometry::MeshPtr mesh;
   nlgeometry::AttribsFormat format( 3 );
   format[0] = nlgeometry::TAttribType::POSITION;
@@ -78,24 +97,63 @@ int main( int argc, char* argv[] )
   format[2] = nlgeometry::TAttribType::TANGENT;
 
   nsol::SwcReader swcr;
+  nsol::VasculatureReader vascur;
+  nlgeometry::AxisAlignedBoundingBox aabb;
 
   for ( int i = 1; i < argc; i++ )
   {
-    nsol::NeuronMorphologyPtr morphology =
-      swcr.readMorphology( std::string( argv[i] ));
-    mesh = nlgenerator::MeshGenerator::generateMesh( morphology );
-    std::cout << "Loaded morphology with: "
-              << mesh->vertices( ).size( ) << " vertices, "
-              << mesh->triangles( ).size( ) << " triangles and "
-              << mesh->quads( ).size( ) << " quads" << std::endl;
+    auto fileName = std::string( argv[i] );
+    auto strings = split( fileName, '.' );
+    nsol::MorphologyPtr morphology = nullptr;
+    if ( strings.back( ).compare( "swc" ) == 0 )
+    {
+      morphology = swcr.readMorphology( fileName );
+      nsol::Simplifier::Instance( )->simplify(
+        dynamic_cast< nsol::NeuronMorphologyPtr >( morphology ),
+        nsol::Simplifier::DIST_NODES_RADIUS );
+    }
+    else if ( strings.back( ).compare( "h5" ) == 0 )
+    {
+      morphology = vascur.loadMorphology( fileName );
+      nsol::Simplifier::Instance( )->simplify(
+        morphology, nsol::Simplifier::DIST_NODES_RADIUS );
 
-    mesh->uploadGPU( format, nlgeometry::Facet::PATCHES );
-    meshes.push_back( mesh );
-    models.push_back( Eigen::Matrix4f::Identity( ));
+    }
+    if ( morphology )
+    {
+      mesh = nlgenerator::MeshGenerator::generateMesh( morphology );
+      std::cout << "Loaded morphology with: "
+                << mesh->vertices( ).size( ) << " vertices, "
+                << mesh->triangles( ).size( ) << " triangles and "
+                << mesh->quads( ).size( ) << " quads" << std::endl;
+
+      mesh->uploadGPU( format, nlgeometry::Facet::PATCHES );
+      mesh->computeBoundingBox( );
+      mesh->clearCPUData( );
+      meshes.push_back( mesh );
+      models.push_back( Eigen::Matrix4f::Identity( ));
+
+      nlgeometry::AxisAlignedBoundingBox meshAABB = mesh->aaBoundingBox( );
+
+      if ( meshAABB.minimum( ).x( ) < aabb.minimum( ).x( ))
+        aabb.minimum( ).x( ) = meshAABB.minimum( ).x();
+      if ( meshAABB.minimum( ).y( ) < aabb.minimum( ).y( ))
+        aabb.minimum( ).y( ) = meshAABB.minimum( ).y();
+      if ( meshAABB.minimum( ).z( ) < aabb.minimum( ).z( ))
+        aabb.minimum( ).z( ) = meshAABB.minimum( ).z();
+      if ( meshAABB.maximum( ).x( ) > aabb.maximum( ).x( ))
+        aabb.maximum( ).x( ) = meshAABB.maximum( ).x();
+      if ( meshAABB.maximum( ).y( ) > aabb.maximum( ).y( ))
+        aabb.maximum( ).y( ) = meshAABB.maximum( ).y();
+      if ( meshAABB.maximum( ).z( ) > aabb.maximum( ).z( ))
+        aabb.maximum( ).z( ) = meshAABB.maximum( ).z();
+    }
   }
+  camera->pivot( aabb.center( ));
+  camera->radius( aabb.radius( ) / sin( camera->fov( )));
+  // camera->pivot( Eigen::Vector3f::Zero( ));
+  // camera->radius( 1000.0f );
 
-  camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-  camera->radius( 100.0f );
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection.transpose( );
   Eigen::Matrix4f view( camera->viewMatrix( ));
@@ -142,7 +200,7 @@ void renderFunc( void )
   renderer->viewMatrix( ) = view.transpose( );
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection.transpose( );
-  renderer->render( meshes, models, Eigen::Vector3f( 0.5f, 0.2f, 0.8f ));
+  renderer->render( meshes, models, Eigen::Vector3f( 0.3f, 0.3f, 0.8f ));
   // for ( auto m: meshes )
   //   renderer->render( m, m->modelMatrix( ),
   //                     Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
@@ -178,16 +236,35 @@ void keyboardFunc( unsigned char key, int, int )
       break;
   case 'w':
     renderer->lod( ) += 0.1f;
+    std::cout << "Level of subdivision " << renderer->lod( ) << std::endl;
     break;
   case 's':
     renderer->lod( ) -= 0.1f;
+    std::cout << "Level of subdivision " << renderer->lod( ) << std::endl;
+    break;
+  case 't':
+    adaptiveCriteria = !adaptiveCriteria;
+    if ( adaptiveCriteria )
+      renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
+    else
+      renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
     break;
   case 'x':
     for ( auto mesh: meshes )
     {
 
+      offw.writeMesh( renderer->extract( mesh,  mesh->modelMatrix( )),
+                      "test.off" );
+      std::cout << "Mesh extracted" << std::endl;
+    }
+    break;
+  case 'z':
+    for ( auto mesh: meshes )
+    {
+
       objw.writeMesh( renderer->extract( mesh,  mesh->modelMatrix( )),
                       "test.obj" );
+      std::cout << "Mesh extracted" << std::endl;
     }
     break;
   }
