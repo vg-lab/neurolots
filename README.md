@@ -35,3 +35,9 @@ mkdir neurolots/build && cd neurolots/build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ```
+
+## Documentation
+
+You can access the online API documentation generated from the source
+(using [Doxygen](http://doxygen.org/) ) in
+https://gmrvvis.github.io/doc/neurolots/
