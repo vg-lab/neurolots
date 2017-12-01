@@ -21,6 +21,7 @@ Ubuntu-Subproject-master:
   - date
   - hostname
   - uname -a
+  - export CMAKE_EXTRA_TARGETS="neurolots-tests doxygen"
   - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
   - export BUILD_GENERATOR="Ninja"
   - export DEPLOY_DOC_REPO="git@github.com:gmrvvis/gmrvvis.github.io"
