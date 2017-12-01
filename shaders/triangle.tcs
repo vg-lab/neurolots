@@ -5,6 +5,7 @@ in vec3 vPosition[];
 in vec3 vCenter[];
 in float vlot[];
 
+out vec3 tcPosition[];
 out vec3 tcCenter[];
 out vec3 tcNormal[];
 out float tcRadius[];
@@ -13,12 +14,21 @@ out float tcRadius[];
 
 void main( void )
 {
+  tcPosition[ID] = vPosition[ID];
   tcCenter[ID] = vCenter[ID];
   tcNormal[ID] = normalize( vPosition[ID]-vCenter[ID] );
   tcRadius[ID] = distance( vPosition[ID], vCenter[ID] );
-  float tcLod = (vlot[0]+vlot[1]+vlot[2])/3;
+  float lot01 = clamp( 64.0, 1.0, (vlot[0] + vlot[1]) * 0.5 *
+    distance( vPosition[0], vPosition[1] ));
+  float lot12 = clamp( 64.0, 1.0, (vlot[1] + vlot[2]) * 0.5 *
+    distance( vPosition[1], vPosition[2] ));
+  float lot20 = clamp( 64.0, 1.0, (vlot[2] + vlot[0]) * 0.5 *
+    distance( vPosition[2], vPosition[0] ));
+
+  float tcLod = (lot01+lot12+lot20)*0.3333;
+
   gl_TessLevelInner[0] = tcLod;
-  gl_TessLevelOuter[0] = (vlot[1]+vlot[2])/2;
-  gl_TessLevelOuter[1] = (vlot[2]+vlot[0])/2;
-  gl_TessLevelOuter[2] = (vlot[0]+vlot[1])/2;
+  gl_TessLevelOuter[0] = lot12;
+  gl_TessLevelOuter[1] = lot20;
+  gl_TessLevelOuter[2] = lot01;
 }

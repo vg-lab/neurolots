@@ -10,8 +10,7 @@ out vec3 vPosition;
 out vec3 vCenter;
 out float vlot;
 
-uniform mat4 model;
-uniform vec3 cameraPos;
+uniform mat4 viewModel;
 uniform float lod;
 uniform float maxDist;
 
@@ -20,7 +19,7 @@ uniform float maxDist;
 
 void main( void )
 {
-  vPosition = ( model * vec4(inVertex, 1.0 )).xyz;
-  vCenter = ( model * vec4( inCenter, 1.0 )).xyz;
-  vlot = levelDist( vCenter ) * length( inTangent ) + 1.0;
+  vPosition = ( viewModel * vec4(inVertex, 1.0 )).xyz;
+  vCenter = ( viewModel * vec4( inCenter, 1.0 )).xyz;
+  vlot = levelDist( vCenter );
 }

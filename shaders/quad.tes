@@ -11,13 +11,9 @@ out vec3 normal;
 out vec3 L;
 
 uniform mat4 proy;
-uniform mat4 view;
-uniform mat4 model;
-uniform vec3 cameraPos;
 
 void main( )
-{
-  vec3 tePosition;
+{ vec3 tePosition;
   vec3 teCenter;
   vec3 teNormal;
   float u=gl_TessCoord.x;
@@ -26,15 +22,21 @@ void main( )
   float v=gl_TessCoord.y;
   float v_2=v*v;
   float v_3=v_2*v;
-  teCenter = (2*v_3-3*v_2+1)*tcCenter[0]+(v_3-2*v_2+v)*m[0]+
-    (v_3-v_2)*m[2]+(-2*v_3+3*v_2)*tcCenter[2];
-  vec3 a_t=mix(tcNormal[0],tcNormal[1],u);
-  vec3 b_t=mix(tcNormal[2],tcNormal[3],u);
-  teNormal = normalize(mix(a_t,b_t,v));
-  float radius=mix(r[0],r[2],v);
-  tePosition = (radius*teNormal+teCenter);
+  vec3 center0 = mix( tcCenter[0], tcCenter[1], u );
+  vec3 center1 = mix( tcCenter[2], tcCenter[3], u );
+  teCenter = mix( center0, center1, v); //((2*v_3-3*v_2+1)*center0+(v_3-2*v_2+v)*m[0]+
+    //(v_3-v_2)*m[2]*step( 0.00001, m[2])+(-2*v_3+3*v_2)*center1 );
+  vec3 a_t=mix(tcNormal[0],tcNormal[2],v);
+  vec3 b_t=mix(tcNormal[1],tcNormal[3],v);
+  // float radius = mix( length( a_t ), length( b_t ), u );
+  teNormal = normalize( mix( a_t, b_t, u ));
+  float radius0 = mix(r[0],r[1],u);
+  float radius1 = mix(r[2],r[3],u);
+  float radius = mix(radius0,radius1,v);
+  tePosition = (radius * teNormal + teCenter);
   normal = teNormal;
-  L = normalize(cameraPos-tePosition);
+  L = normalize(-tePosition);
   position = tePosition;
-  gl_Position = proy*view*vec4(tePosition,1.0);
+
+  gl_Position = proy*vec4(tePosition,1.0);
 }

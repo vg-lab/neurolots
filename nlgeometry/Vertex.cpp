@@ -170,7 +170,7 @@ namespace nlgeometry
     {
       for ( unsigned int i = 0; i < attribs_.size( ); i++ )
       {
-        store( attribs_[i], format_[i]);
+          store( attribs_[i], format_[i]);
       }
       _stored = true;
     }

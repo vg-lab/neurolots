@@ -132,15 +132,13 @@ namespace nlgeometry
      * Method that render the mesh triangles
      */
     NLGEOMETRY_API
-    virtual void renderTriangles(
-      Facet::TFacetType facetType_ = Facet::TRIANGLES );
+    virtual void renderTriangles( void );
 
     /**
      * Method that render the mesh quads
      */
     NLGEOMETRY_API
-    virtual void renderQuads(
-      Facet::TFacetType facetType_ = Facet::TRIANGLES );
+    virtual void renderQuads( void );
 
     /**
      * Method that render the all mesh
@@ -181,6 +179,9 @@ namespace nlgeometry
 
     //! Model matrix of the mesh
     Eigen::Matrix4f _modelMatrix;
+
+    //! Facet type uploaded to the gpu
+    Facet::TFacetType _facetType;
 
   }; // class Mesh
 

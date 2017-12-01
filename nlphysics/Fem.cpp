@@ -21,6 +21,8 @@
  */
 #include "Fem.h"
 
+#include <iostream>
+
 namespace nlphysics
 {
 
@@ -60,9 +62,10 @@ namespace nlphysics
           _nodes[i]->initialPosition( );
     }
     _conformMatrixSystem( );
+
     _u = _solver.solve( _b );
 
-    for ( unsigned int i=0; i < _nodes.size(); i++)
+    for ( unsigned int i=0; i < _nodes.size(); i++ )
     {
       if ( !_nodes[i]->fixed( ))
       {

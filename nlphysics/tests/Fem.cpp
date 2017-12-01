@@ -19,10 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
 #include <nlphysics/nlphysics.h>
+
 #include "nlphysicsTests.h"
-#include <iostream>
+
 #include <boost/test/floating_point_comparison.hpp>
 
 using namespace nlphysics;

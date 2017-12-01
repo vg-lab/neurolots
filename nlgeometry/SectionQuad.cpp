@@ -175,16 +175,17 @@ namespace nlgeometry
 
   SectionQuadPtr SectionQuad::clone( void ) const
   {
-    OrbitalVertexPtr vertex0 =
+    OrbitalVertexPtr clonedVertex0 =
       dynamic_cast< OrbitalVertexPtr >( _vertex0->clone( ));
-    OrbitalVertexPtr vertex1 =
+    OrbitalVertexPtr clonedVertex1 =
       dynamic_cast< OrbitalVertexPtr >( _vertex1->clone( ));
-    OrbitalVertexPtr vertex2 =
+    OrbitalVertexPtr clonedVertex2 =
       dynamic_cast< OrbitalVertexPtr >( _vertex2->clone( ));
-    OrbitalVertexPtr vertex3 =
+    OrbitalVertexPtr clonedVertex3 =
       dynamic_cast< OrbitalVertexPtr >( _vertex3->clone( ));
 
-    return new SectionQuad( vertex0, vertex1, vertex2, vertex3 );
+    return new SectionQuad( clonedVertex0, clonedVertex1,
+                            clonedVertex2, clonedVertex3 );
   }
 
   void SectionQuad::deleteVertices( void )
@@ -208,16 +209,17 @@ namespace nlgeometry
 
   SectionQuadPtr SectionQuad::identity( void )
   {
-    OrbitalVertexPtr vertex0 =
+    OrbitalVertexPtr identityVertex0 =
       new OrbitalVertex( Eigen::Vector3f( 0.0f, 0.0f, -1.0f ));
-    OrbitalVertexPtr vertex1 =
+    OrbitalVertexPtr identityVertex1 =
       new OrbitalVertex( Eigen::Vector3f( -1.0f, 0.0f, 0.0f ));
-    OrbitalVertexPtr vertex2 =
+    OrbitalVertexPtr identityVertex2 =
       new OrbitalVertex( Eigen::Vector3f( 0.0f, 0.0f, 1.0f ));
-    OrbitalVertexPtr vertex3 =
+    OrbitalVertexPtr identityVertex3 =
       new OrbitalVertex( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
 
-      return new SectionQuad( vertex0, vertex1, vertex2, vertex3 );
+      return new SectionQuad( identityVertex0, identityVertex1,
+                              identityVertex2, identityVertex3 );
   }
 
   void SectionQuad::createPipe( SectionQuadPtr startQuad_,
