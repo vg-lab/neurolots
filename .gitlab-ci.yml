@@ -15,6 +15,22 @@ Ubuntu-OptionalDeps:
  tags:
   - ubuntu
 
+Ubuntu-Subproject-master:
+ stage: build
+ script:
+  - date
+  - hostname
+  - uname -a
+  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
+  - export BUILD_GENERATOR="Ninja"
+  - export DEPLOY_DOC_REPO="git@github.com:gmrvvis/gmrvvis.github.io"
+  - export GITHUB_MIRROR_URL="git@github.com:gmrvvis/neurolots"
+  - bash .gitlab-ci.sh
+ only:
+  - master
+ tags:
+  - ubuntu
+
 Ubuntu-Subproject:
  stage: build
  script:
@@ -24,6 +40,8 @@ Ubuntu-Subproject:
   - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
   - export BUILD_GENERATOR="Ninja"
   - bash .gitlab-ci.sh
+ except:
+  - master
  tags:
   - ubuntu
 
