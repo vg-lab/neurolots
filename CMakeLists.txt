@@ -72,7 +72,11 @@ set( DOCS README.md LICENSE.txt )
 install( FILES ${DOCS} DESTINATION share/neurolots COMPONENT dev )
 
 set( DOXYGEN_MAINPAGE_MD README.md )
-set( DOXYGEN_EXTRA_INPUT ${PROJECT_SOURCE_DIR}/README.md )
+set( DOXYGEN_EXTRA_INPUT ${PROJECT_SOURCE_DIR}/README.md
+  ${CMAKE_INSTALL_PREFIX}/include/nlgeometry
+  ${CMAKE_INSTALL_PREFIX}/include/nlphysics
+  ${CMAKE_INSTALL_PREFIX}/include/nlgenerator
+  ${CMAKE_INSTALL_PREFIX}/include/nlrender )
 include( DoxygenRule )
 
 include( CPackConfig )
