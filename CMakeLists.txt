@@ -51,7 +51,7 @@ common_find_package(nsol REQUIRED)
 common_find_package(ReTo REQUIRED)
 common_find_package(GLUT SYSTEM)
 common_find_package(CGAL SYSTEM)
-
+common_find_package(Rockets)
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol ReTo)
 
 common_find_package_post( )

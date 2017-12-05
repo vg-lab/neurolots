@@ -46,6 +46,17 @@ if ( NEUROLOTS_WITH_EXAMPLES )
           ${NEUROLOTSMORPHOLOGYMEASURE_SOURCES} )
 
       endif( )
+
+      if ( ROCKETS_FOUND )
+
+        set( NEUROLOTSROCKETSRENDERER_SOURCES rocketsRenderer.cpp )
+        set( NEUROLOTSROCKETSRENDERER_LINK_LIBRARIES PUBLIC ReTo nsol nlgeometry
+          nlgenerator nlrender ${GLUT_LIBRARIES} Rockets )
+        common_application( neurolotsRocketsRenderer NOHELP )
+        list( APPEND NEUROLOTS_EXAMPLES_FILES
+          ${NEUROLOTSROCKETSRENDER_SOURCES} )
+
+      endif( )
     endif( )
   endif( )
 
