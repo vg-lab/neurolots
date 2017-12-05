@@ -66,7 +66,7 @@ void DemoCallbacks::idleFunc( void )
 }
 
 void DemoCallbacks::keyboardFunc(
-  unsigned char key_, int x_, int y_ )
+  unsigned char key_, int /*x_*/, int /*y_*/ )
 {
   switch( key_ )
   {

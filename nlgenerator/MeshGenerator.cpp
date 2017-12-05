@@ -23,10 +23,6 @@
 
 #include "Icosphere.h"
 
-#define EPSILON 0.00001f
-
-#define END_NODE_DISPLACE 0.3f
-
 namespace nlgenerator
 {
 

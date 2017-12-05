@@ -96,7 +96,6 @@ int main( int argc, char* argv[] )
   format[1] = nlgeometry::TAttribType::CENTER;
   format[2] = nlgeometry::TAttribType::TANGENT;
 
-  nsol::SwcReader swcr;
   nsol::VasculatureReader vascur;
   auto fileName = std::string( argv[1] );
   nsol::MorphologyPtr morphology = nullptr;
