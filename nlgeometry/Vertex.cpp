@@ -54,11 +54,6 @@ namespace nlgeometry
 
   }
 
-  unsigned int& Vertex::id( void )
-  {
-    return _id;
-  }
-
   const unsigned int& Vertex::id( void ) const
   {
     return _id;

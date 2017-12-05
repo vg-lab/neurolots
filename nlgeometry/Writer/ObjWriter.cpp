@@ -24,11 +24,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
 namespace nlgeometry
 {
 
-  void ObjWriter::writeMesh( MeshPtr mesh, const std::string& fileName_ )
+  void ObjWriter::writeMesh( const MeshPtr mesh, const std::string& fileName_ )
   {
     Facets facets;
     facets.insert( facets.end( ), mesh->triangles( ).begin(),
@@ -38,8 +39,8 @@ namespace nlgeometry
     writeMesh( facets, mesh->vertices( ), fileName_ );
   }
 
-  void ObjWriter::writeMesh( Facets& facets_, Vertices& vertices_,
-                  const std::string& fileName_ )
+  void ObjWriter::writeMesh( const Facets& facets_, const Vertices& vertices_,
+                             const std::string& fileName_ )
   {
     std::ofstream outStream(fileName_.c_str());
     if(!outStream.is_open())
@@ -48,9 +49,10 @@ namespace nlgeometry
       return;
     }
 
+    std::unordered_map< VertexPtr, unsigned int> vertexId;
     for ( unsigned int i = 0; i < ( unsigned int ) vertices_.size( ); i++ )
     {
-      vertices_[i]->id( ) = i + 1;
+      vertexId[ vertices_[i] ] = i + 1;
       outStream << "v " << vertices_[i]->position( ).x( ) << " "
                 << vertices_[i]->position( ).y( ) << " "
                 << vertices_[i]->position( ).z( ) << "\n";
@@ -63,14 +65,34 @@ namespace nlgeometry
     }
     for( nlgeometry::FacetPtr facet: facets_ )
     {
-      outStream << "f " << facet->vertex0( )->id( ) << "//"
-                <<  facet->vertex0( )->id( ) << " " << facet->vertex1( )->id( )
-                << "//" <<  facet->vertex1( )->id( ) << " "
-                << facet->vertex2( )->id( ) << "//" <<  facet->vertex2( )->id( )
-                << "\n";
+      if ( facet->vertex3( ))
+      {
+        outStream << "f " << vertexId[ facet->vertex0( )] << "//"
+                  << vertexId[ facet->vertex0( )] << " "
+                  << vertexId[ facet->vertex1( )] << "//"
+                  << vertexId[ facet->vertex1( )] << " "
+                  << vertexId[ facet->vertex2( )] << "//"
+                  << vertexId[ facet->vertex2( )]
+                  << "\n";
+        outStream << "f " << vertexId[ facet->vertex1( )] << "//"
+                  << vertexId[ facet->vertex1( )] << " "
+                  << vertexId[ facet->vertex3( )] << "//"
+                  << vertexId[ facet->vertex3( )] << " "
+                  << vertexId[ facet->vertex2( )] << "//"
+                  << vertexId[ facet->vertex2( )]
+                  << "\n";
+      }
+      else
+        outStream << "f " << vertexId[ facet->vertex0( )] << "//"
+                  << vertexId[ facet->vertex0( )] << " "
+                  << vertexId[ facet->vertex1( )] << "//"
+                  << vertexId[ facet->vertex1( )] << " "
+                  << vertexId[ facet->vertex2( )] << "//"
+                  << vertexId[ facet->vertex2( )]
+                  << "\n";
     }
-
-    outStream.close();
+    vertexId.clear( );
+    outStream.close( );
   }
 
 } // mamespace nlgeometry

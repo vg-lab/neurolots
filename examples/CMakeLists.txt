@@ -14,48 +14,42 @@ if ( NEUROLOTS_WITH_EXAMPLES )
   if ( GLUT_FOUND )
     if( NOT APPLE )
 
-      add_executable(nlgeometryObjRender objRender.cpp Shaders.h
+      set( NEUROLOTSOBJRENDER_SOURCES objRender.cpp Shaders.h DemoCallbacks.cpp
+        DemoCallbacks.h )
+      set( NEUROLOTSOBJRENDER_LINK_LIBRARIES ReTo nlgeometry ${GLUT_LIBRARIES} )
+      common_application( neurolotsObjRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSOBJRENDER_SOURCES} )
+
+      set( NEUROLOTSCUBERENDER_SOURCES cubeRender.cpp Cube.h Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
-      target_link_libraries(nlgeometryObjRender
-        ReTo
-        nlgeometry
-        ${GLUT_LIBRARIES}
-        )
+      set( NEUROLOTSCUBERENDER_LINK_LIBRARIES ReTo nlgeometry
+        ${GLUT_LIBRARIES} )
+      common_application( neurolotsCubeRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSCUBERENDER_SOURCES} )
 
-      add_executable(nlgeometryCubeRender cubeRender.cpp Cube.h Shaders.h
+      set( NEUROLOTSMORPHOLOGYRENDER_SOURCES morphologyRenderer.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
-      target_link_libraries(nlgeometryCubeRender
-        ReTo
-        nlgeometry
-        ${GLUT_LIBRARIES}
-        )
+      set( NEUROLOTSMORPHOLOGYRENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsMorphologyRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSMORPHOLOGYRENDER_SOURCES} )
 
-      add_executable(nlrenderMorphologyRenderer morphologyRenderer.cpp
-        Shaders.h  DemoCallbacks.cpp DemoCallbacks.h )
-      target_link_libraries(nlrenderMorphologyRenderer
-        ReTo
-        nsol
-        nlgeometry
-        nlgenerator
-        nlrender
-        ${GLUT_LIBRARIES}
-        )
-
-      if( CGAL_FOUND AND GMP_FOUND )
-        add_executable(nlrenderMorphologyMeasure morphologyMeasure.cpp
-          Shaders.h )
-        target_link_libraries(nlrenderMorphologyMeasure
-          ReTo
-          nsol
-          nlgeometry
-          nlgenerator
-          nlrender
-          CGAL
-          ${GLUT_LIBRARIES}
-          ${GMP_LIBRARIES}
-          )
-      endif( )
+      set( NEUROLOTSMORPHOLOGYEXTRACTOR_SOURCES morphologyExtractor.cpp
+        Shaders.h)
+      set( NEUROLOTSMORPHOLOGYEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsMorphologyExtractor NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSMORPHOLOGYEXTRACTOR_SOURCES} )
 
     endif( )
   endif( )
-endif( )
+
+  include(InstallFiles)
+  install_files( share/neurolots/examples FILES ${NEUROLOTS_EXAMPLES_FILES}
+    COMPONENT examples )
+
+endif( NEUROLOTS_WITH_EXAMPLES )

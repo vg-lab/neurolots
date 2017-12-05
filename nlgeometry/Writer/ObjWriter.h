@@ -39,13 +39,13 @@ namespace nlgeometry
      * Static method to write mesh to a obj file
      */
     NLGEOMETRY_API
-    static void writeMesh( MeshPtr mesh, const std::string& fileName_ );
+    static void writeMesh( const MeshPtr mesh, const std::string& fileName_ );
 
     /**
      * Static method to write a vector of facets and vertices to a obj file
      */
     NLGEOMETRY_API
-    static void writeMesh( Facets& facets_, Vertices& vertices_,
+    static void writeMesh( const Facets& facets_, const Vertices& vertices_,
                            const std::string& fileName_ );
 
   }; // class ObjWriter

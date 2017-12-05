@@ -158,59 +158,34 @@ namespace nlgeometry
 
   void Mesh::computeBoundingBox( void )
   {
-    std::set< nlgeometry::VertexPtr > uniqueVertices;
-    if ( _vertices.empty( ))
+    Eigen::Array3f minimum =
+      Eigen::Array3f::Constant( std::numeric_limits< float >::max( ));
+    Eigen::Array3f maximum =
+      Eigen::Array3f::Constant( std::numeric_limits< float >::min( ));
+
+    const Eigen::Matrix3f rotMatrix = _modelMatrix.block( 0, 0, 3, 3 );
+    const Eigen::Array3f trVec = _modelMatrix.block( 0, 3, 1, 3 );
+
+    for ( auto facet: _triangles )
     {
-      for ( auto facet: _triangles )
-      {
-        uniqueVertices.insert( facet->vertex0( ));
-        uniqueVertices.insert( facet->vertex1( ));
-        uniqueVertices.insert( facet->vertex2( ));
-      }
-      for ( auto facet: _quads )
-      {
-        uniqueVertices.insert( facet->vertex0( ));
-        uniqueVertices.insert( facet->vertex1( ));
-        uniqueVertices.insert( facet->vertex2( ));
-        uniqueVertices.insert( facet->vertex3( ));
-      }
-      _vertices.insert( _vertices.begin( ), uniqueVertices.begin( ),
-                        uniqueVertices.end( ));
+      Eigen::Array3f v0( rotMatrix * facet->vertex0( )->position( ));
+      Eigen::Array3f v1( rotMatrix * facet->vertex1( )->position( ));
+      Eigen::Array3f v2( rotMatrix * facet->vertex2( )->position( ));
+      minimum = minimum.min( v0.min( v1.min( v2 )));
+      maximum = maximum.max( v0.max( v1.max( v2 )));
     }
 
-    if ( !_vertices.empty( ))
+    for ( auto facet: _quads )
     {
-      Eigen::Vector4f pos;
-      for ( auto vertex: _vertices )
-      {
-        pos = _modelMatrix * Eigen::Vector4f( vertex->position( ).x( ),
-                                              vertex->position( ).y( ),
-                                              vertex->position( ).z( ), 1.0f );
-        _aaBoundingBox.minimum( ).x( ) =
-          ( pos.x( ) < _aaBoundingBox.minimum( ).x( )) ?
-          pos.x( ): _aaBoundingBox.minimum( ).x( );
-        _aaBoundingBox.minimum( ).y( ) =
-          ( pos.y( ) < _aaBoundingBox.minimum( ).y( )) ?
-          pos.y( ): _aaBoundingBox.minimum( ).y( );
-        _aaBoundingBox.minimum( ).z( ) =
-          ( pos.z( ) < _aaBoundingBox.minimum( ).z( )) ?
-          pos.z( ): _aaBoundingBox.minimum( ).z( );
-        _aaBoundingBox.maximum( ).x( ) =
-          ( pos.x( ) > _aaBoundingBox.maximum( ).x( )) ?
-          pos.x( ): _aaBoundingBox.maximum( ).x( );
-        _aaBoundingBox.maximum( ).y( ) =
-          ( pos.y( ) > _aaBoundingBox.maximum( ).y( )) ?
-          pos.y( ): _aaBoundingBox.maximum( ).y( );
-        _aaBoundingBox.maximum( ).z( ) =
-          ( pos.z( ) > _aaBoundingBox.maximum( ).z( )) ?
-          pos.z( ): _aaBoundingBox.maximum( ).z( );
-      }
+      Eigen::Array3f v0( rotMatrix * facet->vertex0( )->position( ));
+      Eigen::Array3f v1( rotMatrix * facet->vertex1( )->position( ));
+      Eigen::Array3f v2( rotMatrix * facet->vertex2( )->position( ));
+      Eigen::Array3f v3( rotMatrix * facet->vertex3( )->position( ));
+      minimum = minimum.min( v0.min( v1.min( v2.min( v3 ))));
+      maximum = maximum.max( v0.max( v1.max( v2.max( v3 ))));
     }
-    else
-    {
-      _aaBoundingBox.minimum( ) = Eigen::Vector3f::Zero( );
-      _aaBoundingBox.maximum( ) = Eigen::Vector3f::Zero( );
-    }
+    _aaBoundingBox.minimum( ) = minimum + trVec;
+    _aaBoundingBox.maximum( ) = maximum + trVec;
   }
 
   void Mesh::computeNormals( void )

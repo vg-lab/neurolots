@@ -6,7 +6,7 @@ in vec3 L;
 
 uniform vec3 color;
 
-#include("_partials/_illuminate.glsl")
+#include("_functions/_illuminate.glsl")
 
 void main( )
 {

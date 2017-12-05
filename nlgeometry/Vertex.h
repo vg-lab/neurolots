@@ -87,9 +87,6 @@ namespace nlgeometry
      * @return vertex id
      */
     NLGEOMETRY_API
-    unsigned int& id( void );
-
-    NLGEOMETRY_API
     const unsigned int& id( void ) const;
 
     /**

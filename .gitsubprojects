@@ -1,4 +1,4 @@
 #-*- mode: cmake -*-
 # git_subproject(Brion https://github.com/BlueBrain/Brion.git 5396f1e)
-git_subproject(nsol https://github.com/gmrvvis/nsol.git ef6de63a)
+git_subproject(nsol https://github.com/gmrvvis/nsol.git 70c5b077)
 git_subproject(ReTo https://github.com/gmrvvis/ReTo.git 574e0924)

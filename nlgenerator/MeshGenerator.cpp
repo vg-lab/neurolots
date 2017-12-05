@@ -23,10 +23,6 @@
 
 #include "Icosphere.h"
 
-#define EPSILON 0.00001f
-
-#define END_NODE_DISPLACE 0.3f
-
 namespace nlgenerator
 {
 
@@ -70,14 +66,14 @@ namespace nlgenerator
     JointNodes firstJoints;
     float somaRadius = morphology_->soma( )->meanRadius( );
     Eigen::Vector3f somaCenter = morphology_->soma( )->center( );
-    for ( unsigned int i = 0; i < morphology_->neurites(  ).size( ); i++ )
+    for ( unsigned int i = 0; i < morphology_->neurites(  ).size( ); ++i )
     {
       auto neurite = morphology_->neurites( )[i];
       auto joint = joints[neurite->firstSection( )->firstNode( )];
       joint->connectedSoma( ) = true;
       Eigen::Vector3f axis = joint->position( ) - somaCenter;
       float module = axis.norm( ) - somaRadius;
-      module = module * alphaNeurites_[i] + somaRadius;
+      module *= alphaNeurites_[i] + somaRadius;
       joint->position( ) = somaCenter + axis.normalized( ) * module;
       firstJoints.push_back( joint );
     }

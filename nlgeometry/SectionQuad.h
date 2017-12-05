@@ -53,6 +53,7 @@ namespace nlgeometry
     /**
      * Default destructor
      */
+    NLGEOMETRY_API
     virtual ~SectionQuad( void );
 
     /**

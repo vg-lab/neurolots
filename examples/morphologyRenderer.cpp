@@ -20,6 +20,7 @@
  *
  */
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 #include <nlgeometry/nlgeometry.h>
 #include <nlgenerator/nlgenerator.h>
@@ -55,31 +56,21 @@ nlgeometry::OffWriter offw;
 nlgeometry::ObjWriter objw;
 
 bool wireframe = false;
-bool adaptiveCriteria = false; 
+bool adaptiveCriteria = false;
 
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
 void keyboardFunc( unsigned char key, int, int );
 
-std::vector< std::string > split( const std::string& string_, char splitter_ )
-{
-  std::vector< std::string > strings;
-  std::istringstream f( string_ );
-  std::string s;
-  while(( getline( f, s, splitter_ )))
-  {
-    strings.push_back( s );
-  }
-  return strings;
-}
-
 int main( int argc, char* argv[] )
 {
   if ( argc < 2 )
-    std::cerr << "Error: Usage: " << argv[0]
+  {  std::cerr << "Error: Usage: " << argv[0]
               << " morphology_file[.swc|.h5]" << std::endl;
-  std::cout << "nlrender example: Morphology Render" << std::endl;
+    return 1;
+  }
+  std::cout << "neurolots example: Morphology Render" << std::endl;
 
   initContext( argc, argv );
   initOGL( );
@@ -97,28 +88,32 @@ int main( int argc, char* argv[] )
   format[2] = nlgeometry::TAttribType::TANGENT;
 
   nsol::SwcReader swcr;
-  nsol::VasculatureReader vascur;
-  nlgeometry::AxisAlignedBoundingBox aabb;
 
+#ifdef NSOL_USE_HDF5
+  nsol::VasculatureReader vascur;
+#endif
+  nlgeometry::AxisAlignedBoundingBox aabb;
   for ( int i = 1; i < argc; i++ )
   {
-    auto fileName = std::string( argv[i] );
-    auto strings = split( fileName, '.' );
+    std::string fileName( argv[i] );
+    auto fileExt = boost::filesystem::extension( fileName );
     nsol::MorphologyPtr morphology = nullptr;
-    if ( strings.back( ).compare( "swc" ) == 0 )
+    if ( fileExt.compare( ".swc" ) == 0 )
     {
       morphology = swcr.readMorphology( fileName );
       nsol::Simplifier::Instance( )->simplify(
         dynamic_cast< nsol::NeuronMorphologyPtr >( morphology ),
         nsol::Simplifier::DIST_NODES_RADIUS );
     }
-    else if ( strings.back( ).compare( "h5" ) == 0 )
+#ifdef NSOL_USE_HDF5
+    else if ( fileExt.compare( ".h5" ) == 0 )
     {
       morphology = vascur.loadMorphology( fileName );
       nsol::Simplifier::Instance( )->simplify(
         morphology, nsol::Simplifier::DIST_NODES_RADIUS );
 
     }
+#endif
     if ( morphology )
     {
       mesh = nlgenerator::MeshGenerator::generateMesh( morphology );
