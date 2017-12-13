@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __NLGEOMETRY_OBJ_WRITER__
-#define __NLGEOMETRY_OBJ_WRITER__
+#ifndef __NLGEOMETRY_OFF_WRITER__
+#define __NLGEOMETRY_OFF_WRITER__
 
 #include "../Mesh.h"
 
@@ -29,26 +29,26 @@
 namespace nlgeometry
 {
 
-  /* \class ObjWriter */
-  class ObjWriter
+  /* \class OffWriter */
+  class OffWriter
   {
 
   public:
 
     /**
-     * Static method to write mesh to a obj file
+     * Static method to write mesh to a off file
      */
     NLGEOMETRY_API
     static void writeMesh( const MeshPtr mesh, const std::string& fileName_ );
 
     /**
-     * Static method to write a vector of facets and vertices to a obj file
+     * Static method to write a vector of facets and vertices to a off file
      */
     NLGEOMETRY_API
     static void writeMesh( const Facets& facets_, const Vertices& vertices_,
                            const std::string& fileName_ );
 
-  }; // class ObjWriter
+  }; // class OffWriter
 
 } // namespace nlgeometry
 

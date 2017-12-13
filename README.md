@@ -18,7 +18,11 @@ for a complete description and sample data tests.
 ## Dependencies
 
 * Required dependencies:
+    * Boost
+    * OpenGL
+    * glew
     * nsol
+    * ReTo
     * eigen3
 
 Note: nsol library is automatically downloaded and built if not found by cmake.
@@ -32,7 +36,8 @@ build the Release version in order to get the best performance possible.
 ```bash
 git clone https://github.com/gmrvvis/neurolots
 mkdir neurolots/build && cd neurolots/build
-cmake .. -DCMAKE_BUILD_TYPE=Release
+git submodule update --init
+cmake .. -DCLONE_SUBPROJECTS=ON
 make
 ```
 

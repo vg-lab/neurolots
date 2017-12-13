@@ -129,6 +129,7 @@ namespace nlgeometry
      * Method that return a cloned orbtial vertex
      * @return a cloned orbital vertex from the actual orbital vertex
      */
+    NLGEOMETRY_API
     VertexPtr clone( void );
 
   protected:

@@ -55,7 +55,7 @@ void initOGL( void );
 
 int main( int argc, char* argv[] )
 {
-  std::cout << "nlgeometry example: Cube Render" << std::endl;
+  std::cout << "neurolots example: Cube Render" << std::endl;
 
   initContext( argc, argv );
   initOGL( );

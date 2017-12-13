@@ -5,8 +5,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
-project( neurolots VERSION 0.1.0 )
-set( neurolots_VERSION_ABI 3 )
+project( neurolots VERSION 0.1.1 )
+set( neurolots_VERSION_ABI 4 )
 
 # Disable in source building
 if( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" )
@@ -43,15 +43,16 @@ option( NEUROLOTS_WITH_EXAMPLES "NEUROLOTS_WITH_EXAMPLES" ON )
 
 include( Common )
 
-common_find_package( Boost COMPONENTS unit_test_framework )
-common_find_package( OpenGL REQUIRED SYSTEM )
-common_find_package( GLEW REQUIRED SYSTEM )
-common_find_package( Eigen3 REQUIRED SYSTEM )
-common_find_package( nsol REQUIRED )
-common_find_package( ReTo REQUIRED )
-common_find_package( GLUT )
+common_find_package(Boost COMPONENTS unit_test_framework system filesystem
+  REQUIRED SYSTEM)
+common_find_package(OpenGL REQUIRED SYSTEM)
+common_find_package(GLEW REQUIRED SYSTEM)
+common_find_package(Eigen3 REQUIRED SYSTEM)
+common_find_package(nsol REQUIRED)
+common_find_package(ReTo REQUIRED)
+common_find_package(GLUT SYSTEM)
 
-list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW GLUT Eigen3 nsol ReTo)
+list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW Eigen3 nsol ReTo )
 
 common_find_package_post( )
 

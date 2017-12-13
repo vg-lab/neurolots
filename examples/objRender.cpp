@@ -54,7 +54,7 @@ void initOGL( void );
 
 int main( int argc, char* argv[] )
 {
-  std::cout << "nlgeometry example: Obj Render" << std::endl;
+  std::cout << "neurolots example: Obj Render" << std::endl;
   if( argc < 2 )
   {
     std::cerr << "Usage error: " << argv[0] << " file[.obj]" << std::endl;

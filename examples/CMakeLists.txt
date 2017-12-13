@@ -30,10 +30,20 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       set( NEUROLOTSMORPHOLOGYRENDER_SOURCES morphologyRenderer.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSMORPHOLOGYRENDER_LINK_LIBRARIES ReTo nsol nlgeometry
-        nlgenerator nlrender ${GLUT_LIBRARIES} )
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
       common_application( neurolotsMorphologyRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSMORPHOLOGYRENDER_SOURCES} )
+
+      set( NEUROLOTSMORPHOLOGYEXTRACTOR_SOURCES morphologyExtractor.cpp
+        Shaders.h)
+      set( NEUROLOTSMORPHOLOGYEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsMorphologyExtractor NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSMORPHOLOGYEXTRACTOR_SOURCES} )
 
     endif( )
   endif( )

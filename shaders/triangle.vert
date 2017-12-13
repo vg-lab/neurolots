@@ -14,8 +14,8 @@ uniform mat4 viewModel;
 uniform float lod;
 uniform float maxDist;
 
-#include("_partials/_linearDist.glsl")
-#include("_partials/_homogeneousDist.glsl")
+#include("_functions/_linearDist.glsl")
+#include("_functions/_homogeneousDist.glsl")
 
 void main( void )
 {

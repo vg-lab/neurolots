@@ -1,25 +1,180 @@
 /**
- * @file    NeuronMeshGenerator.cpp
- * @brief
- * @author  Juan José García <juanjose.garcia@urjc.es>
- * @date
- * @remarks Copyright (c) 2015 GMRV/URJC. All rights reserved.
- * Do not distribute without further notice.
+ * Copyright (c) 2015-2017 GMRV/URJC.
+ *
+ * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
+ *
+ * This file is part of neurolots <https://github.com/gmrvvis/neurolots>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
-
 #include "MeshGenerator.h"
 
 #include "Icosphere.h"
-
-#define EPSILON 0.00001f
-
-#define END_NODE_DISPLACE 0.3f
 
 namespace nlgenerator
 {
 
   nlgeometry::MeshPtr MeshGenerator::generateMesh(
-    nsol::NeuronMorphologyPtr& morphology_ )
+    nsol::MorphologyPtr morphology_ )
+  {
+    nsol::NeuronMorphologyPtr neuronMorphology =
+      dynamic_cast< nsol::NeuronMorphologyPtr >( morphology_ );
+    if ( neuronMorphology )
+      return _generateMophology( neuronMorphology );
+    else
+      return _generateMorphology( morphology_ );
+  }
+
+  nlgeometry::MeshPtr MeshGenerator::generateMesh(
+    nsol::NeuronMorphologyPtr morphology_,
+    float alphaRadius_,
+    const std::vector< float >& alphaNeurites_ )
+  {
+    auto mesh = new nlgeometry::Mesh( );
+
+    nsol::Sections sections;
+    for ( auto neurite: morphology_->neurites(  ))
+    {
+      auto section = neurite->firstSection( );
+      if ( section->nodes( ).size( ) == 1 )
+      {
+        auto firstSecNode = section->firstNode( );
+        Eigen::Vector3f position =
+          ( morphology_->soma( )->center( ) - firstSecNode->point( )
+            ).normalized( ) * firstSecNode->radius( ) + firstSecNode->point( );
+        auto newNode = new nsol::Node( position, firstSecNode->id( ),
+                                       firstSecNode->radius( ));
+        section->addBackwardNode( newNode );
+      }
+      sections.push_back( neurite->firstSection( ));
+    }
+
+    auto joints = _vectorizeJoints( sections );
+
+    JointNodes firstJoints;
+    float somaRadius = morphology_->soma( )->meanRadius( );
+    Eigen::Vector3f somaCenter = morphology_->soma( )->center( );
+    for ( unsigned int i = 0; i < morphology_->neurites(  ).size( ); ++i )
+    {
+      auto neurite = morphology_->neurites( )[i];
+      auto joint = joints[neurite->firstSection( )->firstNode( )];
+      joint->connectedSoma( ) = true;
+      Eigen::Vector3f axis = joint->position( ) - somaCenter;
+      float module = axis.norm( ) - somaRadius;
+      module *= alphaNeurites_[i] + somaRadius;
+      joint->position( ) = somaCenter + axis.normalized( ) * module;
+      firstJoints.push_back( joint );
+    }
+    for ( auto element: joints )
+    {
+      auto joint = element.second;
+      joint->computeGeometry( );
+    }
+
+    Icosphere icosphere( somaCenter, somaRadius * alphaRadius_, 3 );
+
+    mesh->triangles( ) = icosphere.compute( firstJoints );
+
+    auto facets = _meshSections( sections, joints );
+
+    for ( auto element: joints )
+    {
+      auto joint = element.second;
+      if ( joint->numberNeighbors( ) == 1 && !joint->connectedSoma( ))
+      {
+        auto sectionQuad = joint->sectionQuad( );
+        auto node = joint->neighbour( );
+        Eigen::Vector3f center = joint->position( );
+        Eigen::Vector3f position = ( center - node->point( )
+          ).normalized( ) * joint->radius( ) + center;
+        auto vertex = new nlgeometry::OrbitalVertex( position, center );
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex0( ),
+                                 sectionQuad->vertex1( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex1( ),
+                                 sectionQuad->vertex2( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex2( ),
+                                 sectionQuad->vertex3( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex3( ),
+                                 sectionQuad->vertex0( ),
+                                 vertex, vertex ));
+      }
+    }
+
+    mesh->quads( ) = facets;
+    return mesh;
+  }
+
+  nlgeometry::MeshPtr MeshGenerator::_generateMorphology(
+    nsol::MorphologyPtr morphology_ )
+  {
+    auto mesh = new nlgeometry::Mesh( );
+
+    nsol::Sections sections = morphology_->sections( );
+
+    auto joints = _vectorizeJoints( sections );
+    for ( auto element: joints )
+    {
+      auto joint = element.second;
+      joint->computeGeometry( );
+    }
+    auto facets = _meshSections( sections, joints );
+
+    for ( auto element: joints )
+    {
+      auto joint = element.second;
+      if ( joint->numberNeighbors( ) == 1 && !joint->connectedSoma( ))
+      {
+        auto sectionQuad = joint->sectionQuad( );
+        auto node = joint->neighbour( );
+        Eigen::Vector3f center = joint->position( );
+        Eigen::Vector3f position = ( center - node->point( )
+          ).normalized( ) * joint->radius( ) + center;
+        auto vertex = new nlgeometry::OrbitalVertex( position, center );
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex1( ),
+                                 sectionQuad->vertex0( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex2( ),
+                                 sectionQuad->vertex1( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex3( ),
+                                 sectionQuad->vertex2( ),
+                                 vertex, vertex ));
+        facets.push_back(
+          new nlgeometry::Facet( sectionQuad->vertex0( ),
+                                 sectionQuad->vertex3( ),
+                                 vertex, vertex ));
+      }
+    }
+
+    mesh->quads( ) = facets;
+
+    return mesh;
+  }
+
+  nlgeometry::MeshPtr MeshGenerator::_generateMophology(
+    nsol::NeuronMorphologyPtr morphology_ )
   {
     auto mesh = new nlgeometry::Mesh( );
 
@@ -74,106 +229,20 @@ namespace nlgenerator
           ).normalized( ) * joint->radius( ) + center;
         auto vertex = new nlgeometry::OrbitalVertex( position, center );
         facets.push_back(
-          new nlgeometry::Facet( sectionQuad->vertex0( ),
-                                 sectionQuad->vertex1( ),
-                                 vertex, vertex ));
-        facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex1( ),
-                                 sectionQuad->vertex2( ),
+                                 sectionQuad->vertex0( ),
                                  vertex, vertex ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex2( ),
-                                 sectionQuad->vertex3( ),
-                                 vertex, vertex ));
-        facets.push_back(
-          new nlgeometry::Facet( sectionQuad->vertex3( ),
-                                 sectionQuad->vertex0( ),
-                                 vertex, vertex ));
-      }
-    }
-
-    mesh->quads( ) = facets;
-    return mesh;
-  }
-
-  nlgeometry::MeshPtr MeshGenerator::generateMesh(
-    nsol::NeuronMorphologyPtr& morphology_,
-    float alphaRadius_,
-    const std::vector< float >& alphaNeurites_ )
-  {
-    auto mesh = new nlgeometry::Mesh( );
-
-    nsol::Sections sections;
-    for ( auto neurite: morphology_->neurites(  ))
-    {
-      auto section = neurite->firstSection( );
-      if ( section->nodes( ).size( ) == 1 )
-      {
-        auto firstSecNode = section->firstNode( );
-        Eigen::Vector3f position =
-          ( morphology_->soma( )->center( ) - firstSecNode->point( )
-            ).normalized( ) * firstSecNode->radius( ) + firstSecNode->point( );
-        auto newNode = new nsol::Node( position, firstSecNode->id( ),
-                                       firstSecNode->radius( ));
-        section->addBackwardNode( newNode );
-      }
-      sections.push_back( neurite->firstSection( ));
-    }
-
-    auto joints = _vectorizeJoints( sections );
-
-    JointNodes firstJoints;
-    float somaRadius = morphology_->soma( )->meanRadius( );
-    Eigen::Vector3f somaCenter = morphology_->soma( )->center( );
-    for ( unsigned int i = 0; i < morphology_->neurites(  ).size( ); i++ )
-    {
-      auto neurite = morphology_->neurites( )[i];
-      auto joint = joints[neurite->firstSection( )->firstNode( )];
-      joint->connectedSoma( ) = true;
-      Eigen::Vector3f axis = joint->position( ) - somaCenter;
-      float module = axis.norm( ) - somaRadius;
-      module = module * alphaNeurites_[i] + somaRadius;
-      joint->position( ) = somaCenter + axis.normalized( ) * module;
-      firstJoints.push_back( joint );
-    }
-    for ( auto element: joints )
-    {
-      auto joint = element.second;
-      joint->computeGeometry( );
-    }
-
-    Icosphere icosphere( somaCenter, somaRadius * alphaRadius_, 3 );
-
-    mesh->triangles( ) = icosphere.compute( firstJoints );
-
-    auto facets = _meshSections( sections, joints );
-
-    for ( auto element: joints )
-    {
-      auto joint = element.second;
-      if ( joint->numberNeighbors( ) == 1 && !joint->connectedSoma( ))
-      {
-        auto sectionQuad = joint->sectionQuad( );
-        auto node = joint->neighbour( );
-        Eigen::Vector3f center = joint->position( );
-        Eigen::Vector3f position = ( center - node->point( )
-          ).normalized( ) * joint->radius( ) + center;
-        auto vertex = new nlgeometry::OrbitalVertex( position, center );
-        facets.push_back(
-          new nlgeometry::Facet( sectionQuad->vertex0( ),
                                  sectionQuad->vertex1( ),
                                  vertex, vertex ));
         facets.push_back(
-          new nlgeometry::Facet( sectionQuad->vertex1( ),
+          new nlgeometry::Facet( sectionQuad->vertex3( ),
                                  sectionQuad->vertex2( ),
                                  vertex, vertex ));
         facets.push_back(
-          new nlgeometry::Facet( sectionQuad->vertex2( ),
+          new nlgeometry::Facet( sectionQuad->vertex0( ),
                                  sectionQuad->vertex3( ),
-                                 vertex, vertex ));
-        facets.push_back(
-          new nlgeometry::Facet( sectionQuad->vertex3( ),
-                                 sectionQuad->vertex0( ),
                                  vertex, vertex ));
       }
     }

@@ -11,7 +11,7 @@ out vec3 gL;
 out vec3 outValue0;
 out vec3 outValue1;
 
-#include("_partials/_geom.glsl")
+#include("_functions/_geom.glsl")
 
 void main( void )
 {
