@@ -73,7 +73,7 @@ namespace nlgenerator
       joint->connectedSoma( ) = true;
       Eigen::Vector3f axis = joint->position( ) - somaCenter;
       float module = axis.norm( ) - somaRadius;
-      module *= alphaNeurites_[i] + somaRadius;
+      module = module * alphaNeurites_[i] + somaRadius;
       joint->position( ) = somaCenter + axis.normalized( ) * module;
       firstJoints.push_back( joint );
     }
