@@ -153,14 +153,13 @@ namespace nlrender
     if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
-    Eigen::Matrix4f viewModel = ( _viewMatrix * modelMatrix_ ).transpose( );
-    Eigen::Matrix4f projection = _projectionMatrix.transpose( );
+    Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
     unsigned int criteria = _tessCriteria;
 
     if( renderTriangles_ )
     {
       _programTriangles->use( );
-      _programTriangles->sendUniform4m( "proy", projection.data( ));
+      _programTriangles->sendUniform4m( "proy", _projectionMatrix.data( ));
       _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
       _programTriangles->sendUniform3v( "color", color_.data( ));
       _programTriangles->sendUniformf( "lod", _lod );
@@ -172,7 +171,7 @@ namespace nlrender
     if ( renderQuads_ )
     {
       _programQuads->use( );
-      _programQuads->sendUniform4m( "proy", projection.data( ));
+      _programQuads->sendUniform4m( "proy", _projectionMatrix.data( ));
       _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
       _programQuads->sendUniform3v( "color", color_.data( ));
       _programQuads->sendUniformf( "lod", _lod);
@@ -200,20 +199,19 @@ namespace nlrender
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel;
-    Eigen::Matrix4f projection = _projectionMatrix.transpose( );
     unsigned int criteria = _tessCriteria;
 
     if( renderTriangles_ )
     {
       _programTriangles->use( );
-      _programTriangles->sendUniform4m( "proy", projection.data( ));
+      _programTriangles->sendUniform4m( "proy", _projectionMatrix.data( ));
       _programTriangles->sendUniform3v( "color", color_.data( ));
       _programTriangles->sendUniformf( "lod", _lod );
       _programTriangles->sendUniformf( "maxDist", _maximumDistance );
       _programTriangles->sendUniformf( "tng", _tng );
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
-        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        viewModel = _viewMatrix * modelMatrices_[i];
         _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
         meshes_[i]->renderTriangles( );
@@ -222,14 +220,14 @@ namespace nlrender
     if ( renderQuads_ )
     {
       _programQuads->use( );
-      _programQuads->sendUniform4m( "proy", projection.data( ));
+      _programQuads->sendUniform4m( "proy", _projectionMatrix.data( ));
       _programQuads->sendUniform3v( "color", color_.data( ));
       _programQuads->sendUniformf( "lod", _lod);
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
-        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        viewModel = _viewMatrix * modelMatrices_[i];
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
         meshes_[i]->renderQuads( );
@@ -256,19 +254,18 @@ namespace nlrender
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel;
-    Eigen::Matrix4f projection = _projectionMatrix.transpose( );
     unsigned int criteria = _tessCriteria;
 
     if( renderTriangles_ )
     {
       _programTriangles->use( );
-      _programTriangles->sendUniform4m( "proy", projection.data( ));
+      _programTriangles->sendUniform4m( "proy", _projectionMatrix.data( ));
       _programTriangles->sendUniformf( "lod", _lod );
       _programTriangles->sendUniformf( "maxDist", _maximumDistance );
       _programTriangles->sendUniformf( "tng", _tng );
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
-        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        viewModel = _viewMatrix * modelMatrices_[i];
         _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
         _programTriangles->sendUniform3v( "color", colors_[i].data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
@@ -278,13 +275,13 @@ namespace nlrender
     if ( renderQuads_ )
     {
       _programQuads->use( );
-      _programQuads->sendUniform4m( "proy", projection.data( ));
+      _programQuads->sendUniform4m( "proy", _projectionMatrix.data( ));
       _programQuads->sendUniformf( "lod", _lod);
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
-        viewModel = ( _viewMatrix * modelMatrices_[i] ).transpose( );
+        viewModel = _viewMatrix * modelMatrices_[i];
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
         _programQuads->sendUniform3v( "color", colors_[i].data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
