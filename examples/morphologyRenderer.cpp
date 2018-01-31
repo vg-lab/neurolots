@@ -150,9 +150,9 @@ int main( int argc, char* argv[] )
   // camera->radius( 1000.0f );
 
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
-  renderer->projectionMatrix( ) = projection.transpose( );
+  renderer->projectionMatrix( ) = projection;
   Eigen::Matrix4f view( camera->viewMatrix( ));
-  renderer->viewMatrix( ) = view.transpose( );
+  renderer->viewMatrix( ) = view;
 
   glutMainLoop( );
   return 0;
@@ -192,9 +192,9 @@ void renderFunc( void )
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   Eigen::Matrix4f view = Eigen::Matrix4f( camera->viewMatrix( ));
-  renderer->viewMatrix( ) = view.transpose( );
+  renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
-  renderer->projectionMatrix( ) = projection.transpose( );
+  renderer->projectionMatrix( ) = projection;
   renderer->render( meshes, models, Eigen::Vector3f( 0.3f, 0.3f, 0.8f ));
   // for ( auto m: meshes )
   //   renderer->render( m, m->modelMatrix( ),

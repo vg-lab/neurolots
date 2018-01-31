@@ -125,9 +125,9 @@ int main( int argc, char* argv[] )
     mesh->uploadGPU( format, nlgeometry::Facet::PATCHES );
     mesh->clearCPUData( );
     Eigen::Matrix4f projection( camera.projectionMatrix( ));
-    renderer.projectionMatrix( ) = projection.transpose( );
+    renderer.projectionMatrix( ) = projection;
     Eigen::Matrix4f view( camera.viewMatrix( ));
-    renderer.viewMatrix( ) = view.transpose( );
+    renderer.viewMatrix( ) = view;
     fileExt = boost::filesystem::extension( outFile );
     if ( fileExt.compare( ".obj" ) == 0 )
     {
