@@ -48,6 +48,15 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     endif( )
   endif( )
 
+  if( CGAL_FOUND )
+    set( NEUROLOTSMESHMEASURE_SOURCES meshMeasure.cpp
+      Shaders.h )
+    set( NEUROLOTSMESHMEASURE_LINK_LIBRARIES CGAL ${GMP_LIBRARIES})
+    common_application( neurolotsMeshMeasure NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSMESHMEASURE_SOURCES} )
+  endif( )
+
   include(InstallFiles)
   install_files( share/neurolots/examples FILES ${NEUROLOTS_EXAMPLES_FILES}
     COMPONENT examples )

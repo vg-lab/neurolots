@@ -51,6 +51,7 @@ common_find_package(Eigen3 REQUIRED SYSTEM)
 common_find_package(nsol REQUIRED)
 common_find_package(ReTo REQUIRED)
 common_find_package(GLUT SYSTEM)
+common_find_package(CGAL 4.11 EXACT SYSTEM)
 
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW Eigen3 nsol ReTo )
 
