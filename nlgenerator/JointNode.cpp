@@ -215,6 +215,12 @@ namespace nlgenerator
         auto dir = std::get<1>( orderedNodes[id] );
         auto postDir = std::get<1>( orderedNodes[idPost] );
 
+        float radius0 = ( std::get<2>( orderedNodes[idPost] )->point( )
+                          - _position ).norm( );
+        float radius1 = ( std::get<2>( orderedNodes[id] )->point( )
+                          - _position ).norm( );
+        float maxRadius = std::min( radius0, radius1 );
+
         Eigen::Vector3f normalAxis =
           dir.cross( postDir );
         float sinNormalAxis = normalAxis.norm( );
@@ -224,13 +230,21 @@ namespace nlgenerator
         float angle = atan2( sinNormalAxis,
                              dir.dot( postDir ));
 
+        float newRadius = _radius;
+        float scaleFactor = 1 / fabs( sin( angle * 0.5f ));
+        if ( scaleFactor > 0.0f )
+        {
+          newRadius *= scaleFactor;
+          newRadius = std::min( newRadius, maxRadius );
+        }
+
         if ( angle < 0.0f )
           angle = 2 * M_PI + angle;
 
         q = Eigen::Quaternion<float>(
           Eigen::AngleAxis<float>( angle*0.5f, normal ));
         auto halfDir = q * dir;
-        auto vertex = new nlgeometry::OrbitalVertex( halfDir * _radius +
+        auto vertex = new nlgeometry::OrbitalVertex( halfDir * newRadius +
                                                      _position, _position );
         vertices.push_back( vertex );
       }
