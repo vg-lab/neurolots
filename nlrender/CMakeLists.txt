@@ -28,7 +28,6 @@ set(NLRENDER_SOURCES
 
 set(NLRENDER_LINK_LIBRARIES
   nlgeometry
-  ReTo
 )
 
 set(NLRENDER_INCLUDE_NAME nlrender)

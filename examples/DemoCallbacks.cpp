@@ -53,7 +53,7 @@ float DemoCallbacks::_mouseWheelFactor = 1.2f;
 
 float DemoCallbacks::_rotationScale = 0.01f;
 
-float DemoCallbacks::_traslationScale = 0.2f;
+float DemoCallbacks::_traslationScale = 0.005f;
 
 void DemoCallbacks::camera( reto::Camera* camera_ )
 {
@@ -145,9 +145,10 @@ void DemoCallbacks::mouseMotionFunc( int x_, int y_ )
     }
     if( _traslation )
     {
-      _camera->localTranslation( Eigen::Vector3f ( -deltaX * _traslationScale,
-                                                   deltaY * _traslationScale,
-                                                   0.0f ) );
+      _camera->localTranslation(
+        Eigen::Vector3f ( -deltaX * _traslationScale * _camera->radius( ),
+                          deltaY * _traslationScale * _camera->radius( ),
+                          0.0f ) );
     }
     _previousX = x_;
     _previousY = y_;

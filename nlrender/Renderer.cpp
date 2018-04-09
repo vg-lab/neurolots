@@ -25,10 +25,12 @@
 
 #include "../nlgeometry/SpatialHashTable.h"
 
+#define MAX_TESS_LEVEL 65.0f
+
 namespace nlrender
 {
 
-  Renderer::Renderer( bool keepOpenGLServerStack_ )
+  Renderer::Renderer( bool keepOpenGLServerStack_)
     : _keepOpenGLServerStack( keepOpenGLServerStack_ )
     , _lod( 10.0f )
     , _tng( 0.2f )
@@ -41,6 +43,8 @@ namespace nlrender
     _programQuadsFB = new reto::ShaderProgram(  );
     _programTriangles = new reto::ShaderProgram(  );
     _programTrianglesFB = new reto::ShaderProgram(  );
+    _programVDM = new reto::ShaderProgram( );
+    _programVDMFB = new reto::ShaderProgram( );
 
     _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
     _programQuads->loadTesselationControlShaderFromText(
@@ -88,6 +92,29 @@ namespace nlrender
     _programTrianglesFB->link( );
     _programTrianglesFB->autocatching( );
 
+    _programVDM->loadVertexShaderFromText( nlrender::vdm_vert );
+    _programVDM->loadTesselationControlShaderFromText( nlrender::vdm_tcs );
+    _programVDM->loadTesselationEvaluationShaderFromText( nlrender::vdm_tes );
+    _programVDM->loadFragmentShaderFromText( nlrender::vdm_frag );
+    _programVDM->compileAndLink( );
+    _programVDM->autocatching( );
+    _programVDM->use( );
+    _programVDM->sendUniformi( "vdmTex", 0 );
+    _programVDM->sendUniformi( "normalTex", 1 );
+
+    _programVDMFB->loadVertexShaderFromText( nlrender::vdm_vert );
+    _programVDMFB->loadTesselationControlShaderFromText( nlrender::vdm_tcs );
+    _programVDMFB->loadTesselationEvaluationShaderFromText( nlrender::vdm_tes );
+    _programVDMFB->loadGeometryShaderFromText( nlrender::quad_geom );
+
+    _programVDMFB->create( );
+    _programVDMFB->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    _programVDMFB->link( );
+    _programVDMFB->autocatching( );
+    _programVDMFB->use( );
+    _programVDMFB->sendUniformi( "vdmTex", 0 );
+    _programVDMFB->sendUniformi( "normalTex", 1 );
+
     _tbos.resize( 2 );
     glGenBuffers( 2, _tbos.data( ));
 
@@ -98,7 +125,6 @@ namespace nlrender
     glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, _tbos[1] );
 
     glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
-
   }
 
   Renderer::~Renderer( void )
@@ -148,7 +174,7 @@ namespace nlrender
                          const Eigen::Matrix4f& modelMatrix_,
                          const Eigen::Vector3f& color_,
                          bool renderTriangles_,
-                         bool renderQuads_ ) const
+                         bool renderQuads_ )
   {
     if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
@@ -189,7 +215,7 @@ namespace nlrender
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_,
       bool renderTriangles_,
-      bool renderQuads_ ) const
+      bool renderQuads_ )
   {
     if ( meshes_.size( ) != modelMatrices_.size( ))
       throw std::runtime_error(
@@ -244,13 +270,13 @@ namespace nlrender
     const std::vector< Eigen::Matrix4f >& modelMatrices_,
     const std::vector< Eigen::Vector3f >& colors_,
     bool renderTriangles_,
-    bool renderQuads_ ) const
+    bool renderQuads_ )
   {
     if ( meshes_.size( ) != modelMatrices_.size( ) ||
          modelMatrices_.size( ) != colors_.size( ))
       throw std::runtime_error(
         "Meshes, model matrices and colors have differents size" );
- if ( _keepOpenGLServerStack )
+    if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel;
@@ -287,6 +313,77 @@ namespace nlrender
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
         meshes_[i]->renderQuads( );
       }
+    }
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+  }
+
+  void Renderer::render( nlgeometry::VDMapPtr vdmap_,
+                         const Eigen::Matrix4f& modelMatrix_,
+                         const Eigen::Vector3f& color_ )
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    _programVDM->use( );
+    _programVDM->sendUniform4m( "proy", _projectionMatrix.data( ));
+
+    Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+    _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+    _programVDM->sendUniform4m( "model", modelMatrix_.data( ));
+    _programVDM->sendUniform3v( "color", color_.data( ));
+    float maxTexel = vdmap_->size( ) - 1;
+    float invTexel = 1.0f / maxTexel;
+    unsigned int numSegments = ceil( vdmap_->size( ) / MAX_TESS_LEVEL );
+    unsigned int numVertices = numSegments * numSegments * 4;
+    _programVDM->sendUniformf( "lod", _lod / numSegments );
+    _programVDM->sendUniformf( "maxTexel", maxTexel );
+    _programVDM->sendUniformf( "invTexel", invTexel );
+
+    vdmap_->vdmTexture( )->bind( 0 );
+    vdmap_->normalTexture( )->bind( 1 );
+
+    // glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+
+    glBindVertexArray( _getQuadVao( numSegments ));
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+    glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+  }
+
+  void Renderer::render( const std::vector< nlgeometry::VDMapPtr >& vdmaps_,
+                         const std::vector< Eigen::Matrix4f >& modelMatrices_,
+                         const Eigen::Vector3f& color_ )
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    _programVDM->use( );
+    _programVDM->sendUniform4m( "proy", _projectionMatrix.data( ));
+    _programVDM->sendUniform3v( "color", color_.data( ));
+
+    for ( unsigned int i = 0; i < vdmaps_.size( ); i++ )
+    {
+      Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
+      _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+      _programVDM->sendUniform4m( "model", modelMatrices_[i].data( ));
+      float maxTexel = vdmaps_[i]->size( ) - 1;
+      float invTexel = 1.0f / maxTexel;
+      unsigned int numSegments = ceil( vdmaps_[i]->size( ) / MAX_TESS_LEVEL );
+      unsigned int numVertices = numSegments * numSegments * 4;
+      _programVDM->sendUniformf( "lod", _lod / numSegments );
+      _programVDM->sendUniformf( "maxTexel", maxTexel );
+      _programVDM->sendUniformf( "invTexel", invTexel );
+
+      vdmaps_[i]->vdmTexture( )->bind( 0 );
+      vdmaps_[i]->normalTexture( )->bind( 1 );
+
+      glBindVertexArray( _getQuadVao( numSegments ));
+      glPatchParameteri( GL_PATCH_VERTICES, 4 );
+      glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
     }
 
     if ( _keepOpenGLServerStack )
@@ -430,6 +527,97 @@ namespace nlrender
     return mesh;
   }
 
+  nlgeometry::MeshPtr Renderer::extract( nlgeometry::VDMapPtr vdmap_,
+                                         const Eigen::Matrix4f& modelMatrix_ )
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    glDisable( GL_CULL_FACE );
+    glEnable( GL_RASTERIZER_DISCARD );
+
+    unsigned int query = 0;
+    unsigned int trianglesSize = 0;
+
+    std::vector< float > _extractedVertices;
+    std::vector< float > _extractedNormals;
+
+    glGenQueries( 1, &query );
+
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
+    _programVDMFB->use( );
+    _programVDMFB->sendUniform4m( "proy", _projectionMatrix.data( ));
+    _programVDMFB->sendUniform4m( "model", modelMatrix_.data( ));
+    Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+    _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+    float maxTexel = vdmap_->size( ) - 1;
+    float invTexel = 1.0f / maxTexel;
+    unsigned int numSegments = ceil( vdmap_->size( ) / MAX_TESS_LEVEL );
+    unsigned int numVertices = numSegments * numSegments * 4;
+    _programVDM->sendUniformf( "lod", _lod / numSegments );
+    _programVDMFB->sendUniformf( "maxTexel", maxTexel );
+    _programVDMFB->sendUniformf( "invTexel", invTexel );
+
+    vdmap_->vdmTexture( )->bind( 0 );
+    vdmap_->normalTexture( )->bind( 1 );
+
+    // glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+
+    glBindVertexArray( _getQuadVao( numSegments ));
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+    glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
+
+    glEndQuery( GL_PRIMITIVES_GENERATED );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
+    trianglesSize *= 9;
+
+    if ( trianglesSize > 0 )
+    {
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                    GL_STATIC_READ );
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                    GL_STATIC_READ );
+
+      glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
+      glBeginTransformFeedback( GL_TRIANGLES );
+
+      glPatchParameteri( GL_PATCH_VERTICES, 4 );
+      glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
+
+      glEndTransformFeedback( );
+      glFlush( );
+
+      glEndQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN );
+      glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
+      trianglesSize *= 9;
+
+      glBindVertexArray( 0 );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+      _extractedVertices.resize( trianglesSize );
+      _extractedNormals.resize( trianglesSize );
+
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+      glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                          _extractedVertices.data( ));
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+      glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                          _extractedNormals.data( ));
+    }
+
+    glDisable( GL_RASTERIZER_DISCARD );
+    glDeleteQueries( 1, &query );
+
+    auto mesh = _vectorToMesh( _extractedVertices, _extractedNormals );
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+
+    return mesh;
+  }
+
   nlgeometry::MeshPtr Renderer::_vectorToMesh(
     std::vector< float > positions_, std::vector< float > normals_ ) const
   {
@@ -472,5 +660,73 @@ namespace nlrender
     return mesh;
   }
 
+  unsigned int  Renderer::_generateQuadVao( unsigned int numSegments_ )
+  {
+    std::cout << numSegments_ << std::endl;
+    unsigned int quadVao;
+    glGenVertexArrays( 1, &quadVao );
+    glBindVertexArray( quadVao );
+    std::vector< unsigned int > quadvbos( 2 );
+    glGenBuffers( 2, quadvbos.data( ));
 
+    std::vector< float > positions;
+    float increment = 2.0f / numSegments_;
+    unsigned int numVertices = numSegments_ + 1;
+    for ( unsigned int i = 0; i < numVertices; i++ )
+    {
+      for ( unsigned int j = 0; j < numVertices; j++ )
+      {
+        positions.push_back( j * increment - 1.0f );
+        positions.push_back( i * increment - 1.0f );
+        positions.push_back( 0.0f );
+      }
+    }
+
+    std::vector< unsigned int > indices;
+    for ( unsigned int i = 0; i < numSegments_; i++ )
+    {
+      for ( unsigned int j = 0; j < numSegments_; j++ )
+      {
+        unsigned int id0 = j + i * numVertices;
+        unsigned int id1 = j+1 + i * numVertices;
+        unsigned int id2 = j + (i+1) * numVertices;
+        unsigned int id3 = j+1 + (i+1) * numVertices;
+        indices.push_back( id0 );
+        indices.push_back( id2 );
+        indices.push_back( id1 );
+        indices.push_back( id3 );
+      }
+    }
+
+    glBindBuffer( GL_ARRAY_BUFFER, quadvbos[0]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * positions.size( ),
+                  positions.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( 0 );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, quadvbos[1] );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indices.size( ),
+                  indices.data( ), GL_STATIC_DRAW );
+
+    positions.clear( );
+    indices.clear( );
+
+    glBindVertexArray( 0 );
+    return quadVao;
+  }
+
+  unsigned int Renderer::_getQuadVao( unsigned int numSegments_ )
+  {
+    auto vaosIt = _quadVaos.find( numSegments_ );
+    if ( vaosIt != _quadVaos.end( ))
+    {
+      return vaosIt->second;
+    }
+    else
+    {
+      unsigned int newQuadVao = _generateQuadVao( numSegments_ );
+      _quadVaos[numSegments_] = newQuadVao;
+      return newQuadVao;
+    }
+  }
 }

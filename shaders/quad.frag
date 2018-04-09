@@ -10,5 +10,5 @@ uniform vec3 color;
 
 void main( )
 {
-  oColor = shading( );
+  oColor = shading( normal, L, color );
 }

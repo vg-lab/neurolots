@@ -20,6 +20,13 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       common_application( neurolotsObjRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSOBJRENDER_SOURCES} )
 
+      set( NEUROLOTSPARAMETRIZER_SOURCES parametrizer.cpp Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSPARAMETRIZER_LINK_LIBRARIES ReTo nlgeometry nlrender
+        ${GLUT_LIBRARIES} )
+      common_application( neurolotsParametrizer NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSPARAMETRIZER_SOURCES} )
+
       set( NEUROLOTSCUBERENDER_SOURCES cubeRender.cpp Cube.h Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSCUBERENDER_LINK_LIBRARIES ReTo nlgeometry
@@ -35,6 +42,24 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       common_application( neurolotsMorphologyRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSMORPHOLOGYRENDER_SOURCES} )
+
+      set( NEUROLOTSVDMRENDER_SOURCES vdmRenderer.cpp Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSVDMRENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsVDMRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSVDMRENDER_SOURCES} )
+
+      set( NEUROLOTSVDMEXTRACTOR_SOURCES vdmExtractor.cpp Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSVDMEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsVDMExtractor NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSVDMEXTRACTOR_SOURCES} )
 
       set( NEUROLOTSMORPHOLOGYEXTRACTOR_SOURCES morphologyExtractor.cpp
         Shaders.h)

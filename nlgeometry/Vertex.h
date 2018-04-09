@@ -89,6 +89,8 @@ namespace nlgeometry
     NLGEOMETRY_API
     const unsigned int& id( void ) const;
 
+    unsigned int& id( void );
+
     /**
      * Method to get the vertex position
      * @return vertex position
