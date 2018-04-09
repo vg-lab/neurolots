@@ -5,9 +5,11 @@ set( NLGEOMETRY_PUBLIC_HEADERS
   Facet.h
   Mesh.h
   OrbitalVertex.h
+  Parametrizer.h
   Reader/ObjReaderTemplated.h
   SectionQuad.h
   SpatialHashTable.h
+  VDMGenerator.h
   Vertex.h
   Writer/ObjWriter.h
   Writer/OffWriter.h
@@ -21,8 +23,10 @@ set( NLGEOMETRY_SOURCES
   Facet.cpp
   Mesh.cpp
   OrbitalVertex.cpp
+  Parametrizer.cpp
   SectionQuad.cpp
   SpatialHashTable.cpp
+  VDMGenerator.cpp
   Vertex.cpp
   Writer/ObjWriter.cpp
   Writer/OffWriter.cpp

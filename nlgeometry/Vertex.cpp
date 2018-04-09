@@ -59,6 +59,11 @@ namespace nlgeometry
     return _id;
   }
 
+  unsigned int& Vertex::id( void )
+  {
+    return _id;
+  }
+
   Eigen::Vector3f& Vertex::position( void )
   {
     return _position;
@@ -129,25 +134,33 @@ namespace nlgeometry
   void Vertex::store( std::vector< float >& buffer_,
                       const TAttribType attribType_ )
   {
+    bool idSetted = false;
     switch( attribType_ )
     {
     case POSITION:
       _id = ( unsigned int )buffer_.size( ) / 3;
+      idSetted = true;
       buffer_.push_back( _position.x( ) );
       buffer_.push_back( _position.y( ) );
       buffer_.push_back( _position.z( ) );
       break;
     case NORMAL:
+      if ( !idSetted )
+        _id = ( unsigned int )buffer_.size( ) / 3;
       buffer_.push_back( _normal.x( ) );
       buffer_.push_back( _normal.y( ) );
       buffer_.push_back( _normal.z( ) );
       break;
     case COLOR:
+      if ( !idSetted )
+        _id = ( unsigned int )buffer_.size( ) / 3;
       buffer_.push_back( _color.x( ) );
       buffer_.push_back( _color.y( ) );
       buffer_.push_back( _color.z( ) );
       break;
     case UV:
+      if ( !idSetted )
+        _id = ( unsigned int )buffer_.size( ) / 2;
       buffer_.push_back( _uv.x( ) );
       buffer_.push_back( _uv.y( ) );
       break;

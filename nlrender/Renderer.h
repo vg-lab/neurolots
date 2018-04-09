@@ -106,7 +106,7 @@ namespace nlrender
       nlgeometry::MeshPtr mesh_,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
       const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true ) const;
+      bool renderTriangles_ = true, bool renderQuads_ = true );
 
     /**
      * Method that renderize the given meshes
@@ -117,7 +117,7 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true ) const;
+      bool renderTriangles_ = true, bool renderQuads_ = true );
 
     /**
      * Method that renderize the given meshes
@@ -128,7 +128,37 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const std::vector< Eigen::Vector3f >& colors_,
-      bool renderTriangles_ = true, bool renderQuads_ = true  ) const;
+      bool renderTriangles_ = true, bool renderQuads_ = true  );
+
+    /**
+     * Method that renderize a quad using the given texture as vector
+     *  displacement map
+     * @param texture_ index to the vector displacement map in the GPU
+     * @param textureSize_ size of the square map
+     */
+    NLRENDER_API
+    void render(
+      const unsigned int& texture_,
+      const unsigned int& textureSize_,
+      const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
+      const Eigen::Vector3f& color_ =
+      Eigen::Vector3f( 0.2f, 0.2f, 0.2f )) const;
+
+     /**
+     * Method that renderize a quad using the given textures as vector
+     * displacement map
+     * @param textures_ vector of indices to the vector displacement maps in the
+     * GPU
+     * @param textureSize_ size of the square maps
+     * @param modelMatrices_ vector with the model matrices
+     */
+    NLRENDER_API
+    void render(
+      const std::vector< unsigned int >& textures_,
+      const unsigned int& textureSize_,
+      const std::vector< Eigen::Matrix4f >& modelMatrices_,
+      const Eigen::Vector3f& color_ =
+      Eigen::Vector3f( 0.2f, 0.2f, 0.2f )) const;
 
     /**
      * Method that extract the given mesh
@@ -141,17 +171,27 @@ namespace nlrender
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
       bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
+    // /**
+    //  * Method that extract the given meshes
+    //  * @param mesh_ meshes to extract
+    //  * @return the extracted meshesh
+    //  */
+    // NLRENDER_API
+    // nlgeometry::Meshes& extract(
+    //   nlgeometry::Meshes meshes_,
+    //   const std::vector< Eigen::Matrix4f >& modelMatrices_,
+    //   bool extractTriangles_ = true, bool extractQuads_ = true ) const;
+
     /**
-     * Method that extract the given meshes
-     * @param mesh_ meshes to extract
-     * @return the extracted meshesh
+     * Method tath extraxt the gpu generated spine mesh
+     * @param texture_ spine vector displacement map index
+     * @param textureSize_ size of the vector displacement map
      */
     NLRENDER_API
-    nlgeometry::Meshes& extract(
-      nlgeometry::Meshes meshes_,
-      const std::vector< Eigen::Matrix4f >& modelMatrices_,
-      bool extractTriangles_ = true, bool extractQuads_ = true ) const;
-
+    nlgeometry::MeshPtr extract(
+      const unsigned int& texture_,
+      const unsigned int& textureSize_,
+      const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( )) const;
 
   protected:
 
@@ -172,6 +212,12 @@ namespace nlrender
 
     //! Program to extract tessellated quads
     reto::ShaderProgram* _programQuadsFB;
+
+    //! Program to render vector displacement map
+    reto::ShaderProgram* _programVDM;
+
+    //! Program to extrac vector displacement map meshes
+    reto::ShaderProgram* _programVDMFB;
 
     //! Scene camera view matrix
     Eigen::Matrix4f _viewMatrix;
@@ -196,6 +242,9 @@ namespace nlrender
 
     //! Vertex buffers object indices to mesh extraction
     std::vector< unsigned int > _tbos;
+
+    //! Vertex array object index to quad
+    unsigned int _quadvao;
 
   }; // class Renderer
 

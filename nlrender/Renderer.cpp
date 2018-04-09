@@ -34,6 +34,7 @@ namespace nlrender
     , _tng( 0.2f )
     , _maximumDistance( 100.0f )
     , _tessCriteria( HOMOGENEOUS )
+    , _quadvao( 0 )
   {
     _viewMatrix = Eigen::Matrix4f::Identity( );
     _projectionMatrix = Eigen::Matrix4f::Identity( );
@@ -41,6 +42,8 @@ namespace nlrender
     _programQuadsFB = new reto::ShaderProgram(  );
     _programTriangles = new reto::ShaderProgram(  );
     _programTrianglesFB = new reto::ShaderProgram(  );
+    _programVDM = new reto::ShaderProgram( );
+    _programVDMFB = new reto::ShaderProgram( );
 
     _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
     _programQuads->loadTesselationControlShaderFromText(
@@ -88,6 +91,23 @@ namespace nlrender
     _programTrianglesFB->link( );
     _programTrianglesFB->autocatching( );
 
+    _programVDM->loadVertexShaderFromText( nlrender::vdm_vert );
+    _programVDM->loadTesselationControlShaderFromText( nlrender::vdm_tcs );
+    _programVDM->loadTesselationEvaluationShaderFromText( nlrender::vdm_tes );
+    _programVDM->loadFragmentShaderFromText( nlrender::vdm_frag );
+    _programVDM->compileAndLink( );
+    _programVDM->autocatching( );
+
+    _programVDMFB->loadVertexShaderFromText( nlrender::vdm_vert );
+    _programVDMFB->loadTesselationControlShaderFromText( nlrender::vdm_tcs );
+    _programVDMFB->loadTesselationEvaluationShaderFromText( nlrender::vdm_tes );
+    _programVDMFB->loadGeometryShaderFromText( nlrender::quad_geom );
+
+    _programVDMFB->create( );
+    _programVDMFB->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    _programVDMFB->link( );
+    _programVDMFB->autocatching( );
+
     _tbos.resize( 2 );
     glGenBuffers( 2, _tbos.data( ));
 
@@ -98,6 +118,35 @@ namespace nlrender
     glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, _tbos[1] );
 
     glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+
+    glGenVertexArrays( 1, &_quadvao );
+    glBindVertexArray( _quadvao );
+    std::vector< unsigned int > quadvbos( 2 );
+    glGenBuffers( 2, quadvbos.data( ));
+
+    std::vector< float > positions( 12 );
+    positions[0] = -1.0f; positions[1] = 1.0f; positions[2] = 0.0f;
+    positions[3] = -1.0f; positions[4] = -1.0f; positions[5] = 0.0f;
+    positions[6] = 1.0f; positions[7] = -1.0f; positions[8] = 0.0f;
+    positions[9] = 1.0f; positions[10] = 1.0f; positions[11] = 0.0f;
+
+    std::vector< unsigned int > indices(4);
+    indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 3;
+
+    glBindBuffer( GL_ARRAY_BUFFER, quadvbos[0]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * positions.size( ),
+                  positions.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( 0 );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, quadvbos[1] );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indices.size( ),
+                  indices.data( ), GL_STATIC_DRAW );
+
+    positions.clear( );
+    indices.clear( );
+
+    glBindVertexArray( 0 );
 
   }
 
@@ -148,7 +197,7 @@ namespace nlrender
                          const Eigen::Matrix4f& modelMatrix_,
                          const Eigen::Vector3f& color_,
                          bool renderTriangles_,
-                         bool renderQuads_ ) const
+                         bool renderQuads_ )
   {
     if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
@@ -189,7 +238,7 @@ namespace nlrender
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_,
       bool renderTriangles_,
-      bool renderQuads_ ) const
+      bool renderQuads_ )
   {
     if ( meshes_.size( ) != modelMatrices_.size( ))
       throw std::runtime_error(
@@ -244,13 +293,13 @@ namespace nlrender
     const std::vector< Eigen::Matrix4f >& modelMatrices_,
     const std::vector< Eigen::Vector3f >& colors_,
     bool renderTriangles_,
-    bool renderQuads_ ) const
+    bool renderQuads_ )
   {
     if ( meshes_.size( ) != modelMatrices_.size( ) ||
          modelMatrices_.size( ) != colors_.size( ))
       throw std::runtime_error(
         "Meshes, model matrices and colors have differents size" );
- if ( _keepOpenGLServerStack )
+    if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel;
@@ -287,6 +336,70 @@ namespace nlrender
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
         meshes_[i]->renderQuads( );
       }
+    }
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+  }
+
+  void Renderer::render( const unsigned int& texture_,
+                         const unsigned int& textureSize_,
+                         const Eigen::Matrix4f& modelMatrix_,
+                         const Eigen::Vector3f& color_ ) const
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    _programVDM->use( );
+    _programVDM->sendUniform4m( "proy", _projectionMatrix.data( ));
+    _programVDM->sendUniformf( "lod", _lod );
+
+    Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+    _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+    _programVDM->sendUniform4m( "model", modelMatrix_.data( ));
+    _programVDM->sendUniform3v( "color", color_.data( ));
+    unsigned int maxTexel = textureSize_ - 1;
+    _programVDM->sendUniformf( "maxTexel", maxTexel );
+    _programVDM->sendUniformf( "invMaxTexel", 1.0f / maxTexel );
+    glBindTexture( GL_TEXTURE_2D, texture_ );
+    // glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+
+    glBindVertexArray( _quadvao );
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+    glDrawElements( GL_PATCHES, 4, GL_UNSIGNED_INT, 0 );
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+  }
+
+  void Renderer::render( const std::vector< unsigned int >& textures_,
+                         const unsigned int& textureSize_,
+                         const std::vector< Eigen::Matrix4f >& modelMatrices_,
+                         const Eigen::Vector3f& color_ ) const
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    _programVDM->use( );
+    _programVDM->sendUniform4m( "proy", _projectionMatrix.data( ));
+    _programVDM->sendUniformf( "lod", _lod );
+    unsigned int maxTexel = textureSize_ - 1;
+    _programVDM->sendUniformf( "maxTexel", maxTexel );
+    _programVDM->sendUniformf( "invMaxTexel", 1.0f / maxTexel );
+    _programVDM->sendUniform3v( "color", color_.data( ));
+
+    glBindVertexArray( _quadvao );
+
+    for ( unsigned int i = 0; i < textures_.size( ); i++ )
+    {
+      Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
+      _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+      _programVDM->sendUniform4m( "model", modelMatrices_[i].data( ));
+      glBindTexture( GL_TEXTURE_2D, textures_[i] );
+
+      glBindVertexArray( _quadvao );
+      glPatchParameteri( GL_PATCH_VERTICES, 4 );
+      glDrawElements( GL_PATCHES, 4, GL_UNSIGNED_INT, 0 );
     }
 
     if ( _keepOpenGLServerStack )
@@ -419,6 +532,93 @@ namespace nlrender
                             &_extractedNormals[trianglesSize]);
       }
     }
+    glDisable( GL_RASTERIZER_DISCARD );
+    glDeleteQueries( 1, &query );
+
+    auto mesh = _vectorToMesh( _extractedVertices, _extractedNormals );
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+
+    return mesh;
+  }
+
+  nlgeometry::MeshPtr Renderer::extract( const unsigned int& texture_,
+                                         const unsigned int& textureSize_,
+                                         const Eigen::Matrix4f& modelMatrix_ )
+    const
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    glDisable( GL_CULL_FACE );
+    glEnable( GL_RASTERIZER_DISCARD );
+
+    unsigned int query = 0;
+    unsigned int trianglesSize = 0;
+
+    std::vector< float > _extractedVertices;
+    std::vector< float > _extractedNormals;
+
+    glGenQueries( 1, &query );
+
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
+    _programVDMFB->use( );
+    _programVDMFB->sendUniform4m( "proy", _projectionMatrix.data( ));
+    _programVDMFB->sendUniform4m( "model", modelMatrix_.data( ));
+    _programVDMFB->sendUniformf( "lod", _lod );
+    Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+    _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+    unsigned int maxTexel = textureSize_ - 1;
+    _programVDM->sendUniformf( "maxTexel", maxTexel );
+    _programVDM->sendUniformf( "invMaxTexel", 1.0f / maxTexel );
+    glBindTexture( GL_TEXTURE_2D, texture_ );
+    // glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+
+    glBindVertexArray( _quadvao );
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+    glDrawElements( GL_PATCHES, 4, GL_UNSIGNED_INT, 0 );
+
+    glEndQuery( GL_PRIMITIVES_GENERATED );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
+    trianglesSize *= 9;
+
+    if ( trianglesSize > 0 )
+    {
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                    GL_STATIC_READ );
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                    GL_STATIC_READ );
+
+      glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
+      glBeginTransformFeedback( GL_TRIANGLES );
+
+      glPatchParameteri( GL_PATCH_VERTICES, 4 );
+      glDrawElements( GL_PATCHES, 4, GL_UNSIGNED_INT, 0 );
+
+      glEndTransformFeedback( );
+      glFlush( );
+
+      glEndQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN );
+      glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
+      trianglesSize *= 9;
+
+      glBindVertexArray( 0 );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+      _extractedVertices.resize( trianglesSize );
+      _extractedNormals.resize( trianglesSize );
+
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+      glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                          _extractedVertices.data( ));
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+      glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                          _extractedNormals.data( ));
+    }
+
     glDisable( GL_RASTERIZER_DISCARD );
     glDeleteQueries( 1, &query );
 

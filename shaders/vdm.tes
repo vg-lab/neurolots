@@ -1,0 +1,40 @@
+#version 400
+layout(quads) in;
+
+in vec3 tcPosition[];
+
+out vec3 position;
+out vec3 normal;
+out vec3 L;
+out vec3 color;
+
+uniform mat4 model;
+uniform mat4 viewModel;
+uniform mat4 proy;
+
+uniform float maxTexel;
+uniform float invMaxTexel;
+
+uniform sampler2D mainTex;
+
+void main( )
+{
+  vec3 tePosition;
+
+  // vec2 coord = gl_TessCoord.xy;
+  // vec3 displace = textureLod( mainTex, coord, 0 ).xyz;
+  // tePosition = vec3( 2.0 * coord - vec2( 1.0 ), 0.0 ) + displace;
+
+  ivec2 texCoord = ivec2(ceil( gl_TessCoord.xy * maxTexel ));
+  vec2 posCoord = 2 * texCoord * invMaxTexel;
+  vec3 displace = texelFetch( mainTex, texCoord, 0 ).xyz;
+  tePosition = vec3( posCoord.x - 1.0f, posCoord.y - 1.0f, 0.0f ) + displace;
+
+
+  position = ( model * vec4( tePosition, 1.0 )).xyz;;
+  L = normalize(-tePosition);
+  normal = vec3( 0.0, 0.0, 1.0 );
+  tePosition = ( viewModel * vec4( tePosition, 1.0 )).xyz;
+  color = displace; //vec3( v, u, 0.0 );
+  gl_Position = proy*vec4(tePosition,1);
+}
