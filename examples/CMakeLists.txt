@@ -73,6 +73,27 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     endif( )
   endif( )
 
+  if( CGAL_FOUND )
+    set( NEUROLOTSMESHAREA_SOURCES meshArea.cpp )
+    set( NEUROLOTSMESHAREA_LINK_LIBRARIES CGAL ${GMP_LIBRARIES})
+    common_application( neurolotsMeshArea NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSMESHAREA_SOURCES} )
+
+    set( NEUROLOTSMESHVOLUME_SOURCES meshVolume.cpp )
+    set( NEUROLOTSMESHVOLUME_LINK_LIBRARIES CGAL ${GMP_LIBRARIES})
+    common_application( neurolotsMeshVolume NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSMESHVOLUME_SOURCES} )
+
+    set( NEUROLOTSHAUSDORFFDISTANCE_SOURCES hausdorffDistance.cpp )
+    set( NEUROLOTSHAUSDORFFDISTANCE_LINK_LIBRARIES CGAL ${GMP_LIBRARIES})
+    common_application( neurolotsHausdorffDistance NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSHAUSDORFFDISTANCE_SOURCES} )
+
+  endif( )
+
   include(InstallFiles)
   install_files( share/neurolots/examples FILES ${NEUROLOTS_EXAMPLES_FILES}
     COMPONENT examples )
