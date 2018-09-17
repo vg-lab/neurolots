@@ -107,7 +107,7 @@ namespace nlgeometry
   {
     std::vector< unsigned int > indices;
 
-    if ( !_vertex0 | !_vertex1 | !_vertex2 )
+    if ( !_vertex0 | !_vertex1 )
       return indices;
 
     if ( _vertex3 )
@@ -130,11 +130,16 @@ namespace nlgeometry
         break;
       }
     }
-    else
+    else if ( _vertex2 )
     {
       indices.push_back( _vertex0->id( ));
       indices.push_back( _vertex1->id( ));
       indices.push_back( _vertex2->id( ));
+    }
+    else
+    {
+      indices.push_back( _vertex0->id( ));
+      indices.push_back( _vertex1->id( ));
     }
 
     return indices;

@@ -8,7 +8,7 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     examples
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders/
     ${CMAKE_CURRENT_SOURCE_DIR}/Shaders.h
-    )
+     )
   ########## RETO ##########
 
   if ( GLUT_FOUND )
@@ -35,6 +35,15 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       common_application( neurolotsMorphologyRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSMORPHOLOGYRENDER_SOURCES} )
+
+      set( NEUROLOTSMORPHOLOGYSTRUCTURERENDER_SOURCES morphologyStructureRenderer.cpp Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSMORPHOLOGYSTRUCTURERENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsMorphologyStructureRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSMORPHOLOGYSTRUCTURERENDER_SOURCES} )
 
       set( NEUROLOTSMORPHOLOGYEXTRACTOR_SOURCES morphologyExtractor.cpp
         Shaders.h)

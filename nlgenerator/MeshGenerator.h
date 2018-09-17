@@ -35,6 +35,12 @@
 namespace nlgenerator
 {
 
+  typedef std::unordered_map<
+    nsol::NodePtr, std::vector< nlgeometry::OrbitalVertexPtr >> NodeToVertices;
+
+  typedef std::unordered_map<
+    nsol::NodePtr, std::vector< unsigned int >> NodeToVertexIds;
+
   /* \class MeshGenerator */
   class MeshGenerator
   {
@@ -65,6 +71,18 @@ namespace nlgenerator
                   float alphaRadius_,
                   const std::vector< float >& alphaNeurites_ );
 
+    /**
+     * Static method that return a structure mesh generated from the given
+     * morphology
+     * @param moprholgy_ to be reconstructed
+     * @return a structure mesh generated from the given morphology
+     */
+    NLGENERATOR_API
+    static nlgeometry::MeshPtr
+    generateStructureMesh( nsol::MorphologyPtr morphology_,
+                           NodeToVertices& nodeToVertices_,
+                           bool generateNodes_ = false );
+
   protected:
     static nlgeometry::MeshPtr
     _generateMorphology( nsol::MorphologyPtr morphology_ );
@@ -89,6 +107,16 @@ namespace nlgenerator
       const nsol::SectionPtr& section_,
       std::unordered_map< nsol::NodePtr, JointNodePtr >& joints_,
       nlgeometry::Facets& facets_ );
+
+    static void _vectorizeSections(
+      nlgeometry::MeshPtr mesh_,
+      const nsol::SectionPtr section_,
+      std::set< nsol::SectionPtr>& uniqueSections_,
+      NodeToVertices& nodeToVertices_,
+      bool generateNodes_ );
+
+    static nlgeometry::Facets _generateCube(
+      nsol::NodePtr node_, NodeToVertices& nodeToVertices_ );
 
   }; // class MeshGenerator
 
