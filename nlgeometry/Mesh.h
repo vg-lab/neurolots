@@ -66,6 +66,13 @@ namespace nlgeometry
     Vertices& vertices( void );
 
     /**
+     * Method that return the mesh lines
+     * @return the mesh lines
+     */
+    NLGEOMETRY_API
+    Facets& lines( void );
+
+    /**
      * Method that return the mesh triangles
      * @return the mesh triangles
      */
@@ -129,6 +136,12 @@ namespace nlgeometry
     void computeNormals( void );
 
     /**
+     * Method that render the mesh lines
+     */
+    NLGEOMETRY_API
+    virtual void renderLines( void );
+
+    /**
      * Method that render the mesh triangles
      */
     NLGEOMETRY_API
@@ -148,13 +161,20 @@ namespace nlgeometry
 
   private:
 
-    void _uploadBuffer( std::vector< float >& buffer_, TAttribType type_,
+    void _createBuffer( TAttribType type_, unsigned int vaoPosition_ );
+
+    void _uploadBuffer( std::vector< float >& buffer_,
                         unsigned int vaoPosition_ );
+
+    bool _equalFormat( AttribsFormat format0_, AttribsFormat format1_ );
 
   protected:
 
     //! Mesh vertices
     Vertices _vertices;
+
+    //! Mesh lines
+    Facets _lines;
 
     //! Mesh triangles
     Facets _triangles;
@@ -171,6 +191,9 @@ namespace nlgeometry
     //! Vector of indices of the Vertex Buffer Objects of the mesh in the gpu
     std::vector< unsigned int > _vbos;
 
+    //! Size of the mesh lines
+    unsigned int _linesSize;
+
     //! Size of the mesh triangles
     unsigned int _trianglesSize;
 
@@ -179,6 +202,9 @@ namespace nlgeometry
 
     //! Model matrix of the mesh
     Eigen::Matrix4f _modelMatrix;
+
+    //! Attribs format in gpu
+    AttribsFormat _format;
 
     //! Facet type uploaded to the gpu
     Facet::TFacetType _facetType;

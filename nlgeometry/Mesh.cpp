@@ -41,6 +41,7 @@ namespace nlgeometry
 
   Mesh::Mesh( void )
     : _vao( GL_INVALID_VALUE )
+    , _linesSize( 0 )
     , _trianglesSize( 0 )
     , _quadsSize( 0 )
     , _facetType( Facet::TRIANGLES )
@@ -62,6 +63,11 @@ namespace nlgeometry
   Vertices& Mesh::vertices( void )
   {
     return _vertices;
+  }
+
+  Facets& Mesh::lines( void )
+  {
+    return _lines;
   }
 
   Facets& Mesh::triangles( void )
@@ -94,6 +100,7 @@ namespace nlgeometry
     for ( auto vertex: _vertices )
       delete vertex;
     _vertices.clear( );
+    _lines.clear( );
     _triangles.clear( );
     _quads.clear( );
   }
@@ -104,21 +111,43 @@ namespace nlgeometry
       glDeleteVertexArrays( 1, &_vao );
     if ( _vbos.size( ) > 0 )
       glDeleteBuffers( (GLsizei)_vbos.size( ), _vbos.data( ));
+    _format.clear( );
   }
 
   void Mesh::uploadGPU( AttribsFormat format_, Facet::TFacetType facetType_ )
   {
     _facetType = facetType_;
-    clearGPUData( );
+
+    if ( !_equalFormat( _format, format_ ))
+    {
+      clearGPUData( );
+      _format = format_;
+      glGenVertexArrays( 1, &_vao );
+      glBindVertexArray( _vao );
+
+      _vbos.resize( _format.size(  ) + 1 );
+      glGenBuffers( ( unsigned int )_format.size( ) + 1, _vbos.data( ));
+
+      for ( unsigned int i = 0; i < _format.size( ); i++ )
+      {
+        _createBuffer( format_[i], i );
+      }
+    }
 
     Attribs attribs;
     attribs.resize( format_.size( ));
     std::vector< unsigned int > indices;
 
+    for ( auto line: _lines )
+      line->store( attribs, format_ );
     for( auto triangle: _triangles )
       triangle->store( attribs, format_ );
     for( auto quad: _quads )
       quad->store( attribs, format_ );
+
+    for ( auto line: _lines )
+      line->addIndicesAs( facetType_, indices );
+    _linesSize = ( unsigned int )_lines.size( ) * 2;
 
     for ( auto triangle: _triangles )
       triangle->addIndicesAs( facetType_, indices );
@@ -137,15 +166,9 @@ namespace nlgeometry
       break;
     }
 
-    glGenVertexArrays( 1, &_vao );
-    glBindVertexArray( _vao );
-
-    _vbos.resize( attribs.size(  ) + 1 );
-    glGenBuffers( ( unsigned int )attribs.size( ) + 1, _vbos.data( ));
-
     for ( unsigned int i = 0; i < attribs.size( ); i++ )
     {
-      _uploadBuffer( attribs[i], format_[i], i );
+      _uploadBuffer( attribs[i], i );
       attribs[i].clear( );
     }
 
@@ -165,6 +188,14 @@ namespace nlgeometry
 
     const Eigen::Matrix3f rotMatrix = _modelMatrix.block( 0, 0, 3, 3 );
     const Eigen::Array3f trVec = _modelMatrix.block( 0, 3, 1, 3 );
+
+    for ( auto line: _lines )
+    {
+      Eigen::Array3f v0( rotMatrix * line->vertex0( )->position( ));
+      Eigen::Array3f v1( rotMatrix * line->vertex1( )->position( ));
+      minimum = minimum.min( v0.min( v1 ));
+      maximum = maximum.max( v0.max( v1 ));
+    }
 
     for ( auto facet: _triangles )
     {
@@ -225,6 +256,13 @@ namespace nlgeometry
     }
   }
 
+  void Mesh::renderLines( void )
+  {
+    glBindVertexArray( _vao );
+    glDrawElements( GL_LINES, _linesSize, GL_UNSIGNED_INT,
+                    (void*) 0 );
+  }
+
   void Mesh::renderTriangles( void )
   {
     switch( _facetType )
@@ -232,13 +270,13 @@ namespace nlgeometry
     case Facet::TRIANGLES:
       glBindVertexArray( _vao );
       glDrawElements( GL_TRIANGLES, _trianglesSize, GL_UNSIGNED_INT,
-                      (void*) 0 );
+                      (void*) ( _linesSize * sizeof( unsigned int )));
       break;
     case Facet::PATCHES:
       glBindVertexArray( _vao );
       glPatchParameteri( GL_PATCH_VERTICES, 3 );
       glDrawElements( GL_PATCHES, _trianglesSize, GL_UNSIGNED_INT,
-                      (void*) 0 );
+                      (void*) ( _linesSize * sizeof( unsigned int )));
       break;
     }
   }
@@ -250,25 +288,27 @@ namespace nlgeometry
     case Facet::TRIANGLES:
       glBindVertexArray( _vao );
       glDrawElements( GL_TRIANGLES, _quadsSize, GL_UNSIGNED_INT,
-                      (void*) ( _trianglesSize * sizeof( unsigned int )));
+                      (void*) (( _linesSize + _trianglesSize ) *
+                               sizeof( unsigned int )));
       break;
     case Facet::PATCHES:
       glBindVertexArray( _vao );
       glPatchParameteri( GL_PATCH_VERTICES, 4 );
       glDrawElements( GL_PATCHES, _quadsSize, GL_UNSIGNED_INT,
-                      (void*) ( _trianglesSize * sizeof( unsigned int )));
+                      (void*) (( _linesSize + _trianglesSize ) *
+                               sizeof( unsigned int )));
       break;
     }
   }
 
   void Mesh::render( void )
   {
+    renderLines( );
     renderTriangles( );
     renderQuads( );
   }
 
-  void Mesh::_uploadBuffer( std::vector< float >& buffer_, TAttribType type_,
-                            unsigned int vaoPosition_ )
+  void Mesh::_createBuffer( TAttribType type_, unsigned int vaoPosition_ )
   {
     unsigned int numComponents;
     switch( type_ )
@@ -281,11 +321,30 @@ namespace nlgeometry
     }
 
     glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
-    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),
-                  buffer_.data( ), GL_STATIC_DRAW );
     glVertexAttribPointer( vaoPosition_, numComponents,
                            GL_FLOAT, GL_FALSE, 0, 0 );
     glEnableVertexAttribArray( vaoPosition_ );
+  }
+
+  void Mesh::_uploadBuffer( std::vector< float >& buffer_,
+                            unsigned int vaoPosition_ )
+  {
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),
+                  buffer_.data( ), GL_STATIC_DRAW );
+  }
+
+  bool Mesh::_equalFormat( AttribsFormat format0_, AttribsFormat format1_ )
+  {
+    if ( format0_.size( ) != format1_.size( ))
+      return false;
+
+    for ( unsigned int i = 0; i < format0_.size( ); i++ )
+    {
+      if ( format0_[i] != format1_[i] )
+        return false;
+    }
+    return true;
   }
 
 } // namespace nlgeometry

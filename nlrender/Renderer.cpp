@@ -37,10 +37,16 @@ namespace nlrender
   {
     _viewMatrix = Eigen::Matrix4f::Identity( );
     _projectionMatrix = Eigen::Matrix4f::Identity( );
-    _programQuads = new reto::ShaderProgram(  );
-    _programQuadsFB = new reto::ShaderProgram(  );
-    _programTriangles = new reto::ShaderProgram(  );
-    _programTrianglesFB = new reto::ShaderProgram(  );
+    _programLines = new reto::ShaderProgram( );
+    _programQuads = new reto::ShaderProgram( );
+    _programQuadsFB = new reto::ShaderProgram( );
+    _programTriangles = new reto::ShaderProgram( );
+    _programTrianglesFB = new reto::ShaderProgram( );
+
+    _programLines->loadVertexShaderFromText( nlrender::line_vert );
+    _programLines->loadFragmentShaderFromText( nlrender::line_frag );
+    _programLines->compileAndLink( );
+    _programLines->autocatching( );
 
     _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
     _programQuads->loadTesselationControlShaderFromText(
@@ -103,6 +109,7 @@ namespace nlrender
 
   Renderer::~Renderer( void )
   {
+    delete _programLines;
     delete _programTriangles;
     delete _programQuads;
     delete _programTrianglesFB;
@@ -147,6 +154,7 @@ namespace nlrender
   void Renderer::render( nlgeometry::MeshPtr mesh_,
                          const Eigen::Matrix4f& modelMatrix_,
                          const Eigen::Vector3f& color_,
+                         bool renderLines_,
                          bool renderTriangles_,
                          bool renderQuads_ ) const
   {
@@ -156,6 +164,14 @@ namespace nlrender
     Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
     unsigned int criteria = _tessCriteria;
 
+    if ( renderLines_ )
+    {
+      _programLines->use( );
+      _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+      _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+      _programLines->sendUniform3v( "color", color_.data( ));
+      mesh_->renderLines( );
+    }
     if( renderTriangles_ )
     {
       _programTriangles->use( );
@@ -188,6 +204,7 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_,
+      bool renderLines_,
       bool renderTriangles_,
       bool renderQuads_ ) const
   {
@@ -201,6 +218,18 @@ namespace nlrender
     Eigen::Matrix4f viewModel;
     unsigned int criteria = _tessCriteria;
 
+    if ( renderLines_ )
+    {
+      _programLines->use( );
+      _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+      _programLines->sendUniform3v( "color", color_.data( ));
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = _viewMatrix * modelMatrices_[i];
+        _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+        meshes_[i]->renderLines( );
+      }
+    }
     if( renderTriangles_ )
     {
       _programTriangles->use( );
@@ -225,12 +254,15 @@ namespace nlrender
       _programQuads->sendUniformf( "lod", _lod);
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
+
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
+
         viewModel = _viewMatrix * modelMatrices_[i];
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
         meshes_[i]->renderQuads( );
+
       }
     }
 
@@ -243,6 +275,7 @@ namespace nlrender
     nlgeometry::Meshes meshes_,
     const std::vector< Eigen::Matrix4f >& modelMatrices_,
     const std::vector< Eigen::Vector3f >& colors_,
+    bool renderLines_,
     bool renderTriangles_,
     bool renderQuads_ ) const
   {
@@ -256,6 +289,18 @@ namespace nlrender
     Eigen::Matrix4f viewModel;
     unsigned int criteria = _tessCriteria;
 
+    if ( renderLines_ )
+    {
+      _programLines->use( );
+      _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = _viewMatrix * modelMatrices_[i];
+        _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+        _programLines->sendUniform3v( "color", colors_[i].data( ));
+        meshes_[i]->renderLines( );
+      }
+    }
     if( renderTriangles_ )
     {
       _programTriangles->use( );
