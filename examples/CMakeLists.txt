@@ -36,10 +36,21 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSMORPHOLOGYRENDER_SOURCES} )
 
-      set( NEUROLOTSMORPHOLOGYSTRUCTURERENDER_SOURCES morphologyStructureRenderer.cpp Shaders.h
-        DemoCallbacks.cpp DemoCallbacks.h )
-      set( NEUROLOTSMORPHOLOGYSTRUCTURERENDER_LINK_LIBRARIES ReTo nsol nlgeometry
-        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+      set( NEUROLOTSMORPHOLOGYREMOTERENDER_SOURCES morphologyRemoteRenderer.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      link_directories( ${WEBSTREAMER_LIB_DIRS} )
+      set( NEUROLOTSMORPHOLOGYREMOTERENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender webstreamer ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsMorphologyRemoteRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSMORPHOLOGYREMOTERENDER_SOURCES} )
+
+      set( NEUROLOTSMORPHOLOGYSTRUCTURERENDER_SOURCES
+        morphologyStructureRenderer.cpp Shaders.h DemoCallbacks.cpp
+        DemoCallbacks.h )
+      set( NEUROLOTSMORPHOLOGYSTRUCTURERENDER_LINK_LIBRARIES ReTo nsol
+        nlgeometry nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
         ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
       common_application( neurolotsMorphologyStructureRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
