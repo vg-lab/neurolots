@@ -87,7 +87,14 @@ namespace nlgeometry
     Facets& quads( void );
 
     /**
-     * Method that return the returns the mesh axis aligned bounding box
+     * Method that return the uploaded vertices size
+     * @return the uploades vertices size
+     */
+    NLGEOMETRY_API
+    unsigned int verticesSize( void );
+
+    /**
+     * Method that returns the returns the mesh axis aligned bounding box
      * @return the mesh axis aligned bounding box
      */
     NLGEOMETRY_API
@@ -122,6 +129,14 @@ namespace nlgeometry
     NLGEOMETRY_API
     virtual void uploadGPU( AttribsFormat format_,
                             Facet::TFacetType facetType_ = Facet::TRIANGLES );
+
+    /**
+     * Method that upload the geometric information of the mesh to the gpu
+     * @param format_ format of the gpu buffer
+     * @param buffer_ geometric data to upload
+     */
+    NLGEOMETRY_API
+    void uploadBuffer( TAttribType format_, std::vector< float >& buffer_ );
 
     /**
      * Method that computes the axis aligned bounding box of the mesh geometry
@@ -161,6 +176,8 @@ namespace nlgeometry
 
   private:
 
+    void _conformVertices( void );
+
     void _createBuffer( TAttribType type_, unsigned int vaoPosition_ );
 
     void _uploadBuffer( std::vector< float >& buffer_,
@@ -199,6 +216,9 @@ namespace nlgeometry
 
     //! Size of the mesh quads
     unsigned int _quadsSize;
+
+    //! Size of uploaded vertices
+    unsigned int _verticesSize;
 
     //! Model matrix of the mesh
     Eigen::Matrix4f _modelMatrix;

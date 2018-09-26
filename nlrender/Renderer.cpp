@@ -34,6 +34,7 @@ namespace nlrender
     , _tng( 0.2f )
     , _maximumDistance( 100.0f )
     , _tessCriteria( HOMOGENEOUS )
+    , _colorFunc( GLOBAL )
   {
     _viewMatrix = Eigen::Matrix4f::Identity( );
     _projectionMatrix = Eigen::Matrix4f::Identity( );
@@ -151,6 +152,11 @@ namespace nlrender
     return _tessCriteria;
   }
 
+  Renderer::TColorFunc& Renderer::colorFunc( void )
+  {
+    return _colorFunc;
+  }
+
   void Renderer::render( nlgeometry::MeshPtr mesh_,
                          const Eigen::Matrix4f& modelMatrix_,
                          const Eigen::Vector3f& color_,
@@ -163,6 +169,7 @@ namespace nlrender
 
     Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
     unsigned int criteria = _tessCriteria;
+    unsigned int colorFunc = _colorFunc;
 
     if ( renderLines_ )
     {
@@ -182,6 +189,7 @@ namespace nlrender
       _programTriangles->sendUniformf( "maxDist", _maximumDistance );
       _programTriangles->sendUniformf( "tng", _tng );
       glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+      glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
       mesh_->renderTriangles( );
     }
     if ( renderQuads_ )
@@ -194,6 +202,7 @@ namespace nlrender
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
       glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+      glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
       mesh_->renderQuads( );
     }
     if ( _keepOpenGLServerStack )
@@ -217,6 +226,7 @@ namespace nlrender
 
     Eigen::Matrix4f viewModel;
     unsigned int criteria = _tessCriteria;
+    unsigned int colorFunc = _colorFunc;
 
     if ( renderLines_ )
     {
@@ -227,6 +237,7 @@ namespace nlrender
       {
         viewModel = _viewMatrix * modelMatrices_[i];
         _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
         meshes_[i]->renderLines( );
       }
     }
@@ -243,6 +254,7 @@ namespace nlrender
         viewModel = _viewMatrix * modelMatrices_[i];
         _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
         meshes_[i]->renderTriangles( );
       }
     }
@@ -261,6 +273,7 @@ namespace nlrender
         viewModel = _viewMatrix * modelMatrices_[i];
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
         meshes_[i]->renderQuads( );
 
       }
@@ -288,6 +301,7 @@ namespace nlrender
 
     Eigen::Matrix4f viewModel;
     unsigned int criteria = _tessCriteria;
+    unsigned int colorFunc = _colorFunc;
 
     if ( renderLines_ )
     {
@@ -298,6 +312,7 @@ namespace nlrender
         viewModel = _viewMatrix * modelMatrices_[i];
         _programLines->sendUniform4m( "viewModel", viewModel.data( ));
         _programLines->sendUniform3v( "color", colors_[i].data( ));
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
         meshes_[i]->renderLines( );
       }
     }
@@ -314,6 +329,7 @@ namespace nlrender
         _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
         _programTriangles->sendUniform3v( "color", colors_[i].data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
         meshes_[i]->renderTriangles( );
       }
     }
@@ -330,6 +346,7 @@ namespace nlrender
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
         _programQuads->sendUniform3v( "color", colors_[i].data( ));
         glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &colorFunc );
         meshes_[i]->renderQuads( );
       }
     }

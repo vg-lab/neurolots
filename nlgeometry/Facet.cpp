@@ -91,18 +91,6 @@ namespace nlgeometry
       _vertex3->store( attribs_, format_ );
   }
 
-  void Facet::cleanStoreStatus( void )
-  {
-    if ( _vertex0 )
-      _vertex0->cleanStoreStatus( );
-    if ( _vertex1 )
-      _vertex1->cleanStoreStatus( );
-    if ( _vertex2 )
-      _vertex2->cleanStoreStatus( );
-    if ( _vertex3 )
-      _vertex3->cleanStoreStatus( );
-  }
-
   std::vector< unsigned int > Facet::getIndicesAs( TFacetType facetType_ ) const
   {
     std::vector< unsigned int > indices;

@@ -43,6 +43,12 @@ namespace nlrender
       LINEAR
     }TTessCriteria;
 
+    typedef enum
+    {
+      PERVERTEX = 0,
+      GLOBAL
+    }TColorFunc;
+
     /**
      * Default constructor
      */
@@ -96,6 +102,13 @@ namespace nlrender
      */
     NLRENDER_API
     TTessCriteria& tessCriteria( void );
+
+    /**
+     * Method that return the type of color function
+     * @return the color funciton type
+     */
+    NLRENDER_API
+    TColorFunc& colorFunc( void );
 
     /**
      * Method that renderize the given mesh
@@ -195,6 +208,9 @@ namespace nlrender
 
     //! Tessellation level of detail criteria
     TTessCriteria _tessCriteria;
+
+    //! Type of render color function
+    TColorFunc _colorFunc;
 
     //! Vertex array object indices to mesh extraction
     unsigned int _tfo;

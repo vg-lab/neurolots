@@ -36,10 +36,10 @@ namespace nlgenerator
 {
 
   typedef std::unordered_map<
-    nsol::NodePtr, std::vector< nlgeometry::OrbitalVertexPtr >> NodeToVertices;
+    unsigned int, std::vector< nlgeometry::OrbitalVertexPtr >> NodeIdToVertices;
 
   typedef std::unordered_map<
-    nsol::NodePtr, std::vector< unsigned int >> NodeToVertexIds;
+    unsigned int, std::vector< unsigned int >> NodeIdToVerticesIds;
 
   /* \class MeshGenerator */
   class MeshGenerator
@@ -75,13 +75,44 @@ namespace nlgenerator
      * Static method that return a structure mesh generated from the given
      * morphology
      * @param moprholgy_ to be reconstructed
+     * @param nodeToVertices_ structure that keeps the relationship between
+     * morphology nodes index and mesh vertices
      * @return a structure mesh generated from the given morphology
      */
     NLGENERATOR_API
     static nlgeometry::MeshPtr
-    generateStructureMesh( nsol::MorphologyPtr morphology_,
-                           NodeToVertices& nodeToVertices_,
-                           bool generateNodes_ = false );
+    generateStructureMesh(
+      nsol::MorphologyPtr morphology_, NodeIdToVertices& nodeIdToVertices_,
+      Eigen::Vector3f color_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f),
+      bool generateNodes_ = false );
+
+    /**
+     * Static method that fill the node index to vertices indices structure
+     * @param nodeToVertices_ input structure that keeps the relationship
+     * between morphology node index and mesh vertices
+     * @param nodeIdToVerticesIds_ output structure that keeps the relationship
+     * between morphology node index and mesh vertices indices
+     */
+    NLGENERATOR_API
+    static void
+    verticesToIndices( NodeIdToVertices& nodeIdToVertices_,
+                       NodeIdToVerticesIds& nodeIdToVerticesIds_ );
+
+    /**
+     * Static method that fills the buffer with the given value for the vertices
+     * related to the given node indices
+     * @param nodeIds_ vector of morphology node indices
+     * @param nodeIdToVerticesIds_ output structure that keeps the relationship
+     * between morphology node index and mesh vertices indices
+     * @param buffer_ float buffer to fill
+     * @param value_ value to insert in the buffer
+     */
+    NLGENERATOR_API
+    static void
+    conformBuffer( std::vector< unsigned int >& nodeIds_,
+                   NodeIdToVerticesIds& nodeIdToVerticesIds_,
+                   std::vector< float >& buffer_,
+                   Eigen::Vector3f value_ );
 
   protected:
     static nlgeometry::MeshPtr
@@ -112,11 +143,13 @@ namespace nlgenerator
       nlgeometry::MeshPtr mesh_,
       const nsol::SectionPtr section_,
       std::set< nsol::SectionPtr>& uniqueSections_,
-      NodeToVertices& nodeToVertices_,
+      NodeIdToVertices& nodeIdToVertices_,
+      Eigen::Vector3f color_,
       bool generateNodes_ );
 
     static nlgeometry::Facets _generateCube(
-      nsol::NodePtr node_, NodeToVertices& nodeToVertices_ );
+      nsol::NodePtr node_, NodeIdToVertices& nodeIdToVertices_,
+      Eigen::Vector3f color_ );
 
   }; // class MeshGenerator
 

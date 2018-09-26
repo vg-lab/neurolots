@@ -84,8 +84,8 @@ int main( int argc, char* argv[] )
   nlgeometry::MeshPtr mesh;
   nlgeometry::AttribsFormat format( 3 );
   format[0] = nlgeometry::TAttribType::POSITION;
-  format[1] = nlgeometry::TAttribType::CENTER;
-  format[2] = nlgeometry::TAttribType::TANGENT;
+  format[1] = nlgeometry::TAttribType::COLOR;
+  format[2] = nlgeometry::TAttribType::CENTER;
 
   nsol::SwcReader swcr;
 

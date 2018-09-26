@@ -33,7 +33,6 @@ namespace nlgeometry
     , _normal( normal_ )
     , _color( color_ )
     , _uv( uv_ )
-    , _stored( false )
   {
 
   }
@@ -44,7 +43,6 @@ namespace nlgeometry
     , _normal( other_.normal( ))
     , _color( other_.color( ))
     , _uv( other_.uv( ))
-    , _stored( false )
   {
 
   }
@@ -161,19 +159,10 @@ namespace nlgeometry
     if ( attribs_.size( ) != format_.size( ))
       throw std::runtime_error(
         "Vertex attribs format and attribs buffers have differents sizes." );
-    if ( !_stored )
+    for ( unsigned int i = 0; i < attribs_.size( ); i++ )
     {
-      for ( unsigned int i = 0; i < attribs_.size( ); i++ )
-      {
-          store( attribs_[i], format_[i]);
-      }
-      _stored = true;
+      store( attribs_[i], format_[i]);
     }
-  }
-
-  void Vertex::cleanStoreStatus( void )
-  {
-    _stored = false;
   }
 
   VertexPtr Vertex::clone( void )

@@ -34,7 +34,7 @@
 #endif
 
 #include <iostream>
-#include <set>
+#include <unordered_set>
 
 namespace nlgeometry
 {
@@ -44,6 +44,7 @@ namespace nlgeometry
     , _linesSize( 0 )
     , _trianglesSize( 0 )
     , _quadsSize( 0 )
+    , _verticesSize( 0 )
     , _facetType( Facet::TRIANGLES )
   {
     _modelMatrix = Eigen::Matrix4f::Identity( );
@@ -80,6 +81,11 @@ namespace nlgeometry
     return _quads;
   }
 
+  unsigned int Mesh::verticesSize( void )
+  {
+    return _verticesSize;
+  }
+
   AxisAlignedBoundingBox& Mesh::aaBoundingBox( void )
   {
     return _aaBoundingBox;
@@ -112,6 +118,7 @@ namespace nlgeometry
     if ( _vbos.size( ) > 0 )
       glDeleteBuffers( (GLsizei)_vbos.size( ), _vbos.data( ));
     _format.clear( );
+    _verticesSize = 0;
   }
 
   void Mesh::uploadGPU( AttribsFormat format_, Facet::TFacetType facetType_ )
@@ -132,18 +139,15 @@ namespace nlgeometry
       {
         _createBuffer( format_[i], i );
       }
+      _conformVertices( );
     }
 
     Attribs attribs;
     attribs.resize( format_.size( ));
     std::vector< unsigned int > indices;
 
-    for ( auto line: _lines )
-      line->store( attribs, format_ );
-    for( auto triangle: _triangles )
-      triangle->store( attribs, format_ );
-    for( auto quad: _quads )
-      quad->store( attribs, format_ );
+    for ( auto vertex: _vertices )
+      vertex->store( attribs, format_ );
 
     for ( auto line: _lines )
       line->addIndicesAs( facetType_, indices );
@@ -179,6 +183,22 @@ namespace nlgeometry
     glBindVertexArray( 0 );
   }
 
+  void Mesh::uploadBuffer( TAttribType format_, std::vector< float >& buffer_ )
+  {
+    unsigned int vaoPosition = 0;
+    for ( unsigned int i = 0; i < _format.size( ); i++ )
+    {
+      if ( _format[i] == format_ )
+      {
+        vaoPosition = i;
+        break;
+      }
+    }
+    glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition]);
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),
+                  buffer_.data( ), GL_STATIC_DRAW );
+  }
+
   void Mesh::computeBoundingBox( void )
   {
     Eigen::Array3f minimum =
@@ -189,31 +209,12 @@ namespace nlgeometry
     const Eigen::Matrix3f rotMatrix = _modelMatrix.block( 0, 0, 3, 3 );
     const Eigen::Array3f trVec = _modelMatrix.block( 0, 3, 1, 3 );
 
-    for ( auto line: _lines )
+    _conformVertices( );
+    for ( auto vertex: _vertices )
     {
-      Eigen::Array3f v0( rotMatrix * line->vertex0( )->position( ));
-      Eigen::Array3f v1( rotMatrix * line->vertex1( )->position( ));
-      minimum = minimum.min( v0.min( v1 ));
-      maximum = maximum.max( v0.max( v1 ));
-    }
-
-    for ( auto facet: _triangles )
-    {
-      Eigen::Array3f v0( rotMatrix * facet->vertex0( )->position( ));
-      Eigen::Array3f v1( rotMatrix * facet->vertex1( )->position( ));
-      Eigen::Array3f v2( rotMatrix * facet->vertex2( )->position( ));
-      minimum = minimum.min( v0.min( v1.min( v2 )));
-      maximum = maximum.max( v0.max( v1.max( v2 )));
-    }
-
-    for ( auto facet: _quads )
-    {
-      Eigen::Array3f v0( rotMatrix * facet->vertex0( )->position( ));
-      Eigen::Array3f v1( rotMatrix * facet->vertex1( )->position( ));
-      Eigen::Array3f v2( rotMatrix * facet->vertex2( )->position( ));
-      Eigen::Array3f v3( rotMatrix * facet->vertex3( )->position( ));
-      minimum = minimum.min( v0.min( v1.min( v2.min( v3 ))));
-      maximum = maximum.max( v0.max( v1.max( v2.max( v3 ))));
+      Eigen::Array3f v0( rotMatrix * vertex->position( ));
+      minimum = minimum.min( v0 );
+      maximum = maximum.max( v0 );
     }
     _aaBoundingBox.minimum( ) = minimum + trVec;
     _aaBoundingBox.maximum( ) = maximum + trVec;
@@ -221,6 +222,7 @@ namespace nlgeometry
 
   void Mesh::computeNormals( void )
   {
+    _conformVertices( );
     for ( auto vertex: _vertices )
     {
       vertex->normal( ) = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
@@ -306,6 +308,35 @@ namespace nlgeometry
     renderLines( );
     renderTriangles( );
     renderQuads( );
+  }
+
+  void Mesh::_conformVertices( void )
+  {
+    if ( _verticesSize == 0 )
+    {
+      std::unordered_set< VertexPtr > vertices;
+      for ( auto line: _lines )
+      {
+        vertices.insert( line->vertex0( ));
+        vertices.insert( line->vertex1( ));
+      }
+      for( auto triangle: _triangles )
+      {
+        vertices.insert( triangle->vertex0( ));
+        vertices.insert( triangle->vertex1( ));
+        vertices.insert( triangle->vertex2( ));
+      }
+      for( auto quad: _quads )
+      {
+        vertices.insert( quad->vertex0( ));
+        vertices.insert( quad->vertex1( ));
+        vertices.insert( quad->vertex2( ));
+        vertices.insert( quad->vertex3( ));
+      }
+      _vertices.clear( );
+      _vertices.insert( _vertices.begin( ), vertices.begin( ), vertices.end( ));
+      _verticesSize = _vertices.size( );
+    }
   }
 
   void Mesh::_createBuffer( TAttribType type_, unsigned int vaoPosition_ )

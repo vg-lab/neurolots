@@ -58,6 +58,12 @@ nlgeometry::ObjWriter objw;
 bool wireframe = false;
 bool adaptiveCriteria = false;
 
+Eigen::Vector3f currentColor = Eigen::Vector3f( 0.0, 0.0, 1.0 );
+nlgenerator::NodeIdToVerticesIds nodeIdToVerticesIds;
+
+float nodeId = 0.0f;
+std::vector< unsigned int > nodeIds;
+
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
@@ -81,11 +87,13 @@ int main( int argc, char* argv[] )
 
   renderer->lod( ) = 10.0f;
   renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
+  renderer->colorFunc( ) = nlrender::Renderer::PERVERTEX;
   renderer->maximumDistance( ) = 1000.0f;
   nlgeometry::MeshPtr mesh;
-  nlgeometry::AttribsFormat format( 2 );
+  nlgeometry::AttribsFormat format( 3 );
   format[0] = nlgeometry::TAttribType::POSITION;
-  format[1] = nlgeometry::TAttribType::CENTER;
+  format[1] = nlgeometry::TAttribType::COLOR;
+  format[2] = nlgeometry::TAttribType::CENTER;
 
   nsol::SwcReader swcr;
 
@@ -116,23 +124,19 @@ int main( int argc, char* argv[] )
 #endif
     if ( morphology )
     {
-      nlgenerator::NodeToVertices nodeToVertices;
+      nlgenerator::NodeIdToVertices nodeIdToVertices;
       mesh = nlgenerator::MeshGenerator::generateStructureMesh(
-        morphology, nodeToVertices, true );
+        morphology, nodeIdToVertices, Eigen::Vector3f( 0.0f, 0.5f,0.8f ),
+        true );
       std::cout << "Loaded morphology with: "
                 << mesh->vertices( ).size( ) << " vertices, "
                 << mesh->lines( ).size( ) << " lines, "
                 << mesh->triangles( ).size( ) << " triangles and "
                 << mesh->quads( ).size( ) << " quads" << std::endl;
 
-      // auto vertex0 = new nlgeometry::OrbitalVertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f  ));
-      // auto vertex1 = new nlgeometry::OrbitalVertex( Eigen::Vector3f( 1000.0f, 0.0f, 0.0f  ));
-
-      // nlgeometry::Facets lines;
-      // lines.push_back( new nlgeometry::Facet( vertex0, vertex1  ));
-      // mesh->lines( ) = lines;
-
       mesh->uploadGPU( format, nlgeometry::Facet::PATCHES );
+      nlgenerator::MeshGenerator::verticesToIndices( nodeIdToVertices,
+                                                     nodeIdToVerticesIds );
       mesh->computeBoundingBox( );
       mesh->clearCPUData( );
 
@@ -201,15 +205,29 @@ void initOGL( void )
 void renderFunc( void )
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
+  for ( auto mesh: meshes )
+  {
+    std::vector< float > buffer( mesh->verticesSize( )*3);
+    for ( unsigned int i = 0; i < mesh->verticesSize( ); i++ )
+    {
+      buffer[i*3] = 0.0f;
+      buffer[i*3+1] = 0.5f;
+      buffer[i*3+2] = 0.5f;
+    }
+    nodeId += 0.005;
+    std::cout << nodeId << std::endl;
+    nodeIds.push_back( std::trunc(nodeId) );
+    currentColor = Eigen::Vector3f( 1.0f, 0.0f, 0.0f );
+    nlgenerator::MeshGenerator::conformBuffer( nodeIds, nodeIdToVerticesIds,
+                                               buffer, currentColor );
+    mesh->uploadBuffer( nlgeometry::COLOR, buffer );
+  }
   Eigen::Matrix4f view = Eigen::Matrix4f( camera->viewMatrix( ));
   renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
-  renderer->render( meshes, models, Eigen::Vector3f( 0.3f, 0.3f, 0.8f ), true, true, true );
-  // for ( auto m: meshes )
-  //   renderer->render( m, m->modelMatrix( ),
-  //                     Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
+  renderer->render( meshes, models, Eigen::Vector3f( 0.3f, 0.3f, 0.8f ), true,
+                    true, true );
   glFlush( );
   glutSwapBuffers( );
 }

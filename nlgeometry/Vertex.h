@@ -181,12 +181,6 @@ namespace nlgeometry
     void store( Attribs& attribs_, const AttribsFormat format_ );
 
     /**
-     * Method that put store status to not stored
-     */
-    NLGEOMETRY_API
-    void cleanStoreStatus( void );
-
-    /**
      * Method that return a cloned vertex
      * @return a cloned vertex from the actual vertex
      */
@@ -209,9 +203,6 @@ namespace nlgeometry
 
     //! Vertex uv coordinates
     Eigen::Vector2f _uv;
-
-    //! Vertex stored status
-    bool _stored;
 
   }; // class Vertex
 
