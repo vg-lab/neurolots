@@ -20,6 +20,14 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       common_application( neurolotsObjRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSOBJRENDER_SOURCES} )
 
+      set( NEUROLOTSOBJRENDERTRANSPARENCY_SOURCES objRenderTransparency.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSOBJRENDERTRANSPARENCY_LINK_LIBRARIES ReTo nlgeometry
+        ${GLUT_LIBRARIES} )
+      common_application( neurolotsObjRenderTransparency NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSOBJRENDERTRANSPARENCY_SOURCES} )
+
       set( NEUROLOTSCUBERENDER_SOURCES cubeRender.cpp Cube.h Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSCUBERENDER_LINK_LIBRARIES ReTo nlgeometry

@@ -125,7 +125,7 @@ namespace nlgenerator
 
   nlgeometry::MeshPtr MeshGenerator::generateStructureMesh(
     nsol::MorphologyPtr morphology_, NodeIdToVertices& nodeIdToVertices_,
-    Eigen::Vector3f color_, bool generateNodes_ )
+    Eigen::Vector3f color_, bool generateNodes_, float offset_ )
   {
     auto mesh = new nlgeometry::Mesh(  );
     nodeIdToVertices_.clear( );
@@ -164,7 +164,7 @@ namespace nlgenerator
 
     for ( auto firstSection: firstSections )
       _vectorizeSections( mesh, firstSection, uniqueSections, nodeIdToVertices_,
-                          color_, generateNodes_ );
+                          color_, generateNodes_, offset_ );
 
     for ( auto section: uniqueSections )
     {
@@ -195,7 +195,7 @@ namespace nlgenerator
               if ( generateNodes_ )
               {
                 auto triangles = _generateCube( currentNode, nodeIdToVertices_,
-                                                color_ );
+                                                color_, offset_ );
                 mesh->triangles().insert(
                   mesh->triangles( ).end( ), triangles.begin( ),
                   triangles.end( ));
@@ -567,7 +567,8 @@ namespace nlgenerator
     std::set< nsol::SectionPtr>& uniqueSections_,
     NodeIdToVertices& nodeIdToVertices_,
     Eigen::Vector3f color_,
-    bool generateNodes_ )
+    bool generateNodes_,
+    float offset_ )
   {
     if ( uniqueSections_.find( section_ ) == uniqueSections_.end( ))
     {
@@ -583,13 +584,15 @@ namespace nlgenerator
       }
       if ( generateNodes_ )
       {
-        auto triangles = _generateCube( firstNode, nodeIdToVertices_, color_ );
+        auto triangles = _generateCube( firstNode, nodeIdToVertices_,
+                                        color_, offset_ );
         mesh_->triangles().insert(
           mesh_->triangles().end( ), triangles.begin( ), triangles.end( ));
       }
 
       auto lastNode = section_->forwardNode( );
-      if ( nodeIdToVertices_.find( lastNode->id( ) ) == nodeIdToVertices_.end( ))
+      if ( nodeIdToVertices_.find( lastNode->id( ) ) ==
+           nodeIdToVertices_.end( ))
       {
         auto lastVertex = new nlgeometry::OrbitalVertex(
           lastNode->point( ), lastNode->point( ),
@@ -598,27 +601,30 @@ namespace nlgenerator
       }
       if ( generateNodes_ )
       {
-        auto triangles = _generateCube( lastNode, nodeIdToVertices_, color_ );
+        auto triangles = _generateCube( lastNode, nodeIdToVertices_,
+                                        color_, offset_ );
         mesh_->triangles().insert(
           mesh_->triangles().end( ), triangles.begin( ), triangles.end( ));
       }
 
       for ( auto nextSection: section_->forwardNeighbors( ))
         _vectorizeSections( mesh_, nextSection, uniqueSections_,
-                            nodeIdToVertices_, color_, generateNodes_ );
+                            nodeIdToVertices_, color_, generateNodes_,
+                            offset_ );
       for ( auto nextSection: section_->backwardNeighbors( ))
         _vectorizeSections( mesh_, nextSection, uniqueSections_,
-                            nodeIdToVertices_, color_, generateNodes_ );
+                            nodeIdToVertices_, color_, generateNodes_,
+                            offset_ );
     }
   }
 
   nlgeometry::Facets MeshGenerator::_generateCube(
     nsol::NodePtr node_, NodeIdToVertices& nodeIdToVertices_,
-    Eigen::Vector3f color_ )
+    Eigen::Vector3f color_, float offset_ )
   {
     nlgeometry::Facets triangles;
     auto center = node_->point( );
-    float radius = node_->radius( );
+    float radius = node_->radius( ) * offset_;
     auto vertex0 = new nlgeometry::OrbitalVertex(
       center + Eigen::Vector3f( radius, 0.0f, 0.0f ), center,
       Eigen::Vector3f( 0.0f, 0.0f, 0.0f ), color_ );

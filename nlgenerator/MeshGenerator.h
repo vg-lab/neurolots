@@ -84,7 +84,8 @@ namespace nlgenerator
     generateStructureMesh(
       nsol::MorphologyPtr morphology_, NodeIdToVertices& nodeIdToVertices_,
       Eigen::Vector3f color_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f),
-      bool generateNodes_ = false );
+      bool generateNodes_ = false,
+      float offset_ = 0.9f );
 
     /**
      * Static method that fill the node index to vertices indices structure
@@ -145,11 +146,12 @@ namespace nlgenerator
       std::set< nsol::SectionPtr>& uniqueSections_,
       NodeIdToVertices& nodeIdToVertices_,
       Eigen::Vector3f color_,
-      bool generateNodes_ );
+      bool generateNodes_,
+      float offset_ );
 
     static nlgeometry::Facets _generateCube(
       nsol::NodePtr node_, NodeIdToVertices& nodeIdToVertices_,
-      Eigen::Vector3f color_ );
+      Eigen::Vector3f color_, float offset_ );
 
   }; // class MeshGenerator
 
