@@ -26,7 +26,7 @@
 
 #include <Eigen/Sparse>
 
-# define M_PI           3.14159265358979323846  /* pi */
+#define PI 3.1415927f
 
 namespace nlgeometry
 {
@@ -322,9 +322,10 @@ namespace nlgeometry
   {
     Vertices& vertices = mesh_->vertices( );
     unsigned int coeffSize = 0;
-    unsigned int systemDim = vertices.size( ) - borderVerticesSize_;
+    unsigned int systemDim =
+      (unsigned int)vertices.size( ) - borderVerticesSize_;
     for ( auto neighbors: neighborsMap_ )
-      coeffSize += neighbors.second.size( ) + 1;
+      coeffSize += (unsigned int)neighbors.second.size( ) + 1;
 
     Eigen::SparseMatrix< float > system( systemDim, systemDim );
     system.reserve( coeffSize );
@@ -484,7 +485,7 @@ namespace nlgeometry
         throw std::runtime_error( "Error: Parametrization can not be applied"
                                   " over mesh with more than 1 hole." );
     }
-    borderVerticesSize_ = sortedVertices.size( );
+    borderVerticesSize_ = (unsigned int)sortedVertices.size( );
 
     for ( auto vertex: vertices )
     {
@@ -554,7 +555,7 @@ namespace nlgeometry
         ( vertices[i]->position( ) -
           vertices[(i+1)%borderVerticesSize_]->position( )).norm( );
     }
-    float factor = 2 * M_PI / borderLength;
+    float factor = 2 * PI / borderLength;
     float currentLength = 0.0f;
     for ( unsigned int i = 0; i < borderVerticesSize_; i++ )
     {

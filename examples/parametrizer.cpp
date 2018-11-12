@@ -147,13 +147,13 @@ int main( int argc, char* argv[ ])
   nlgeometry::ObjReader objr;
   meshUV = objr.readMesh( std::string( argv[1]), false );
 
-  nlgeometry::VDMGenerator::Instance( )->vdmapSize( textureSize );
-  vdmap = nlgeometry::VDMGenerator::Instance( )->vectorDisplacementMapTexture(
+  nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
+  vdmap = nlgenerator::VDMGenerator::Instance( )->vectorDisplacementMapTexture(
     meshUV, paraMethod0, paraMethod1, alpha0, alpha1, factor );
 
   meshUV->uploadGPU( formatUV );
 
-  cpuTessQuad = nlgeometry::VDMGenerator::Instance( )->cpuTessellatedQuad( );
+  cpuTessQuad = nlgenerator::VDMGenerator::Instance( )->cpuTessellatedQuad( );
   cpuTessQuad->uploadGPU( formatUV );
 
   model = Eigen::Matrix4f::Identity( );

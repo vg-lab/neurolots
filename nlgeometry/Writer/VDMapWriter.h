@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2017 GMRV/URJC.
+ * Copyright (c) 2015-2018 GMRV/URJC.
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
@@ -19,37 +19,36 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __NLGEOMETRY_OBJ_WRITER__
-#define __NLGEOMETRY_OBJ_WRITER__
+#ifndef __NLGEOMETRY_VDMAP_WRITER__
+#define __NLGEOMETRY_VDMAP_WRITER__
 
-#include "../Mesh.h"
+#include "../VDMap.h"
+
+#include <reto/reto.h>
 
 #include <nlgeometry/api.h>
 
 namespace nlgeometry
 {
-
-  /* \class ObjWriter */
-  class ObjWriter
+  class VDMapWriter
   {
 
   public:
 
-    /**
-     * Static method to write mesh to a obj file
-     */
     NLGEOMETRY_API
-    static void writeMesh( const MeshPtr mesh_, const std::string& fileName_ );
+    static bool writeVDMap( const VDMapPtr vdmap_,
+                            const std::string& fileName_ );
 
-    /**
-     * Static method to write a vector of facets and vertices to a obj file
-     */
     NLGEOMETRY_API
-    static void writeMesh( const Facets& facets_, const Vertices& vertices_,
-                           const std::string& fileName_ );
+    static bool writeVDMapCollection( VDMapCollectionPtr vdmapCollection_,
+                                      const std::string& fileName_,
+                                      bool writeAsCollection_ = true );
+  protected:
 
-  }; // class ObjWriter
-
-} // namespace nlgeometry
+    static bool _writeTexture( reto::Texture2D* texture_,
+                               unsigned int textureSize_,
+                               const std::string& fileName_ );
+  };
+}
 
 #endif

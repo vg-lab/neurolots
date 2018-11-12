@@ -69,7 +69,7 @@ int main( int argc, char* argv[ ])
   std::string inFile( argv[1] );
   std::string outFile( "out.obj" );
   float lod = 20.0f;
-  float alpha0 = 0.5f;
+  float alpha0 = 1.0f;
   float alpha1 = 0.5f;
   float factor = 3.0f;
   textureSize = 65;
@@ -134,8 +134,8 @@ int main( int argc, char* argv[ ])
   auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
 
   auto mesh = objr.readMesh( inFile, false );
-  nlgeometry::VDMGenerator::Instance( )->vdmapSize( textureSize );
-  vdmap = nlgeometry::VDMGenerator::Instance( )->vectorDisplacementMapTexture(
+  nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
+  vdmap = nlgenerator::VDMGenerator::Instance( )->vectorDisplacementMapTexture(
     mesh, paraMethod0, paraMethod1, alpha0, alpha1, factor );
   model = mesh->modelMatrix( );
   delete mesh;

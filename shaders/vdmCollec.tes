@@ -1,0 +1,42 @@
+#version 400
+layout(quads) in;
+
+in vec3 tcPosition[];
+in ivec2 tcSpineCoord[];
+in mat4 tcModel[];
+
+out vec3 position;
+out vec3 normal;
+out vec3 L;
+// out vec3 color;
+
+uniform mat4 viewModel;
+uniform mat4 proy;
+
+uniform float maxTexel;
+uniform float invTexel;
+
+uniform sampler2D vdmTex;
+uniform sampler2D normalTex;
+
+void main( )
+{
+  vec3 tePosition;
+  vec2 realCoord =
+    mix( mix( tcPosition[0], tcPosition[2], gl_TessCoord.x),
+         mix( tcPosition[1], tcPosition[3], gl_TessCoord.x),
+         gl_TessCoord.y ).xy * 0.5 + vec2( 0.5 );
+  ivec2 teCoord =  ivec2( roundEven( realCoord * maxTexel ));
+  vec2 tePos = 2.0 * teCoord * invTexel - vec2( 1.0 );
+  teCoord += ivec2( tcSpineCoord[0] * ( maxTexel + 1 ));
+  vec3 displace = texelFetch( vdmTex, teCoord, 0 ).xyz;
+  tePosition = vec3( tePos, 0.0 ) + displace;
+  vec3 teNormal = texelFetch( normalTex, teCoord, 0).xyz;
+  normal = normalize(( viewModel * tcModel[0] * vec4(normalize( teNormal), 0)).xyz );
+
+  position = ( tcModel[0] * vec4( tePosition, 1.0 )).xyz;;
+  tePosition = ( viewModel * tcModel[0] * vec4( tePosition, 1.0 )).xyz;
+  L = normalize( -tePosition );
+  // color = vec3( realCoord, 0.0f ); //teNormal; // vec3( 0.2, 0.6, 0.6 ); //displace; //vec3( v, u, 0.0 );
+  gl_Position = proy*vec4(tePosition,1);
+}

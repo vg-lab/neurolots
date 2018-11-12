@@ -47,12 +47,26 @@ common_find_package(Boost COMPONENTS unit_test_framework system filesystem
   REQUIRED SYSTEM)
 common_find_package(OpenGL REQUIRED SYSTEM)
 common_find_package(GLEW REQUIRED SYSTEM)
-common_find_package(Eigen3 REQUIRED SYSTEM)
+common_find_package(Eigen3 3.2 REQUIRED SYSTEM)
 common_find_package(nsol REQUIRED)
 common_find_package(ReTo REQUIRED)
+common_find_package(TIFF SYSTEM)
 common_find_package(GLUT SYSTEM)
+common_find_package(Qt5Core 5.4 SYSTEM)
 
 list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW Eigen3 nsol ReTo )
+
+if ( TIFF_FOUND )
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES TIFF)
+endif( )
+
+if ( TIFF_GLUT )
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES GLUT)
+endif( )
+
+if(QT5CORE_FOUND)
+  list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES Qt5Core)
+endif()
 
 common_find_package_post( )
 

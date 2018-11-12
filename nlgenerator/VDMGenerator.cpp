@@ -33,11 +33,10 @@
 #include <GL/glu.h>
 #endif
 
-#include <iostream>
+#define PI 3.1415927f
 
-namespace nlgeometry
+namespace nlgenerator
 {
-
   VDMGenerator* VDMGenerator::_mpInstance = nullptr;
 
   VDMGenerator::VDMGenerator( void )
@@ -56,12 +55,14 @@ namespace nlgeometry
     return _mpInstance;
   }
 
-  VDMapPtr VDMGenerator::vectorDisplacementMapTexture(
-    MeshPtr mesh_, Parametrizer::TVertexWeightMethod  paraMethod0_,
-    Parametrizer::TVertexWeightMethod paraMethod1_, const float alpha0_,
+  nlgeometry::VDMapPtr VDMGenerator::vectorDisplacementMapTexture(
+    nlgeometry::MeshPtr mesh_,
+    nlgeometry::Parametrizer::TVertexWeightMethod  paraMethod0_,
+    nlgeometry::Parametrizer::TVertexWeightMethod paraMethod1_,
+    const float alpha0_,
     const float alpha1_, const float factor_ )
   {
-    auto vdmap = new VDMap( );
+    auto vdmap = new nlgeometry::VDMap( );
 
     auto texConfig = reto::TextureConfig( );
     texConfig.internalFormat = GL_RGB32F;
@@ -70,9 +71,8 @@ namespace nlgeometry
     texConfig.wrapS = GL_CLAMP_TO_EDGE;
     texConfig.wrapT = GL_CLAMP_TO_EDGE;
     unsigned int borderVerticesSize =
-      Parametrizer::Instance( )->doublePassParametrize( mesh_, paraMethod0_,
-                                                        paraMethod1_, alpha0_,
-                                                        alpha1_ );
+      nlgeometry::Parametrizer::Instance( )->doublePassParametrize(
+        mesh_, paraMethod0_, paraMethod1_, alpha0_, alpha1_ );
     mesh_->computeNormals( );
     std::vector< float > dis;
     std::vector< float > normals;
@@ -97,8 +97,8 @@ namespace nlgeometry
     auto normalTexture =
       new reto::Texture2D( texConfig, normals.data( ), _vdmSize, _vdmSize );
 
-    vdmap->vdmTexture( ) = vdmTexture;
-    vdmap->normalTexture( ) = normalTexture;
+    vdmap->vdmTexture( vdmTexture );
+    vdmap->normalTexture( normalTexture );
     vdmap->size( ) = _vdmSize;
 
     return vdmap;
@@ -115,7 +115,7 @@ namespace nlgeometry
     return _vdmSize;
   }
 
-  MeshPtr VDMGenerator::cpuTessellatedQuad( void )
+  nlgeometry::MeshPtr VDMGenerator::cpuTessellatedQuad( void )
   {
     return _cpuTessQuad;
   }
@@ -124,9 +124,9 @@ namespace nlgeometry
   {
     if ( _cpuTessQuad )
       delete _cpuTessQuad;
-    _cpuTessQuad = new Mesh( );
-    Vertices& vertices = _cpuTessQuad->vertices( );
-    Facets& triangles = _cpuTessQuad->triangles( );
+    _cpuTessQuad = new nlgeometry::Mesh( );
+    nlgeometry::Vertices& vertices = _cpuTessQuad->vertices( );
+    nlgeometry::Facets& triangles = _cpuTessQuad->triangles( );
 
     unsigned int dim = _vdmSize;
     unsigned int subdivisions = dim - 1;
@@ -138,7 +138,7 @@ namespace nlgeometry
       {
         float xCoord = -1.0f + j * increment;
         float yCoord = -1.0f + i * increment;
-          vertices.push_back( new Vertex(
+          vertices.push_back( new nlgeometry::Vertex(
                                 Eigen::Vector3f( xCoord, yCoord, 0.0f  )));
       }
     }
@@ -160,21 +160,23 @@ namespace nlgeometry
           unsigned int idAux3 = id3;
           id0 = idAux1; id1 = idAux2; id2 = idAux3; id3 = idAux0;
         }
-        triangles.push_back( new Facet( vertices[id0], vertices[id1],
-                                        vertices[id2] ));
-        triangles.push_back( new Facet( vertices[id0], vertices[id2],
-                                        vertices[id3] ));
+        triangles.push_back( new nlgeometry::Facet(
+                               vertices[id0], vertices[id1], vertices[id2] ));
+        triangles.push_back( new nlgeometry::Facet(
+                               vertices[id0], vertices[id2], vertices[id3] ));
       }
     }
     _cpuTessQuadVertices = _cpuTessQuad->vertices( );
-    Parametrizer::Instance( )->doublePassParametrize( _cpuTessQuad,
-                                                      Parametrizer::MEAN_VALUE,
-                                                      Parametrizer::UNDEFINED,
-                                                      1.0f, 0.5f );
+    nlgeometry::Parametrizer::Instance(
+      )->doublePassParametrize( _cpuTessQuad,
+                                nlgeometry::Parametrizer::MEAN_VALUE,
+                                nlgeometry::Parametrizer::UNDEFINED,
+                                1.0f, 0.5f );
   }
 
-  Eigen::Vector3f VDMGenerator::_barycentricCoords( const FacetPtr facet_,
-                                                    const VertexPtr vertex_ )
+  Eigen::Vector3f VDMGenerator::_barycentricCoords(
+    const nlgeometry::FacetPtr facet_,
+    const nlgeometry::VertexPtr vertex_ )
   {
     Eigen::Matrix3f A;
     Eigen::Vector3f b( vertex_->uv( ).x( ), vertex_->uv( ).y( ), 1.0f );
@@ -191,9 +193,9 @@ namespace nlgeometry
     return A.colPivHouseholderQr( ).solve( b );
   }
 
-  bool VDMGenerator::_edgeNearestPoint( const VertexPtr edge0_,
-                                        const VertexPtr edge1_,
-                                        const VertexPtr vertex_,
+  bool VDMGenerator::_edgeNearestPoint( const nlgeometry::VertexPtr edge0_,
+                                        const nlgeometry::VertexPtr edge1_,
+                                        const nlgeometry::VertexPtr vertex_,
                                         Eigen::Vector3f& nearestPoint_,
                                         Eigen::Vector3f& normal_,
                                         const float factor_ )
@@ -201,16 +203,16 @@ namespace nlgeometry
     float invFactor = 1.0f / factor_;
     float angleEdge0 = atan2( edge0_->uv( ).y( ), edge0_->uv( ).x( ));
     if ( angleEdge0 < 0.0f )
-      angleEdge0 += 2.0f * M_PI;
+      angleEdge0 += 2.0f * PI;
     float angleEdge1 = atan2( edge1_->uv( ).y( ), edge1_->uv( ).x( ));
     if ( angleEdge1 < 0.0f )
-      angleEdge1 += 2.0f * M_PI;
+      angleEdge1 += 2.0f * PI;
     float angleVertex = atan2( vertex_->uv( ).y( ), vertex_->uv( ).x( ));
     if ( angleVertex < 0.0f )
-      angleVertex += 2.0f * M_PI;
+      angleVertex += 2.0f * PI;
 
     if ( angleEdge0 > angleEdge1 )
-      angleEdge1 += 2.0f * M_PI;
+      angleEdge1 += 2.0f * PI;
 
     if ( angleVertex >= angleEdge0 && angleVertex <= angleEdge1)
     {
@@ -237,8 +239,8 @@ namespace nlgeometry
   }
 
   void VDMGenerator::_matchPoint(
-    const Facets& triangles_, const Vertices& vertices_,
-    unsigned int borderVerticesSize_, const VertexPtr vertex_,
+    const nlgeometry::Facets& triangles_, const nlgeometry::Vertices& vertices_,
+    unsigned int borderVerticesSize_, const nlgeometry::VertexPtr vertex_,
     Eigen::Vector3f& intersectionPoint_, Eigen::Vector3f& normal_,
     const float factor_ )
   {
@@ -322,4 +324,4 @@ namespace nlgeometry
 
     return newCoord;
   }
-} // namespace nlgeometry
+} // namespace nlgenerator

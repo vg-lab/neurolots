@@ -45,6 +45,8 @@ namespace nlrender
     _programTrianglesFB = new reto::ShaderProgram(  );
     _programVDM = new reto::ShaderProgram( );
     _programVDMFB = new reto::ShaderProgram( );
+    _programVDMCollec = new reto::ShaderProgram( );
+    _programVDMCollecFB = new reto::ShaderProgram( );
 
     _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
     _programQuads->loadTesselationControlShaderFromText(
@@ -114,6 +116,33 @@ namespace nlrender
     _programVDMFB->use( );
     _programVDMFB->sendUniformi( "vdmTex", 0 );
     _programVDMFB->sendUniformi( "normalTex", 1 );
+
+    _programVDMCollec->loadVertexShaderFromText( nlrender::vdmCollec_vert );
+    _programVDMCollec->loadTesselationControlShaderFromText(
+      nlrender::vdmCollec_tcs );
+    _programVDMCollec->loadTesselationEvaluationShaderFromText(
+      nlrender::vdmCollec_tes );
+    _programVDMCollec->loadFragmentShaderFromText( nlrender::vdmCollec_frag );
+    _programVDMCollec->compileAndLink( );
+    _programVDMCollec->autocatching( );
+    _programVDMCollec->use( );
+    _programVDMCollec->sendUniformi( "vdmTex", 0 );
+    _programVDMCollec->sendUniformi( "normalTex", 1 );
+
+    _programVDMCollecFB->loadVertexShaderFromText( nlrender::vdm_vert );
+    _programVDMCollecFB->loadTesselationControlShaderFromText(
+      nlrender::vdm_tcs );
+    _programVDMCollecFB->loadTesselationEvaluationShaderFromText(
+      nlrender::vdmCollec_tes );
+    _programVDMCollecFB->loadGeometryShaderFromText( nlrender::quad_geom );
+
+    _programVDMCollecFB->create( );
+    _programVDMCollecFB->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    _programVDMCollecFB->link( );
+    _programVDMCollecFB->autocatching( );
+    _programVDMCollecFB->use( );
+    _programVDMCollecFB->sendUniformi( "vdmTex", 0 );
+    _programVDMCollecFB->sendUniformi( "normalTex", 1 );
 
     _tbos.resize( 2 );
     glGenBuffers( 2, _tbos.data( ));
@@ -385,6 +414,28 @@ namespace nlrender
       glPatchParameteri( GL_PATCH_VERTICES, 4 );
       glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
     }
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
+  }
+
+  void Renderer::render( nlgeometry::VDMapCollectionPtr vdmapCollection_,
+                         const Eigen::Vector3f& color_ )
+  {
+    if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    _programVDMCollec->use( );
+    _programVDMCollec->sendUniform4m( "proy", _projectionMatrix.data( ));
+    _programVDMCollec->sendUniform3v( "color", color_.data( ));
+    auto modelMatrices = vdmapCollection_->models( );
+    float maxTexel = vdmapCollection_->vdmapsSize( ) - 1;
+    float invTexel = 1.0f / maxTexel;
+    _programVDMCollec->sendUniformf( "lod", _lod );
+    _programVDMCollec->sendUniformf( "maxTexel", maxTexel );
+    _programVDMCollec->sendUniformf( "invTexel", invTexel );
+    _programVDMCollec->sendUniform4m( "viewModel", _viewMatrix.data( ));
+    vdmapCollection_->render( );
 
     if ( _keepOpenGLServerStack )
       glPopAttrib( );
@@ -662,7 +713,6 @@ namespace nlrender
 
   unsigned int  Renderer::_generateQuadVao( unsigned int numSegments_ )
   {
-    std::cout << numSegments_ << std::endl;
     unsigned int quadVao;
     glGenVertexArrays( 1, &quadVao );
     glBindVertexArray( quadVao );

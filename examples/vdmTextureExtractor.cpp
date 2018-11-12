@@ -20,6 +20,8 @@
  *
  */
 #include <iostream>
+#include <iomanip>
+#include <boost/filesystem.hpp>
 
 #include <nlrender/nlrender.h>
 #include <nlgeometry/nlgeometry.h>
@@ -45,16 +47,12 @@
 
 #include "Shaders.h"
 
-reto::Camera* camera;
-nlrender::Renderer* renderer;
-nlgeometry::VDMapCollectionPtr vdmapCollection;
+std::vector< nlgeometry::VDMapPtr > vdmaps;
 unsigned int textureSize;
 
 bool showMesh = true;
 bool wireMode = true;
 
-void renderFunc( void );
-void keyboardFunc( unsigned char key, int, int );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
 
@@ -66,16 +64,17 @@ int main( int argc, char* argv[ ])
   {
     std::cerr << "Error: Usage: " << argv[0] << " spine_file[.obj] "
              << "-alpha0 alpha0[float] -alpha1 alpha1[float] "
-             << "-size textureSize[int]" << std::endl;
+             << "-size textureSize[int] -out outDirectory" << std::endl;
     return 1;
   }
 
   float alpha0 = 1.0f;
   float alpha1 = 0.5f;
   float factor = 3.0f;
+  std::string outFile( "out.xml" );
   textureSize = 65;
 
-  for ( int i = 2; i < argc; i++ )
+  for ( int i = 1; i < argc; i++ )
   {
     std::string option( argv[i] );
     try
@@ -100,6 +99,11 @@ int main( int argc, char* argv[ ])
         i++;
         factor = atof( argv[i] );
       }
+      else if ( option.compare( "-out") == 0 )
+      {
+        i++;
+        outFile = std::string( argv[i] );
+      }
     }
     catch( ... )
     {
@@ -113,15 +117,11 @@ int main( int argc, char* argv[ ])
   initContext( argc, argv );
   initOGL( );
 
-  camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
-  renderer = new nlrender::Renderer( );
-  renderer->lod( ) = textureSize - 1;
-
   auto paraMethod0 = nlgeometry::Parametrizer::CURVATURE;
   auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
   nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
-  vdmapCollection = new  nlgeometry::VDMapCollection( );
+  std::cout << "Saving spines maps" << std::endl;
+  nlgeometry::VDMapCollectionPtr vdmCollec = new nlgeometry::VDMapCollection( );
   for ( int i = 1; i < argc; i++ )
   {
     try
@@ -131,46 +131,41 @@ int main( int argc, char* argv[ ])
       nlgeometry::MeshPtr mesh = objr.readMesh( inFile, false );
       nlgeometry::VDMapPtr vdmap =
         nlgenerator::VDMGenerator::Instance( )->vectorDisplacementMapTexture(
-          mesh,
-          paraMethod0,
-          paraMethod1,
-          alpha0, alpha1, factor );
-      vdmapCollection->addVDMap( vdmap, mesh->modelMatrix( ));
+          mesh, paraMethod0, paraMethod1, alpha0, alpha1, factor );
+
+      // boost::filesystem::path p( inFile );
+
+      // std::string outFile( directory );
+      // if ( outFile.compare( "" ) != 0 )
+      //   outFile.append( "/" );
+      // outFile.append( p.stem( ).string( ));
+      // nlgeometry::VDMapWriter::writeVDMap( vdmap, outFile );
+
+      vdmCollec->addVDMap( vdmap, mesh->modelMatrix( ) );
+
+      std::cout << "\r\t" << std::fixed << std::setw(11)
+                << std::setprecision(2) << (( float )i) / (argc-1) * 100 << "%"
+                << " loaded. "
+                << std::flush;
       delete mesh;
     }
     catch( ... )
     {
-
     }
   }
-
-  Eigen::Array3f minimum =
-    Eigen::Array3f::Constant( std::numeric_limits< float >::max( ));
-  Eigen::Array3f maximum =
-    Eigen::Array3f::Constant( std::numeric_limits< float >::min( ));
-
-  for ( auto model: vdmapCollection->models( ))
+  std::cout << std::endl;
+  vdmCollec->computeMacroMap( );
+  if ( nlgeometry::VDMapWriter::writeVDMapCollection(
+         vdmCollec, outFile ))
   {
-    Eigen::Array3f pos( model.block( 0, 3, 1, 3 ));
-    minimum = minimum.min( pos );
-    maximum = maximum.max( pos );
+    return 0;
+  }
+  else
+  {
+    std::cerr << "Collection not saved" << std::endl;
+    return 1;
   }
 
-  minimum += Eigen::Array3f( -2.0f, -2.0f, -2.0f );
-  maximum += Eigen::Array3f( 2.0f, 2.0f, 2.0f );
-  Eigen::Vector3f center(( maximum + minimum ) * 0.5f );
-
-  camera->pivot( center );
-  camera->radius(
-    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( camera->fov( )));
-
-  Eigen::Matrix4f projection( camera->projectionMatrix( ));
-  renderer->projectionMatrix( ) = projection;
-  Eigen::Matrix4f view( camera->viewMatrix( ));
-  renderer->viewMatrix( ) = view;
-
-  glutMainLoop( );
-  return 0;
 }
 
 void initContext( int argc, char* argv[ ])
@@ -185,13 +180,6 @@ void initContext( int argc, char* argv[ ])
 
   glewExperimental = GL_TRUE;
   glewInit( );
-
-  glutDisplayFunc( renderFunc );
-  glutIdleFunc( DemoCallbacks::idleFunc );
-  glutKeyboardFunc( keyboardFunc );
-  glutMouseFunc( DemoCallbacks::mouseFunc );
-  glutMotionFunc( DemoCallbacks::mouseMotionFunc );
-  glutReshapeFunc( DemoCallbacks::resizeFunc );
 }
 
 void initOGL( void )
@@ -200,42 +188,7 @@ void initOGL( void )
 
 
   glEnable( GL_DEPTH_TEST );
-  // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-  glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+  glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  // glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-}
-
-void renderFunc( void )
-{
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-  Eigen::Matrix4f view = Eigen::Matrix4f( camera->viewMatrix( ));
-  renderer->viewMatrix( ) = view;
-  Eigen::Matrix4f projection = Eigen::Matrix4f( camera->projectionMatrix( ));
-  renderer->projectionMatrix( )= projection;
-  renderer->render( vdmapCollection );
-
-  glFlush( );
-  glutSwapBuffers( );
-}
-
-void keyboardFunc( unsigned char key_, int, int )
-{
-  switch( key_ )
-  {
-  case 'w':
-    renderer->lod( ) += 1.f;
-    std::cout << "Level of tessellation: " << renderer->lod( ) << std::endl;
-    break;
-  case 's':
-    renderer->lod( ) -= 1.f;
-    std::cout << "Level of tessellation: " << renderer->lod( ) << std::endl;
-    break;
-  case 'm':
-    wireMode = !wireMode;
-    if ( wireMode )
-      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    else
-      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-  }
 }

@@ -1,0 +1,28 @@
+#version 400
+layout(vertices = 4) out;
+
+in vec3 vPosition[];
+in ivec2 vSpineCoord[];
+in float vlot[];
+in mat4 vModel[];
+
+out vec3 tcPosition[];
+out ivec2 tcSpineCoord[];
+out mat4 tcModel[];
+
+#define ID gl_InvocationID
+
+void main( void )
+{
+  float lot = vlot[0];
+
+  tcPosition[ID] = vPosition[ID];
+  tcModel[ID] = vModel[ID];
+  tcSpineCoord[ID] = vSpineCoord[ID];
+  gl_TessLevelInner[0] = lot;
+  gl_TessLevelInner[1] = lot;
+  gl_TessLevelOuter[0] = lot;
+  gl_TessLevelOuter[1] = lot;
+  gl_TessLevelOuter[2] = lot;
+  gl_TessLevelOuter[3] = lot;
+}

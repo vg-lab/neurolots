@@ -19,47 +19,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __NLGEOMETRY_VDMGENERATOR__
-#define __NLGEOMETRY_VDMGENERATOR__
+#ifndef __NLGENERATOR_VDMGENERATOR__
+#define __NLGENERATOR_VDMGENERATOR__
 
-#include "Parametrizer.h"
+#include "../nlgeometry/Parametrizer.h"
+#include "../nlgeometry/VDMap.h"
 
-#include <reto/reto.h>
-#include <nlgeometry/api.h>
+#include <nlgenerator/api.h>
 
 
-namespace nlgeometry
+namespace nlgenerator
 {
-  class VDMap
-  {
-
-  public:
-
-    NLGEOMETRY_API
-    VDMap( void ) : _vdmTexture( nullptr ), _normalTexture( nullptr ),  _size( 0 ){ }
-
-    NLGEOMETRY_API
-    ~VDMap( void ) { delete _vdmTexture; delete _normalTexture; }
-
-    NLGEOMETRY_API
-    reto::Texture2D*& vdmTexture( void ) { return _vdmTexture; }
-
-    NLGEOMETRY_API
-    reto::Texture2D*& normalTexture( void ) { return _normalTexture; }
-
-    NLGEOMETRY_API
-    unsigned int& size( void ) { return _size; }
-
-  private:
-
-    reto::Texture2D* _vdmTexture;
-
-    reto::Texture2D* _normalTexture;
-
-    unsigned int _size;
-  };
-
-  typedef VDMap* VDMapPtr;
 
   /*! \class VectorDisplacementMapGenerator
     \brief A singleton class to generate vector displacement maps from
@@ -74,7 +44,7 @@ namespace nlgeometry
      * Returns the instace of the singleton class
      * @return the VDMGenerator instance
      */
-    NLGEOMETRY_API
+    NLGENERATOR_API
     static VDMGenerator* Instance( void );
 
     /**
@@ -82,10 +52,13 @@ namespace nlgeometry
      * @param mesh_ mesh to compute it vector displacement map
      * @return vector displacement map texture 2D
      */
-    VDMapPtr vectorDisplacementMapTexture(
-      MeshPtr mesh_, Parametrizer::TVertexWeightMethod paraMethod0_ =
-      Parametrizer::MEAN_VALUE, Parametrizer::TVertexWeightMethod paraMethod1_ =
-      Parametrizer::UNDEFINED, const float alpha0_ = 1.0f,
+    NLGENERATOR_API
+    nlgeometry::VDMapPtr vectorDisplacementMapTexture(
+      nlgeometry::MeshPtr mesh_,
+      nlgeometry::Parametrizer::TVertexWeightMethod paraMethod0_ =
+      nlgeometry::Parametrizer::MEAN_VALUE,
+      nlgeometry::Parametrizer::TVertexWeightMethod paraMethod1_ =
+      nlgeometry::Parametrizer::UNDEFINED, const float alpha0_ = 1.0f,
       const float alpha1_ = 0.5f,
       const float factor_ = 3.0f );
 
@@ -93,19 +66,22 @@ namespace nlgeometry
      * Method to set the resultant vector displacement map size
      * @param size_ size of the computed vector displacement map
      */
+    NLGENERATOR_API
     void vdmapSize( unsigned int size_ );
 
     /**
      * Method that returns the size of the vector displacement maps
      * @return the size of the vector displacement maps
      */
+    NLGENERATOR_API
     unsigned int vdmapSize( void );
 
     /**
      * Method that returns the cpu tessellated quad used
      * @return pointer to the mesh of the cpu tessellated quad
      */
-    MeshPtr cpuTessellatedQuad( void );
+    NLGENERATOR_API
+    nlgeometry::MeshPtr cpuTessellatedQuad( void );
 
   private:
 
@@ -113,20 +89,20 @@ namespace nlgeometry
 
     void _generateTessQuad( void );
 
-    Eigen::Vector3f _barycentricCoords( const FacetPtr facet_,
-                                        const VertexPtr vertex_ );
+    Eigen::Vector3f _barycentricCoords( const nlgeometry::FacetPtr facet_,
+                                        const nlgeometry::VertexPtr vertex_ );
 
-    bool _edgeNearestPoint( const VertexPtr edge0_,
-                            const VertexPtr edge1_,
-                            const VertexPtr vertex_,
+    bool _edgeNearestPoint( const nlgeometry::VertexPtr edge0_,
+                            const nlgeometry::VertexPtr edge1_,
+                            const nlgeometry::VertexPtr vertex_,
                             Eigen::Vector3f& nearestPoint_,
                             Eigen::Vector3f& normal_,
                             const float factor_ = 5.0f );
 
-    void _matchPoint( const Facets& triangles_,
-                      const Vertices& vertices_,
+    void _matchPoint( const nlgeometry::Facets& triangles_,
+                      const nlgeometry::Vertices& vertices_,
                       unsigned int borderVerticesSize_,
-                      const VertexPtr vertex_,
+                      const nlgeometry::VertexPtr vertex_,
                       Eigen::Vector3f& intersectionPoint_,
                       Eigen::Vector3f& normal_,
                       const float factor_ = 5.0f );
@@ -138,16 +114,16 @@ namespace nlgeometry
     static VDMGenerator* _mpInstance;
 
     //! Pointer to a mesh containing a cpu tessellated quad
-    MeshPtr _cpuTessQuad;
+    nlgeometry::MeshPtr _cpuTessQuad;
 
     //! Vector of the cpu tessellated quad vertices with generation sort
-    Vertices _cpuTessQuadVertices;
+    nlgeometry::Vertices _cpuTessQuadVertices;
 
     //! Size of the vector displacement maps computed
     unsigned int _vdmSize;
 
   }; // class VDMGenerator
 
-} // namespace nlgeometry
+} // namespace nlgenerator
 
 #endif

@@ -23,7 +23,7 @@
 #define __NLRENDER_RENDERER__
 
 #include "../nlgeometry/Mesh.h"
-#include "../nlgeometry/VDMGenerator.h"
+#include "../nlgenerator/VDMGenerator.h"
 
 #include <reto/reto.h>
 
@@ -159,6 +159,12 @@ namespace nlrender
       const Eigen::Vector3f& color_ =
       Eigen::Vector3f( 0.2f, 0.6f, 0.6f ));
 
+    NLRENDER_API
+    void render(
+      nlgeometry::VDMapCollectionPtr vdmapCollection_,
+      const Eigen::Vector3f& color_ =
+      Eigen::Vector3f( 0.2f, 0.6f, 0.6f ));
+
     /**
      * Method that extract the given mesh
      * @param mesh_ mesh to extract
@@ -220,6 +226,12 @@ namespace nlrender
 
     //! Program to extrac vector displacement map meshes
     reto::ShaderProgram* _programVDMFB;
+
+    //! Program to render vector displacement map
+    reto::ShaderProgram* _programVDMCollec;
+
+    //! Program to extrac vector displacement map meshes
+    reto::ShaderProgram* _programVDMCollecFB;
 
     //! Scene camera view matrix
     Eigen::Matrix4f _viewMatrix;

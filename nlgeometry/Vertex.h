@@ -89,6 +89,7 @@ namespace nlgeometry
     NLGEOMETRY_API
     const unsigned int& id( void ) const;
 
+    NLGEOMETRY_API
     unsigned int& id( void );
 
     /**

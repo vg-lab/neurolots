@@ -4,6 +4,7 @@ set(NLGENERATOR_PUBLIC_HEADERS
   Icosphere.h
   JointNode.h
   MeshGenerator.h
+  VDMGenerator.h
 )
 
 set(NLGENERATOR_HEADERS
@@ -13,6 +14,7 @@ set(NLGENERATOR_SOURCES
   Icosphere.cpp
   JointNode.cpp
   MeshGenerator.cpp
+  VDMGenerator.cpp
 )
 
 set(NLGENERATOR_LINK_LIBRARIES

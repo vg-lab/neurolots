@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2017 GMRV/URJC.
+ * Copyright (c) 2015-2018 GMRV/URJC.
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
@@ -47,11 +47,11 @@
 
 reto::Camera* camera;
 nlrender::Renderer* renderer;
-nlgeometry::VDMapCollectionPtr vdmapCollection;
+nlgeometry::VDMapCollectionPtr vdmCollec;
 unsigned int textureSize;
 
 bool showMesh = true;
-bool wireMode = true;
+bool wireMode = false;
 
 void renderFunc( void );
 void keyboardFunc( unsigned char key, int, int );
@@ -60,55 +60,16 @@ void initOGL( void );
 
 int main( int argc, char* argv[ ])
 {
-  std::cout << "neurolots example: Mesh Parametrizer" << std::endl;
+  std::cout << "neurolots example: VDM Render Reader" << std::endl;
 
   if ( argc < 2 )
   {
-    std::cerr << "Error: Usage: " << argv[0] << " spine_file[.obj] "
-             << "-alpha0 alpha0[float] -alpha1 alpha1[float] "
-             << "-size textureSize[int]" << std::endl;
+    std::cerr << "Error: Usage: " << argv[0] << " spine_scene[.xml]"
+              << std::endl;
     return 1;
   }
 
-  float alpha0 = 1.0f;
-  float alpha1 = 0.5f;
-  float factor = 3.0f;
-  textureSize = 65;
-
-  for ( int i = 2; i < argc; i++ )
-  {
-    std::string option( argv[i] );
-    try
-    {
-      if ( option.compare( "-alpha0") == 0 )
-      {
-        i++;
-        alpha0 = atof( argv[i] );
-      }
-      else if ( option.compare( "-alpha1") == 0 )
-      {
-        i++;
-        alpha1 = atof( argv[i] );
-      }
-      else if ( option.compare( "-size") == 0 )
-      {
-        i++;
-        textureSize = atof( argv[i] );
-      }
-      else if ( option.compare( "-factor") == 0 )
-      {
-        i++;
-        factor = atof( argv[i] );
-      }
-    }
-    catch( ... )
-    {
-      std::cerr << "Error: Usage: " << argv[0] << " spine_file[.obj] "
-                << "-alpha0 alpha0[float] -alpha1 alpha1[float] "
-                << "-size textureSize[int]" << std::endl;
-      return 1;
-    }
-  }
+  std::string sceneFile( argv[1] );
 
   initContext( argc, argv );
   initOGL( );
@@ -116,32 +77,14 @@ int main( int argc, char* argv[ ])
   camera = new reto::Camera( );
   DemoCallbacks::camera( camera );
   renderer = new nlrender::Renderer( );
-  renderer->lod( ) = textureSize - 1;
 
-  auto paraMethod0 = nlgeometry::Parametrizer::CURVATURE;
-  auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
-  nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
-  vdmapCollection = new  nlgeometry::VDMapCollection( );
-  for ( int i = 1; i < argc; i++ )
+  vdmCollec = nlgeometry::VDMapReader::readVDMapCollection( sceneFile );
+  std::string test( "test" );
+  if ( !vdmCollec )
   {
-    try
-    {
-      auto inFile = std::string( argv[i] );
-      nlgeometry::ObjReader objr;
-      nlgeometry::MeshPtr mesh = objr.readMesh( inFile, false );
-      nlgeometry::VDMapPtr vdmap =
-        nlgenerator::VDMGenerator::Instance( )->vectorDisplacementMapTexture(
-          mesh,
-          paraMethod0,
-          paraMethod1,
-          alpha0, alpha1, factor );
-      vdmapCollection->addVDMap( vdmap, mesh->modelMatrix( ));
-      delete mesh;
-    }
-    catch( ... )
-    {
-
-    }
+    std::cerr << "Error: Usage: " << argv[0] << " spine_scene[.xml]"
+              << std::endl;
+    return 1;
   }
 
   Eigen::Array3f minimum =
@@ -149,7 +92,7 @@ int main( int argc, char* argv[ ])
   Eigen::Array3f maximum =
     Eigen::Array3f::Constant( std::numeric_limits< float >::min( ));
 
-  for ( auto model: vdmapCollection->models( ))
+  for ( Eigen::Matrix4f model: vdmCollec->macroModels( ))
   {
     Eigen::Array3f pos( model.block( 0, 3, 1, 3 ));
     minimum = minimum.min( pos );
@@ -168,7 +111,9 @@ int main( int argc, char* argv[ ])
   renderer->projectionMatrix( ) = projection;
   Eigen::Matrix4f view( camera->viewMatrix( ));
   renderer->viewMatrix( ) = view;
+  vdmCollec->uploadGPU( );
 
+  renderer->lod( ) = vdmCollec->vdmapsSize( ) - 1;
   glutMainLoop( );
   return 0;
 }
@@ -181,7 +126,7 @@ void initContext( int argc, char* argv[ ])
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
   glutInitWindowSize( 600, 600 );
   glutInitWindowPosition( 0, 0 );
-  glutCreateWindow( "Neurolots example: Mesh Parametrizer" );
+  glutCreateWindow( "Neurolots example: vdm render reader" );
 
   glewExperimental = GL_TRUE;
   glewInit( );
@@ -213,7 +158,8 @@ void renderFunc( void )
   renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection = Eigen::Matrix4f( camera->projectionMatrix( ));
   renderer->projectionMatrix( )= projection;
-  renderer->render( vdmapCollection );
+  renderer->render( vdmCollec );
+  // renderer->render( vdmCollec->macroMap( ));
 
   glFlush( );
   glutSwapBuffers( );
