@@ -29,18 +29,20 @@
 namespace nlgeometry
 {
 
-  void ObjWriter::writeMesh( const MeshPtr mesh, const std::string& fileName_ )
+  void ObjWriter::writeMesh( const MeshPtr mesh, const std::string& fileName_,
+                             const std::string& headerString_  )
   {
     Facets facets;
     facets.insert( facets.end( ), mesh->triangles( ).begin(),
                    mesh->triangles( ).end( ));
     facets.insert( facets.end( ), mesh->quads( ).begin(),
                    mesh->quads( ).end( ));
-    writeMesh( facets, mesh->vertices( ), fileName_ );
+    writeMesh( facets, mesh->vertices( ), fileName_, headerString_ );
   }
 
   void ObjWriter::writeMesh( const Facets& facets_, const Vertices& vertices_,
-                             const std::string& fileName_ )
+                             const std::string& fileName_,
+                             const std::string& headerString_ )
   {
     std::ofstream outStream(fileName_.c_str());
     if(!outStream.is_open())
@@ -48,6 +50,8 @@ namespace nlgeometry
       std::cerr <<  fileName_ << ": Error creating the file" << std::endl;
       return;
     }
+
+    outStream << headerString_ << "\n" << std::endl;
 
     std::unordered_map< VertexPtr, unsigned int> vertexId;
     for ( unsigned int i = 0; i < ( unsigned int ) vertices_.size( ); i++ )
