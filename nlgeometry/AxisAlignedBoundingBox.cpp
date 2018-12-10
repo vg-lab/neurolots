@@ -76,4 +76,37 @@ namespace nlgeometry
     return ( _maximum - _minimum ).norm( ) * 0.5f;
   }
 
+  void AxisAlignedBoundingBox::expand( const Eigen::Vector3f& point )
+  {
+    _maximum.x( ) = std::max( point.x( ), _maximum.x( ));
+    _maximum.y( ) = std::max( point.y( ), _maximum.y( ));
+    _maximum.z( ) = std::max( point.z( ), _maximum.z( ));
+
+    _minimum.x( ) = std::min( point.x( ), _minimum.x( ));
+    _minimum.y( ) = std::min( point.y( ), _minimum.y( ));
+    _minimum.z( ) = std::min( point.z( ), _minimum.z( ));
+
+  }
+
+  void AxisAlignedBoundingBox::expand( const AxisAlignedBoundingBox& other )
+  {
+    _maximum.x( ) = std::max( other.maximum( ).x( ), _maximum.x( ));
+    _maximum.y( ) = std::max( other.maximum( ).y( ), _maximum.y( ));
+    _maximum.z( ) = std::max( other.maximum( ).z( ), _maximum.z( ));
+
+    _minimum.x( ) = std::min( other.minimum( ).x( ), _minimum.x( ));
+    _minimum.y( ) = std::min( other.minimum( ).y( ), _minimum.y( ));
+    _minimum.z( ) = std::min( other.minimum( ).z( ), _minimum.z( ));
+
+  }
+
+  void AxisAlignedBoundingBox::clear( void )
+  {
+    float maxVal = std::numeric_limits< float >::max( );
+    float minVal = std::numeric_limits< float >::min( );
+
+    _minimum = Eigen::Vector3f( maxVal, maxVal, maxVal );
+    _maximum = Eigen::Vector3f( minVal, minVal, minVal );
+  }
+
 } // namespace nlgeometry

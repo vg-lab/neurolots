@@ -25,6 +25,17 @@
 
 #include "../nlgeometry/SpatialHashTable.h"
 
+#ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
+#include <GL/glew.h>
+#endif
+#ifdef Darwin
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+
 namespace nlrender
 {
 
