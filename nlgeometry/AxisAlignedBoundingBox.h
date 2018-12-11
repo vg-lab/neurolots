@@ -93,6 +93,27 @@ namespace nlgeometry
     NLGEOMETRY_API
     float radius( void ) const;
 
+    /**
+     *
+     * Method that expands the current bounds with the given point
+     * @param point given point to expand current bounds
+     *
+     */
+    NLGEOMETRY_API
+    void expand( const Eigen::Vector3f& point );
+
+    /**
+     *
+     * Method that expands the current bounds with the given bounding box
+     * @param other given bounding box to expand current bounds
+     *
+     */
+    NLGEOMETRY_API
+    void expand( const AxisAlignedBoundingBox& other );
+
+    NLGEOMETRY_API
+    void clear( void );
+
   protected:
 
     //! Left bottom back axis aligned bounding box position
