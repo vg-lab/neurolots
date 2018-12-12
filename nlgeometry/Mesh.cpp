@@ -106,26 +106,24 @@ namespace nlgeometry
       glDeleteBuffers( (GLsizei)_vbos.size( ), _vbos.data( ));
   }
 
-  void Mesh::uploadGPU( AttribsFormat format_, Facet::TFacetType facetType_ )
+  void Mesh::conformAttribs( AttribsFormat format_,
+                             Facet::TFacetType facetType_ )
   {
+    _format = format_;
     _facetType = facetType_;
-    clearGPUData( );
-
-    Attribs attribs;
-    attribs.resize( format_.size( ));
-    std::vector< unsigned int > indices;
+    _attribs.resize( _format.size( ));
 
     for( auto triangle: _triangles )
-      triangle->store( attribs, format_ );
+      triangle->store( _attribs, _format );
     for( auto quad: _quads )
-      quad->store( attribs, format_ );
+      quad->store( _attribs, _format );
 
     for ( auto triangle: _triangles )
-      triangle->addIndicesAs( facetType_, indices );
+      triangle->addIndicesAs( _facetType, _indices );
     _trianglesSize = (unsigned int)_triangles.size( ) * 3;
 
     for ( auto quad: _quads )
-      quad->addIndicesAs( facetType_, indices );
+      quad->addIndicesAs( _facetType, _indices );
 
     switch( facetType_ )
     {
@@ -136,24 +134,35 @@ namespace nlgeometry
       _quadsSize = (unsigned int)_quads.size( ) * 4;
       break;
     }
+  }
+
+  void Mesh::uploadGPU( void )
+  {
+    clearGPUData( );
 
     glGenVertexArrays( 1, &_vao );
     glBindVertexArray( _vao );
 
-    _vbos.resize( attribs.size(  ) + 1 );
-    glGenBuffers( ( unsigned int )attribs.size( ) + 1, _vbos.data( ));
+    _vbos.resize( _attribs.size(  ) + 1 );
+    glGenBuffers( ( unsigned int )_attribs.size( ) + 1, _vbos.data( ));
 
-    for ( unsigned int i = 0; i < attribs.size( ); i++ )
+    for ( unsigned int i = 0; i < _attribs.size( ); i++ )
     {
-      _uploadBuffer( attribs[i], format_[i], i );
-      attribs[i].clear( );
+      _uploadBuffer( _attribs[i], _format[i], i );
+      _attribs[i].clear( );
     }
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _vbos[attribs.size( )] );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _vbos[_attribs.size( )] );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( unsigned int) *
-                  indices.size( ), indices.data( ), GL_STATIC_DRAW );
-    indices.clear( );
+                  _indices.size( ), _indices.data( ), GL_STATIC_DRAW );
+    _indices.clear( );
     glBindVertexArray( 0 );
+  }
+
+  void Mesh::uploadGPU( AttribsFormat format_, Facet::TFacetType facetType_ )
+  {
+    conformAttribs( format_, facetType_ );
+    uploadGPU( );
   }
 
   void Mesh::computeBoundingBox( void )

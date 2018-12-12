@@ -108,6 +108,13 @@ namespace nlgeometry
     NLGEOMETRY_API
     void clearGPUData( void );
 
+    NLGEOMETRY_API
+    void conformAttribs( AttribsFormat format_,
+                         Facet::TFacetType facetType_ = Facet::TRIANGLES );
+
+    NLGEOMETRY_API
+    void uploadGPU( void );
+
     /**
      * Method that upload the geometric information of the mesh to the gpu
      * @param format_ format of the gpu buffers
@@ -182,6 +189,9 @@ namespace nlgeometry
 
     //! Facet type uploaded to the gpu
     Facet::TFacetType _facetType;
+    Attribs _attribs;
+    std::vector< unsigned int > _indices;
+    AttribsFormat _format;
 
   }; // class Mesh
 
