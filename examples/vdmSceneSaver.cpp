@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2017 GMRV/URJC.
+ * Copyright (c) 2015-2018 GMRV/URJC.
  *
  * Authors: Juan Jose Garcia Cantero <juanjose.garcia@urjc.es>
  *
@@ -27,9 +27,6 @@
 #include <nlgeometry/nlgeometry.h>
 #include <reto/reto.h>
 
-#include "DemoCallbacks.h"
-
-//OpenGL
 #ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
   #include <GL/glew.h>
 #endif
@@ -45,26 +42,20 @@
   #include <GL/freeglut.h>
 #endif
 
-#include "Shaders.h"
-
 std::vector< nlgeometry::VDMapPtr > vdmaps;
 unsigned int textureSize;
-
-bool showMesh = true;
-bool wireMode = true;
 
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
 
 int main( int argc, char* argv[ ])
 {
-  std::cout << "neurolots example: Mesh Parametrizer" << std::endl;
-
   if ( argc < 2 )
   {
     std::cerr << "Error: Usage: " << argv[0] << " spine_file[.obj] "
              << "-alpha0 alpha0[float] -alpha1 alpha1[float] "
-             << "-size textureSize[int] -out outDirectory" << std::endl;
+              << "-size textureSize[int] -collec [int] "
+              << "-out outFile.xml" << std::endl;
     return 1;
   }
 
@@ -72,6 +63,7 @@ int main( int argc, char* argv[ ])
   float alpha1 = 0.5f;
   float factor = 3.0f;
   std::string outFile( "out.xml" );
+  bool collection = true;
   textureSize = 65;
 
   for ( int i = 1; i < argc; i++ )
@@ -104,12 +96,17 @@ int main( int argc, char* argv[ ])
         i++;
         outFile = std::string( argv[i] );
       }
+      else if ( option.compare( "-collec" ) == 0 )
+      {
+        i++;
+        collection = ( atoi( argv[i]) == 0 );
+      }
     }
     catch( ... )
     {
       std::cerr << "Error: Usage: " << argv[0] << " spine_file[.obj] "
                 << "-alpha0 alpha0[float] -alpha1 alpha1[float] "
-                << "-size textureSize[int]" << std::endl;
+                << "-size textureSize[int] -out outFile.xml" << std::endl;
       return 1;
     }
   }
@@ -117,7 +114,7 @@ int main( int argc, char* argv[ ])
   initContext( argc, argv );
   initOGL( );
 
-  auto paraMethod0 = nlgeometry::Parametrizer::CURVATURE;
+  auto paraMethod0 = nlgeometry::Parametrizer::MEAN_VALUE;
   auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
   nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
   std::cout << "Saving spines maps" << std::endl;
@@ -146,18 +143,18 @@ int main( int argc, char* argv[ ])
     }
   }
   std::cout << std::endl;
-  vdmCollec->computeMacroMap( );
+
+  if ( collection )
+    vdmCollec->computeMacroMap( );
+
   if ( nlgeometry::VDMapWriter::writeVDMapCollection(
-         vdmCollec, outFile ))
-  {
+         vdmCollec, outFile, collection ))
     return 0;
-  }
   else
   {
     std::cerr << "Collection not saved" << std::endl;
     return 1;
   }
-
 }
 
 void initContext( int argc, char* argv[ ])
@@ -168,7 +165,7 @@ void initContext( int argc, char* argv[ ])
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
   glutInitWindowSize( 600, 600 );
   glutInitWindowPosition( 0, 0 );
-  glutCreateWindow( "Neurolots example: Mesh Parametrizer" );
+  glutCreateWindow( "Neurolots example: vdm scene saver" );
 
   glewExperimental = GL_TRUE;
   glewInit( );
@@ -181,6 +178,5 @@ void initOGL( void )
 
   glEnable( GL_DEPTH_TEST );
   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-  // glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
 }

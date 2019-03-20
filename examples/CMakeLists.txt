@@ -70,6 +70,14 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSVDMRENDERSCENELOADER_SOURCES} )
 
+      set( NEUROLOTSVDMSCENESAVER_SOURCES vdmSceneSaver.cpp )
+      set( NEUROLOTSVDMSCENESAVER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsVDMSceneSaver NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSVDMSCENESAVER_SOURCES} )
+
       set( NEUROLOTSVDMEXTRACTOR_SOURCES vdmExtractor.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSVDMEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry

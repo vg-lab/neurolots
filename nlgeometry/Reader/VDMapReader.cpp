@@ -109,7 +109,7 @@ namespace nlgeometry
       std::cerr << "Expected vdmaps root elemnt" << std::endl;
       return nullptr;
     }
-    bool collectionLoaded = false;
+    // bool collectionLoaded = false;
 
     VDMapCollectionPtr vdmCollec = new VDMapCollection( );
     QXmlStreamAttributes attributes = xml.attributes( );
@@ -164,7 +164,7 @@ namespace nlgeometry
       }
       if ( xml.name( ) == "vdmapCollection" )
       {
-        collectionLoaded = true;
+        // collectionLoaded = true;
         attributes = xml.attributes( );
         if( attributes.hasAttribute( "vdmapTexture" ) &&
             attributes.hasAttribute("normalTexture") &&
@@ -211,8 +211,8 @@ namespace nlgeometry
       }
     }
 
-    if ( !collectionLoaded )
-      vdmCollec->computeMacroMap( );
+    // if ( !collectionLoaded )
+    //   vdmCollec->computeMacroMap( );
 
     return vdmCollec;
 

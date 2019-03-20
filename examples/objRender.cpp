@@ -45,6 +45,7 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 reto::ShaderProgram* program;
 nlgeometry::Meshes meshes;
 
@@ -65,7 +66,8 @@ int main( int argc, char* argv[] )
   initOGL( );
 
   camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
+  cController = new reto::OrbitalCameraController( camera );
+  DemoCallbacks::camera( cController );
 
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::MeshPtr mesh;
@@ -113,8 +115,8 @@ int main( int argc, char* argv[] )
       std::cout << "File " << argv[i] << " not loaded" << std::endl;
   }
 
-  camera->pivot( aabb.center( ));
-  camera->radius( aabb.radius( ) / sin( camera->fov( )));
+  cController->position( aabb.center( ));
+  cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
 
   glutMainLoop( );
   return 0;

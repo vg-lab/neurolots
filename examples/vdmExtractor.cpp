@@ -47,6 +47,7 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 nlgeometry::VDMapPtr vdmap;
 Eigen::Matrix4f model;
@@ -125,12 +126,13 @@ int main( int argc, char* argv[ ])
   initOGL( );
 
   camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
+  cController = new reto::OrbitalCameraController( camera );
+  DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
   renderer->lod( ) = lod;
 
   nlgeometry::ObjReader objr;
-  auto paraMethod0 = nlgeometry::Parametrizer::CURVATURE;
+  auto paraMethod0 = nlgeometry::Parametrizer::MEAN_VALUE;
   auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
 
   auto mesh = objr.readMesh( inFile, false );

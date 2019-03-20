@@ -605,7 +605,7 @@ namespace nlrender
     float invTexel = 1.0f / maxTexel;
     unsigned int numSegments = ceil( vdmap_->size( ) / MAX_TESS_LEVEL );
     unsigned int numVertices = numSegments * numSegments * 4;
-    _programVDM->sendUniformf( "lod", _lod / numSegments );
+    _programVDMFB->sendUniformf( "lod", _lod / numSegments );
     _programVDMFB->sendUniformf( "maxTexel", maxTexel );
     _programVDMFB->sendUniformf( "invTexel", invTexel );
 

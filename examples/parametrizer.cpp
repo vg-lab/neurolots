@@ -46,6 +46,7 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 reto::ShaderProgram* programUV;
 nlgeometry::MeshPtr meshUV;
@@ -137,9 +138,10 @@ int main( int argc, char* argv[ ])
     paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
   }
   camera = new reto::Camera( );
+  cController = new reto::OrbitalCameraController( camera );
   renderer = new nlrender::Renderer( false );
   renderer->lod( ) = textureSize - 1;
-  DemoCallbacks::camera( camera );
+  DemoCallbacks::camera( cController );
 
   nlgeometry::AttribsFormat formatUV( 1 );
   formatUV[0] = nlgeometry::TAttribType::UV;
@@ -161,8 +163,8 @@ int main( int argc, char* argv[ ])
   modelUV = Eigen::Matrix4f::Identity( );
   modelUV.block< 3, 1 >( 0, 3 ) = Eigen::Vector3f( -1.1f, 0.0f, 0.0f );
 
-  camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-  camera->radius( 10.0f );
+  cController->position( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+  cController->radius( 10.0f );
 
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;

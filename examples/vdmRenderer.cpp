@@ -46,6 +46,7 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 nlgeometry::VDMapCollectionPtr vdmapCollection;
 unsigned int textureSize;
@@ -72,7 +73,7 @@ int main( int argc, char* argv[ ])
 
   float alpha0 = 1.0f;
   float alpha1 = 0.5f;
-  float factor = 3.0f;
+  float factor = 5.0f;
   textureSize = 65;
 
   for ( int i = 2; i < argc; i++ )
@@ -114,11 +115,12 @@ int main( int argc, char* argv[ ])
   initOGL( );
 
   camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
+  cController = new reto::OrbitalCameraController( camera );
+  DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
   renderer->lod( ) = textureSize - 1;
 
-  auto paraMethod0 = nlgeometry::Parametrizer::CURVATURE;
+  auto paraMethod0 = nlgeometry::Parametrizer::MEAN_VALUE;
   auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
   nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
   vdmapCollection = new  nlgeometry::VDMapCollection( );
@@ -160,14 +162,15 @@ int main( int argc, char* argv[ ])
   maximum += Eigen::Array3f( 2.0f, 2.0f, 2.0f );
   Eigen::Vector3f center(( maximum + minimum ) * 0.5f );
 
-  camera->pivot( center );
-  camera->radius(
-    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( camera->fov( )));
+  cController->position( center );
+  cController->radius(
+    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( 3.1416f * 0.25f ));
 
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
   Eigen::Matrix4f view( camera->viewMatrix( ));
   renderer->viewMatrix( ) = view;
+  vdmapCollection->computeMacroMap( );
 
   glutMainLoop( );
   return 0;
@@ -213,7 +216,7 @@ void renderFunc( void )
   renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection = Eigen::Matrix4f( camera->projectionMatrix( ));
   renderer->projectionMatrix( )= projection;
-  renderer->render( vdmapCollection );
+  renderer->render( vdmapCollection->vdmaps( ), vdmapCollection->models( ));
 
   glFlush( );
   glutSwapBuffers( );

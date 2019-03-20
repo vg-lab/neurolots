@@ -33,7 +33,7 @@
   #include <GL/freeglut.h>
 #endif
 
-reto::Camera* DemoCallbacks::_camera = nullptr;
+reto::AbstractCameraController* DemoCallbacks::_cController = nullptr;
 
 int DemoCallbacks::_previousX = 0;
 
@@ -55,9 +55,9 @@ float DemoCallbacks::_rotationScale = 0.01f;
 
 float DemoCallbacks::_traslationScale = 0.005f;
 
-void DemoCallbacks::camera( reto::Camera* camera_ )
+void DemoCallbacks::camera( reto::AbstractCameraController* cController_ )
 {
-  _camera = camera_;
+  _cController = cController_;
 }
 
 void DemoCallbacks::idleFunc( void )
@@ -73,9 +73,9 @@ void DemoCallbacks::keyboardFunc(
   // Camera control.
   case 'c':
   case 'C':
-    _camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-    _camera->radius( 1000.0f );
-    _camera->rotation( 0.0f, 0.0f );
+    _cController->position( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    _cController->radius( 1000.0f );
+    _cController->rotation( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
     glutPostRedisplay( );
     break;
   case 'm':
@@ -111,9 +111,9 @@ void DemoCallbacks::mouseFunc(
     {
       _mouseScrolling = true;
       float newRadius = ( button_ == 3 ) ?
-        _camera->radius( ) / _mouseWheelFactor :
-        _camera->radius( ) * _mouseWheelFactor;
-      _camera->radius( newRadius );
+        _cController->radius( ) / _mouseWheelFactor :
+        _cController->radius( ) * _mouseWheelFactor;
+      _cController->radius( newRadius );
       glutPostRedisplay();
     }
     // We save X and Y previous positions.
@@ -140,14 +140,15 @@ void DemoCallbacks::mouseMotionFunc( int x_, int y_ )
     float deltaY = ( float )y_ - _previousY;
     if( _rotation )
     {
-      _camera->localRotation( deltaX * _rotationScale,
-                              deltaY * _rotationScale );
+      _cController->rotate(
+        Eigen::Vector3f( deltaX * _rotationScale,
+                         deltaY * _rotationScale, 0.0f ));
     }
     if( _traslation )
     {
-      _camera->localTranslation(
-        Eigen::Vector3f ( -deltaX * _traslationScale * _camera->radius( ),
-                          deltaY * _traslationScale * _camera->radius( ),
+      _cController->localTranslate(
+        Eigen::Vector3f ( deltaX * _traslationScale * _cController->radius( ),
+                          -deltaY * _traslationScale * _cController->radius( ),
                           0.0f ) );
     }
     _previousX = x_;
@@ -158,6 +159,6 @@ void DemoCallbacks::mouseMotionFunc( int x_, int y_ )
 
 void DemoCallbacks::resizeFunc( int width_, int height_ )
 {
-  _camera->ratio((( float ) width_ ) / height_ );
+  _cController->windowSize( width_, height_ );
   glViewport( 0, 0, width_, height_ );
 }

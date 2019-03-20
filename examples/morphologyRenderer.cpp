@@ -49,6 +49,7 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 nlgeometry::Meshes meshes;
 nlrender::Renderer* renderer;
 std::vector< Eigen::Matrix4f > models;
@@ -76,7 +77,8 @@ int main( int argc, char* argv[] )
   initOGL( );
 
   camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
+  cController = new reto::OrbitalCameraController( camera );
+  DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
 
   renderer->lod( ) = 0.3f;
@@ -144,8 +146,8 @@ int main( int argc, char* argv[] )
         aabb.maximum( ).z( ) = meshAABB.maximum( ).z();
     }
   }
-  camera->pivot( aabb.center( ));
-  camera->radius( aabb.radius( ) / sin( camera->fov( )));
+  cController->position( aabb.center( ));
+  cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
   // camera->pivot( Eigen::Vector3f::Zero( ));
   // camera->radius( 1000.0f );
 
@@ -211,9 +213,9 @@ void keyboardFunc( unsigned char key, int, int )
     // Camera control.
     case 'c':
     case 'C':
-      camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-      camera->radius( 1000.0f );
-      camera->rotation( 0.0f, 0.0f );
+      cController->position( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+      cController->radius( 1000.0f );
+      cController->rotation( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
       glutPostRedisplay( );
       break;
     case 'm':

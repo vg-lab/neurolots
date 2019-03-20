@@ -46,9 +46,12 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 nlgeometry::VDMapCollectionPtr vdmCollec;
 unsigned int textureSize;
+
+bool collection = false;
 
 bool showMesh = true;
 bool wireMode = false;
@@ -75,11 +78,12 @@ int main( int argc, char* argv[ ])
   initOGL( );
 
   camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
+  cController = new reto::OrbitalCameraController( camera );
+  DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
 
   vdmCollec = nlgeometry::VDMapReader::readVDMapCollection( sceneFile );
-  std::string test( "test" );
+
   if ( !vdmCollec )
   {
     std::cerr << "Error: Usage: " << argv[0] << " spine_scene[.xml]"
@@ -92,7 +96,18 @@ int main( int argc, char* argv[ ])
   Eigen::Array3f maximum =
     Eigen::Array3f::Constant( std::numeric_limits< float >::min( ));
 
-  for ( Eigen::Matrix4f model: vdmCollec->macroModels( ))
+
+  std::vector< Eigen::Matrix4f > models;
+  if ( vdmCollec->macroMap( ))
+  {
+    std::cout << "File loaded as collection" << std::endl;
+    collection = true;
+    models = vdmCollec->macroModels( );
+  }
+  else
+    models = vdmCollec->models( );
+
+  for ( Eigen::Matrix4f model: models )
   {
     Eigen::Array3f pos( model.block( 0, 3, 1, 3 ));
     minimum = minimum.min( pos );
@@ -101,11 +116,12 @@ int main( int argc, char* argv[ ])
 
   minimum += Eigen::Array3f( -2.0f, -2.0f, -2.0f );
   maximum += Eigen::Array3f( 2.0f, 2.0f, 2.0f );
+
   Eigen::Vector3f center(( maximum + minimum ) * 0.5f );
 
-  camera->pivot( center );
-  camera->radius(
-    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( camera->fov( )));
+  cController->position( center );
+  cController->radius(
+    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( 3.1416f * 0.25f ));
 
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
@@ -158,7 +174,10 @@ void renderFunc( void )
   renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection = Eigen::Matrix4f( camera->projectionMatrix( ));
   renderer->projectionMatrix( )= projection;
-  renderer->render( vdmCollec );
+  if ( collection )
+    renderer->render( vdmCollec );
+  else
+    renderer->render( vdmCollec->vdmaps( ), vdmCollec->models( ));
   // renderer->render( vdmCollec->macroMap( ));
 
   glFlush( );

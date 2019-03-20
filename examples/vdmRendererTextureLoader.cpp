@@ -46,6 +46,7 @@
 #include "Shaders.h"
 
 reto::Camera* camera;
+reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 nlgeometry::VDMapCollectionPtr vdmCollec;
 unsigned int textureSize;
@@ -77,7 +78,8 @@ int main( int argc, char* argv[ ])
   initOGL( );
 
   camera = new reto::Camera( );
-  DemoCallbacks::camera( camera );
+  cController = new reto::OrbitalCameraController( camera );
+  DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
 
   vdmCollec = new nlgeometry::VDMapCollection( );
@@ -111,9 +113,9 @@ int main( int argc, char* argv[ ])
   maximum += Eigen::Array3f( 2.0f, 2.0f, 2.0f );
   Eigen::Vector3f center(( maximum + minimum ) * 0.5f );
 
-  camera->pivot( center );
-  camera->radius(
-    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( camera->fov( )));
+  cController->position( center );
+  cController->radius(
+    ( center - Eigen::Vector3f( minimum )).norm( ) / sin( 3.1416f * 0.25f ));
 
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;

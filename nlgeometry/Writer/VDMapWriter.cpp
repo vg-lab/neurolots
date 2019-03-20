@@ -83,7 +83,6 @@ namespace nlgeometry
       boost::filesystem::path p( fileName_ );
       std::string relDir( p.stem( ).string( ));
       relDir.append( "_macroMap");
-      
 
       auto vdmap = vdmapCollection_->macroMap( );
       if ( !vdmap ||
@@ -132,7 +131,7 @@ namespace nlgeometry
       for ( unsigned int i = 0; i < vdmaps.size( ); i++ )
       {
         if ( !writeVDMap( vdmaps[i],
-                          std::string( currentDir + std::to_string( i ))))
+                          std::string( relDir + std::to_string( i ))))
           return false;
 
         auto& model = models[i];
