@@ -73,7 +73,7 @@ int main( int argc, char* argv[ ])
 
   float alpha0 = 1.0f;
   float alpha1 = 0.5f;
-  float factor = 5.0f;
+  float factor = 3.0f;
   textureSize = 65;
 
   for ( int i = 2; i < argc; i++ )
@@ -124,6 +124,9 @@ int main( int argc, char* argv[ ])
   auto paraMethod1 = nlgeometry::Parametrizer::UNDEFINED;
   nlgenerator::VDMGenerator::Instance( )->vdmapSize( textureSize );
   vdmapCollection = new  nlgeometry::VDMapCollection( );
+
+  auto startTime = std::chrono::system_clock::now( );
+
   for ( int i = 1; i < argc; i++ )
   {
     try
@@ -145,6 +148,12 @@ int main( int argc, char* argv[ ])
 
     }
   }
+
+  auto endTime = std::chrono::system_clock::now( );
+  auto duration =
+    (float)std::chrono::duration_cast< std::chrono::milliseconds >
+    ( endTime - startTime ).count( );
+  std::cout << duration << " milliseconds" << std::endl;
 
   Eigen::Array3f minimum =
     Eigen::Array3f::Constant( std::numeric_limits< float >::max( ));

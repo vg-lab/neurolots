@@ -78,6 +78,50 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSVDMSCENESAVER_SOURCES} )
 
+      set( NEUROLOTSTEST2GENERATIONTIME_SOURCES test2-generationTime.cpp )
+      set( NEUROLOTSTEST2GENERATIONTIME_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest2GenerationTime NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST2GENERATIONTIME_SOURCES} )
+
+      set( NEUROLOTSTEST2LOADTIMEMESHES_SOURCES test2-loadTimeMeshes.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSTEST2LOADTIMEMESHES_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest2LoadTimeMeshes NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST2LOADTIMEMESHES_SOURCES} )
+
+      set( NEUROLOTSTEST2LOADTIME_SOURCES test2-loadTime.cpp )
+      set( NEUROLOTSTEST2LOADTIME_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest2LoadTime NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST2LOADTIME_SOURCES} )
+
+      set( NEUROLOTSTEST3ORIGINALMESH_SOURCES test3-originalMesh.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSTEST3ORIGINALMESH_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest3OriginalMesh NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST3ORIGINALMESHE_SOURCES})
+
+      set( NEUROLOTSTEST3SCENERENDER_SOURCES test3-SceneRender.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSTEST3SCENERENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest3SceneRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST3SCENERENDER_SOURCES} )
+
+
       set( NEUROLOTSVDMEXTRACTOR_SOURCES vdmExtractor.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSVDMEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry
