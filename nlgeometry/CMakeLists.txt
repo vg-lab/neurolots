@@ -10,6 +10,7 @@ set( NLGEOMETRY_PUBLIC_HEADERS
   Reader/VDMapReader.h
   SectionQuad.h
   SpatialHashTable.h
+  MeshMetrics.h
   VDMap.h
   Vertex.h
   Writer/ObjWriter.h
@@ -29,6 +30,7 @@ set( NLGEOMETRY_SOURCES
   Reader/VDMapReader.cpp
   SectionQuad.cpp
   SpatialHashTable.cpp
+  MeshMetrics.cpp
   VDMap.cpp
   Vertex.cpp
   Writer/ObjWriter.cpp
