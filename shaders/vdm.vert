@@ -16,13 +16,13 @@ subroutine( levelDistType )
 float linear( vec3 position )
 {
   return clamp( lod * clamp( 1.0 - length( position ) / maxDist, 0.0, 1.0 ),
-    3.0, maxTexel );
+    4.0, maxTexel );
 }
 
 subroutine( levelDistType )
 float homogeneous( vec3 position )
 {
-  return clamp( lod, 3.0, maxTexel );
+  return clamp( lod, 4.0, maxTexel );
 }
 
 
