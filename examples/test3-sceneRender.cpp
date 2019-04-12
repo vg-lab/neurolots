@@ -60,6 +60,25 @@ int main( int argc, char* argv[] )
   cController = new reto::OrbitalCameraController( camera );
   DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
+  for ( int i = 1; i < argc; i++ )
+  {
+    if ( std::string( argv[i]).compare( "-c") == 0 )
+    {
+      i++;
+      if ( std::stoi(argv[i]) == 0 )
+        renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
+      else if ( std::stoi( argv[i]) == 1 )
+      {
+        renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
+        renderer->maximumDistance( ) = 500.0f;
+      }
+      else
+      {
+        renderer->tessCriteria( ) = nlrender::Renderer::QUADRATIC;
+        renderer->maximumDistance( ) = 500.0f;
+      }
+    }
+  }
 
   vdmCollec = nlgeometry::VDMapReader::readVDMapCollection( sceneFile );
 
@@ -78,8 +97,10 @@ int main( int argc, char* argv[] )
     models = vdmCollec->macroModels( );
   }
   else
+  {
+    std::cout << "loaded as individual maps" << std::endl;
     models = vdmCollec->models( );
-
+  }
   Eigen::Array3f minimum =
     Eigen::Array3f::Constant( std::numeric_limits< float >::max( ));
   Eigen::Array3f maximum =
@@ -104,10 +125,10 @@ int main( int argc, char* argv[] )
   renderer->projectionMatrix( ) = projection;
   Eigen::Matrix4f view( camera->viewMatrix( ));
   renderer->viewMatrix( ) = view;
-  renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
-  renderer->maximumDistance( ) = 100.0f;
   vdmCollec->uploadGPU( );
   renderer->lod( ) = vdmCollec->vdmapsSize( ) - 1;
+
+
   startTime = std::chrono::system_clock::now( );
   previousTime = startTime;
   initCameraAnimation( );
@@ -197,38 +218,38 @@ void initCameraAnimation( void )
     cController->rotationMatrixFromAngles( Eigen::Vector3f( 3.1416, 0.0, 0.0 )) *
     initRot;
   float radius = initRadius * 0.1f;
-  camAnim->addKeyCamera( new reto::KeyCamera( 10.0f, pos,rot, radius ));
+  camAnim->addKeyCamera( new reto::KeyCamera( 5.0f, pos,rot, radius ));
 
   pos = initPos + Eigen::Vector3f( 0.0f, 0.0f, 0.0f );
   rot =
     cController->rotationMatrixFromAngles( Eigen::Vector3f( 0, 1.4, 0.0 )) *
     initRot;
   radius = initRadius * 1.0f;
-  camAnim->addKeyCamera( new reto::KeyCamera( 20.0f, pos,rot, radius ));
+  camAnim->addKeyCamera( new reto::KeyCamera( 10.0f, pos,rot, radius ));
 
   pos = initPos + Eigen::Vector3f( 0.0f, -100.0f, 0.0f );
   rot =
     cController->rotationMatrixFromAngles( Eigen::Vector3f( 0, 1.4, 0.0 )) *
     initRot;
   radius = initRadius * 0.1f;
-  camAnim->addKeyCamera( new reto::KeyCamera( 30.0f, pos,rot, radius ));
+  camAnim->addKeyCamera( new reto::KeyCamera( 15.0f, pos,rot, radius ));
 
   pos = initPos + Eigen::Vector3f( 0.0f, 200.0f, 0.0f );
   rot =
     cController->rotationMatrixFromAngles( Eigen::Vector3f( 0, 1.4, 0.0 )) *
     initRot;
   radius = initRadius * 0.1f;
-  camAnim->addKeyCamera( new reto::KeyCamera( 40.0f, pos,rot, radius ));
+  camAnim->addKeyCamera( new reto::KeyCamera( 20.0f, pos,rot, radius ));
 
   pos = initPos + Eigen::Vector3f( 10.0f, 200.0f, -20.0f );
   rot =
     cController->rotationMatrixFromAngles( Eigen::Vector3f( 0, 1.4, 0.0 )) *
     initRot;
   radius = initRadius * 0.001f;
-  camAnim->addKeyCamera( new reto::KeyCamera( 50.0f, pos,rot, radius ));
+  camAnim->addKeyCamera( new reto::KeyCamera( 25.0f, pos,rot, radius ));
 
   camAnim->addKeyCamera(
-    new reto::KeyCamera( 60.0f, initPos,initRot, initRadius ));
+    new reto::KeyCamera( 30.0f, initPos,initRot, initRadius ));
 
 
   cController->startAnim( camAnim, false );

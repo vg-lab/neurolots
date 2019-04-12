@@ -92,7 +92,7 @@ int main( int argc, char* argv[ ])
       else
       {
         renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
-        renderer->maximumDistance( ) = 1000.0f;
+        renderer->maximumDistance( ) = 500.0f;
       }
     }
   }

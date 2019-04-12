@@ -112,7 +112,7 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSTEST3ORIGINALMESHE_SOURCES})
 
-      set( NEUROLOTSTEST3SCENERENDER_SOURCES test3-SceneRender.cpp
+      set( NEUROLOTSTEST3SCENERENDER_SOURCES test3-sceneRender.cpp
         Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSTEST3SCENERENDER_LINK_LIBRARIES ReTo nsol nlgeometry
         nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
@@ -120,6 +120,24 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       common_application( neurolotsTest3SceneRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSTEST3SCENERENDER_SOURCES} )
+
+      set( NEUROLOTSTEST4ORIGINALMESH_SOURCES test4-originalMesh.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSTEST4ORIGINALMESH_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest4OriginalMesh NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST4ORIGINALMESHE_SOURCES})
+
+      set( NEUROLOTSTEST4SCENERENDER_SOURCES test4-sceneRender.cpp
+        Shaders.h DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSTEST4SCENERENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+        nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+        ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+      common_application( neurolotsTest4SceneRender NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES
+        ${NEUROLOTSTEST4SCENERENDER_SOURCES} )
 
 
       set( NEUROLOTSVDMEXTRACTOR_SOURCES vdmExtractor.cpp Shaders.h

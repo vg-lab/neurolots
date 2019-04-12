@@ -41,7 +41,8 @@ namespace nlrender
     typedef enum
     {
       HOMOGENEOUS = 0,
-      LINEAR
+      LINEAR,
+      QUADRATIC
     }TTessCriteria;
 
     /**
@@ -156,12 +157,14 @@ namespace nlrender
     void render(
       const std::vector< nlgeometry::VDMapPtr >& vdmaps_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
+      const Eigen::Matrix4f& model_ = Eigen::Matrix4f::Identity( ),
       const Eigen::Vector3f& color_ =
       Eigen::Vector3f( 0.2f, 0.6f, 0.6f ));
 
     NLRENDER_API
     void render(
       nlgeometry::VDMapCollectionPtr vdmapCollection_,
+      const Eigen::Matrix4f& model_ = Eigen::Matrix4f::Identity( ),
       const Eigen::Vector3f& color_ =
       Eigen::Vector3f( 0.2f, 0.6f, 0.6f ));
 

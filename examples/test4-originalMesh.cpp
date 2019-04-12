@@ -30,6 +30,9 @@ reto::ShaderProgram* program;
 nlgeometry::MeshPtr globalMesh;
 nlgeometry::Meshes meshes;
 
+std::vector< Eigen::Matrix4f > gModels;
+unsigned int numNeurons = 1;
+
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
@@ -56,6 +59,11 @@ int main( int argc, char* argv[] )
     if ( std::string( argv[i]).compare( "-u") == 0 )
     {
       unique = true;
+    }
+    if ( std::string( argv[i]).compare( "-n") == 0 )
+    {
+      i++;
+      numNeurons = std::stoi( argv[i] );
     }
   }
 
@@ -129,8 +137,43 @@ int main( int argc, char* argv[] )
   if ( unique )
   {
     globalMesh->uploadGPU( format );
+    nlgeometry::ObjWriter::writeMesh( globalMesh, std::string("all.obj"));
     globalMesh->clearCPUData( );
   }
+
+  float radius = aabb.radius( ) / sin( 3.1416f * 0.25f );
+
+  std::cout << "Number of neurons: " << numNeurons * numNeurons* numNeurons << std::endl;
+
+  if ( numNeurons <= 1 )
+  {
+    Eigen::Matrix4f model = Eigen::Matrix4f::Identity( );
+    gModels.push_back( model );
+  }
+  else
+  {
+    for ( unsigned int i = 0; i < numNeurons; i++ )
+    {
+      for ( unsigned int j = 0; j < numNeurons; j++ )
+      {
+        for ( unsigned int k = 0; k < numNeurons; k++ )
+        {
+          Eigen::Matrix4f model = Eigen::Matrix4f::Identity( );
+          model( 0, 3 ) =
+            radius * 0.5 * (numNeurons -1.0f) *
+            (  0.5 - ( float(i) / (numNeurons-1.0f)));
+          model( 1, 3 ) =
+            radius * 0.5 * (numNeurons -1.0f) *
+            (  0.5 - ( float(j) / (numNeurons-1.0f)));
+          model( 2, 3 ) =
+            radius * 0.25 * (numNeurons -1.0f) *
+            (  0.5 - ( float(k) / (numNeurons-1.0f)));
+          gModels.push_back( model );
+        }
+      }
+    }
+  }
+
   cController->position( aabb.center( ));
   cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
 
@@ -200,12 +243,17 @@ void renderFunc( void )
   program->use( );
   program->sendUniform4m("proj", camera->projectionMatrix( ));
   program->sendUniform4m("view", camera->viewMatrix( ));
-  program->sendUniform4m("model", globalMesh->modelMatrixVectorized( ));
 
-  if ( unique )
-    globalMesh->renderTriangles( );
-  for( auto mesh: meshes )
-    mesh->renderTriangles( );
+  for ( auto model: gModels  )
+  {
+    Eigen::Matrix4f newModel = globalMesh->modelMatrix( ) * model;
+    program->sendUniform4m("model", newModel.data( ));
+
+    if ( unique )
+      globalMesh->renderTriangles( );
+    for( auto mesh: meshes )
+      mesh->renderTriangles( );
+  }
   // globalMesh->renderQuads( );
 
   glFlush( );
