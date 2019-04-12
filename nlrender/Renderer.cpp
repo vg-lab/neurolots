@@ -366,15 +366,18 @@ namespace nlrender
     float invTexel = 1.0f / maxTexel;
     unsigned int numSegments = ceil( vdmap_->size( ) / MAX_TESS_LEVEL );
     unsigned int numVertices = numSegments * numSegments * 4;
+    unsigned int criteria = _tessCriteria;
+
     _programVDM->sendUniformf( "lod", _lod / numSegments );
     _programVDM->sendUniformf( "maxTexel", maxTexel );
     _programVDM->sendUniformf( "invTexel", invTexel );
+    _programVDM->sendUniformf( "maxDist", _maximumDistance);
+
 
     vdmap_->vdmTexture( )->bind( 0 );
     vdmap_->normalTexture( )->bind( 1 );
 
-    // glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
-
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
     glBindVertexArray( _getQuadVao( numSegments ));
     glPatchParameteri( GL_PATCH_VERTICES, 4 );
     glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
@@ -403,13 +406,18 @@ namespace nlrender
       float invTexel = 1.0f / maxTexel;
       unsigned int numSegments = ceil( vdmaps_[i]->size( ) / MAX_TESS_LEVEL );
       unsigned int numVertices = numSegments * numSegments * 4;
+      unsigned int criteria = _tessCriteria;
+
       _programVDM->sendUniformf( "lod", _lod / numSegments );
       _programVDM->sendUniformf( "maxTexel", maxTexel );
       _programVDM->sendUniformf( "invTexel", invTexel );
+      _programVDM->sendUniformf( "maxDist", _maximumDistance);
+
 
       vdmaps_[i]->vdmTexture( )->bind( 0 );
       vdmaps_[i]->normalTexture( )->bind( 1 );
 
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
       glBindVertexArray( _getQuadVao( numSegments ));
       glPatchParameteri( GL_PATCH_VERTICES, 4 );
       glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
@@ -428,13 +436,19 @@ namespace nlrender
     _programVDMCollec->use( );
     _programVDMCollec->sendUniform4m( "proy", _projectionMatrix.data( ));
     _programVDMCollec->sendUniform3v( "color", color_.data( ));
+
     auto modelMatrices = vdmapCollection_->models( );
     float maxTexel = vdmapCollection_->vdmapsSize( ) - 1;
     float invTexel = 1.0f / maxTexel;
+    unsigned int criteria = _tessCriteria;
+
     _programVDMCollec->sendUniformf( "lod", _lod );
     _programVDMCollec->sendUniformf( "maxTexel", maxTexel );
     _programVDMCollec->sendUniformf( "invTexel", invTexel );
     _programVDMCollec->sendUniform4m( "viewModel", _viewMatrix.data( ));
+    _programVDMCollec->sendUniformf( "maxDist", _maximumDistance);
+
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
     vdmapCollection_->render( );
 
     if ( _keepOpenGLServerStack )
@@ -605,14 +619,16 @@ namespace nlrender
     float invTexel = 1.0f / maxTexel;
     unsigned int numSegments = ceil( vdmap_->size( ) / MAX_TESS_LEVEL );
     unsigned int numVertices = numSegments * numSegments * 4;
+    unsigned int criteria = _tessCriteria;
     _programVDMFB->sendUniformf( "lod", _lod / numSegments );
     _programVDMFB->sendUniformf( "maxTexel", maxTexel );
     _programVDMFB->sendUniformf( "invTexel", invTexel );
+    _programVDMCollec->sendUniformf( "maxDist", _maximumDistance);
 
     vdmap_->vdmTexture( )->bind( 0 );
     vdmap_->normalTexture( )->bind( 1 );
 
-    // glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
 
     glBindVertexArray( _getQuadVao( numSegments ));
     glPatchParameteri( GL_PATCH_VERTICES, 4 );

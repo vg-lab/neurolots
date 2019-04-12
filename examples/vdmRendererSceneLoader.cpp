@@ -82,6 +82,20 @@ int main( int argc, char* argv[ ])
   DemoCallbacks::camera( cController );
   renderer = new nlrender::Renderer( );
 
+  for ( int i = 1; i < argc; i++ )
+  {
+    if ( std::string( argv[i]).compare( "-c") == 0 )
+    {
+      i++;
+      if ( std::stoi(argv[i]) == 0 )
+        renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
+      else
+      {
+        renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
+        renderer->maximumDistance( ) = 1000.0f;
+      }
+    }
+  }
   vdmCollec = nlgeometry::VDMapReader::readVDMapCollection( sceneFile );
 
   if ( !vdmCollec )

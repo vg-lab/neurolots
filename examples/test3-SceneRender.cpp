@@ -104,6 +104,8 @@ int main( int argc, char* argv[] )
   renderer->projectionMatrix( ) = projection;
   Eigen::Matrix4f view( camera->viewMatrix( ));
   renderer->viewMatrix( ) = view;
+  renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
+  renderer->maximumDistance( ) = 100.0f;
   vdmCollec->uploadGPU( );
   renderer->lod( ) = vdmCollec->vdmapsSize( ) - 1;
   startTime = std::chrono::system_clock::now( );
