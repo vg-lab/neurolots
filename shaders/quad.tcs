@@ -3,13 +3,13 @@ layout(vertices=4) out;
 
 in vec3 vPosition[];
 in vec3 vCenter[];
-in vec3 vTangent[];
+in vec3 vColor[];
 in float vlot[];
 
 out vec3 tcCenter[];
 out float r[];
 out vec3 tcNormal[];
-out vec3 m[];
+out vec3 tcColor[];
 
 uniform float tng;
 
@@ -19,9 +19,9 @@ void main( )
 {
   tcCenter[ID] = vCenter[ID];
   tcNormal[ID] = vPosition[ID]-vCenter[ID];
+  tcColor[ID] = vColor[ID];
   r[ID]=distance(vPosition[ID],vCenter[ID]);
-  m[ID]=( tng + 1.0 )* normalize(vTangent[ID]) *
-    distance(vCenter[0],vCenter[2]) / 8;
+
   float tcLod = (vlot[0]+vlot[1]+vlot[2]+vlot[3])/4;
 
   float lot01 = clamp( 64.0, 1.0, ( vlot[0] + vlot[1] ) * 0.5 *

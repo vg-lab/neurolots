@@ -110,12 +110,6 @@ namespace nlgeometry
     void store( Attribs& attribs_, const AttribsFormat format_ );
 
     /**
-     * Method that put the store status to nor stored for all the facet vertices
-     */
-    NLGEOMETRY_API
-    void cleanStoreStatus( void );
-
-    /**
      * Method that returns the facet indices stored in a vector
      * @param facetType_ format to the returns indices
      * @return vector with the facet indices

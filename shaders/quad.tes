@@ -4,10 +4,11 @@ layout(quads) in;
 in vec3 tcCenter[];
 in float r[];
 in vec3 tcNormal[];
-in vec3 m[];
+in vec3 tcColor[];
 
 out vec3 position;
 out vec3 normal;
+out vec3 vColor;
 out vec3 L;
 
 uniform mat4 proy;
@@ -24,8 +25,12 @@ void main( )
   float v_3=v_2*v;
   vec3 center0 = mix( tcCenter[0], tcCenter[1], u );
   vec3 center1 = mix( tcCenter[2], tcCenter[3], u );
-  teCenter = mix( center0, center1, v); //((2*v_3-3*v_2+1)*center0+(v_3-2*v_2+v)*m[0]+
-    //(v_3-v_2)*m[2]*step( 0.00001, m[2])+(-2*v_3+3*v_2)*center1 );
+  teCenter = mix( center0, center1, v);
+  vec3 color0 = mix( tcColor[0], tcColor[1], u );
+  vec3 color1 = mix( tcColor[2], tcColor[3], u );
+  vColor = mix( color0, color1, v );
+
+
   vec3 a_t=mix(tcNormal[0],tcNormal[2],v);
   vec3 b_t=mix(tcNormal[1],tcNormal[3],v);
   // float radius = mix( length( a_t ), length( b_t ), u );

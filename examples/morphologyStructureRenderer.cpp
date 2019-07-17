@@ -55,12 +55,22 @@ std::vector< Eigen::Matrix4f > models;
 nlgeometry::OffWriter offw;
 nlgeometry::ObjWriter objw;
 
+unsigned int width = 600;
+unsigned int height = 600;
+
 bool wireframe = false;
 bool adaptiveCriteria = false;
+
+Eigen::Vector3f currentColor = Eigen::Vector3f( 0.0, 0.0, 1.0 );
+nlgenerator::NodeIdToVerticesIds nodeIdToVerticesIds;
+
+float nodeId = 0.0f;
+std::vector< unsigned int > nodeIds;
 
 void renderFunc( void );
 void initContext( int argc, char* argv[ ]);
 void initOGL( void );
+void resizeFunc( int width_, int height_ );
 void keyboardFunc( unsigned char key, int, int );
 
 int main( int argc, char* argv[] )
@@ -79,8 +89,14 @@ int main( int argc, char* argv[] )
   DemoCallbacks::camera( camera );
   renderer = new nlrender::Renderer( );
 
-  renderer->lod( ) = 0.3f;
+  renderer->lod( ) = 10.0f;
+  renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
+  renderer->colorFunc( ) = nlrender::Renderer::PERVERTEX;
+  renderer->transparencyStatus( ) = nlrender::Renderer::ENABLE;
   renderer->maximumDistance( ) = 1000.0f;
+  renderer->initTransparencySystem( width, height );
+  renderer->alpha( ) = 0.2f;
+
   nlgeometry::MeshPtr mesh;
   nlgeometry::AttribsFormat format( 3 );
   format[0] = nlgeometry::TAttribType::POSITION;
@@ -116,15 +132,29 @@ int main( int argc, char* argv[] )
 #endif
     if ( morphology )
     {
-      mesh = nlgenerator::MeshGenerator::generateMesh( morphology );
+      nlgenerator::NodeIdToVertices nodeIdToVertices;
+      mesh = nlgenerator::MeshGenerator::generateStructureMesh(
+        morphology, nodeIdToVertices, Eigen::Vector3f( 0.0f, 0.5f,0.8f ),
+        true );
       std::cout << "Loaded morphology with: "
                 << mesh->vertices( ).size( ) << " vertices, "
+                << mesh->lines( ).size( ) << " lines, "
                 << mesh->triangles( ).size( ) << " triangles and "
                 << mesh->quads( ).size( ) << " quads" << std::endl;
 
       mesh->uploadGPU( format, nlgeometry::Facet::PATCHES );
+      nlgenerator::MeshGenerator::verticesToIndices( nodeIdToVertices,
+                                                     nodeIdToVerticesIds );
+      mesh->clearCPUData( );
+
+      meshes.push_back( mesh );
+      models.push_back( Eigen::Matrix4f::Identity( ));
+
+      mesh = nlgenerator::MeshGenerator::generateMesh( morphology );
+      mesh->uploadGPU( format, nlgeometry::Facet::PATCHES );
       mesh->computeBoundingBox( );
       mesh->clearCPUData( );
+
       meshes.push_back( mesh );
       models.push_back( Eigen::Matrix4f::Identity( ));
 
@@ -164,7 +194,7 @@ void initContext( int argc, char* argv[ ])
   glutInitContextVersion( 4, 0 );
 
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
-  glutInitWindowSize( 600, 600 );
+  glutInitWindowSize( width, height );
   glutInitWindowPosition( 0, 0 );
   glutCreateWindow( " Neurolots example: Obj Render" );
 
@@ -176,7 +206,7 @@ void initContext( int argc, char* argv[ ])
   glutKeyboardFunc( keyboardFunc );
   glutMouseFunc( DemoCallbacks::mouseFunc );
   glutMotionFunc( DemoCallbacks::mouseMotionFunc );
-  glutReshapeFunc( DemoCallbacks::resizeFunc );
+  glutReshapeFunc( resizeFunc );
 }
 
 void initOGL( void )
@@ -191,16 +221,51 @@ void renderFunc( void )
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+  auto mesh = meshes[0];
+  std::vector< float > buffer( mesh->verticesSize( )*3);
+  for ( unsigned int i = 0; i < mesh->verticesSize( ); i++ )
+  {
+    buffer[i*3] = 0.0f;
+    buffer[i*3+1] = 0.5f;
+    buffer[i*3+2] = 0.5f;
+  }
+  nodeId += 0.005;
+  nodeIds.push_back( std::trunc(nodeId) );
+  currentColor = Eigen::Vector3f( 1.0f, 0.0f, 0.0f );
+  nlgenerator::MeshGenerator::conformBuffer( nodeIds, nodeIdToVerticesIds,
+                                               buffer, currentColor );
+  mesh->uploadBuffer( nlgeometry::COLOR, buffer );
+
+  renderer->setUpOpaqueTransparencyScene( Eigen::Vector3f( 1.0f, 1.0f, 1.0f ),
+                                          width, height );
+
+
   Eigen::Matrix4f view = Eigen::Matrix4f( camera->viewMatrix( ));
   renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
-  renderer->render( meshes, models, Eigen::Vector3f( 0.3f, 0.3f, 0.8f ));
-  // for ( auto m: meshes )
-  //   renderer->render( m, m->modelMatrix( ),
-  //                     Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
+  renderer->colorFunc( ) = nlrender::Renderer::PERVERTEX;
+  renderer->render( meshes[0], models[0], Eigen::Vector3f( 0.0f, 0.0f, 1.0f ),
+                    true, true, true );
+
+  renderer->setUpTransparentTransparencyScene( );
+
+  renderer->colorFunc( ) = nlrender::Renderer::GLOBAL;
+  renderer->render( meshes[1], models[1], Eigen::Vector3f( 0.0f, 0.0f, 1.0f ),
+                    true, true, true );
+
+  renderer->composeTransparencyScene( 0 );
+
   glFlush( );
   glutSwapBuffers( );
+}
+
+void resizeFunc( int width_, int height_ )
+{
+  camera->ratio((( float ) width_ ) / height_ );
+  width = width_;
+  height = height_;
+  glViewport( 0, 0, width_, height_ );
 }
 
 void keyboardFunc( unsigned char key, int, int )
@@ -236,6 +301,14 @@ void keyboardFunc( unsigned char key, int, int )
   case 's':
     renderer->lod( ) -= 0.1f;
     std::cout << "Level of subdivision " << renderer->lod( ) << std::endl;
+    break;
+  case 'q':
+    renderer->alpha( ) += 0.01f;
+    std::cout << "Alpha" << renderer->alpha( ) << std::endl;
+    break;
+  case 'a':
+    renderer->alpha( ) -= 0.01f;
+    std::cout << "Alpha" << renderer->alpha( ) << std::endl;
     break;
   case 't':
     adaptiveCriteria = !adaptiveCriteria;

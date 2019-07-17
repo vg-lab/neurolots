@@ -3,11 +3,13 @@ layout(vertices = 3) out;
 
 in vec3 vPosition[];
 in vec3 vCenter[];
+in vec3 vColor[];
 in float vlot[];
 
 out vec3 tcPosition[];
 out vec3 tcCenter[];
 out vec3 tcNormal[];
+out vec3 tcColor[];
 out float tcRadius[];
 
 #define ID gl_InvocationID
@@ -18,6 +20,7 @@ void main( void )
   tcCenter[ID] = vCenter[ID];
   tcNormal[ID] = normalize( vPosition[ID]-vCenter[ID] );
   tcRadius[ID] = distance( vPosition[ID], vCenter[ID] );
+  tcColor[ID] = vColor[ID];
   float lot01 = clamp( 64.0, 1.0, (vlot[0] + vlot[1]) * 0.5 *
     distance( vPosition[0], vPosition[1] ));
   float lot12 = clamp( 64.0, 1.0, (vlot[1] + vlot[2]) * 0.5 *

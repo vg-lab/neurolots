@@ -44,14 +44,27 @@ namespace nlrender
     , _lod( 10.0f )
     , _tng( 0.2f )
     , _maximumDistance( 100.0f )
+    , _alpha( 0.5f )
     , _tessCriteria( HOMOGENEOUS )
+    , _colorFunc( GLOBAL )
+    , _transparencyStatus( DISABLE )
+    , _transSystemInit( false )
+    , _transSystemWidth( 0 )
+    , _transSystemHeight( 0 )
   {
     _viewMatrix = Eigen::Matrix4f::Identity( );
     _projectionMatrix = Eigen::Matrix4f::Identity( );
-    _programQuads = new reto::ShaderProgram(  );
-    _programQuadsFB = new reto::ShaderProgram(  );
-    _programTriangles = new reto::ShaderProgram(  );
-    _programTrianglesFB = new reto::ShaderProgram(  );
+    _programLines = new reto::ShaderProgram( );
+    _programQuads = new reto::ShaderProgram( );
+    _programQuadsFB = new reto::ShaderProgram( );
+    _programTriangles = new reto::ShaderProgram( );
+    _programTrianglesFB = new reto::ShaderProgram( );
+    _programTransCompose = new reto::ShaderProgram( );
+
+    _programLines->loadVertexShaderFromText( nlrender::line_vert );
+    _programLines->loadFragmentShaderFromText( nlrender::line_frag );
+    _programLines->compileAndLink( );
+    _programLines->autocatching( );
 
     _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
     _programQuads->loadTesselationControlShaderFromText(
@@ -99,6 +112,20 @@ namespace nlrender
     _programTrianglesFB->link( );
     _programTrianglesFB->autocatching( );
 
+    _programTransCompose->loadVertexShaderFromText(
+      nlrender::transparency_vert );
+    _programTransCompose->loadFragmentShaderFromText(
+      nlrender::transparency_frag );
+    _programTransCompose->compileAndLink( );
+    _programTransCompose->autocatching( );
+    _programTransCompose->use( );
+    glUniform1i( glGetUniformLocation( _programTransCompose->program( ),
+                                       "opaqueTexture" ), 0);
+    glUniform1i( glGetUniformLocation( _programTransCompose->program( ),
+                                     "accumTexture" ), 1);
+    glUniform1i( glGetUniformLocation( _programTransCompose->program( ),
+                                     "revealageTexture" ), 2);
+
     _tbos.resize( 2 );
     glGenBuffers( 2, _tbos.data( ));
 
@@ -114,6 +141,7 @@ namespace nlrender
 
   Renderer::~Renderer( void )
   {
+    delete _programLines;
     delete _programTriangles;
     delete _programQuads;
     delete _programTrianglesFB;
@@ -150,14 +178,30 @@ namespace nlrender
     return _maximumDistance;
   }
 
+  float& Renderer::alpha( void )
+  {
+    return _alpha;
+  }
+
   Renderer::TTessCriteria& Renderer::tessCriteria( void )
   {
     return _tessCriteria;
   }
 
+  Renderer::TColorFunc& Renderer::colorFunc( void )
+  {
+    return _colorFunc;
+  }
+
+  Renderer::TTransparencyStatus& Renderer::transparencyStatus( void )
+  {
+    return _transparencyStatus;
+  }
+
   void Renderer::render( nlgeometry::MeshPtr mesh_,
                          const Eigen::Matrix4f& modelMatrix_,
                          const Eigen::Vector3f& color_,
+                         bool renderLines_,
                          bool renderTriangles_,
                          bool renderQuads_ ) const
   {
@@ -165,8 +209,23 @@ namespace nlrender
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
-    unsigned int criteria = _tessCriteria;
+    std::vector< unsigned int > vertexSubroutines( 1 );
+    vertexSubroutines[0] = _tessCriteria;
+    std::vector< unsigned int > fragmentSubroutines( 2 );
+    fragmentSubroutines[0] = _colorFunc;
+    fragmentSubroutines[1] = _transparencyStatus;
 
+    if ( renderLines_ )
+    {
+      _programLines->use( );
+      _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+      _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+      _programLines->sendUniform3v( "color", color_.data( ));
+      _programLines->sendUniformf( "alpha", _alpha );
+      glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                               fragmentSubroutines.data( ));
+      mesh_->renderLines( );
+    }
     if( renderTriangles_ )
     {
       _programTriangles->use( );
@@ -176,7 +235,10 @@ namespace nlrender
       _programTriangles->sendUniformf( "lod", _lod );
       _programTriangles->sendUniformf( "maxDist", _maximumDistance );
       _programTriangles->sendUniformf( "tng", _tng );
-      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+      _programTriangles->sendUniformf( "alpha", _alpha );
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, vertexSubroutines.data( ) );
+      glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                               fragmentSubroutines.data( ));
       mesh_->renderTriangles( );
     }
     if ( renderQuads_ )
@@ -188,7 +250,10 @@ namespace nlrender
       _programQuads->sendUniformf( "lod", _lod);
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
-      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+      _programQuads->sendUniformf( "alpha", _alpha );
+      glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, vertexSubroutines.data( ) );
+      glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                               fragmentSubroutines.data( ));
       mesh_->renderQuads( );
     }
     if ( _keepOpenGLServerStack )
@@ -199,6 +264,7 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_,
+      bool renderLines_,
       bool renderTriangles_,
       bool renderQuads_ ) const
   {
@@ -210,8 +276,27 @@ namespace nlrender
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel;
-    unsigned int criteria = _tessCriteria;
+    std::vector< unsigned int > vertexSubroutines( 1 );
+    vertexSubroutines[0] = _tessCriteria;
+    std::vector< unsigned int > fragmentSubroutines( 2 );
+    fragmentSubroutines[0] = _colorFunc;
+    fragmentSubroutines[1] = _transparencyStatus;
 
+    if ( renderLines_ )
+    {
+      _programLines->use( );
+      _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+      _programLines->sendUniform3v( "color", color_.data( ));
+      _programLines->sendUniformf( "alpha", _alpha );
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = _viewMatrix * modelMatrices_[i];
+        _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                               fragmentSubroutines.data( ));
+        meshes_[i]->renderLines( );
+      }
+    }
     if( renderTriangles_ )
     {
       _programTriangles->use( );
@@ -220,11 +305,15 @@ namespace nlrender
       _programTriangles->sendUniformf( "lod", _lod );
       _programTriangles->sendUniformf( "maxDist", _maximumDistance );
       _programTriangles->sendUniformf( "tng", _tng );
+      _programTriangles->sendUniformf( "alpha", _alpha );
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
         viewModel = _viewMatrix * modelMatrices_[i];
         _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
+                                 vertexSubroutines.data( ) );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                                 fragmentSubroutines.data( ));
         meshes_[i]->renderTriangles( );
       }
     }
@@ -236,12 +325,19 @@ namespace nlrender
       _programQuads->sendUniformf( "lod", _lod);
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
+      _programQuads->sendUniformf( "alpha", _alpha );
+
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
+
         viewModel = _viewMatrix * modelMatrices_[i];
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
+                                 vertexSubroutines.data( ) );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                                 fragmentSubroutines.data( ));
         meshes_[i]->renderQuads( );
+
       }
     }
 
@@ -254,6 +350,7 @@ namespace nlrender
     nlgeometry::Meshes meshes_,
     const std::vector< Eigen::Matrix4f >& modelMatrices_,
     const std::vector< Eigen::Vector3f >& colors_,
+    bool renderLines_,
     bool renderTriangles_,
     bool renderQuads_ ) const
   {
@@ -265,8 +362,27 @@ namespace nlrender
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
     Eigen::Matrix4f viewModel;
-    unsigned int criteria = _tessCriteria;
+    std::vector< unsigned int > vertexSubroutines( 1 );
+    vertexSubroutines[0] = _tessCriteria;
+    std::vector< unsigned int > fragmentSubroutines( 2 );
+    fragmentSubroutines[0] = _colorFunc;
+    fragmentSubroutines[1] = _transparencyStatus;
 
+    if ( renderLines_ )
+    {
+      _programLines->use( );
+      _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+      for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+      {
+        viewModel = _viewMatrix * modelMatrices_[i];
+        _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+        _programLines->sendUniform3v( "color", colors_[i].data( ));
+        _programLines->sendUniformf( "alpha", _alpha );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                               fragmentSubroutines.data( ));
+        meshes_[i]->renderLines( );
+      }
+    }
     if( renderTriangles_ )
     {
       _programTriangles->use( );
@@ -274,12 +390,16 @@ namespace nlrender
       _programTriangles->sendUniformf( "lod", _lod );
       _programTriangles->sendUniformf( "maxDist", _maximumDistance );
       _programTriangles->sendUniformf( "tng", _tng );
+      _programTriangles->sendUniformf( "alpha", _alpha );
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
         viewModel = _viewMatrix * modelMatrices_[i];
         _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
         _programTriangles->sendUniform3v( "color", colors_[i].data( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
+                                 vertexSubroutines.data( ) );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                                 fragmentSubroutines.data( ));
         meshes_[i]->renderTriangles( );
       }
     }
@@ -290,12 +410,16 @@ namespace nlrender
       _programQuads->sendUniformf( "lod", _lod);
       _programQuads->sendUniformf( "maxDist", _maximumDistance);
       _programQuads->sendUniformf( "tng", _tng);
+      _programQuads->sendUniformf( "alpha", _alpha );
       for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
       {
         viewModel = _viewMatrix * modelMatrices_[i];
         _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
         _programQuads->sendUniform3v( "color", colors_[i].data( ));
-        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+        glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
+                                 vertexSubroutines.data( ) );
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                                 fragmentSubroutines.data( ));
         meshes_[i]->renderQuads( );
       }
     }
@@ -441,6 +565,122 @@ namespace nlrender
     return mesh;
   }
 
+  void Renderer::initTransparencySystem( unsigned int width_,
+                                         unsigned int height_ )
+  {
+    if ( !_transSystemInit )
+    {
+      _transSystemWidth = width_;
+      _transSystemHeight = height_;
+
+      auto texConfig = reto::TextureConfig( );
+      texConfig.internalFormat = GL_RGBA32F;
+      texConfig.format = GL_RGBA;
+      texConfig.type = GL_FLOAT;
+      texConfig.wrapS = GL_LINEAR;
+      texConfig.wrapT = GL_LINEAR;
+      _opaqueTexture =
+        new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
+      _accumTexture =
+        new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
+      _revealageTexture =
+        new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
+
+      texConfig.internalFormat = GL_DEPTH_COMPONENT;
+      texConfig.format = GL_DEPTH_COMPONENT;
+      texConfig.type = GL_UNSIGNED_INT;
+      _depthTexture =
+        new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
+
+      glGenFramebuffers( 1, &_opaqueFbo );
+      glBindFramebuffer( GL_FRAMEBUFFER, _opaqueFbo );
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                             GL_TEXTURE_2D, _opaqueTexture->handler( ), 0);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                             GL_TEXTURE_2D, _depthTexture->handler( ), 0);
+
+      glGenFramebuffers( 1, &_transFbo );
+      glBindFramebuffer( GL_FRAMEBUFFER, _transFbo );
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                             GL_TEXTURE_2D, _accumTexture->handler( ), 0);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                             GL_TEXTURE_2D, _revealageTexture->handler( ), 0);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                             GL_TEXTURE_2D, _depthTexture->handler( ), 0);
+      GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+      glDrawBuffers( 2, drawBuffers );
+
+      _uploadQuad( );
+
+      _transSystemInit = true;
+    }
+  }
+
+
+  void Renderer::setUpOpaqueTransparencyScene(
+    Eigen::Vector3f backgroundColor_, unsigned int width_,
+    unsigned int height_ )
+  {
+    if ( _transSystemInit )
+    {
+      if ( _transSystemWidth != width_ || _transSystemHeight != height_ )
+      {
+        _opaqueTexture->resize( width_, height_ );
+        _accumTexture->resize( width_, height_ );
+        _revealageTexture->resize( width_, height_ );
+        _depthTexture->resize( width_, height_ );
+        _transSystemWidth = width_;
+        _transSystemHeight = height_;
+      }
+
+      _transparencyStatus = TTransparencyStatus::DISABLE;
+      glBindFramebuffer( GL_FRAMEBUFFER, _opaqueFbo );
+      glClearColor( backgroundColor_.x( ), backgroundColor_.y( ),
+                    backgroundColor_.z( ), 1.0f );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glDisable( GL_BLEND );
+      glEnable( GL_DEPTH_TEST );
+      glDepthMask(GL_TRUE);
+
+    }
+  }
+
+  void Renderer::setUpTransparentTransparencyScene( void )
+  {
+    if ( _transSystemInit )
+    {
+      _transparencyStatus = TTransparencyStatus::ENABLE;
+      glBindFramebuffer( GL_FRAMEBUFFER, _transFbo );
+      float zeros[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+      float ones[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+      glClearBufferfv( GL_COLOR, 0, zeros );
+      glClearBufferfv( GL_COLOR, 1, ones );
+      glEnable( GL_BLEND );
+      glBlendFunci(0, GL_ONE, GL_ONE);
+      glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
+      glDepthMask( GL_FALSE );
+    }
+  }
+
+  void Renderer::composeTransparencyScene( unsigned int finalFbo_ )
+  {
+    glBindFramebuffer( GL_FRAMEBUFFER, finalFbo_ );
+    glDisable( GL_DEPTH_TEST );
+    glDisable( GL_BLEND );
+    glDepthMask(GL_TRUE);
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    _programTransCompose->use( );
+    glBindVertexArray( _quadVao );
+    _opaqueTexture->bind( 0 );
+    _accumTexture->bind( 1 );
+    _revealageTexture->bind( 2 );
+    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT,
+                    (void*) 0 );
+  }
+
+
+
+
   nlgeometry::MeshPtr Renderer::_vectorToMesh(
     std::vector< float > positions_, std::vector< float > normals_ ) const
   {
@@ -483,5 +723,33 @@ namespace nlrender
     return mesh;
   }
 
+  void Renderer::_uploadQuad( void )
+  {
+    std::vector< float > positions( 8 );
+    positions[0] = -1.0; positions[1] = 1.0;
+    positions[2] = -1.0; positions[3] = -1.0;
+    positions[4] = 1.0; positions[5] = -1.0;
+    positions[6] = 1.0; positions[7] = 1.0;
+    std::vector< unsigned int > indices( 6 );
+    indices[0] = 0; indices[1] = 1; indices[2] = 2;
+    indices[3] = 0; indices[4] = 2; indices[5] = 3;
+
+    glGenVertexArrays( 1, &_quadVao );
+    glBindVertexArray( _quadVao );
+
+    std::vector< unsigned int > vbos(2);
+    glGenBuffers( 2, vbos.data( ));
+
+    glBindBuffer( GL_ARRAY_BUFFER, vbos[0] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * positions.size( ),
+                  positions.data( ), GL_STATIC_DRAW );
+    glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+    glEnableVertexAttribArray( 0 );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbos[1] );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( unsigned int) *
+                  indices.size( ), indices.data( ), GL_STATIC_DRAW );
+    glBindVertexArray( 0 );
+  }
 
 }

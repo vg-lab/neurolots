@@ -43,6 +43,18 @@ namespace nlrender
       LINEAR
     }TTessCriteria;
 
+    typedef enum
+    {
+      PERVERTEX = 2,
+      GLOBAL
+    }TColorFunc;
+
+    typedef enum
+    {
+      DISABLE = 0,
+      ENABLE
+    }TTransparencyStatus;
+
     /**
      * Default constructor
      */
@@ -91,11 +103,32 @@ namespace nlrender
     float& maximumDistance( void );
 
     /**
+     * Method that return the transparency factor
+     * @return the transparency factor
+     */
+    NLRENDER_API
+    float& alpha( void );
+
+    /**
      * Method that return the tessellation criteria
      * @return the tessellation criteria
      */
     NLRENDER_API
     TTessCriteria& tessCriteria( void );
+
+    /**
+     * Method that return the type of color function
+     * @return the color funciton type
+     */
+    NLRENDER_API
+    TColorFunc& colorFunc( void );
+
+    /**
+     * Method that return the transparency status
+     * @return the transparency status
+     */
+    NLRENDER_API
+    TTransparencyStatus& transparencyStatus( void );
 
     /**
      * Method that renderize the given mesh
@@ -106,8 +139,8 @@ namespace nlrender
       nlgeometry::MeshPtr mesh_,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
       const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true ) const;
-
+      bool renderTriangles_ = true, bool renderQuads_ = true,
+      bool renderLines = true ) const;
     /**
      * Method that renderize the given meshes
      * @param mesh_ meshes to renderize
@@ -117,7 +150,8 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true ) const;
+      bool renderLines_ = true, bool renderTriangles_ = true,
+      bool renderQuads_ = true) const;
 
     /**
      * Method that renderize the given meshes
@@ -128,7 +162,8 @@ namespace nlrender
       nlgeometry::Meshes meshes_,
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       const std::vector< Eigen::Vector3f >& colors_,
-      bool renderTriangles_ = true, bool renderQuads_ = true  ) const;
+      bool renderLines_ = true, bool renderTriangles_ = true,
+      bool renderQuads_ = true) const;
 
     /**
      * Method that extract the given mesh
@@ -152,14 +187,31 @@ namespace nlrender
       const std::vector< Eigen::Matrix4f >& modelMatrices_,
       bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
+    NLRENDER_API
+    void initTransparencySystem( unsigned int width_, unsigned int height_ );
+
+    NLRENDER_API
+    void setUpOpaqueTransparencyScene( Eigen::Vector3f backgroundColor_,
+                                       unsigned int width_,
+                                       unsigned int height_ );
+
+    NLRENDER_API
+    void setUpTransparentTransparencyScene( void );
+
+    NLRENDER_API
+    void composeTransparencyScene( unsigned int finalFbo_ );
 
   protected:
 
     nlgeometry::MeshPtr _vectorToMesh( std::vector< float > positions_,
                                        std::vector< float > normals_  ) const;
+    void _uploadQuad( void );
 
     //! Variable to determine if keep the OpenGL server status
     bool _keepOpenGLServerStack;
+
+    //! Program to render lines
+    reto::ShaderProgram* _programLines;
 
     //! Program to render tessellated triangles
     reto::ShaderProgram* _programTriangles;
@@ -172,6 +224,9 @@ namespace nlrender
 
     //! Program to extract tessellated quads
     reto::ShaderProgram* _programQuadsFB;
+
+    //! Program to compose the transparency scene
+    reto::ShaderProgram* _programTransCompose;
 
     //! Scene camera view matrix
     Eigen::Matrix4f _viewMatrix;
@@ -188,14 +243,53 @@ namespace nlrender
     //! Maximum tessellation distance
     float _maximumDistance;
 
+    //! Transparency factor
+    float _alpha;
+
     //! Tessellation level of detail criteria
     TTessCriteria _tessCriteria;
 
-    //! Vertex array object indices to mesh extraction
+    //! Type of render color function
+    TColorFunc _colorFunc;
+
+    //! Status of transparency render
+    TTransparencyStatus _transparencyStatus;
+
+    //! Vertex array object index to mesh extraction
     unsigned int _tfo;
 
     //! Vertex buffers object indices to mesh extraction
     std::vector< unsigned int > _tbos;
+
+    //! Vertex array object index to quad
+    unsigned int _quadVao;
+
+    //! Variable to indicates if the transparency system is initialized
+    bool _transSystemInit;
+
+    //! FBO used in the transparency composition to save opaque objects
+    unsigned int _opaqueFbo;
+
+    //! FBO used in the transparency composition to save transparent objects
+    unsigned int _transFbo;
+
+    //! Texture to save the opaque objects color
+    reto::Texture2D* _opaqueTexture;
+
+    //! Texture to save the tranparent accumulated objects color
+    reto::Texture2D* _accumTexture;
+
+    //! Texture to save the traparent revealage objects color
+    reto::Texture2D* _revealageTexture;
+
+    //! Texture to save the opaque objects depth
+    reto::Texture2D* _depthTexture;
+
+    //! Width of the screen for the transparency system
+    unsigned int _transSystemWidth;
+
+    //! height of the screen for the transparency system
+    unsigned int _transSystemHeight;
 
   }; // class Renderer
 

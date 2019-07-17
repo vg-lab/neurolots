@@ -4,10 +4,12 @@ layout(triangles) in;
 in vec3 tcPosition[];
 in vec3 tcCenter[];
 in vec3 tcNormal[];
+in vec3 tcColor[];
 in float tcRadius[];
 
 out vec3 position;
 out vec3 normal;
+out vec3 vColor;
 out vec3 L;
 
 uniform mat4 proy;
@@ -22,7 +24,7 @@ void main( )
   float w=gl_TessCoord.z;
   normal = normalize(tcNormal[0]*u+tcNormal[1]*v+tcNormal[2]*w);
   teCenter = tcCenter[0]*u+tcCenter[1]*v+tcCenter[2]*w;
-
+  vColor = tcColor[0]*u+tcColor[1]*v+tcColor[2]*w;
   // teRadius = tcRadius[0]*u+tcRadius[1]*v+tcRadius[2]*w;
 
   float radius0 = length( tcPosition[0] - tcCenter[0] );
