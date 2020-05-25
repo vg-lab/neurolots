@@ -240,9 +240,9 @@ void keyboardFunc( unsigned char key, int, int )
   case 't':
     adaptiveCriteria = !adaptiveCriteria;
     if ( adaptiveCriteria )
-      renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
+      renderer->tessCriteria( nlrender::Renderer::LINEAR );
     else
-      renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
+      renderer->tessCriteria( nlrender::Renderer::HOMOGENEOUS );
     break;
   case 'x':
     for ( auto mesh: meshes )

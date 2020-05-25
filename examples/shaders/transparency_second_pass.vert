@@ -1,6 +1,6 @@
 #version 400
 
-in vec2 inPosition;
+layout( location = 0 ) in vec2 inPosition;
 
 void main( void )
 {

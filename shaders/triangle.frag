@@ -5,8 +5,8 @@ subroutine uniform colorFuncType colorFunc;
 subroutine void transparencyFuncType( void );
 subroutine uniform transparencyFuncType transparencyFunc;
 
-out vec4 accum;
-out vec4 revealage;
+layout( location = 0 ) out vec4 accum;
+layout( location = 1 ) out vec4 revealage;
 
 in vec3 normal;
 in vec3 vColor;

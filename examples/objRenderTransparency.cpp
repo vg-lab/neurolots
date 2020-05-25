@@ -54,6 +54,8 @@ reto::Texture2D* revealageTexture;
 reto::Texture2D* depthTexture;
 unsigned int screenFbo;
 unsigned int sceneFbo;
+unsigned int enableTransparencyIndex;
+unsigned int disableTransparencyIndex;
 
 unsigned int quadVao;
 
@@ -211,13 +213,11 @@ void initOGL( void )
   secondPassProgram->compileAndLink( );
   secondPassProgram->autocatching( );
 
-  std::cout
-    << glGetUniformLocation( secondPassProgram->program( ), "opaqueTexture" )
-    << "\n"
-    << glGetUniformLocation( secondPassProgram->program( ), "accumTexture" )
-    << "\n"
-    << glGetUniformLocation( secondPassProgram->program( ), "revealageTexture" )
-    << std::endl;
+
+  enableTransparencyIndex = glGetSubroutineIndex( firstPassProgram->program( ),
+          GL_FRAGMENT_SHADER, "transparencyEnable" );
+  disableTransparencyIndex = glGetSubroutineIndex( firstPassProgram->program( ),
+          GL_FRAGMENT_SHADER, "transparencyDisable" );
   secondPassProgram->use( );
   glUniform1i( glGetUniformLocation( secondPassProgram->program( ),
                                      "opaqueTexture" ), 0);
@@ -244,7 +244,6 @@ void renderFunc( void )
   //   mesh->renderTriangles( );
   //   mesh->renderQuads( );
   // }
-  unsigned int transFunc;
   firstPassProgram->use( );
   firstPassProgram->sendUniform4m("proj", camera->projectionMatrix( ));
   firstPassProgram->sendUniform4m("view", camera->viewMatrix( ));
@@ -256,8 +255,7 @@ void renderFunc( void )
   glDisable( GL_BLEND );
   glEnable( GL_DEPTH_TEST );
   glDisable( GL_CULL_FACE );
-  transFunc = 0;
-  glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &transFunc );
+  glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &disableTransparencyIndex );
   auto model = meshes[0]->modelMatrixVectorized( );
   model[14] -= 2.0f;
   firstPassProgram->sendUniform4m("model", model );
@@ -276,8 +274,7 @@ void renderFunc( void )
   glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
   glDisable( GL_CULL_FACE );
   glDepthMask( GL_FALSE );
-  transFunc = 1;
-  glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &transFunc );
+  glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &enableTransparencyIndex );
   firstPassProgram->sendUniform4m("model", model );
   firstPassProgram->sendUniformf("alpha", alpha );
   meshes[0]->renderTriangles( );

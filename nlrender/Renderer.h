@@ -30,268 +30,310 @@
 
 namespace nlrender
 {
-
-  /* \class Renderer */
-  class Renderer
-  {
-
-  public:
-
-    typedef enum
+    /* \class Renderer */
+    class Renderer
     {
-      HOMOGENEOUS = 0,
-      LINEAR
-    }TTessCriteria;
+    public:
+        typedef enum
+        {
+            HOMOGENEOUS = 0,
+            LINEAR
+        }TTessCriteria;
 
-    typedef enum
-    {
-      PERVERTEX = 2,
-      GLOBAL
-    }TColorFunc;
+        typedef enum
+        {
+            PERVERTEX = 0,
+            GLOBAL
+        }TColorFunc;
 
-    typedef enum
-    {
-      DISABLE = 0,
-      ENABLE
-    }TTransparencyStatus;
+        typedef enum
+        {
+            DISABLE = 0,
+            ENABLE
+        }TTransparencyStatus;
 
-    /**
-     * Default constructor
-     */
-    NLRENDER_API
-    Renderer( bool keepOpenGLServerStack_ = false );
+        /**
+         * Default constructor
+         */
+        NLRENDER_API
+        Renderer( bool keepOpenGLServerStack_ = false );
 
-    /**
-     * Default destructors
-     */
-    NLRENDER_API
-    ~Renderer( void );
+        /**
+         * Default destructors
+         */
+        NLRENDER_API
+        ~Renderer( void );
 
-    /**
-     * Method that return the scene camera view matrix
-     * @return the scene camera view matrix
-     */
-    NLRENDER_API
-    Eigen::Matrix4f& viewMatrix( void );
+        /**
+         * Method that return the scene camera view matrix
+         * @return the scene camera view matrix
+         */
+        NLRENDER_API
+        Eigen::Matrix4f& viewMatrix( void );
 
-    /**
-     * Method that return the scene camera view matrix
-     * @return the scene camera view matrix
-     */
-    NLRENDER_API
-    Eigen::Matrix4f& projectionMatrix( void );
+        /**
+        * Method that return the scene camera view matrix
+         * @return the scene camera view matrix
+         */
+        NLRENDER_API
+        Eigen::Matrix4f& projectionMatrix( void );
 
-    /**
-     * Method that return the level of detail
-     * @return the level of detail
-     */
-    NLRENDER_API
-    float& lod( void );
+        /**
+         * Method that return the level of detail
+         * @return the level of detail
+         */
+        NLRENDER_API
+        float& lod( void );
 
-    /**
-     * Method that return the tangent modulus
-     * @return the tanget modulus
-     */
-    NLRENDER_API
-    float& tangentModulus( void );
+        /**
+         * Method that return the tangent modulus
+         * @return the tanget modulus
+         */
+        NLRENDER_API
+        float& tangentModulus( void );
 
-    /**
-     * Method that return the maximum distance
-     * @return the maximum distance
-     */
-    NLRENDER_API
-    float& maximumDistance( void );
+        /**
+         * Method that return the maximum distance
+         * @return the maximum distance
+         */
+        NLRENDER_API
+        float& maximumDistance( void );
 
-    /**
-     * Method that return the transparency factor
-     * @return the transparency factor
-     */
-    NLRENDER_API
-    float& alpha( void );
+        /**
+         * Method that return the transparency factor
+         * @return the transparency factor
+         */
+        NLRENDER_API
+        float& alpha( void );
 
-    /**
-     * Method that return the tessellation criteria
-     * @return the tessellation criteria
-     */
-    NLRENDER_API
-    TTessCriteria& tessCriteria( void );
+        /**
+         * Method that return the tessellation criteria
+         * @return the tessellation criteria
+         */
+        NLRENDER_API
+        TTessCriteria tessCriteria( void );
 
-    /**
-     * Method that return the type of color function
-     * @return the color funciton type
-     */
-    NLRENDER_API
-    TColorFunc& colorFunc( void );
+        NLRENDER_API
+        void tessCriteria( TTessCriteria tessCriteria_ );
 
-    /**
-     * Method that return the transparency status
-     * @return the transparency status
-     */
-    NLRENDER_API
-    TTransparencyStatus& transparencyStatus( void );
+        /**
+         * Method that return the type of color function
+         * @return the color funciton type
+         */
+        NLRENDER_API
+        TColorFunc colorFunc( void );
 
-    /**
-     * Method that renderize the given mesh
-     * @param mesh_ mesh to renderize
-     */
-    NLRENDER_API
-    void render(
-      nlgeometry::MeshPtr mesh_,
-      const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
-      const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderTriangles_ = true, bool renderQuads_ = true,
-      bool renderLines = true ) const;
-    /**
-     * Method that renderize the given meshes
-     * @param mesh_ meshes to renderize
-     */
-    NLRENDER_API
-    void render(
-      nlgeometry::Meshes meshes_,
-      const std::vector< Eigen::Matrix4f >& modelMatrices_,
-      const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-      bool renderLines_ = true, bool renderTriangles_ = true,
-      bool renderQuads_ = true) const;
+        NLRENDER_API
+        void colorFunc( TColorFunc colorFunc_ );
 
-    /**
-     * Method that renderize the given meshes
-     * @param mesh_ meshes to renderize
-     */
-    NLRENDER_API
-    void render(
-      nlgeometry::Meshes meshes_,
-      const std::vector< Eigen::Matrix4f >& modelMatrices_,
-      const std::vector< Eigen::Vector3f >& colors_,
-      bool renderLines_ = true, bool renderTriangles_ = true,
-      bool renderQuads_ = true) const;
+        /**
+         * Method that return the transparency status
+         * @return the transparency status
+         */
+        NLRENDER_API
+        TTransparencyStatus transparencyStatus( void );
 
-    /**
-     * Method that extract the given mesh
-     * @param mesh_ mesh to extract
-     * @return the extracted mesh
-     */
-    NLRENDER_API
-    nlgeometry::MeshPtr extract(
-      nlgeometry::MeshPtr mesh_,
-      const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
-      bool extractTriangles_ = true, bool extractQuads_ = true ) const;
+        /**
+         * Method that renderize the given mesh
+         * @param mesh_ mesh to renderize
+         */
+        NLRENDER_API
+        void render(
+          nlgeometry::MeshPtr mesh_,
+          const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
+          const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
+          bool renderTriangles_ = true, bool renderQuads_ = true,
+          bool renderLines = true ) const;
+        /**
+         * Method that renderize the given meshes
+         * @param mesh_ meshes to renderize
+         */
+        NLRENDER_API
+        void render(
+          nlgeometry::Meshes meshes_,
+          const std::vector< Eigen::Matrix4f >& modelMatrices_,
+          const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
+          bool renderLines_ = true, bool renderTriangles_ = true,
+          bool renderQuads_ = true) const;
 
-    /**
-     * Method that extract the given meshes
-     * @param mesh_ meshes to extract
-     * @return the extracted meshesh
-     */
-    NLRENDER_API
-    nlgeometry::Meshes& extract(
-      nlgeometry::Meshes meshes_,
-      const std::vector< Eigen::Matrix4f >& modelMatrices_,
-      bool extractTriangles_ = true, bool extractQuads_ = true ) const;
+        /**
+         * Method that renderize the given meshes
+         * @param mesh_ meshes to renderize
+         */
+        NLRENDER_API
+        void render(
+          nlgeometry::Meshes meshes_,
+          const std::vector< Eigen::Matrix4f >& modelMatrices_,
+          const std::vector< Eigen::Vector3f >& colors_,
+          bool renderLines_ = true, bool renderTriangles_ = true,
+          bool renderQuads_ = true) const;
 
-    NLRENDER_API
-    void initTransparencySystem( unsigned int width_, unsigned int height_ );
+        /**
+         * Method that extract the given mesh
+         * @param mesh_ mesh to extract
+         * @return the extracted mesh
+         */
+        NLRENDER_API
+        nlgeometry::MeshPtr extract(
+          nlgeometry::MeshPtr mesh_,
+          const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
+          bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
-    NLRENDER_API
-    void setUpOpaqueTransparencyScene( Eigen::Vector3f backgroundColor_,
-                                       unsigned int width_,
-                                       unsigned int height_ );
+        /**
+         * Method that extract the given meshes
+         * @param mesh_ meshes to extract
+         * @return the extracted meshesh
+         */
+        NLRENDER_API
+        nlgeometry::Meshes& extract(
+          nlgeometry::Meshes meshes_,
+          const std::vector< Eigen::Matrix4f >& modelMatrices_,
+          bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
-    NLRENDER_API
-    void setUpTransparentTransparencyScene( void );
+        NLRENDER_API
+        void initTransparencySystem( unsigned int width_, unsigned int height_ );
 
-    NLRENDER_API
-    void composeTransparencyScene( unsigned int finalFbo_ );
+        NLRENDER_API
+        void setUpOpaqueTransparencyScene( Eigen::Vector3f backgroundColor_,
+                                           unsigned int width_,
+                                           unsigned int height_ );
 
-  protected:
+        NLRENDER_API
+        void setUpTransparentTransparencyScene( void );
 
-    nlgeometry::MeshPtr _vectorToMesh( std::vector< float > positions_,
-                                       std::vector< float > normals_  ) const;
-    void _uploadQuad( void );
+        NLRENDER_API
+        void composeTransparencyScene( unsigned int finalFbo_ );
 
-    //! Variable to determine if keep the OpenGL server status
-    bool _keepOpenGLServerStack;
+    protected:
 
-    //! Program to render lines
-    reto::ShaderProgram* _programLines;
+        nlgeometry::MeshPtr _vectorToMesh( std::vector< float > positions_,
+                                           std::vector< float > normals_  ) const;
+        void _uploadQuad( void );
 
-    //! Program to render tessellated triangles
-    reto::ShaderProgram* _programTriangles;
+        void _composeVertexSubroutines( void );
+        void _composeFragmentSubroutines( void );
 
-    //! Program to render tessellated quads
-    reto::ShaderProgram* _programQuads;
+        //! Variable to determine if keep the OpenGL server status
+        bool _keepOpenGLServerStack;
 
-    //! Program to extract tessellated triangles
-    reto::ShaderProgram* _programTrianglesFB;
+        //! Program to render lines
+        reto::ShaderProgram* _programLines;
+        unsigned int _lGlobalColorInd;
+        unsigned int _lVertexColorInd;
+        unsigned int _lTransEnableInd;
+        unsigned int _lTransDisableInd;
 
-    //! Program to extract tessellated quads
-    reto::ShaderProgram* _programQuadsFB;
+        //! Program to render tessellated triangles
+        reto::ShaderProgram* _programTriangles;
+        unsigned int _tLinearDistInd;
+        unsigned int _tHomogeDistInd;
+        unsigned int _tGlobalColorInd;
+        unsigned int _tVertexColorInd;
+        unsigned int _tTransEnableInd;
+        unsigned int _tTransDisableInd;
 
-    //! Program to compose the transparency scene
-    reto::ShaderProgram* _programTransCompose;
+        //! Program to render tessellated quads
+        reto::ShaderProgram* _programQuads;
+        unsigned int _qLinearDistInd;
+        unsigned int _qHomogeDistInd;
+        unsigned int _qGlobalColorInd;
+        unsigned int _qVertexColorInd;
+        unsigned int _qTransEnableInd;
+        unsigned int _qTransDisableInd;
 
-    //! Scene camera view matrix
-    Eigen::Matrix4f _viewMatrix;
+        //! Program to extract tessellated triangles
+        reto::ShaderProgram* _programTrianglesFB;
+        unsigned int _tFBLinearDistInd;
+        unsigned int _tFBHomogeDistInd;
 
-    //! Scene camera projection matrix
-    Eigen::Matrix4f _projectionMatrix;
+        //! Program to extract tessellated quads
+        reto::ShaderProgram* _programQuadsFB;
+        unsigned int _qFBLinearDistInd;
+        unsigned int _qFBHomogeDistInd;
 
-    //! Level of detail
-    float _lod;
 
-    //! Tangent modulus
-    float _tng;
+        unsigned int _ulColorSub;
+        unsigned int _utColorSub;
+        unsigned int _uqColorSub;
+        unsigned int _ulTransSub;
+        unsigned int _utTransSub;
+        unsigned int _uqTransSub;
 
-    //! Maximum tessellation distance
-    float _maximumDistance;
+        std::vector< unsigned int > _tVertexSubroutines;
+        std::vector< unsigned int > _qVertexSubroutines;
+        std::vector< unsigned int > _tFBVertexSubroutines;
+        std::vector< unsigned int > _qFBVertexSubroutines;
+        std::vector< unsigned int > _lFragmentSubroutines;
+        std::vector< unsigned int > _tFragmentSubroutines;
+        std::vector< unsigned int > _qFragmentSubroutines;
 
-    //! Transparency factor
-    float _alpha;
+        //! Program to compose the transparency scene
+        reto::ShaderProgram* _programTransCompose;
 
-    //! Tessellation level of detail criteria
-    TTessCriteria _tessCriteria;
+        //! Scene camera view matrix
+        Eigen::Matrix4f _viewMatrix;
 
-    //! Type of render color function
-    TColorFunc _colorFunc;
+        //! Scene camera projection matrix
+        Eigen::Matrix4f _projectionMatrix;
 
-    //! Status of transparency render
-    TTransparencyStatus _transparencyStatus;
+        //! Level of detail
+        float _lod;
 
-    //! Vertex array object index to mesh extraction
-    unsigned int _tfo;
+        //! Tangent modulus
+        float _tng;
 
-    //! Vertex buffers object indices to mesh extraction
-    std::vector< unsigned int > _tbos;
+        //! Maximum tessellation distance
+        float _maximumDistance;
 
-    //! Vertex array object index to quad
-    unsigned int _quadVao;
+        //! Transparency factor
+        float _alpha;
 
-    //! Variable to indicates if the transparency system is initialized
-    bool _transSystemInit;
+        //! Tessellation level of detail criteria
+        TTessCriteria _tessCriteria;
 
-    //! FBO used in the transparency composition to save opaque objects
-    unsigned int _opaqueFbo;
+        //! Type of render color function
+        TColorFunc _colorFunc;
 
-    //! FBO used in the transparency composition to save transparent objects
-    unsigned int _transFbo;
+        //! Status of transparency render
+        TTransparencyStatus _transparencyStatus;
 
-    //! Texture to save the opaque objects color
-    reto::Texture2D* _opaqueTexture;
+        //! Vertex array object index to mesh extraction
+        unsigned int _tfo;
 
-    //! Texture to save the tranparent accumulated objects color
-    reto::Texture2D* _accumTexture;
+        //! Vertex buffers object indices to mesh extraction
+        std::vector< unsigned int > _tbos;
 
-    //! Texture to save the traparent revealage objects color
-    reto::Texture2D* _revealageTexture;
+        //! Vertex array object index to quad
+        unsigned int _quadVao;
 
-    //! Texture to save the opaque objects depth
-    reto::Texture2D* _depthTexture;
+        //! Variable to indicates if the transparency system is initialized
+        bool _transSystemInit;
 
-    //! Width of the screen for the transparency system
-    unsigned int _transSystemWidth;
+        //! FBO used in the transparency composition to save opaque objects
+        unsigned int _opaqueFbo;
 
-    //! height of the screen for the transparency system
-    unsigned int _transSystemHeight;
+        //! FBO used in the transparency composition to save transparent objects
+        unsigned int _transFbo;
 
-  }; // class Renderer
+        //! Texture to save the opaque objects color
+        reto::Texture2D* _opaqueTexture;
+
+        //! Texture to save the tranparent accumulated objects color
+        reto::Texture2D* _accumTexture;
+
+        //! Texture to save the traparent revealage objects color
+        reto::Texture2D* _revealageTexture;
+
+        //! Texture to save the opaque objects depth
+        reto::Texture2D* _depthTexture;
+
+        //! Width of the screen for the transparency system
+        unsigned int _transSystemWidth;
+
+        //! height of the screen for the transparency system
+        unsigned int _transSystemHeight;
+
+    }; // class Renderer
 
 } // namespace nlrender
 

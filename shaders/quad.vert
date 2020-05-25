@@ -2,9 +2,9 @@
 subroutine float levelDistType( vec3 position );
 subroutine uniform levelDistType levelDist;
 
-in vec3 inVertex;
-in vec3 inColor;
-in vec3 inCenter;
+layout( location = 0 ) in vec3 inVertex;
+layout( location = 1 ) in vec3 inColor;
+layout( location = 2 ) in vec3 inCenter;
 
 out vec3 vPosition;
 out vec3 vCenter;
