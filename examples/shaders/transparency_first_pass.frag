@@ -6,10 +6,11 @@ subroutine uniform transparencyFuncType transparencyFunc;
 in vec3 normal;
 in vec3 l;
 
-out vec4 accum;
-out vec4 revelage;
+layout( location = 0 ) out vec4 accum;
+layout( location = 1 ) out vec4 revelage;
 
 uniform float alpha;
+
 
 subroutine( transparencyFuncType )
 void transparencyEnable( vec3 color )

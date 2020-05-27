@@ -90,9 +90,8 @@ int main( int argc, char* argv[] )
   renderer = new nlrender::Renderer( );
 
   renderer->lod( ) = 10.0f;
-  renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
-  renderer->colorFunc( ) = nlrender::Renderer::PERVERTEX;
-  renderer->transparencyStatus( ) = nlrender::Renderer::ENABLE;
+  renderer->tessCriteria( nlrender::Renderer::HOMOGENEOUS );
+  renderer->colorFunc( nlrender::Renderer::PERVERTEX );
   renderer->maximumDistance( ) = 1000.0f;
   renderer->initTransparencySystem( width, height );
   renderer->alpha( ) = 0.2f;
@@ -221,6 +220,15 @@ void renderFunc( void )
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+  if ( wireframe )
+  {
+      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  }
+  else
+  {
+      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+  }
+
   auto mesh = meshes[0];
   std::vector< float > buffer( mesh->verticesSize( )*3);
   for ( unsigned int i = 0; i < mesh->verticesSize( ); i++ )
@@ -244,13 +252,13 @@ void renderFunc( void )
   renderer->viewMatrix( ) = view;
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
-  renderer->colorFunc( ) = nlrender::Renderer::PERVERTEX;
+  renderer->colorFunc( nlrender::Renderer::PERVERTEX );
   renderer->render( meshes[0], models[0], Eigen::Vector3f( 0.0f, 0.0f, 1.0f ),
                     true, true, true );
 
   renderer->setUpTransparentTransparencyScene( );
 
-  renderer->colorFunc( ) = nlrender::Renderer::GLOBAL;
+  renderer->colorFunc( nlrender::Renderer::GLOBAL );
   renderer->render( meshes[1], models[1], Eigen::Vector3f( 0.0f, 0.0f, 1.0f ),
                     true, true, true );
 
@@ -284,14 +292,6 @@ void keyboardFunc( unsigned char key, int, int )
     case 'm':
     case 'M':
       wireframe = !wireframe;
-      if ( wireframe )
-      {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-      }
-      else
-      {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-      }
       glutPostRedisplay( );
       break;
   case 'w':
@@ -313,9 +313,9 @@ void keyboardFunc( unsigned char key, int, int )
   case 't':
     adaptiveCriteria = !adaptiveCriteria;
     if ( adaptiveCriteria )
-      renderer->tessCriteria( ) = nlrender::Renderer::LINEAR;
+      renderer->tessCriteria( nlrender::Renderer::LINEAR );
     else
-      renderer->tessCriteria( ) = nlrender::Renderer::HOMOGENEOUS;
+      renderer->tessCriteria( nlrender::Renderer::HOMOGENEOUS );
     break;
   case 'x':
     for ( auto mesh: meshes )
