@@ -623,13 +623,12 @@ namespace nlrender
     _programVDMFB->sendUniformf( "lod", _lod / numSegments );
     _programVDMFB->sendUniformf( "maxTexel", maxTexel );
     _programVDMFB->sendUniformf( "invTexel", invTexel );
-    _programVDMCollec->sendUniformf( "maxDist", _maximumDistance);
+    _programVDMFB->sendUniformf( "maxDist", _maximumDistance);
 
     vdmap_->vdmTexture( )->bind( 0 );
     vdmap_->normalTexture( )->bind( 1 );
 
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
-
     glBindVertexArray( _getQuadVao( numSegments ));
     glPatchParameteri( GL_PATCH_VERTICES, 4 );
     glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
