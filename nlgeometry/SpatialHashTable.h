@@ -22,7 +22,9 @@
 #ifndef __NLGEOMETRY_SPATIAL_HASH_TABLE__
 #define __NLGEOMETRY_SPATIAL_HASH_TABLE__
 
-#include "Vertex.h"
+#include "Facet.h"
+
+#include <unordered_set>
 
 #include <nlgeometry/api.h>
 
@@ -101,6 +103,87 @@ namespace nlgeometry
     std::vector< Vertices > _table;
 
   }; // class SpatialHashTable
+  /* \class SpatialHashTable */
+
+
+  class TrianglesSpatialHashTable
+  {
+
+  public:
+
+    /**
+     * Default Constructor
+     * @param size_ number of Spatial Hash Table cells
+     * @param cellSize_ size of the cells
+     * @param prime0_ X axis prime number of the hash function
+     * @param prime1_ Y axis prime number of the hash function
+     * @param prime2_ Z axis prime number of the hash function
+     */
+    NLGEOMETRY_API
+    TrianglesSpatialHashTable( unsigned int size_ = 100000,
+                               float cellSize_ = 0.1f );
+
+    /**
+     * Default destructor
+     */
+    NLGEOMETRY_API
+    ~TrianglesSpatialHashTable( void );
+
+    NLGEOMETRY_API
+    void clear( void );
+
+    NLGEOMETRY_API
+    void insert( const FacetPtr& facet_ );
+
+    NLGEOMETRY_API
+    std::unordered_set< FacetPtr > getNeighbors( const VertexPtr vertex_ );
+
+  private:
+
+
+    typedef std::pair< Eigen::Vector3i, FacetPtr > tTSHTData;
+
+    struct tsht_hash
+    {
+      std::size_t operator()(const tTSHTData& p) const
+      {
+        return _indicesHash( p.first ) +  std::hash<Facet*>()(p.second);
+      }
+    };
+
+    typedef std::unordered_set< tTSHTData, tsht_hash > tCeil;
+
+    Eigen::Vector3i _tableId( const Eigen::Vector3f& pos_ );
+
+    unsigned int _tableId( const Eigen::Vector3i& indices_ );
+
+    static size_t _indicesHash( const Eigen::Vector3i& indices_ );
+
+    std::unordered_set< FacetPtr > _getNeighbors( const Eigen::Vector3f& pos_ );
+
+    std::unordered_set< FacetPtr > _getNeighbors( const Eigen::Vector3f& pos_,
+                                                  unsigned int level_ );
+
+    //! Number of cells in the table
+    unsigned int _size;
+
+    //! Size of the cells of the table
+    float _cellSize;
+
+    //! X axis prime number of the hash function
+    static unsigned int _primeX;
+
+    //! Y axis prime number of the hash function
+    static unsigned int _primeY;
+
+    //! Z axis prime number of the hash function
+    static unsigned int _primeZ;
+
+    //! Table
+    std::vector< tCeil > _table;
+
+  }; // class TrianglesSpatialHashTable
+
 
 } // namespace nlgeometry
 

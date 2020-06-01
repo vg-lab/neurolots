@@ -76,4 +76,16 @@ namespace nlgeometry
     return ( _maximum - _minimum ).norm( ) * 0.5f;
   }
 
+  void AxisAlignedBoundingBox::joint( AxisAlignedBoundingBox aabb_ )
+  {
+    Eigen::Array3f minimum( _minimum );
+    Eigen::Array3f maximum( _maximum );
+
+    minimum = minimum.min( Eigen::Array3f( aabb_.minimum( )));
+    maximum = maximum.max( Eigen::Array3f( aabb_.maximum( )));
+
+    _minimum = Eigen::Vector3f( minimum );
+    _maximum = Eigen::Vector3f( maximum );
+  }
+
 } // namespace nlgeometry
