@@ -11,6 +11,11 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     )
   ########## RETO ##########
 
+  set( NEUROLOTSHAUSDORFFDISTANCE_SOURCES hausdorffDistance.cpp )
+  set( NEUROLOTSHAUSDORFFDISTANCE_LINK_LIBRARIES nlgeometry )
+  common_application( neurolotsHausdorffDistance NOHELP )
+  list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSHAUSDORFFDISTANCE_SOURCES} )
+
   if ( GLUT_FOUND )
     if( NOT APPLE )
 

@@ -93,6 +93,9 @@ namespace nlgeometry
     NLGEOMETRY_API
     float radius( void ) const;
 
+    NLGEOMETRY_API
+    void joint( AxisAlignedBoundingBox aabb_ );
+
   protected:
 
     //! Left bottom back axis aligned bounding box position
