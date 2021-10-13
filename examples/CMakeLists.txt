@@ -39,6 +39,15 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       common_application( neurolotsCubeRender NOHELP )
       list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSCUBERENDER_SOURCES} )
 
+#[[
+      set( NEUROLOTSEXTRACTOR_SOURCES extractor.cpp Shaders.h
+        DemoCallbacks.cpp DemoCallbacks.h )
+      set( NEUROLOTSEXTRACTOR_LINK_LIBRARIES ReTo nlgeometry
+        ${GLUT_LIBRARIES} )
+      common_application( neurolotsExtractor NOHELP )
+      list( APPEND NEUROLOTS_EXAMPLES_FILES ${NEUROLOTSEXTRACTOR_SOURCES} )
+]]
+
       set( NEUROLOTSMORPHOLOGYRENDER_SOURCES morphologyRenderer.cpp Shaders.h
         DemoCallbacks.cpp DemoCallbacks.h )
       set( NEUROLOTSMORPHOLOGYRENDER_LINK_LIBRARIES ReTo nsol nlgeometry

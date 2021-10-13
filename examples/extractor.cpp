@@ -109,11 +109,8 @@ int main( int argc, char* argv[ ])
   renderer = new nlrender::Renderer( );
   renderer->lod( ) = lod;
 
-
   auto vdmap =  nlgeometry::VDMapReader::readVDMap( vdmTexture, normalTexture);
   
- //Change to update
-
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
   Eigen::Matrix4f view( camera->viewMatrix( ));
