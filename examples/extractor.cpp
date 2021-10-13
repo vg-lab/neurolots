@@ -112,7 +112,7 @@ int main( int argc, char* argv[ ])
 
   auto vdmap =  nlgeometry::VDMapReader::readVDMap( vdmTexture, normalTexture);
   
- 
+ //Change to update
 
   Eigen::Matrix4f projection( camera->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
