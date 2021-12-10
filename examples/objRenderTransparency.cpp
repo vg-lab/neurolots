@@ -45,7 +45,7 @@
 
 #include "Shaders.h"
 
-reto::Camera* camera;
+reto::OrbitalCameraController* camera;
 reto::ShaderProgram* firstPassProgram;
 reto::ShaderProgram* secondPassProgram;
 reto::Texture2D* opaqueTexture;
@@ -81,7 +81,7 @@ int main( int argc, char* argv[] )
   initContext( argc, argv );
   initOGL( );
 
-  camera = new reto::Camera( );
+  camera = new reto::OrbitalCameraController( );
   DemoCallbacks::camera( camera );
 
   nlgeometry::AxisAlignedBoundingBox aabb;
@@ -130,8 +130,8 @@ int main( int argc, char* argv[] )
       std::cout << "File " << argv[i] << " not loaded" << std::endl;
   }
 
-  camera->pivot( aabb.center( ));
-  camera->radius( aabb.radius( ) / sin( camera->fov( )));
+  camera->position( aabb.center( ));
+  camera->radius( aabb.radius( ) / sin( camera->camera()->fieldOfView( )));
 
   glutMainLoop( );
   return 0;
@@ -245,8 +245,8 @@ void renderFunc( void )
   //   mesh->renderQuads( );
   // }
   firstPassProgram->use( );
-  firstPassProgram->sendUniform4m("proj", camera->projectionMatrix( ));
-  firstPassProgram->sendUniform4m("view", camera->viewMatrix( ));
+  firstPassProgram->sendUniform4m("proj", camera->camera()->projectionMatrix( ));
+  firstPassProgram->sendUniform4m("view", camera->camera()->viewMatrix( ));
 
   glBindFramebuffer( GL_FRAMEBUFFER, screenFbo );
   glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );

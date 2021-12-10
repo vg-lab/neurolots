@@ -33,7 +33,7 @@
   #include <GL/freeglut.h>
 #endif
 
-reto::Camera* DemoCallbacks::_camera = nullptr;
+reto::OrbitalCameraController* DemoCallbacks::_camera = nullptr;
 
 int DemoCallbacks::_previousX = 0;
 
@@ -55,7 +55,7 @@ float DemoCallbacks::_rotationScale = 0.01f;
 
 float DemoCallbacks::_traslationScale = 0.2f;
 
-void DemoCallbacks::camera( reto::Camera* camera_ )
+void DemoCallbacks::camera( reto::OrbitalCameraController* camera_ )
 {
   _camera = camera_;
 }
@@ -73,9 +73,9 @@ void DemoCallbacks::keyboardFunc(
   // Camera control.
   case 'c':
   case 'C':
-    _camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    _camera->position( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
     _camera->radius( 1000.0f );
-    _camera->rotation( 0.0f, 0.0f );
+    _camera->rotation( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ) );
     glutPostRedisplay( );
     break;
   case 'm':
@@ -140,14 +140,14 @@ void DemoCallbacks::mouseMotionFunc( int x_, int y_ )
     float deltaY = ( float )y_ - _previousY;
     if( _rotation )
     {
-      _camera->localRotation( deltaX * _rotationScale,
-                              deltaY * _rotationScale );
+      _camera->rotate( Eigen::Vector3f (deltaX * _rotationScale,
+                              deltaY * _rotationScale, 0.0f ));
     }
     if( _traslation )
     {
-      _camera->localTranslation( Eigen::Vector3f ( -deltaX * _traslationScale,
-                                                   deltaY * _traslationScale,
-                                                   0.0f ) );
+      _camera->translate( Eigen::Vector3f ( -deltaX * _traslationScale,
+                                             deltaY * _traslationScale,
+                                             0.0f ) );
     }
     _previousX = x_;
     _previousY = y_;
@@ -157,6 +157,6 @@ void DemoCallbacks::mouseMotionFunc( int x_, int y_ )
 
 void DemoCallbacks::resizeFunc( int width_, int height_ )
 {
-  _camera->ratio((( float ) width_ ) / height_ );
+  _camera->windowSize(width_, height_);
   glViewport( 0, 0, width_, height_ );
 }

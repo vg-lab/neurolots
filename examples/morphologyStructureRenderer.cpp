@@ -48,7 +48,7 @@
 
 #include "Shaders.h"
 
-reto::Camera* camera;
+reto::OrbitalCameraController* camera;
 nlgeometry::Meshes meshes;
 nlrender::Renderer* renderer;
 std::vector< Eigen::Matrix4f > models;
@@ -85,7 +85,7 @@ int main( int argc, char* argv[] )
   initContext( argc, argv );
   initOGL( );
 
-  camera = new reto::Camera( );
+  camera = new reto::OrbitalCameraController( );
   DemoCallbacks::camera( camera );
   renderer = new nlrender::Renderer( );
 
@@ -173,14 +173,14 @@ int main( int argc, char* argv[] )
         aabb.maximum( ).z( ) = meshAABB.maximum( ).z();
     }
   }
-  camera->pivot( aabb.center( ));
-  camera->radius( aabb.radius( ) / sin( camera->fov( )));
+  camera->position( aabb.center( ));
+  camera->radius( aabb.radius( ) / sin( camera->camera()->fieldOfView( )));
   // camera->pivot( Eigen::Vector3f::Zero( ));
   // camera->radius( 1000.0f );
 
-  Eigen::Matrix4f projection( camera->projectionMatrix( ));
+  Eigen::Matrix4f projection( camera->camera()->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
-  Eigen::Matrix4f view( camera->viewMatrix( ));
+  Eigen::Matrix4f view( camera->camera()->viewMatrix( ));
   renderer->viewMatrix( ) = view;
 
   glutMainLoop( );
@@ -248,9 +248,9 @@ void renderFunc( void )
                                           width, height );
 
 
-  Eigen::Matrix4f view = Eigen::Matrix4f( camera->viewMatrix( ));
+  Eigen::Matrix4f view = Eigen::Matrix4f( camera->camera()->viewMatrix( ));
   renderer->viewMatrix( ) = view;
-  Eigen::Matrix4f projection( camera->projectionMatrix( ));
+  Eigen::Matrix4f projection( camera->camera()->projectionMatrix( ));
   renderer->projectionMatrix( ) = projection;
   renderer->colorFunc( nlrender::Renderer::PERVERTEX );
   renderer->render( meshes[0], models[0], Eigen::Vector3f( 0.0f, 0.0f, 1.0f ),
@@ -270,7 +270,7 @@ void renderFunc( void )
 
 void resizeFunc( int width_, int height_ )
 {
-  camera->ratio((( float ) width_ ) / height_ );
+  camera->windowSize(width_ , height_ );
   width = width_;
   height = height_;
   glViewport( 0, 0, width_, height_ );
@@ -284,9 +284,9 @@ void keyboardFunc( unsigned char key, int, int )
     // Camera control.
     case 'c':
     case 'C':
-      camera->pivot( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+      camera->position( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
       camera->radius( 1000.0f );
-      camera->rotation( 0.0f, 0.0f );
+      camera->rotation( Eigen::Vector3f(0.0f, 0.0f, 0.0f) );
       glutPostRedisplay( );
       break;
     case 'm':

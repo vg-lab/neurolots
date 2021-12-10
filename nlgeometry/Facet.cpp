@@ -31,12 +31,6 @@ namespace nlgeometry
     , _vertex2( vertex2_ )
     , _vertex3( vertex3_ )
   {
-
-  }
-
-  Facet::~Facet( void )
-  {
-
   }
 
   VertexPtr& Facet::vertex0( void )

@@ -186,7 +186,6 @@ namespace nlgeometry
     bool _equalFormat( AttribsFormat format0_, AttribsFormat format1_ );
 
   protected:
-
     //! Mesh vertices
     Vertices _vertices;
 

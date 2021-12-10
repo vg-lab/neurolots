@@ -60,7 +60,8 @@ namespace nlgeometry
      * Default destructor
      */
     NLGEOMETRY_API
-    ~Facet( void );
+    ~Facet( void )
+    {};
 
     /**
      * Method to get the first triangle/quad vertex pointer
