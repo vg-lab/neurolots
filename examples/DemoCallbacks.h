@@ -29,7 +29,7 @@ class DemoCallbacks
 
 public:
 
-  static void camera( reto::Camera* camera_ );
+  static void camera( reto::OrbitalCameraController* camera_ );
 
   static void idleFunc( void );
 
@@ -43,7 +43,7 @@ public:
 
 protected:
 
-  static reto::Camera* _camera;
+  static reto::OrbitalCameraController* _camera;
 
   // X Y mouse position.
   static int _previousX;

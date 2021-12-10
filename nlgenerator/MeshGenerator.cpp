@@ -64,7 +64,7 @@ namespace nlgenerator
     auto joints = _vectorizeJoints( sections );
 
     JointNodes firstJoints;
-    float somaRadius = morphology_->soma( )->meanRadius( );
+    const float somaRadius = morphology_->soma( )->meanRadius( );
     Eigen::Vector3f somaCenter = morphology_->soma( )->center( );
     for ( unsigned int i = 0; i < morphology_->neurites(  ).size( ); ++i )
     {
@@ -77,9 +77,10 @@ namespace nlgenerator
       joint->position( ) = somaCenter + axis.normalized( ) * module;
       firstJoints.push_back( joint );
     }
+
     for ( auto element: joints )
     {
-      auto joint = element.second;
+      auto &joint = element.second;
       joint->computeGeometry( );
     }
 
@@ -316,13 +317,14 @@ namespace nlgenerator
     JointNodes firstJoints;
     for ( auto neurite: morphology_->neurites(  ))
     {
-      auto joint = joints[neurite->firstSection( )->firstNode( )];
+      auto &joint = joints[neurite->firstSection( )->firstNode( )];
       joint->connectedSoma( ) = true;
       firstJoints.push_back( joint );
     }
+
     for ( auto element: joints )
     {
-      auto joint = element.second;
+      auto &joint = element.second;
       joint->computeGeometry( );
     }
 

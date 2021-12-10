@@ -44,7 +44,7 @@
 
 #include "Shaders.h"
 
-reto::Camera* camera;
+reto::OrbitalCameraController* camera;
 reto::ShaderProgram* program;
 nlgeometry::Meshes meshes;
 
@@ -64,7 +64,7 @@ int main( int argc, char* argv[] )
   initContext( argc, argv );
   initOGL( );
 
-  camera = new reto::Camera( );
+  camera = new reto::OrbitalCameraController( );
   DemoCallbacks::camera( camera );
 
   nlgeometry::AxisAlignedBoundingBox aabb;
@@ -113,8 +113,8 @@ int main( int argc, char* argv[] )
       std::cout << "File " << argv[i] << " not loaded" << std::endl;
   }
 
-  camera->pivot( aabb.center( ));
-  camera->radius( aabb.radius( ) / sin( camera->fov( )));
+  camera->position( aabb.center( ));
+  camera->radius( aabb.radius( ) / sin( camera->camera()->fieldOfView()));
 
   glutMainLoop( );
   return 0;
@@ -160,8 +160,8 @@ void renderFunc( void )
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   program->use( );
-  program->sendUniform4m("proj", camera->projectionMatrix( ));
-  program->sendUniform4m("view", camera->viewMatrix( ));
+  program->sendUniform4m("proj", camera->camera()->projectionMatrix( ));
+  program->sendUniform4m("view", camera->camera()->viewMatrix( ));
 
   for ( auto mesh: meshes )
   {

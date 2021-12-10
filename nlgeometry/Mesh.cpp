@@ -38,7 +38,6 @@
 
 namespace nlgeometry
 {
-
   Mesh::Mesh( void )
     : _vao( GL_INVALID_VALUE )
     , _linesSize( 0 )
@@ -58,7 +57,6 @@ namespace nlgeometry
 
   void Mesh::init( void )
   {
-
   }
 
   Vertices& Mesh::vertices( void )
@@ -179,8 +177,9 @@ namespace nlgeometry
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _vbos[attribs.size( )] );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( unsigned int) *
                   indices.size( ), indices.data( ), GL_STATIC_DRAW );
-    indices.clear( );
+
     glBindVertexArray( 0 );
+    indices.clear();
   }
 
   void Mesh::uploadBuffer( TAttribType format_, std::vector< float >& buffer_ )
