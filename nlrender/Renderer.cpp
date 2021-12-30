@@ -116,6 +116,10 @@ namespace nlrender
     _programVDMFB->use( );
     _programVDMFB->sendUniformi( "vdmTex", 0 );
     _programVDMFB->sendUniformi( "normalTex", 1 );
+/*
+#Link Error
+Link log: error: tessellation evaluation shader input `tcSpineCoord' has no matching output in the previous stage
+error: tessellation evaluation shader input `tcModel' has no matching output in the previous stage
 
     _programVDMCollec->loadVertexShaderFromText( nlrender::vdmCollec_vert );
     _programVDMCollec->loadTesselationControlShaderFromText(
@@ -143,7 +147,7 @@ namespace nlrender
     _programVDMCollecFB->use( );
     _programVDMCollecFB->sendUniformi( "vdmTex", 0 );
     _programVDMCollecFB->sendUniformi( "normalTex", 1 );
-
+*/
     _tbos.resize( 2 );
     glGenBuffers( 2, _tbos.data( ));
 

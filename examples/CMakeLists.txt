@@ -100,6 +100,16 @@ if ( NEUROLOTS_WITH_EXAMPLES )
       list( APPEND NEUROLOTS_EXAMPLES_FILES
         ${NEUROLOTSVDMEXTRACTOR_SOURCES} )
 
+
+      set( NEUROLOTSVDMEXTRACTFROMMAP_SOURCES vdmExtractFromMap.cpp Shaders.h
+      DemoCallbacks.cpp DemoCallbacks.h )
+    set( NEUROLOTSVDMEXTRACTFROMMAP_LINK_LIBRARIES ReTo nsol nlgeometry
+      nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+      ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+    common_application( neurolotsVDMExtractFromMap NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSVDMEXTRACTOR_SOURCES} )
+
       set( NEUROLOTSVDMTEXTUREEXTRACTOR_SOURCES vdmTextureExtractor.cpp
         Shaders.h )
       set( NEUROLOTSVDMTEXTUREEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry
