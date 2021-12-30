@@ -164,7 +164,7 @@ namespace nlgeometry
       Eigen::Array3f::Constant( std::numeric_limits< float >::min( ));
 
     const Eigen::Matrix3f rotMatrix = _modelMatrix.block( 0, 0, 3, 3 );
-    const Eigen::Array3f trVec = _modelMatrix.block( 0, 3, 1, 3 );
+    const Eigen::Array3f trVec = _modelMatrix.block( 0, 3, 3, 1 );
 
     for ( auto facet: _triangles )
     {
