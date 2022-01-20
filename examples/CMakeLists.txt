@@ -110,6 +110,25 @@ if ( NEUROLOTS_WITH_EXAMPLES )
     list( APPEND NEUROLOTS_EXAMPLES_FILES
       ${NEUROLOTSVDMEXTRACTOR_SOURCES} )
 
+      set( NEUROLOTSREADVDMANDRENDER_SOURCES ReadVDMAndRender.cpp Shaders.h
+      DemoCallbacks.cpp DemoCallbacks.h )
+    set( NEUROLOTSREADVDMANDRENDER_LINK_LIBRARIES ReTo nsol nlgeometry
+      nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+      ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+    common_application( neurolotsReadVDMAndRender NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSVDMEXTRACTOR_SOURCES} )
+
+      set( NEUROLOTSPCADISPLACEMENT_SOURCES PCADisplacement.cpp Shaders.h
+      DemoCallbacks.cpp DemoCallbacks.h )
+    set( NEUROLOTSPCADISPLACEMENT_LINK_LIBRARIES ReTo nsol nlgeometry
+      nlgenerator nlrender ${Boost_SYSTEM_LIBRARIES}
+      ${Boost_FILESYSTEM_LIBRARIES} ${GLUT_LIBRARIES} )
+    common_application( neurolotsPCADisplacement NOHELP )
+    list( APPEND NEUROLOTS_EXAMPLES_FILES
+      ${NEUROLOTSVDMEXTRACTOR_SOURCES} )
+
+
       set( NEUROLOTSVDMTEXTUREEXTRACTOR_SOURCES vdmTextureExtractor.cpp
         Shaders.h )
       set( NEUROLOTSVDMTEXTUREEXTRACTOR_LINK_LIBRARIES ReTo nsol nlgeometry
