@@ -250,22 +250,22 @@ namespace nlgenerator
     auto joints = _vectorizeJoints( sections );
     for ( auto element: joints )
     {
-      auto joint = element.second;
+      auto &joint = element.second;
       joint->computeGeometry( );
     }
     auto facets = _meshSections( sections, joints );
 
     for ( auto element: joints )
     {
-      auto joint = element.second;
+      auto &joint = element.second;
       if ( joint->numberNeighbors( ) == 1 && !joint->connectedSoma( ))
       {
         auto sectionQuad = joint->sectionQuad( );
         auto node = joint->neighbour( );
-        Eigen::Vector3f center = joint->position( );
-        Eigen::Vector3f position = ( center - node->point( )
-          ).normalized( ) * joint->radius( ) + center;
+        const auto center = joint->position( );
+        const auto position = (center - node->point( )).normalized( ) * joint->radius( ) + center;
         auto vertex = new nlgeometry::OrbitalVertex( position, center );
+
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex1( ),
                                  sectionQuad->vertex0( ),
@@ -392,7 +392,7 @@ namespace nlgenerator
     if ( uniqueSections_.find( section_ ) == uniqueSections_.end( ))
     {
       uniqueSections_.insert( section_ );
-      unsigned int numNodes = ( unsigned int )section_->nodes( ).size( );
+      unsigned int numNodes = static_cast<unsigned int>(section_->nodes( ).size( ));
       if ( numNodes > 1 )
       {
         nsol::NodePtr nsolJoint;
@@ -450,7 +450,7 @@ namespace nlgenerator
       uniqueSections_.insert( section_ );
 
       auto nodes = section_->nodes( );
-      unsigned int numNodes = ( unsigned int )nodes.size( );
+      unsigned int numNodes = static_cast<unsigned int>(nodes.size( ));
 
 
       auto startJointIt = joints_.find( nodes.front( ));

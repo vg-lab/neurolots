@@ -22,15 +22,14 @@
 #ifndef __NLGENERATOR_JOINT_NODE__
 #define __NLGENERATOR_JOINT_NODE__
 
-#include <nsol/nsol.h>
-
 #include "../nlgeometry/SectionQuad.h"
+
+#include <nsol/nsol.h>
 
 #include <nlgenerator/api.h>
 
 namespace nlgenerator
 {
-
   class JointNode;
   typedef JointNode* JointNodePtr;
   typedef std::vector< JointNodePtr > JointNodes;
@@ -38,7 +37,6 @@ namespace nlgenerator
   /* \class JointNode */
   class JointNode
   {
-
   public:
 
     /**
