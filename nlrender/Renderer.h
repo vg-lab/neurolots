@@ -164,6 +164,7 @@ namespace nlrender
         void render(
           nlgeometry::Meshes meshes_,
           const std::vector< Eigen::Matrix4f >& modelMatrices_,
+          const Eigen::Vector3f &baseColor,
           const std::vector< Eigen::Vector3f >& colors_,
           bool renderLines_ = true, bool renderTriangles_ = true,
           bool renderQuads_ = true) const;

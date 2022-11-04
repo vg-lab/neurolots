@@ -89,7 +89,6 @@ namespace nlrender
         _programQuadsFB->link( );
         _programQuadsFB->autocatching( );
 
-
         _programTriangles->loadVertexShaderFromText( nlrender::triangle_vert );
         _programTriangles->loadTesselationControlShaderFromText(
           nlrender::triangle_tcs );
@@ -98,7 +97,6 @@ namespace nlrender
         _programTriangles->loadFragmentShaderFromText( nlrender::triangle_frag );
         _programTriangles->compileAndLink( );
         _programTriangles->autocatching( );
-
 
         _programTrianglesFB->loadVertexShaderFromText( nlrender::triangle_vert );
         _programTrianglesFB->loadTesselationControlShaderFromText(
@@ -207,7 +205,6 @@ namespace nlrender
         glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, _tbos[1] );
 
         glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
-
     }
 
     Renderer::~Renderer( void )
@@ -221,7 +218,7 @@ namespace nlrender
         if ( _tfo != GL_INVALID_VALUE )
           glDeleteVertexArrays( 1, &_tfo );
         if ( _tbos.size( ) > 0 )
-          glDeleteBuffers( (GLsizei)_tbos.size( ), _tbos.data( ));
+          glDeleteBuffers( static_cast<GLsizei>(_tbos.size( )), _tbos.data( ));
     }
 
     Eigen::Matrix4f& Renderer::viewMatrix( void )
@@ -362,7 +359,7 @@ namespace nlrender
             _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
             _programLines->sendUniform3v( "color", color_.data( ));
             _programLines->sendUniformf( "alpha", _alpha );
-            for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+            for ( size_t i = 0; i < meshes_.size( ); i++ )
             {
                 viewModel = _viewMatrix * modelMatrices_[i];
                 _programLines->sendUniform4m( "viewModel", viewModel.data( ));
@@ -380,7 +377,7 @@ namespace nlrender
             _programTriangles->sendUniformf( "maxDist", _maximumDistance );
             _programTriangles->sendUniformf( "tng", _tng );
             _programTriangles->sendUniformf( "alpha", _alpha );
-            for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+            for ( size_t i = 0; i < meshes_.size( ); i++ )
             {
                 viewModel = _viewMatrix * modelMatrices_[i];
                 _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
@@ -401,7 +398,7 @@ namespace nlrender
             _programQuads->sendUniformf( "tng", _tng);
             _programQuads->sendUniformf( "alpha", _alpha );
 
-            for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
+            for ( size_t i = 0; i < meshes_.size( ); i++ )
             {
                 viewModel = _viewMatrix * modelMatrices_[i];
                 _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
@@ -420,6 +417,7 @@ namespace nlrender
 
     void Renderer::render( nlgeometry::Meshes meshes_,
             const std::vector< Eigen::Matrix4f >& modelMatrices_,
+            const Eigen::Vector3f &baseColor,
             const std::vector< Eigen::Vector3f >& colors_,
             bool renderLines_,
             bool renderTriangles_,
@@ -428,70 +426,66 @@ namespace nlrender
         if ( meshes_.size( ) != modelMatrices_.size( ) ||
             modelMatrices_.size( ) != colors_.size( ))
             throw std::runtime_error(
-                    "Meshes, model matrices and colors have differents size" );
+                    "Meshes, model matrices and colors have different size" );
 
         if ( _keepOpenGLServerStack )
             glPushAttrib( GL_ALL_ATTRIB_BITS );
 
         Eigen::Matrix4f viewModel;
 
-        if ( renderLines_ )
+        _programLines->use( );
+        _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
+        for (size_t i = 0; i < meshes_.size(); i++)
         {
-            _programLines->use( );
-            _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
-            for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
-            {
-                viewModel = _viewMatrix * modelMatrices_[i];
-                _programLines->sendUniform4m( "viewModel", viewModel.data( ));
-                _programLines->sendUniform3v( "color", colors_[i].data( ));
-                _programLines->sendUniformf( "alpha", _alpha );
-                glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
-                                       _lFragmentSubroutines.data( ));
-                meshes_[i]->renderLines( );
-            }
+          if( !renderLines_ && colors_[i] == baseColor ) continue;
+
+          viewModel = _viewMatrix * modelMatrices_[i];
+          _programLines->sendUniform4m("viewModel", viewModel.data());
+          _programLines->sendUniform3v("color", colors_[i].data());
+          _programLines->sendUniformf("alpha", _alpha);
+          glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+              _lFragmentSubroutines.data());
+          meshes_[i]->renderLines();
         }
-        if( renderTriangles_ )
+
+        _programTriangles->use();
+        _programTriangles->sendUniform4m("proy", _projectionMatrix.data());
+        _programTriangles->sendUniformf("lod", _lod);
+        _programTriangles->sendUniformf("maxDist", _maximumDistance);
+        _programTriangles->sendUniformf("tng", _tng);
+        _programTriangles->sendUniformf("alpha", _alpha);
+        for (size_t i = 0; i < meshes_.size(); i++)
         {
-            _programTriangles->use( );
-            _programTriangles->sendUniform4m( "proy",
-                    _projectionMatrix.data( ));
-            _programTriangles->sendUniformf( "lod", _lod );
-            _programTriangles->sendUniformf( "maxDist", _maximumDistance );
-            _programTriangles->sendUniformf( "tng", _tng );
-            _programTriangles->sendUniformf( "alpha", _alpha );
-            for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
-            {
-                viewModel = _viewMatrix * modelMatrices_[i];
-                _programTriangles->sendUniform4m( "viewModel",
-                        viewModel.data( ));
-                _programTriangles->sendUniform3v( "color", colors_[i].data( ));
-                glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
-                        _tVertexSubroutines.data( ) );
-                glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
-                        _tFragmentSubroutines.data( ));
-                meshes_[i]->renderTriangles( );
-            }
+          if (!renderTriangles_ && colors_[i] == baseColor) continue;
+
+          viewModel = _viewMatrix * modelMatrices_[i];
+          _programTriangles->sendUniform4m("viewModel", viewModel.data());
+          _programTriangles->sendUniform3v("color", colors_[i].data());
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, _tVertexSubroutines.data());
+          glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+              _tFragmentSubroutines.data());
+          meshes_[i]->renderTriangles();
         }
-        if ( renderQuads_ )
+
+        _programQuads->use();
+        _programQuads->sendUniform4m("proy", _projectionMatrix.data());
+        _programQuads->sendUniformf("lod", _lod);
+        _programQuads->sendUniformf("maxDist", _maximumDistance);
+        _programQuads->sendUniformf("tng", _tng);
+        _programQuads->sendUniformf("alpha", _alpha);
+        for (size_t i = 0; i < meshes_.size(); i++)
         {
-            _programQuads->use( );
-            _programQuads->sendUniform4m( "proy", _projectionMatrix.data( ));
-            _programQuads->sendUniformf( "lod", _lod);
-            _programQuads->sendUniformf( "maxDist", _maximumDistance);
-            _programQuads->sendUniformf( "tng", _tng);
-            _programQuads->sendUniformf( "alpha", _alpha );
-            for ( unsigned int i = 0; i < ( unsigned int )meshes_.size( ); i++ )
-            {
-                viewModel = _viewMatrix * modelMatrices_[i];
-                _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
-                _programQuads->sendUniform3v( "color", colors_[i].data( ));
-                glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
-                        _qVertexSubroutines.data( ) );
-                glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
-                        _qFragmentSubroutines.data( ));
-                meshes_[i]->renderQuads( );
-            }
+          if (!renderQuads_ && colors_[i] == baseColor) continue;
+
+          viewModel = _viewMatrix * modelMatrices_[i];
+          _programQuads->sendUniform4m("viewModel", viewModel.data());
+          _programQuads->sendUniform3v("color", colors_[i].data());
+          glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, _qVertexSubroutines.data());
+          glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+              _qFragmentSubroutines.data());
+          meshes_[i]->renderQuads();
         }
+
 
         if ( _keepOpenGLServerStack )
             glPopAttrib( );
@@ -754,7 +748,7 @@ namespace nlrender
         _opaqueTexture->bind( 0 );
         _accumTexture->bind( 1 );
         _revealageTexture->bind( 2 );
-        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) 0 );
+        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<void*>(0) );
     }
 
 
@@ -772,7 +766,7 @@ namespace nlrender
 
         nlgeometry::SpatialHashTable spht;
 
-        for ( unsigned int i = 0; i < ( unsigned int ) positions_.size( ) / 9;
+        for ( size_t i = 0; i < positions_.size( ) / 9;
               i ++ )
         {
             position = Eigen::Vector3f( positions_[i*9], positions_[i*9+1],
