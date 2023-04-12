@@ -48,6 +48,9 @@ namespace nlrender
     _programVDMCollec = new reto::ShaderProgram( );
     _programVDMCollecFB = new reto::ShaderProgram( );
 
+    _programPCA = new reto::ShaderProgram( );
+
+
     _programQuads->loadVertexShaderFromText( nlrender::quad_vert );
     _programQuads->loadTesselationControlShaderFromText(
       nlrender::quad_tcs );
@@ -103,6 +106,17 @@ namespace nlrender
     _programVDM->use( );
     _programVDM->sendUniformi( "vdmTex", 0 );
     _programVDM->sendUniformi( "normalTex", 1 );
+
+
+    _programPCA->loadVertexShaderFromText( nlrender::pca_vert );
+    _programPCA->loadTesselationControlShaderFromText( nlrender::pca_tcs );
+    _programPCA->loadTesselationEvaluationShaderFromText( nlrender::pca_tes );
+    _programPCA->loadFragmentShaderFromText( nlrender::pca_frag );
+    _programPCA->compileAndLink( );
+    _programPCA->autocatching( );
+    _programPCA->use( );
+    _programPCA->sendUniformi( "macroTexture", 0 );
+    _programPCA->sendUniformi( "spineInfo", 1 );
 
     _programVDMFB->loadVertexShaderFromText( nlrender::vdm_vert );
     _programVDMFB->loadTesselationControlShaderFromText( nlrender::vdm_tcs );
@@ -686,6 +700,44 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
       glPopAttrib( );
 
     return mesh;
+  }
+
+
+  void Renderer::PCARender( nlgeometry::VDMapPtr macroTexture,
+                            nlgeometry::VDMapPtr spineInfo,
+                            const Eigen::Matrix4f& modelMatrix_ )
+  {
+      if ( _keepOpenGLServerStack )
+      glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+    _programPCA->use( );
+    _programPCA->sendUniform4m( "proy", _projectionMatrix.data( ));
+
+    Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+    _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+    _programVDM->sendUniform4m( "model", modelMatrix_.data( ));
+    float maxTexel = macroTexture->size( ) - 1;
+    float invTexel = 1.0f / maxTexel;
+    unsigned int numSegments = ceil( macroTexture->size( ) / MAX_TESS_LEVEL );
+    unsigned int numVertices = numSegments * numSegments * 4;
+    unsigned int criteria = _tessCriteria;
+
+    _programPCA->sendUniformf( "lod", _lod / numSegments );
+    _programPCA->sendUniformf( "maxTexel", maxTexel );
+    _programPCA->sendUniformf( "invTexel", invTexel );
+    _programPCA->sendUniformf( "maxDist", _maximumDistance);
+
+    macroTexture->vdmTexture( )->bind( 0 );
+    spineInfo->vdmTexture( )->bind( 1 );
+
+
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+    glBindVertexArray( _getQuadVao( numSegments ));
+    glPatchParameteri( GL_PATCH_VERTICES, 4 );
+    glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
+
+    if ( _keepOpenGLServerStack )
+      glPopAttrib( );
   }
 
   nlgeometry::MeshPtr Renderer::_vectorToMesh(

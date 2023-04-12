@@ -176,6 +176,9 @@ namespace nlrender
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
       bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
+
+   
+
     // /**
     //  * Method that extract the given meshes
     //  * @param mesh_ meshes to extract
@@ -195,6 +198,17 @@ namespace nlrender
     NLRENDER_API
     nlgeometry::MeshPtr extract(
       nlgeometry::VDMapPtr vdmap_,
+      const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ));
+
+       /**
+     * Method that extract the given mesh from a PCA macrotexture
+     * @param mesh_ mesh to extract
+     * @return the extracted mesh
+     */
+    NLRENDER_API
+    void PCARender(
+      nlgeometry::VDMapPtr macroTexture,
+      nlgeometry::VDMapPtr spineInfo,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ));
 
   protected:
@@ -223,6 +237,9 @@ namespace nlrender
 
     //! Program to render vector displacement map
     reto::ShaderProgram* _programVDM;
+
+    //! Program to render a PCA texture
+    reto::ShaderProgram* _programPCA;
 
     //! Program to extrac vector displacement map meshes
     reto::ShaderProgram* _programVDMFB;

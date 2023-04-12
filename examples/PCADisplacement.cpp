@@ -35,7 +35,9 @@ reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 
 //Read
-nlgeometry::VDMapPtr vdmap;
+nlgeometry::VDMapPtr macroTexture;
+nlgeometry::VDMapPtr spineInfo;
+
 Eigen::Matrix4f model;
 unsigned int textureSize;
 
@@ -52,15 +54,15 @@ int main ( int argc, char* argv[])
   if(argc < 4)
   {
           std::cerr << "Error: Usage: " << argv[0] << "allSpinesTextures[.tiff] "
-            << "spineInfo[.tiff] " /*<< " spine index "*/ << " -out file[.obj|.off] "
+            << "spineInfoStr[.tiff] " /*<< " spine index "*/ << " -out file[.obj|.off] "
             << " -lod levelOfDetail[float]"<< std::endl;
   return 1;
   }
 
   //Las texturas, leidas como strings
   // porque arg[1], [2]?
-  std::string allSplineTextures( argv[1]);
-  std::string spineInfo (argv[2]);
+  std::string macroTextureStr( argv[1]);
+  std::string spineInfoStr (argv[2]);
   std::string outFile( "out.obj");
   float lod=64.0f;
   //uint spineIndex=atof(argv[3]);
@@ -85,7 +87,7 @@ int main ( int argc, char* argv[])
       catch(...)
       {
         std::cerr << "Error: Usage: " << argv[0] << "allSpinesTextures[.tiff] "
-                    << "spineInfo[.tiff]  -out file[.obj|.off] "
+                    << "spineInfoStr[.tiff]  -out file[.obj|.off] "
                     << " -lod levelOfDetail[float]"<< std::endl;
         return 1;        
       }        
@@ -100,23 +102,18 @@ int main ( int argc, char* argv[])
   renderer = new nlrender::Renderer();
   renderer->lod()= lod;
 
-  //Quiero
-  //No tengo necesidad de usar VDMap. Solo tengo que pasar la info necesaria
-  //entender la textura y separarla en 4 (columnas), leerla
-  //entender como un vector la infoEspina
-  //enviar la info precisa al shader
-  //Una vez todo funcione, ordenar
 
+  macroTexture= nlgeometry::VDMapReader::readVDMap(macroTextureStr, nullptr); //Este nullPtr puede petar. Si es así envia la textura de nuevo
+  spineInfo = nlgeometry::VDMapReader::readVDMap(spineInfoStr, nullptr); //Este nullPtr puede petar. Si es así envia 
 
-  vdmap= nlgeometry::VDMapReader::readVDMap(allSplineTextures, spineInfo);
   
   Eigen::Matrix4f projection(camera->projectionMatrix());
   renderer->projectionMatrix()=projection;
   Eigen::Matrix4f view(camera->viewMatrix());
   renderer->viewMatrix()=view;
 
-  nlgeometry::MeshPtr mesh=renderer->extract(vdmap);
-
+  renderer->PCARender(macroTexture, spineInfo);
+/*
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::AttribsFormat format( 2 );
   format[0] = nlgeometry::TAttribType::POSITION;
@@ -163,7 +160,7 @@ int main ( int argc, char* argv[])
   cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
 
   glutMainLoop( );
-  return 0;
+  return 0;*/
 
 }
 
