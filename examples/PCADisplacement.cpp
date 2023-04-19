@@ -51,7 +51,7 @@ void initOGL( void );
 
 int main ( int argc, char* argv[])
 {
-  if(argc < 4)
+  if(argc < 3)
   {
           std::cerr << "Error: Usage: " << argv[0] << "allSpinesTextures[.tiff] "
             << "spineInfoStr[.tiff] " /*<< " spine index "*/ << " -out file[.obj|.off] "
@@ -92,6 +92,7 @@ int main ( int argc, char* argv[])
         return 1;        
       }        
   }
+
   initContext(argc, argv);
   initOGL();
 
@@ -99,12 +100,13 @@ int main ( int argc, char* argv[])
   cController = new reto::OrbitalCameraController( camera );
   DemoCallbacks::camera(cController);
 
+
   renderer = new nlrender::Renderer();
   renderer->lod()= lod;
 
 
-  macroTexture= nlgeometry::VDMapReader::readVDMap(macroTextureStr, nullptr); //Este nullPtr puede petar. Si es así envia la textura de nuevo
-  spineInfo = nlgeometry::VDMapReader::readVDMap(spineInfoStr, nullptr); //Este nullPtr puede petar. Si es así envia 
+  macroTexture= nlgeometry::VDMapReader::readVDMap(macroTextureStr, macroTextureStr); //Sending twice to avoid constructing from a nullptr and making an error
+  spineInfo = nlgeometry::VDMapReader::readVDMap(spineInfoStr, spineInfoStr); 
 
   
   Eigen::Matrix4f projection(camera->projectionMatrix());
@@ -112,12 +114,17 @@ int main ( int argc, char* argv[])
   Eigen::Matrix4f view(camera->viewMatrix());
   renderer->viewMatrix()=view;
 
-  renderer->PCARender(macroTexture, spineInfo);
-/*
+  //renderer->PCARender(macroTexture, spineInfo);
+  // std::getchar();
+
+
+  nlgeometry::MeshPtr mesh=renderer->PCARender(macroTexture, spineInfo);
+
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::AttribsFormat format( 2 );
   format[0] = nlgeometry::TAttribType::POSITION;
   format[1] = nlgeometry::TAttribType::NORMAL;
+
 
   //for ( int i = 1; i < argc; i++ )
   //{
@@ -159,8 +166,9 @@ int main ( int argc, char* argv[])
   cController->position( aabb.center( ));
   cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
 
+
   glutMainLoop( );
-  return 0;*/
+  return 0;
 
 }
 

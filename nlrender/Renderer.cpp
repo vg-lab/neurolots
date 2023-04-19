@@ -108,13 +108,18 @@ namespace nlrender
     _programVDM->sendUniformi( "normalTex", 1 );
 
 
-    _programPCA->loadVertexShaderFromText( nlrender::pca_vert );
-    _programPCA->loadTesselationControlShaderFromText( nlrender::pca_tcs );
-    _programPCA->loadTesselationEvaluationShaderFromText( nlrender::pca_tes );
-    _programPCA->loadFragmentShaderFromText( nlrender::pca_frag );
-    _programPCA->compileAndLink( );
+    _programPCA->loadVertexShaderFromText( nlrender::vdm_vert);//pca_vert );
+    _programPCA->loadTesselationControlShaderFromText( nlrender::vdm_tcs);//pca_tcs );
+    _programPCA->loadTesselationEvaluationShaderFromText( nlrender::vdm_tes);//pca_tes );
+    _programPCA->loadGeometryShaderFromText( nlrender::quad_geom);//pca_frag );
+
+    _programPCA->create( );
+    _programPCA->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    _programPCA->link( );
     _programPCA->autocatching( );
     _programPCA->use( );
+    //_programPCA->sendUniformi( "vdmTex", 0 );
+    //_programPCA->sendUniformi( "normalTex", 1 );
     _programPCA->sendUniformi( "macroTexture", 0 );
     _programPCA->sendUniformi( "spineInfo", 1 );
 
@@ -703,25 +708,40 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
   }
 
 
-  void Renderer::PCARender( nlgeometry::VDMapPtr macroTexture,
+  nlgeometry::MeshPtr  Renderer::PCARender( nlgeometry::VDMapPtr macroTexture,
                             nlgeometry::VDMapPtr spineInfo,
                             const Eigen::Matrix4f& modelMatrix_ )
   {
-      if ( _keepOpenGLServerStack )
+     if ( _keepOpenGLServerStack )
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
+    glDisable( GL_CULL_FACE );
+    glEnable( GL_RASTERIZER_DISCARD );
+
+    unsigned int query = 0;
+    unsigned int trianglesSize = 0;
+
+    std::vector< float > _extractedVertices;
+    std::vector< float > _extractedNormals;
+
+    glGenQueries( 1, &query );
+
+    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
     _programPCA->use( );
     _programPCA->sendUniform4m( "proy", _projectionMatrix.data( ));
-
+    _programPCA->sendUniform4m( "model", modelMatrix_.data( ));
     Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
-    _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
-    _programVDM->sendUniform4m( "model", modelMatrix_.data( ));
+    _programPCA->sendUniform4m( "viewModel", viewModel.data( ));
+
+
     float maxTexel = macroTexture->size( ) - 1;
     float invTexel = 1.0f / maxTexel;
     unsigned int numSegments = ceil( macroTexture->size( ) / MAX_TESS_LEVEL );
     unsigned int numVertices = numSegments * numSegments * 4;
     unsigned int criteria = _tessCriteria;
 
+
+    
     _programPCA->sendUniformf( "lod", _lod / numSegments );
     _programPCA->sendUniformf( "maxTexel", maxTexel );
     _programPCA->sendUniformf( "invTexel", invTexel );
@@ -730,14 +750,60 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     macroTexture->vdmTexture( )->bind( 0 );
     spineInfo->vdmTexture( )->bind( 1 );
 
-
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
     glBindVertexArray( _getQuadVao( numSegments ));
     glPatchParameteri( GL_PATCH_VERTICES, 4 );
     glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
 
+    glEndQuery( GL_PRIMITIVES_GENERATED );
+    glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
+    trianglesSize *= 9;
+
+    if ( trianglesSize > 0 )
+    {
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                    GL_STATIC_READ );
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+      glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * trianglesSize, nullptr,
+                    GL_STATIC_READ );
+
+      glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
+      glBeginTransformFeedback( GL_TRIANGLES );
+
+      glPatchParameteri( GL_PATCH_VERTICES, 4 );
+      glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
+
+      glEndTransformFeedback( );
+      glFlush( );
+
+      glEndQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN );
+      glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
+      trianglesSize *= 9;
+
+      glBindVertexArray( 0 );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+      _extractedVertices.resize( trianglesSize );
+      _extractedNormals.resize( trianglesSize );
+
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[0] );
+      glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                          _extractedVertices.data( ));
+      glBindBuffer( GL_ARRAY_BUFFER, _tbos[1] );
+      glGetBufferSubData( GL_ARRAY_BUFFER, 0, sizeof( float ) * trianglesSize,
+                          _extractedNormals.data( ));
+    }
+
+    glDisable( GL_RASTERIZER_DISCARD );
+    glDeleteQueries( 1, &query );
+
+    auto mesh = _vectorToMesh( _extractedVertices, _extractedNormals );
+
     if ( _keepOpenGLServerStack )
       glPopAttrib( );
+
+    return mesh;
   }
 
   nlgeometry::MeshPtr Renderer::_vectorToMesh(

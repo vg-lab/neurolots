@@ -206,7 +206,7 @@ namespace nlrender
      * @return the extracted mesh
      */
     NLRENDER_API
-    void PCARender(
+    nlgeometry::MeshPtr  PCARender(
       nlgeometry::VDMapPtr macroTexture,
       nlgeometry::VDMapPtr spineInfo,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ));
