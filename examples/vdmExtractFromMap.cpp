@@ -111,6 +111,11 @@ int main( int argc, char* argv[ ])
 
   auto mesh = renderer->extract( vdmap );
 
+   std::cout << "Loaded " << argv[0] << " with: "
+                << mesh->vertices( ).size( ) << " vertices, "
+                << mesh->triangles( ).size( ) << " triangles and "
+                << mesh->quads( ).size( ) << " quads" << std::endl;
+
   auto fileExt = boost::filesystem::extension( outFile );
   if ( fileExt.compare( ".obj" ) == 0 )
   {

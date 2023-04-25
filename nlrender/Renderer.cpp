@@ -108,10 +108,10 @@ namespace nlrender
     _programVDM->sendUniformi( "normalTex", 1 );
 
 
-    _programPCA->loadVertexShaderFromText( nlrender::vdm_vert);//pca_vert );
-    _programPCA->loadTesselationControlShaderFromText( nlrender::vdm_tcs);//pca_tcs );
-    _programPCA->loadTesselationEvaluationShaderFromText( nlrender::vdm_tes);//pca_tes );
-    _programPCA->loadGeometryShaderFromText( nlrender::quad_geom);//pca_frag );
+    _programPCA->loadVertexShaderFromText( nlrender::pca_vert);
+    _programPCA->loadTesselationControlShaderFromText( nlrender::pca_tcs);
+    _programPCA->loadTesselationEvaluationShaderFromText( nlrender::pca_tes);
+    _programPCA->loadGeometryShaderFromText( nlrender::quad_geom);
 
     _programPCA->create( );
     _programPCA->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
@@ -746,6 +746,8 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     _programPCA->sendUniformf( "maxTexel", maxTexel );
     _programPCA->sendUniformf( "invTexel", invTexel );
     _programPCA->sendUniformf( "maxDist", _maximumDistance);
+
+    //_programPCA->sendUniform4v("spineInfo", spineInfo->vdmTexture())
 
     macroTexture->vdmTexture( )->bind( 0 );
     spineInfo->vdmTexture( )->bind( 1 );

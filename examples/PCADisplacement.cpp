@@ -114,11 +114,21 @@ int main ( int argc, char* argv[])
   Eigen::Matrix4f view(camera->viewMatrix());
   renderer->viewMatrix()=view;
 
-  //renderer->PCARender(macroTexture, spineInfo);
-  // std::getchar();
-
 
   nlgeometry::MeshPtr mesh=renderer->PCARender(macroTexture, spineInfo);
+  /*
+
+  auto fileExt = boost::filesystem::extension( outFile );
+  if ( fileExt.compare( ".obj" ) == 0 )
+  {
+    nlgeometry::ObjWriter::writeMesh( mesh, outFile );
+    std::cout << "Mesh saved to " << outFile << std::endl;
+  }
+  else if ( fileExt.compare( ".off" ) == 0 )
+  {
+    nlgeometry::OffWriter::writeMesh( mesh, outFile );
+    std::cout << "Mesh saved to " << outFile << std::endl;
+  }*/
 
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::AttribsFormat format( 2 );
