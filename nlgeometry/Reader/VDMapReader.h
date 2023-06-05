@@ -48,6 +48,17 @@ namespace nlgeometry
                                           unsigned int& size_ );
 
   };
+
+  class PCAReader
+  {
+    public:
+    static VDMapPtr readPCATexture(const std::string& pcaFile);
+
+    static nlgeometry::PCACompMapPtr readMacrotextureComponents(const std::string* pcaComponentsPath, int& numComponentes);
+
+    static std::vector <void *> _readTexture( const std::string& fileName_,
+                                          unsigned int& size_ );
+  };
 }
 
 #endif

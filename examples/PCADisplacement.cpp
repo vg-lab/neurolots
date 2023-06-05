@@ -35,7 +35,7 @@ reto::AbstractCameraController* cController;
 nlrender::Renderer* renderer;
 
 //Read
-nlgeometry::VDMapPtr macroTexture;
+nlgeometry::PCACompMapPtr macroTexture;
 nlgeometry::VDMapPtr spineInfo;
 
 Eigen::Matrix4f model;
@@ -53,19 +53,35 @@ int main ( int argc, char* argv[])
 {
   if(argc < 3)
   {
-          std::cerr << "Error: Usage: " << argv[0] << "allSpinesTextures[.tiff] "
-            << "spineInfoStr[.tiff] " /*<< " spine index "*/ << " -out file[.obj|.off] "
+          std::cerr << "Error: Usage: " << argv[0] << " LaPrimeraEspina path" << argv[1] << " num of componentes a usar"<<
+            " -out file[.obj|.off] "
             << " -lod levelOfDetail[float]"<< std::endl;
   return 1;
   }
 
+  int numComponents=  std::stoi(argv[2]);
+
   //Las texturas, leidas como strings
   // porque arg[1], [2]?
-  std::string macroTextureStr( argv[1]);
-  std::string spineInfoStr (argv[2]);
+  std::string path=argv[1];
+  std::string macroTextureBaseStr( path );
+  std::string spineNormalStr ( path + "C1-700000000-pca_normal.tiff");
+  std::string spineInfoStr ( path + "C1-700000000-pca.tif"); 
   std::string outFile( "out.obj");
   float lod=64.0f;
-  //uint spineIndex=atof(argv[3]);
+
+std::cout << "spineNormal " << spineNormalStr << std::endl;
+std::cout << "spine " << spineInfoStr << std::endl;
+
+
+std::string macroTextureComponentsStr[numComponents];
+for(int i= 0; i <numComponents; i++)
+{  
+  macroTextureComponentsStr[i]= macroTextureBaseStr + "pc_" + std::to_string(i) + ".tiff";
+  std::cout << "component " << macroTextureComponentsStr[i] << std::endl;
+
+}
+
 
   for(int i=3; i < argc;i++)
   {
@@ -105,8 +121,11 @@ int main ( int argc, char* argv[])
   renderer->lod()= lod;
 
 
-  macroTexture= nlgeometry::VDMapReader::readVDMap(macroTextureStr, macroTextureStr); //Sending twice to avoid constructing from a nullptr and making an error
-  spineInfo = nlgeometry::VDMapReader::readVDMap(spineInfoStr, spineInfoStr); 
+  //unsigned int size;
+//  std::vector <void *> a = nlgeometry::PCAReader::_readTexture(spineInfoStr, size); 
+
+  macroTexture= nlgeometry::PCAReader::readMacrotextureComponents(macroTextureComponentsStr,numComponents);
+  spineInfo = nlgeometry::VDMapReader::readVDMap(spineInfoStr, spineNormalStr); 
 
   
   Eigen::Matrix4f projection(camera->projectionMatrix());
@@ -114,7 +133,7 @@ int main ( int argc, char* argv[])
   Eigen::Matrix4f view(camera->viewMatrix());
   renderer->viewMatrix()=view;
 
-
+/*
   nlgeometry::MeshPtr mesh=renderer->PCARender(macroTexture, spineInfo);
   /*
 
@@ -129,6 +148,8 @@ int main ( int argc, char* argv[])
     nlgeometry::OffWriter::writeMesh( mesh, outFile );
     std::cout << "Mesh saved to " << outFile << std::endl;
   }*/
+
+  /*
 
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::AttribsFormat format( 2 );
@@ -176,7 +197,7 @@ int main ( int argc, char* argv[])
   cController->position( aabb.center( ));
   cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
 
-
+*/
   glutMainLoop( );
   return 0;
 

@@ -81,6 +81,36 @@ namespace nlgeometry
     return _size;
   }
 
+    PCAComponentMap::PCAComponentMap( void )
+    : _textureComponents( nullptr )
+    , _size( 0 )
+  {
+
+  }
+
+  PCAComponentMap::~PCAComponentMap( void )
+  {
+    if ( _textureComponents )
+      delete _textureComponents;
+  }
+
+  reto::Texture2DArray* PCAComponentMap::textureComponents( void )
+  {
+    return _textureComponents;
+  }
+
+
+  void PCAComponentMap::textureComponents( reto::Texture2DArray* textureComponents_ )
+  {
+    _textureComponents = textureComponents_;
+  }
+
+  unsigned int& PCAComponentMap::size( void )
+  {
+    return _size;
+  }
+
+
   VDMapCollection::VDMapCollection( void )
     : _vdmapsSize( 0 )
     , _macroMap( nullptr )

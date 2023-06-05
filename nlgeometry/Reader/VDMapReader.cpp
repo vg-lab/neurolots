@@ -72,6 +72,68 @@ namespace nlgeometry
     return vdmap;
   }
 
+   VDMapPtr PCAReader::readPCATexture(const std::string& pcaFile)
+   {
+    //TODO: tu lo que quieres es cambiar como se cargan las texturas en GPU. 
+   }
+
+
+
+  nlgeometry::PCACompMapPtr PCAReader::readMacrotextureComponents(const std::string* pcaComponentsPath, int& numComponentes)
+  {
+    unsigned int componentSize;
+    std::vector<void*> components;
+   // std::vector <void *> data{pixels.data(), pixels.data() + pixels.size()};
+
+
+    std::vector<void*> componentTexture = PCAReader::_readTexture( pcaComponentsPath[0], componentSize );
+    for(int i=0; i<numComponentes;i++)
+    {
+        componentTexture = PCAReader::_readTexture( pcaComponentsPath[i], componentSize );
+
+        std::cout << "component " << std::to_string(i)<< " size " << componentTexture.size() << std:: endl; 
+
+
+        for (int i=0; i<componentTexture.size(); i++) 
+        {
+          components.push_back(componentTexture[i]); 
+        }
+    } 
+
+    std::cout << "componentents size " << components.size() << std:: endl; 
+
+    
+
+    if ( numComponentes * componentSize != numComponentes *65) //65 es el width. es por tener algo con lo que saber que aqui existe algo
+    {
+      std::cout<<"algo s'ha roto" << std::endl;
+    //  if ( componentTexture == nullptr) delete componentTexture;
+      return nullptr;
+    }
+
+    auto texConfig = reto::TextureConfig();
+    texConfig.internalFormat=GL_RGB32F;
+    texConfig.format= GL_RGB;
+    texConfig.type= GL_FLOAT;
+    texConfig.wrapS= GL_CLAMP_TO_EDGE;
+    texConfig.wrapT= GL_CLAMP_TO_EDGE;
+    
+
+    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, components, componentSize,componentSize );
+
+
+
+
+
+    auto pcaComponentMap = new PCAComponentMap( ); //TODO: esto en VDMAP cpp no está hecho
+    //vdmap->vdmTexture( vdmTexture );
+    //vdmap->normalTexture( normalTexture );
+    //vdmap->size( ) = vdmSize;
+    return pcaComponentMap;
+  }
+
+
+
   VDMapCollectionPtr VDMapReader::readVDMapCollection(
 #ifdef NEUROLOTS_USE_QT5CORE
     const std::string& fileName_ )
@@ -262,5 +324,72 @@ namespace nlgeometry
     return nullptr;
   }
 #endif
+
+
+  std::vector <void *> PCAReader::_readTexture(
+#ifdef NEUROLOTS_USE_TIFF
+    const std::string& fileName_, unsigned int& size_ )
+  {
+    TIFF* tifFile = TIFFOpen( fileName_.c_str( ), "r" );
+
+    TIFFGetField( tifFile, TIFFTAG_IMAGEWIDTH, &size_ );
+
+    unsigned int rowBytesSize = size_ * 3 * 4;
+    std::vector< float > pixels( size_ * size_ * 3 );
+    unsigned char * buf = ( unsigned char* )_TIFFmalloc( rowBytesSize );
+
+    for ( unsigned int row = 0; row < size_; row++ )
+    {
+      if ( TIFFReadScanline( tifFile, buf, row ) < 0 )
+        break;
+      memcpy( &pixels[ row*size_*3 ], buf, rowBytesSize );
+    }
+    _TIFFfree( buf );
+    TIFFClose( tifFile );
+
+    auto texConfig = reto::TextureConfig( );
+    texConfig.internalFormat = GL_RGB32F;
+    texConfig.format = GL_RGB;
+    texConfig.type = GL_FLOAT;
+    texConfig.wrapS = GL_CLAMP_TO_EDGE;
+    texConfig.wrapT = GL_CLAMP_TO_EDGE;
+
+    std::vector <void *> data{pixels.data(), pixels.data() + pixels.size()};
+
+    std::vector <float> dataf{pixels.data(), pixels.data() + pixels.size()};
+
+    for (int i=0; i<pixels.size(); i++) 
+    {
+      //data.push_back( reinterpret_cast<void *> (pixels[i]));
+    }
+ 
+    //Si transformas el data a std::vector <float> verás como si que están los valores de las texturas
+   std::cout << "pues no tengo ni idea de si estoy copiando los datos." <<std::endl;
+
+    for( size_t i = 0 ; i <  pixels.size() ; i++ )
+    {
+       std::cout << dataf[i] << " " ;
+    }
+
+   /* int count=0;
+    for( size_t i = 0 ; i < size_ *size_ ; i++ )
+    {
+      count++;
+       std::cout << pixels.data()[i] << " " ;
+    }
+
+    std::cout << "size is " << std::to_string(count) << std::endl ;*/
+
+    return data;
+    //return pixels.data( );
+  }
+#else
+  const std::string& /*fileName*/, unsigned int& /*size_*/ )
+  {
+    std::cerr << "libtiff not supported" << std::endl;
+    return nullptr;
+  }
+#endif
+
 
 }

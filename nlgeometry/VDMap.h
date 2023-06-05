@@ -61,8 +61,40 @@ namespace nlgeometry
 
     unsigned int _size;
   };
-
+  
   typedef VDMap* VDMapPtr;
+
+
+  class PCAComponentMap
+  {
+
+  public:
+
+    NLGEOMETRY_API
+    PCAComponentMap( void );
+
+    NLGEOMETRY_API
+    ~PCAComponentMap( void );
+
+    NLGEOMETRY_API
+    reto::Texture2DArray* textureComponents( void );
+
+    NLGEOMETRY_API
+    void textureComponents( reto::Texture2DArray* textureComponents_ );
+
+    NLGEOMETRY_API
+    unsigned int& size( void );
+
+  private:
+
+    reto::Texture2DArray* _textureComponents;
+
+
+    unsigned int _size;
+  };
+  typedef PCAComponentMap* PCACompMapPtr;
+
+
 
   class VDMapCollection
   {
