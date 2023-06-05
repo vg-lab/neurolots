@@ -82,11 +82,10 @@ namespace nlgeometry
   nlgeometry::PCACompMapPtr PCAReader::readMacrotextureComponents(const std::string* pcaComponentsPath, int& numComponentes)
   {
     unsigned int componentSize;
-    std::vector<void*> components;
-   // std::vector <void *> data{pixels.data(), pixels.data() + pixels.size()};
+    std::vector<float> components;
 
 
-    std::vector<void*> componentTexture = PCAReader::_readTexture( pcaComponentsPath[0], componentSize );
+    std::vector<float> componentTexture;
     for(int i=0; i<numComponentes;i++)
     {
         componentTexture = PCAReader::_readTexture( pcaComponentsPath[i], componentSize );
@@ -94,20 +93,26 @@ namespace nlgeometry
         std::cout << "component " << std::to_string(i)<< " size " << componentTexture.size() << std:: endl; 
 
 
-        for (int i=0; i<componentTexture.size(); i++) 
+        for (int j=0; j<componentTexture.size(); j++) 
         {
-          components.push_back(componentTexture[i]); 
+          components.push_back(componentTexture[j]); 
         }
     } 
 
     std::cout << "componentents size " << components.size() << std:: endl; 
 
+    std::vector <void *> componentsVoid{components.data(), components.data() + components.size()};
+
+    for (int i=0; i<componentTexture.size(); i++) 
+    {
+      componentsVoid.push_back(&componentTexture[i]); 
+    }
     
 
     if ( numComponentes * componentSize != numComponentes *65) //65 es el width. es por tener algo con lo que saber que aqui existe algo
     {
       std::cout<<"algo s'ha roto" << std::endl;
-    //  if ( componentTexture == nullptr) delete componentTexture;
+       //componentTexture.clear();
       return nullptr;
     }
 
@@ -117,18 +122,15 @@ namespace nlgeometry
     texConfig.type= GL_FLOAT;
     texConfig.wrapS= GL_CLAMP_TO_EDGE;
     texConfig.wrapT= GL_CLAMP_TO_EDGE;
-    
-
-    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, components, componentSize,componentSize );
 
 
 
+    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, componentsVoid, componentSize,componentSize );
 
+    auto pcaComponentMap = new PCAComponentMap( ); 
+    pcaComponentMap->textureComponents(componentMap);
+    pcaComponentMap->size()= componentSize * componentSize * numComponentes * 3;
 
-    auto pcaComponentMap = new PCAComponentMap( ); //TODO: esto en VDMAP cpp no está hecho
-    //vdmap->vdmTexture( vdmTexture );
-    //vdmap->normalTexture( normalTexture );
-    //vdmap->size( ) = vdmSize;
     return pcaComponentMap;
   }
 
@@ -326,7 +328,7 @@ namespace nlgeometry
 #endif
 
 
-  std::vector <void *> PCAReader::_readTexture(
+  std::vector <float> PCAReader::_readTexture(
 #ifdef NEUROLOTS_USE_TIFF
     const std::string& fileName_, unsigned int& size_ )
   {
@@ -354,23 +356,6 @@ namespace nlgeometry
     texConfig.wrapS = GL_CLAMP_TO_EDGE;
     texConfig.wrapT = GL_CLAMP_TO_EDGE;
 
-    std::vector <void *> data{pixels.data(), pixels.data() + pixels.size()};
-
-    std::vector <float> dataf{pixels.data(), pixels.data() + pixels.size()};
-
-    for (int i=0; i<pixels.size(); i++) 
-    {
-      //data.push_back( reinterpret_cast<void *> (pixels[i]));
-    }
- 
-    //Si transformas el data a std::vector <float> verás como si que están los valores de las texturas
-   std::cout << "pues no tengo ni idea de si estoy copiando los datos." <<std::endl;
-
-    for( size_t i = 0 ; i <  pixels.size() ; i++ )
-    {
-       std::cout << dataf[i] << " " ;
-    }
-
    /* int count=0;
     for( size_t i = 0 ; i < size_ *size_ ; i++ )
     {
@@ -380,8 +365,7 @@ namespace nlgeometry
 
     std::cout << "size is " << std::to_string(count) << std::endl ;*/
 
-    return data;
-    //return pixels.data( );
+    return pixels;
   }
 #else
   const std::string& /*fileName*/, unsigned int& /*size_*/ )

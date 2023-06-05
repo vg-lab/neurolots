@@ -56,7 +56,7 @@ namespace nlgeometry
 
     static nlgeometry::PCACompMapPtr readMacrotextureComponents(const std::string* pcaComponentsPath, int& numComponentes);
 
-    static std::vector <void *> _readTexture( const std::string& fileName_,
+    static std::vector <float> _readTexture( const std::string& fileName_,
                                           unsigned int& size_ );
   };
 }
