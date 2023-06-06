@@ -72,9 +72,52 @@ namespace nlgeometry
     return vdmap;
   }
 
-   VDMapPtr PCAReader::readPCATexture(const std::string& pcaFile)
+   reto::Texture1D* PCAReader::readPCATexture(const std::string& pcaFile, unsigned int& width_)
    {
-    //TODO: tu lo que quieres es cambiar como se cargan las texturas en GPU. 
+    TIFF* tifFile = TIFFOpen( pcaFile.c_str( ), "r" );
+
+
+    TIFFGetField( tifFile, TIFFTAG_IMAGEWIDTH, &width_ );
+
+    const float height=1;
+    const float monochrome=1;
+
+
+    unsigned int rowBytesSize = width_ * monochrome * 4; //sizeof(int) is 4 bytes
+    std::vector< float > pixels( width_ * height * monochrome );
+    unsigned char * buf = ( unsigned char* )_TIFFmalloc( rowBytesSize );
+
+
+    //TODO: esto creo que lee más de una fila bastante fijisimo
+    for ( unsigned int row = 0; row < width_; row++ )
+    {
+      if ( TIFFReadScanline( tifFile, buf, row ) < 0 )
+        break;
+      memcpy( &pixels[ row*width_*monochrome ], buf, rowBytesSize );
+    }
+    _TIFFfree( buf );
+    TIFFClose( tifFile );
+
+    auto texConfig = reto::TextureConfig( );
+    texConfig.internalFormat = GL_RGB32F;
+    texConfig.format = GL_R32F; //por darle uno
+    texConfig.type = GL_FLOAT;
+    texConfig.wrapS = GL_CLAMP_TO_EDGE;
+    texConfig.wrapT = GL_CLAMP_TO_EDGE;
+
+    std::cout << "Espina" << std::endl ;
+    int count=0;
+
+
+    for( size_t i = 0 ; i < width_ *height ; i++ )
+    {
+      count++;
+       std::cout << pixels.data()[i] << " " ;
+    }
+    std::cout << std:: endl;
+
+
+    return new reto::Texture1D( texConfig, pixels.data( ), width_ );
    }
 
 
@@ -125,7 +168,7 @@ namespace nlgeometry
 
 
 
-    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, componentsVoid, componentSize,componentSize );
+    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, componentsVoid, numComponentes, componentSize,componentSize );
 
     auto pcaComponentMap = new PCAComponentMap( ); 
     pcaComponentMap->textureComponents(componentMap);

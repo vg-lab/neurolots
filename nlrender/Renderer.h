@@ -207,8 +207,10 @@ namespace nlrender
      */
     NLRENDER_API
     nlgeometry::MeshPtr  PCARender(
-      nlgeometry::VDMapPtr macroTexture,
-      nlgeometry::VDMapPtr spineInfo,
+      nlgeometry::PCACompMapPtr macroTexture,
+      reto::Texture1D* spineInfo,
+      nlgeometry::VDMapPtr normalVDM,
+      const int& numComponentes,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ));
 
   protected:

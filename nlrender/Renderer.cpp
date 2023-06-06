@@ -118,10 +118,10 @@ namespace nlrender
     _programPCA->link( );
     _programPCA->autocatching( );
     _programPCA->use( );
-    //_programPCA->sendUniformi( "vdmTex", 0 );
-    //_programPCA->sendUniformi( "normalTex", 1 );
     _programPCA->sendUniformi( "macroTexture", 0 );
     _programPCA->sendUniformi( "spineInfo", 1 );
+    _programPCA->sendUniformi( "normalTex", 2 );
+
 
     _programVDMFB->loadVertexShaderFromText( nlrender::vdm_vert );
     _programVDMFB->loadTesselationControlShaderFromText( nlrender::vdm_tcs );
@@ -708,8 +708,10 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
   }
 
 
-  nlgeometry::MeshPtr  Renderer::PCARender( nlgeometry::VDMapPtr macroTexture,
-                            nlgeometry::VDMapPtr spineInfo,
+  nlgeometry::MeshPtr  Renderer::PCARender( nlgeometry::PCACompMapPtr macroTexture,
+                            reto::Texture1D* spineInfo,
+                            nlgeometry::VDMapPtr normalVDM,
+                            const int& numComponentes,
                             const Eigen::Matrix4f& modelMatrix_ )
   {
      if ( _keepOpenGLServerStack )
@@ -747,10 +749,10 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     _programPCA->sendUniformf( "invTexel", invTexel );
     _programPCA->sendUniformf( "maxDist", _maximumDistance);
 
-    //_programPCA->sendUniform4v("spineInfo", spineInfo->vdmTexture())
+    macroTexture->textureComponents( )->bind( 0 );
+    spineInfo->bind( 1 );
+    normalVDM->normalTexture( )->bind( 2 );
 
-    macroTexture->vdmTexture( )->bind( 0 );
-    spineInfo->vdmTexture( )->bind( 1 );
 
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
     glBindVertexArray( _getQuadVao( numSegments ));
