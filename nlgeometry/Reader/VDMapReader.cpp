@@ -68,7 +68,7 @@ namespace nlgeometry
     auto vdmap = new VDMap( );
     vdmap->vdmTexture( vdmTexture );
     vdmap->normalTexture( normalTexture );
-    vdmap->size( ) = vdmSize;
+    vdmap->size( ) = normalSize;
     return vdmap;
   }
 
@@ -80,21 +80,25 @@ namespace nlgeometry
     TIFFGetField( tifFile, TIFFTAG_IMAGEWIDTH, &width_ );
 
     const float height=1;
-    const float monochrome=1;
 
 
-    unsigned int rowBytesSize = width_ * monochrome * 4; //sizeof(int) is 4 bytes
-    std::vector< float > pixels( width_ * height * monochrome );
+    unsigned int rowBytesSize = width_ * 3 * 4; //sizeof(int) is 4 bytes
+    std::vector< float > pixels( width_ * height * 3 );
     unsigned char * buf = ( unsigned char* )_TIFFmalloc( rowBytesSize );
 
 
-    //TODO: esto creo que lee más de una fila bastante fijisimo
-    for ( unsigned int row = 0; row < width_; row++ )
+    //Necesito una sola linea, fuera el for
+   /* for ( unsigned int row = 0; row < width_; row++ )
     {
       if ( TIFFReadScanline( tifFile, buf, row ) < 0 )
         break;
       memcpy( &pixels[ row*width_*monochrome ], buf, rowBytesSize );
-    }
+    }*/
+
+    if ( TIFFReadScanline( tifFile, buf, 0 ) < 0 )
+      return nullptr;
+    memcpy( &pixels[0], buf, rowBytesSize );
+
     _TIFFfree( buf );
     TIFFClose( tifFile );
 
@@ -105,19 +109,19 @@ namespace nlgeometry
     texConfig.wrapS = GL_CLAMP_TO_EDGE;
     texConfig.wrapT = GL_CLAMP_TO_EDGE;
 
-    std::cout << "Espina" << std::endl ;
+    std::cout << "Espina -> rowBytesSize " << std::to_string(rowBytesSize) << std::endl ;
     int count=0;
 
 
-    for( size_t i = 0 ; i < width_ *height ; i++ )
+    for( size_t i = 0 ; i < width_ *3 ; i++ )
     {
       count++;
        std::cout << pixels.data()[i] << " " ;
     }
-    std::cout << std:: endl;
+    std::cout<< "Size :" << std::to_string(count) << std:: endl;
 
+    new reto::Texture1D( texConfig, pixels.data( ), width_ );
 
-    return new reto::Texture1D( texConfig, pixels.data( ), width_ );
    }
 
 

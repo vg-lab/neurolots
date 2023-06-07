@@ -725,6 +725,7 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
 
     std::vector< float > _extractedVertices;
     std::vector< float > _extractedNormals;
+    std::cout << "we in boyz "<< std::endl;
 
     glGenQueries( 1, &query );
 
