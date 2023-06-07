@@ -72,7 +72,7 @@ namespace nlgeometry
     return vdmap;
   }
 
-   reto::Texture1D* PCAReader::readPCATexture(const std::string& pcaFile, unsigned int& width_)
+   std::vector <float> PCAReader::readPCATexture(const std::string& pcaFile, unsigned int& width_)
    {
     TIFF* tifFile = TIFFOpen( pcaFile.c_str( ), "r" );
 
@@ -86,17 +86,9 @@ namespace nlgeometry
     std::vector< float > pixels( width_ * height * 3 );
     unsigned char * buf = ( unsigned char* )_TIFFmalloc( rowBytesSize );
 
-
-    //Necesito una sola linea, fuera el for
-   /* for ( unsigned int row = 0; row < width_; row++ )
-    {
-      if ( TIFFReadScanline( tifFile, buf, row ) < 0 )
-        break;
-      memcpy( &pixels[ row*width_*monochrome ], buf, rowBytesSize );
-    }*/
-
-    if ( TIFFReadScanline( tifFile, buf, 0 ) < 0 )
-      return nullptr;
+    //if ( TIFFReadScanline( tifFile, buf, 0 ) < 0 )
+      //return nullptr;
+    TIFFReadScanline( tifFile, buf, 0 );
     memcpy( &pixels[0], buf, rowBytesSize );
 
     _TIFFfree( buf );
@@ -110,7 +102,7 @@ namespace nlgeometry
     texConfig.wrapT = GL_CLAMP_TO_EDGE;
 
     std::cout << "Espina -> rowBytesSize " << std::to_string(rowBytesSize) << std::endl ;
-    int count=0;
+   /* int count=0;
 
 
     for( size_t i = 0 ; i < width_ *3 ; i++ )
@@ -118,10 +110,11 @@ namespace nlgeometry
       count++;
        std::cout << pixels.data()[i] << " " ;
     }
-    std::cout<< "Size :" << std::to_string(count) << std:: endl;
+    std::cout<< "Size :" << std::to_string(count) << std:: endl;*/
 
-    new reto::Texture1D( texConfig, pixels.data( ), width_ );
+    //return new reto::Texture1D( texConfig, pixels.data( ), width_ );
 
+    return pixels;
    }
 
 
@@ -169,8 +162,6 @@ namespace nlgeometry
     texConfig.type= GL_FLOAT;
     texConfig.wrapS= GL_CLAMP_TO_EDGE;
     texConfig.wrapT= GL_CLAMP_TO_EDGE;
-
-
 
     reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, componentsVoid, numComponentes, componentSize,componentSize );
 

@@ -36,7 +36,7 @@ nlrender::Renderer* renderer;
 
 //Read
 nlgeometry::PCACompMapPtr macroTexture;
-reto::Texture1D* spineInfo;
+std::vector <float> spineInfo;
 nlgeometry::VDMapPtr vdmap;
 
 
@@ -125,17 +125,11 @@ for(int i= 0; i <numComponents; i++)
 
 
   macroTexture= nlgeometry::PCAReader::readMacrotextureComponents(macroTextureComponentsPath,numComponents);
-    std::cout << "Como"<< std::endl;
 
   unsigned int spineSize;
-  spineInfo = nlgeometry::PCAReader::readPCATexture(spineInfoPath, spineSize); 
-
-      std::cout << "me rio  "<< std::endl;
-
-    vdmap= nlgeometry::VDMapReader::readVDMap(spineNormalPath,spineNormalPath);
-
-    std::cout << "yo! "<< std::endl;
-
+  spineInfo = nlgeometry::PCAReader::readPCATexture(spineInfoPath, spineSize);
+   
+  vdmap= nlgeometry::VDMapReader::readVDMap(spineNormalPath,spineNormalPath);
   
   Eigen::Matrix4f projection(camera->projectionMatrix());
   renderer->projectionMatrix()=projection;
@@ -143,7 +137,7 @@ for(int i= 0; i <numComponents; i++)
   renderer->viewMatrix()=view;
 
 
-  //nlgeometry::MeshPtr mesh=renderer->PCARender(macroTexture, spineInfo, vdmap, numComponents);
+  nlgeometry::MeshPtr mesh=renderer->PCARender(macroTexture, spineInfo, vdmap, numComponents);
 
 
   /*
@@ -158,9 +152,13 @@ for(int i= 0; i <numComponents; i++)
   {
     nlgeometry::OffWriter::writeMesh( mesh, outFile );
     std::cout << "Mesh saved to " << outFile << std::endl;
+  }
+  else
+  {
+    std::cout << "NoMesh "<< std::endl;
   }*/
 
-  /*
+  
 
   nlgeometry::AxisAlignedBoundingBox aabb;
   nlgeometry::AttribsFormat format( 2 );
@@ -208,7 +206,7 @@ for(int i= 0; i <numComponents; i++)
   cController->position( aabb.center( ));
   cController->radius( aabb.radius( ) / sin( 3.1416f * 0.25f ));
 
-*/
+
   glutMainLoop( );
 
   //Tengo un segmentation fault que me sale despues de leer las componentes. Es al cerrar el programa. 

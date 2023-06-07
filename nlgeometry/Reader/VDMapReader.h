@@ -52,7 +52,7 @@ namespace nlgeometry
   class PCAReader
   {
     public:
-    static reto::Texture1D* readPCATexture(const std::string& pcaFile, unsigned int& size_);
+    static std::vector <float> readPCATexture(const std::string& pcaFile, unsigned int& size_);
 
     static nlgeometry::PCACompMapPtr readMacrotextureComponents(const std::string* pcaComponentsPath, int& numComponentes);
 
