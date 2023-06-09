@@ -208,7 +208,7 @@ namespace nlrender
     NLRENDER_API
     nlgeometry::MeshPtr  PCARender(
       nlgeometry::PCACompMapPtr macroTexture,
-      std::vector <float> spineInfo,
+      reto::Texture1D* spineInfo,
       nlgeometry::VDMapPtr normalVDM,
       const int& numComponentes,
       const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ));

@@ -36,7 +36,7 @@ nlrender::Renderer* renderer;
 
 //Read
 nlgeometry::PCACompMapPtr macroTexture;
-std::vector <float> spineInfo;
+reto::Texture1D* spineInfo;
 nlgeometry::VDMapPtr vdmap;
 
 
@@ -68,7 +68,7 @@ int main ( int argc, char* argv[])
   std::string path=argv[1];
   std::string macroTextureBaseStr( path );
   std::string spineNormalPath ( path + "C1-700000001-recons_normal.tiff");
-  std::string spineInfoPath ( path + "C1-700000001-pca.tif"); 
+  std::string spineInfoPath ( path + "C1-700000001-pca.tiff"); 
   std::string outFile( "out.obj");
   float lod=64.0f;
 
@@ -128,6 +128,7 @@ for(int i= 0; i <numComponents; i++)
 
   unsigned int spineSize;
   spineInfo = nlgeometry::PCAReader::readPCATexture(spineInfoPath, spineSize);
+  
    
   vdmap= nlgeometry::VDMapReader::readVDMap(spineNormalPath,spineNormalPath);
   

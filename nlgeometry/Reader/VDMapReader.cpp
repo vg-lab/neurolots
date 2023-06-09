@@ -72,22 +72,18 @@ namespace nlgeometry
     return vdmap;
   }
 
-   std::vector <float> PCAReader::readPCATexture(const std::string& pcaFile, unsigned int& width_)
+   reto::Texture1D* PCAReader::readPCATexture(const std::string& pcaFile, unsigned int& width_)
    {
     TIFF* tifFile = TIFFOpen( pcaFile.c_str( ), "r" );
-
 
     TIFFGetField( tifFile, TIFFTAG_IMAGEWIDTH, &width_ );
 
     const float height=1;
 
-
-    unsigned int rowBytesSize = width_ * 3 * 4; //sizeof(int) is 4 bytes
-    std::vector< float > pixels( width_ * height * 3 );
+    unsigned int rowBytesSize = 1056;
+    std::vector< float > pixels( width_ * height* 3 );
     unsigned char * buf = ( unsigned char* )_TIFFmalloc( rowBytesSize );
 
-    //if ( TIFFReadScanline( tifFile, buf, 0 ) < 0 )
-      //return nullptr;
     TIFFReadScanline( tifFile, buf, 0 );
     memcpy( &pixels[0], buf, rowBytesSize );
 
@@ -96,25 +92,31 @@ namespace nlgeometry
 
     auto texConfig = reto::TextureConfig( );
     texConfig.internalFormat = GL_RGB32F;
-    texConfig.format = GL_R32F; //por darle uno
+    texConfig.format = GL_RGB; //por darle uno
     texConfig.type = GL_FLOAT;
     texConfig.wrapS = GL_CLAMP_TO_EDGE;
     texConfig.wrapT = GL_CLAMP_TO_EDGE;
 
     std::cout << "Espina -> rowBytesSize " << std::to_string(rowBytesSize) << std::endl ;
-   /* int count=0;
+    int count=0;
+      
+    /*for( size_t i = 0 ; i < width_*3 ; i++ )
+    {
+      count++;
+      std::cout << pixels.data()[i] << " ";
+    }*/
 
+    std::vector<float> data;
 
     for( size_t i = 0 ; i < width_ *3 ; i++ )
     {
-      count++;
-       std::cout << pixels.data()[i] << " " ;
+      data.push_back(10);
     }
-    std::cout<< "Size :" << std::to_string(count) << std:: endl;*/
+    std::cout<< "Size :" << std::to_string(count) << std:: endl;
 
-    //return new reto::Texture1D( texConfig, pixels.data( ), width_ );
+    return new reto::Texture1D( texConfig, data.data(), width_ );
 
-    return pixels;
+    //return pixels;
    }
 
 
@@ -122,11 +124,11 @@ namespace nlgeometry
   nlgeometry::PCACompMapPtr PCAReader::readMacrotextureComponents(const std::string* pcaComponentsPath, int& numComponentes)
   {
     unsigned int componentSize;
-    std::vector<float> components;
+    std::vector<void*> components;
 
 
     std::vector<float> componentTexture;
-    for(int i=0; i<numComponentes;i++)
+   /* for(int i=0; i<numComponentes;i++)
     {
         componentTexture = PCAReader::_readTexture( pcaComponentsPath[i], componentSize );
 
@@ -135,26 +137,23 @@ namespace nlgeometry
 
         for (int j=0; j<componentTexture.size(); j++) 
         {
-          components.push_back(componentTexture[j]); 
+          components.push_back(&componentTexture[j]); 
         }
-    } 
+        componentTexture.clear();
+    } */
+
+
+
+     float a =3.1415;
+    for (int j=0; j<65*65*3*4; j++) 
+    {
+      components.push_back(&(a)); 
+    }
+
+    componentTexture.clear();
 
     std::cout << "componentents size " << components.size() << std:: endl; 
 
-    std::vector <void *> componentsVoid{components.data(), components.data() + components.size()};
-
-    for (int i=0; i<componentTexture.size(); i++) 
-    {
-      componentsVoid.push_back(&componentTexture[i]); 
-    }
-    
-
-    if ( numComponentes * componentSize != numComponentes *65) //65 es el width. es por tener algo con lo que saber que aqui existe algo
-    {
-      std::cout<<"algo s'ha roto" << std::endl;
-       //componentTexture.clear();
-      return nullptr;
-    }
 
     auto texConfig = reto::TextureConfig();
     texConfig.internalFormat=GL_RGB32F;
@@ -163,11 +162,11 @@ namespace nlgeometry
     texConfig.wrapS= GL_CLAMP_TO_EDGE;
     texConfig.wrapT= GL_CLAMP_TO_EDGE;
 
-    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, componentsVoid, numComponentes, componentSize,componentSize );
+    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, components, numComponentes, componentSize,componentSize );
 
     auto pcaComponentMap = new PCAComponentMap( ); 
     pcaComponentMap->textureComponents(componentMap);
-    pcaComponentMap->size()= componentSize * componentSize * numComponentes * 3;
+    pcaComponentMap->size()= components.size();
 
     return pcaComponentMap;
   }
