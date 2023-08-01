@@ -122,6 +122,7 @@ for(int i= 0; i <numComponents; i++)
   renderer = new nlrender::Renderer();
   renderer->lod()= lod;
 
+  printf("OpenGL version supported by this platform (%s): \n", glGetString(GL_VERSION));
 
 
   macroTexture= nlgeometry::PCAReader::readMacrotextureComponents(macroTextureComponentsPath,numComponents);

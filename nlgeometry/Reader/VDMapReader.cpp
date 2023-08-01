@@ -80,7 +80,7 @@ namespace nlgeometry
 
     const float height=1;
 
-    unsigned int rowBytesSize = 1056;
+    unsigned int rowBytesSize = 100*4;
     std::vector< float > pixels( width_ * height* 3 );
     unsigned char * buf = ( unsigned char* )_TIFFmalloc( rowBytesSize );
 
@@ -100,11 +100,11 @@ namespace nlgeometry
     std::cout << "Espina -> rowBytesSize " << std::to_string(rowBytesSize) << std::endl ;
     int count=0;
       
-    /*for( size_t i = 0 ; i < width_*3 ; i++ )
+    for( size_t i = 0 ; i < width_*3 ; i++ )
     {
       count++;
       std::cout << pixels.data()[i] << " ";
-    }*/
+    }
 
     std::vector<float> data;
 
@@ -142,17 +142,20 @@ namespace nlgeometry
         componentTexture.clear();
     } */
 
-
-
-     float a =3.1415;
-    for (int j=0; j<65*65*3*4; j++) 
+    std::vector<std::vector<float>> componentArray;
+    for(int i; i<4; i++)
     {
-      components.push_back(&(a)); 
+        std::vector<float> componentData;
+        float a =10;
+
+        for (int j=0; j<65*65*3; j++) 
+        {
+          componentTexture.push_back(a); 
+        }
+        componentArray.push_back(componentTexture);
+
+        std::cout << "componentents size " << components.size() << std:: endl; 
     }
-
-    componentTexture.clear();
-
-    std::cout << "componentents size " << components.size() << std:: endl; 
 
 
     auto texConfig = reto::TextureConfig();
@@ -162,7 +165,7 @@ namespace nlgeometry
     texConfig.wrapS= GL_CLAMP_TO_EDGE;
     texConfig.wrapT= GL_CLAMP_TO_EDGE;
 
-    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, components, numComponentes, componentSize,componentSize );
+    reto::Texture2DArray * componentMap= new reto::Texture2DArray( texConfig, componentArray, numComponentes, componentSize,componentSize );
 
     auto pcaComponentMap = new PCAComponentMap( ); 
     pcaComponentMap->textureComponents(componentMap);

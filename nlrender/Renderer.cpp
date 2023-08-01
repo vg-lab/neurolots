@@ -118,10 +118,15 @@ namespace nlrender
     _programPCA->link( );
     _programPCA->autocatching( );
     _programPCA->use( );
-    //_programPCA->sendUniformi( "spineInfo", 1 );
+    std::cout << "normalTexture " << std::endl;
     _programPCA->sendUniformi( "normalTex", 0 );
+    std::cout << "macro " << std::endl;
     _programPCA->sendUniformi( "macroTexture", 1 );
+    std::cout << "spineInfo " << std::endl;
     _programPCA->sendUniformi( "spineInfo", 2 );
+    
+    //std::string brosa;
+    //std::cin >> brosa;
 
 
 
@@ -730,12 +735,18 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
 
     glGenQueries( 1, &query );
 
+    std::string brosa;
+
     glBeginQuery( GL_PRIMITIVES_GENERATED, query );
     _programPCA->use( );
+    //std::cout << "proy" << std::endl;
     _programPCA->sendUniform4m( "proy", _projectionMatrix.data( ));
+    //std::cout << "model" << std::endl;
     _programPCA->sendUniform4m( "model", modelMatrix_.data( ));
+    //std::cout << "viewModel" << std::endl;
     Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
     _programVDM->sendUniform4m( "viewModel", viewModel.data( ));
+    
     float maxTexel = normalVDM->size( ) - 1;
     float invTexel = 1.0f / maxTexel;
     unsigned int numSegments = ceil( normalVDM->size( ) / MAX_TESS_LEVEL );
@@ -751,6 +762,7 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     _programPCA->sendUniformi("numComponents", numComponentes);
 
     normalVDM->normalTexture()->bind( 0 );
+
     macroTexture->textureComponents()->bind(1);
     spineInfo->bind(2);
 
