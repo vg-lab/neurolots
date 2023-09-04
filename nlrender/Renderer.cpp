@@ -20,6 +20,8 @@
  *
  */
 #include "Renderer.h"
+#include "../examples/Shaders.h"
+
 
 #include "Shaders.h"
 
@@ -111,10 +113,17 @@ namespace nlrender
     _programPCA->loadVertexShaderFromText( nlrender::pca_vert);
     _programPCA->loadTesselationControlShaderFromText( nlrender::pca_tcs);
     _programPCA->loadTesselationEvaluationShaderFromText( nlrender::pca_tes);
-    _programPCA->loadGeometryShaderFromText( nlrender::quad_geom);
+
+    _programPCA->loadFragmentShaderFromText( examples::example_frag );
+
+
+    //_programPCA->loadGeometryShaderFromText( nlrender::quad_geom);
 
     _programPCA->create( );
-    _programPCA->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS );
+    //Transform feedback. Keep in mind fbVaryings which are only outValue1 for position and
+    //outValue2 for normal. I don't know why GL_Separate instead of interleaved->
+    //In interleaved mode, all captured outputs go into the same buffer, interleaved with one another. In separate mode, each captured output goes into a separate buffer. 
+    //_programPCA->feedbackVarying( fbVaryings, 2, GL_SEPARATE_ATTRIBS ); 
     _programPCA->link( );
     _programPCA->autocatching( );
     _programPCA->use( );
@@ -125,8 +134,6 @@ namespace nlrender
     std::cout << "spineInfo " << std::endl;
     _programPCA->sendUniformi( "spineInfo", 2 );
     
-    //std::string brosa;
-    //std::cin >> brosa;
 
 
 
@@ -174,9 +181,12 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     _programVDMCollecFB->sendUniformi( "vdmTex", 0 );
     _programVDMCollecFB->sendUniformi( "normalTex", 1 );
 */
+
+    //transform feeback vbos
     _tbos.resize( 2 );
     glGenBuffers( 2, _tbos.data( ));
 
+    //transform feeback vao
     glGenTransformFeedbacks( 1, &_tfo );
     glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
 
@@ -722,10 +732,8 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
                             const Eigen::Matrix4f& modelMatrix_ )
   {
  if ( _keepOpenGLServerStack )
-      glPushAttrib( GL_ALL_ATTRIB_BITS );
-
-    glDisable( GL_CULL_FACE );
-    glEnable( GL_RASTERIZER_DISCARD );
+    glPushAttrib( GL_ALL_ATTRIB_BITS );
+    //glDisable( GL_CULL_FACE );
 
     unsigned int query = 0;
     unsigned int trianglesSize = 0;
@@ -733,11 +741,6 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     std::vector< float > _extractedVertices;
     std::vector< float > _extractedNormals;
 
-    glGenQueries( 1, &query );
-
-    std::string brosa;
-
-    glBeginQuery( GL_PRIMITIVES_GENERATED, query );
     _programPCA->use( );
     //std::cout << "proy" << std::endl;
     _programPCA->sendUniform4m( "proy", _projectionMatrix.data( ));
@@ -756,24 +759,25 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
     _programPCA->sendUniformf( "maxTexel", maxTexel );
     _programPCA->sendUniformf( "invTexel", invTexel );
     _programPCA->sendUniformf( "maxDist", _maximumDistance);
+    glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
+
 
     std::cout<< "numComponents "  << std::to_string(numComponentes) << std::endl;
 
     _programPCA->sendUniformi("numComponents", numComponentes);
 
     normalVDM->normalTexture()->bind( 0 );
-
     macroTexture->textureComponents()->bind(1);
     spineInfo->bind(2);
 
     glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, &criteria );
-    glBindVertexArray( _getQuadVao( numSegments ));
+    glBindVertexArray( _getQuadVao( numSegments )); //Aquí mete el plano
     glPatchParameteri( GL_PATCH_VERTICES, 4 );
     glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
 
     glEndQuery( GL_PRIMITIVES_GENERATED );
     glGetQueryObjectuiv( query, GL_QUERY_RESULT, &trianglesSize );
-    trianglesSize *= 9;
+    trianglesSize *= 9; // hacemos 9 veces mas triangulos que lo que habia antes?
 
     if ( trianglesSize > 0 )
     {
@@ -786,9 +790,10 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
 
       glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
       glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, _tfo );
-      glBeginTransformFeedback( GL_TRIANGLES );
+      glBeginTransformFeedback( GL_TRIANGLES ); //aqui es donde empieza el transform feedback. Como hemos hecho un query para dibujar lo puede hacer despues.
 
       glPatchParameteri( GL_PATCH_VERTICES, 4 );
+      //While transform feedback mode is active (and not paused), if you execute a drawing command, all outputs that are set to be captured by the final vertex processing stage will be recorded to the bound buffers.
       glDrawElements( GL_PATCHES, numVertices, GL_UNSIGNED_INT, 0 );
 
       glEndTransformFeedback( );
@@ -799,7 +804,7 @@ error: tessellation evaluation shader input `tcModel' has no matching output in 
       trianglesSize *= 9;
 
       glBindVertexArray( 0 );
-      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+      glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 ); //TODO: mirar bien lo los feedback objects
       _extractedVertices.resize( trianglesSize );
       _extractedNormals.resize( trianglesSize );
 
