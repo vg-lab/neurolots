@@ -11,8 +11,8 @@ of detail, providing either homogeneous or adaptive resolution along the model.
 The soma shape is recovered from the incomplete information of the tracings,
 applying a physical deformation model that can be interactively adjusted.
 
-See [NeuroTessMesh web page](http://gmrv.es/neurotessmesh/) and
-[NeuroTessMesh  manual](http://gmrv.es/neurotessmesh/NeuroTessMeshUserManual.pdf)
+See [NeuroTessMesh web page](http://vg-lab.es/neurotessmesh/) and
+[NeuroTessMesh  manual](http://vg-lab.es/neurotessmesh/NeuroTessMeshUserManual.pdf)
 for a complete description and sample data tests.
 
 ## Dependencies
@@ -34,7 +34,7 @@ Sierra and Windows 10 64-bits with Visual Studio 2013. Please ensure that you
 build the Release version in order to get the best performance possible.
 
 ```bash
-git clone https://github.com/gmrvvis/neurolots
+git clone https://github.com/vg-lab/neurolots
 mkdir neurolots/build && cd neurolots/build
 git submodule update --init
 cmake .. -DCLONE_SUBPROJECTS=ON
@@ -45,4 +45,4 @@ make
 
 You can access the online API documentation generated from the source
 (using [Doxygen](http://doxygen.org/) ) in
-https://gmrvvis.github.io/doc/neurolots/
+https://vg-lab.github.io/doc/neurolots/

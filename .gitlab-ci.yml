@@ -24,8 +24,8 @@ Ubuntu-Subproject-master:
   - export CMAKE_EXTRA_TARGETS="neurolots-tests doxygen"
   - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
   - export BUILD_GENERATOR="Ninja"
-  - export DEPLOY_DOC_REPO="git@github.com:gmrvvis/gmrvvis.github.io"
-  - export GITHUB_MIRROR_URL="git@github.com:gmrvvis/neurolots"
+  - export DEPLOY_DOC_REPO="git@github.com:vg-lab/vg-lab.github.io"
+  - export GITHUB_MIRROR_URL="git@github.com:vg-lab/neurolots"
   - bash .gitlab-ci.sh
  only:
   - master
