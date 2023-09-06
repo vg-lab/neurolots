@@ -36,7 +36,7 @@ endif()
 
 include( GitExternal )
 
-set( COMMON_PROJECT_DOMAIN gmrv.es )
+set( COMMON_PROJECT_DOMAIN vg-lab.es )
 set( NEUROLOTS_DESCRIPTION "NeuroLOTs" )
 
 option( NEUROLOTS_WITH_EXAMPLES "NEUROLOTS_WITH_EXAMPLES" ON )
