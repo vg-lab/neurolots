@@ -11,8 +11,8 @@ of detail, providing either homogeneous or adaptive resolution along the model.
 The soma shape is recovered from the incomplete information of the tracings,
 applying a physical deformation model that can be interactively adjusted.
 
-See [NeuroTessMesh web page](http://vg-lab.es/neurotessmesh/) and
-[NeuroTessMesh  manual](http://vg-lab.es/neurotessmesh/NeuroTessMeshUserManual.pdf)
+See [NeuroTessMesh web page](http://vg-lab.es/neurolots/) and
+[NeuroTessMesh  manual](https://neurotessmesh-documentation.readthedocs.io/en/latest/)
 for a complete description and sample data tests.
 
 ## Dependencies
