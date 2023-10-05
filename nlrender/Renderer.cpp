@@ -36,6 +36,8 @@
 #include <GL/glu.h>
 #endif
 
+#define UNUSED(x) (void)(x)
+
 namespace nlrender
 {
 
@@ -288,7 +290,7 @@ namespace nlrender
         if ( _keepOpenGLServerStack )
           glPushAttrib( GL_ALL_ATTRIB_BITS );
 
-        Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+        const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
 
         if ( renderLines_ )
         {
@@ -301,6 +303,7 @@ namespace nlrender
                   _lFragmentSubroutines.data( ));
             mesh_->renderLines( );
         }
+
         if( renderTriangles_ )
         {
             _programTriangles->use( );
@@ -317,6 +320,7 @@ namespace nlrender
                   _tFragmentSubroutines.data( ));
             mesh_->renderTriangles( );
         }
+
         if ( renderQuads_ )
         {
             _programQuads->use( );
@@ -333,6 +337,7 @@ namespace nlrender
                   _qFragmentSubroutines.data( ));
             mesh_->renderQuads( );
         }
+
         if ( _keepOpenGLServerStack )
             glPopAttrib( );
     }
@@ -345,13 +350,10 @@ namespace nlrender
             bool renderQuads_ ) const
     {
         if ( meshes_.size( ) != modelMatrices_.size( ))
-            throw std::runtime_error(
-                    "Meshes and model matrices have differents size" );
+            throw std::runtime_error( "Meshes and model matrices have different sizes" );
 
         if ( _keepOpenGLServerStack )
             glPushAttrib( GL_ALL_ATTRIB_BITS );
-
-        Eigen::Matrix4f viewModel;
 
         if ( renderLines_ )
         {
@@ -361,13 +363,13 @@ namespace nlrender
             _programLines->sendUniformf( "alpha", _alpha );
             for ( size_t i = 0; i < meshes_.size( ); i++ )
             {
-                viewModel = _viewMatrix * modelMatrices_[i];
-                _programLines->sendUniform4m( "viewModel", viewModel.data( ));
-                glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
-                        _lFragmentSubroutines.data( ));
-                meshes_[i]->renderLines( );
+              const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
+              _programLines->sendUniform4m( "viewModel", viewModel.data( ));
+              glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2, _lFragmentSubroutines.data( ));
+              meshes_[i]->renderLines( );
             }
         }
+
         if( renderTriangles_ )
         {
             _programTriangles->use( );
@@ -379,15 +381,14 @@ namespace nlrender
             _programTriangles->sendUniformf( "alpha", _alpha );
             for ( size_t i = 0; i < meshes_.size( ); i++ )
             {
-                viewModel = _viewMatrix * modelMatrices_[i];
-                _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
-                glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
-                        _tVertexSubroutines.data( ));
-                glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
-                        _tFragmentSubroutines.data( ));
-                meshes_[i]->renderTriangles( );
+              const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
+              _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
+              glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, _tVertexSubroutines.data( ));
+              glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2, _tFragmentSubroutines.data( ));
+              meshes_[i]->renderTriangles( );
             }
         }
+
         if ( renderQuads_ )
         {
             _programQuads->use( );
@@ -400,13 +401,11 @@ namespace nlrender
 
             for ( size_t i = 0; i < meshes_.size( ); i++ )
             {
-                viewModel = _viewMatrix * modelMatrices_[i];
-                _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
-                glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
-                        _qVertexSubroutines.data( ));
-                glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
-                        _qFragmentSubroutines.data( ));
-                meshes_[i]->renderQuads( );
+              const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
+              _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
+              glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, _qVertexSubroutines.data( ));
+              glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2, _qFragmentSubroutines.data( ));
+              meshes_[i]->renderQuads( );
             }
         }
 
@@ -417,31 +416,35 @@ namespace nlrender
 
     void Renderer::render( nlgeometry::Meshes meshes_,
             const std::vector< Eigen::Matrix4f >& modelMatrices_,
-            const Eigen::Vector3f &baseColor,
+            const std::vector< Eigen::Vector3f >& baseColors,
             const std::vector< Eigen::Vector3f >& colors_,
             bool renderLines_,
             bool renderTriangles_,
             bool renderQuads_ ) const
     {
+      // TODO: @felix 2023-06-28 Manage colors_ != baseColors...
+      // @felix 2023-10-05 Pending a working method for spike
+      // representations.
+      UNUSED(colors_);
+
         if ( meshes_.size( ) != modelMatrices_.size( ) ||
-            modelMatrices_.size( ) != colors_.size( ))
+            modelMatrices_.size( ) != baseColors.size( ))
             throw std::runtime_error(
-                    "Meshes, model matrices and colors have different size" );
+                    "Meshes, model matrices and colors have different sizes" );
 
         if ( _keepOpenGLServerStack )
             glPushAttrib( GL_ALL_ATTRIB_BITS );
-
-        Eigen::Matrix4f viewModel;
 
         _programLines->use( );
         _programLines->sendUniform4m( "proy", _projectionMatrix.data( ));
         for (size_t i = 0; i < meshes_.size(); i++)
         {
-          if( !renderLines_ && colors_[i] == baseColor ) continue;
+          if( !renderLines_ ) continue;
+          // else if( colors_[i] == baseColors[i] ) continue;
 
-          viewModel = _viewMatrix * modelMatrices_[i];
+          const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
           _programLines->sendUniform4m("viewModel", viewModel.data());
-          _programLines->sendUniform3v("color", colors_[i].data());
+          _programLines->sendUniform3v("color", baseColors[i].data());
           _programLines->sendUniformf("alpha", _alpha);
           glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
               _lFragmentSubroutines.data());
@@ -456,11 +459,12 @@ namespace nlrender
         _programTriangles->sendUniformf("alpha", _alpha);
         for (size_t i = 0; i < meshes_.size(); i++)
         {
-          if (!renderTriangles_ && colors_[i] == baseColor) continue;
+          if (!renderTriangles_ ) continue;
+          // else if( colors_[i] == baseColors[i] ) continue;
 
-          viewModel = _viewMatrix * modelMatrices_[i];
+          const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
           _programTriangles->sendUniform4m("viewModel", viewModel.data());
-          _programTriangles->sendUniform3v("color", colors_[i].data());
+          _programTriangles->sendUniform3v("color", baseColors[i].data());
           glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, _tVertexSubroutines.data());
           glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
               _tFragmentSubroutines.data());
@@ -475,17 +479,17 @@ namespace nlrender
         _programQuads->sendUniformf("alpha", _alpha);
         for (size_t i = 0; i < meshes_.size(); i++)
         {
-          if (!renderQuads_ && colors_[i] == baseColor) continue;
+          if (!renderQuads_ ) continue;
+          // else if( colors_[i] == baseColors[i] ) continue;
 
-          viewModel = _viewMatrix * modelMatrices_[i];
+          const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrices_[i];
           _programQuads->sendUniform4m("viewModel", viewModel.data());
-          _programQuads->sendUniform3v("color", colors_[i].data());
+          _programQuads->sendUniform3v("color", baseColors[i].data());
           glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1, _qVertexSubroutines.data());
           glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
               _qFragmentSubroutines.data());
           meshes_[i]->renderQuads();
         }
-
 
         if ( _keepOpenGLServerStack )
             glPopAttrib( );

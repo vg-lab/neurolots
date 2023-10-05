@@ -136,6 +136,12 @@ namespace nlrender
         /**
          * Method that renderize the given mesh
          * @param mesh_ mesh to renderize
+         * @param modelMatrix model matrix transform.
+         * @param color_ Rendering color of the mesh, default gray.
+         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderQuads_ True to render mesh quads and false otherwise.
+         * @param renderLines_ True to render mesh lines and false otherwise.
+         *
          */
         NLRENDER_API
         void render(
@@ -146,7 +152,13 @@ namespace nlrender
           bool renderLines = true ) const;
         /**
          * Method that renderize the given meshes
-         * @param mesh_ meshes to renderize
+         * @param meshes_ meshes to renderize
+         * @param modelMatrices Model matrices transform.
+         * @param color_ Rendering color of the meshes, default gray.
+         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderQuads_ True to render mesh quads and false otherwise.
+         * @param renderLines_ True to render mesh lines and false otherwise.
+         *
          */
         NLRENDER_API
         void render(
@@ -158,13 +170,20 @@ namespace nlrender
 
         /**
          * Method that renderize the given meshes
-         * @param mesh_ meshes to renderize
+         * @param meshes_ meshes to renderize
+         * @param modelMatrices Model matrices transform.
+         * @param baseColors Default mesh colors.
+         * @param color_ Rendering color of the meshes, default gray.
+         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderQuads_ True to render mesh quads and false otherwise.
+         * @param renderLines_ True to render mesh lines and false otherwise.
+         *
          */
         NLRENDER_API
         void render(
           nlgeometry::Meshes meshes_,
           const std::vector< Eigen::Matrix4f >& modelMatrices_,
-          const Eigen::Vector3f &baseColor,
+          const std::vector< Eigen::Vector3f >& baseColors,
           const std::vector< Eigen::Vector3f >& colors_,
           bool renderLines_ = true, bool renderTriangles_ = true,
           bool renderQuads_ = true) const;
