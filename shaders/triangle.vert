@@ -11,7 +11,8 @@ out vec3 vCenter;
 out vec3 vColor;
 out float vlot;
 
-uniform mat4 viewModel;
+uniform mat4 view;
+uniform mat4 model;
 uniform float lod;
 uniform float maxDist;
 
@@ -20,8 +21,8 @@ uniform float maxDist;
 
 void main( void )
 {
-  vPosition = ( viewModel * vec4(inVertex, 1.0 )).xyz;
-  vCenter = ( viewModel * vec4( inCenter, 1.0 )).xyz;
+  vPosition = ( view * model * vec4(inVertex, 1.0 )).xyz;
+  vCenter = ( view * model * vec4( inCenter, 1.0 )).xyz;
   vColor = inColor;
   vlot = levelDist( vCenter );
 }

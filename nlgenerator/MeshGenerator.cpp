@@ -84,7 +84,7 @@ namespace nlgenerator
       joint->computeGeometry( );
     }
 
-    Icosphere icosphere( somaCenter, somaRadius * alphaRadius_, 3 );
+    Icosphere icosphere( somaCenter, somaRadius * alphaRadius_, 2 );
 
     mesh->triangles( ) = icosphere.compute( firstJoints );
 
@@ -329,7 +329,7 @@ namespace nlgenerator
     }
 
     Icosphere icosphere( morphology_->soma( )->center( ),
-                         morphology_->soma( )->meanRadius( ), 3 );
+                         morphology_->soma( )->meanRadius( ), 2 );
 
     mesh->triangles( ) = icosphere.compute( firstJoints );
 

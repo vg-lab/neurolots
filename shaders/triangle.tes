@@ -12,7 +12,7 @@ out vec3 normal;
 out vec3 vColor;
 out vec3 L;
 
-uniform mat4 proy;
+uniform mat4 proj;
 
 void main( )
 {
@@ -36,5 +36,5 @@ void main( )
   // tePosition = tcPosition[0]*u+tcPosition[1]*v+tcPosition[2]*w;
   L = normalize(-tePosition);
   position = tePosition;
-  gl_Position = proy*vec4(tePosition,1);
+  gl_Position = proj*vec4(tePosition,1);
 }
