@@ -24,7 +24,7 @@
 
 #include "Vertex.h"
 
-#include <nlgeometry/api.h>
+#include <nlgeometry/nlgeometry_export.h>
 
 namespace nlgeometry
 {
@@ -52,14 +52,14 @@ namespace nlgeometry
      * @param vertex2_ pointer to the third triangle/quad vertex
      * @param vertex3_ pointer to the fourth quad vertex
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Facet( VertexPtr vertex0_ = nullptr, VertexPtr vertex1_ = nullptr,
            VertexPtr vertex2_ = nullptr, VertexPtr vertex3_ = nullptr );
 
     /**
      * Default destructor
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     ~Facet( void )
     {};
 
@@ -67,47 +67,47 @@ namespace nlgeometry
      * Method to get the first triangle/quad vertex pointer
      * @return first triangle/quad vertex pointer
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     VertexPtr& vertex0( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const VertexPtr& vertex0( void ) const;
 
     /**
      * Method to get the second triangle/quad vertex pointer
      * @return second triangle/quad vertex pointer
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     VertexPtr& vertex1( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const VertexPtr& vertex1( void ) const;
 
     /**
      * Method to get the third triangle/quad vertex pointer
      * @return first triangle/quad vertex pointer
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     VertexPtr& vertex2( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const VertexPtr& vertex2( void ) const;
 
     /**
      * Method to get the fourth triangle/quad vertex pointer
      * @return fourth quad vertex pointer
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     VertexPtr& vertex3( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const VertexPtr& vertex3( void ) const;
 
     /**
      * Method that store the facet vertices attribs and assigns the vertices ids
      * @param attribs_ reference to the vertex attribs to return
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void store( Attribs& attribs_, const AttribsFormat format_ );
 
     /**
@@ -115,7 +115,7 @@ namespace nlgeometry
      * @param facetType_ format to the returns indices
      * @return vector with the facet indices
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     std::vector< unsigned int > getIndicesAs( TFacetType facetType_ ) const;
 
     /**
@@ -123,7 +123,7 @@ namespace nlgeometry
      * @param facetType_ format to the added indices
      * @param indices_ indices vector where indices are added
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void addIndicesAs( TFacetType facetType_,
                        std::vector< unsigned int >& indices_ ) const;
   private:

@@ -28,7 +28,7 @@
 #include "Node.h"
 #include "Tetrahedron.h"
 
-#include <nlphysics/api.h>
+#include <nlphysics/nlphysics_export.h>
 
 namespace nlphysics
 {
@@ -46,20 +46,20 @@ namespace nlphysics
      * @param poissonRatio_ Poisson's ratio
      * @param youngModulus_ Young modulus
      */
-    NLPHYSICS_API
+    NLPHYSICS_EXPORT
     Fem( Nodes& nodes_, Tetrahedra& tetrahedra_,
          float poissonRatio_ = 0.3f, float youngModulus_ = 1.0f );
 
     /*
      * Default destructor
      */
-    NLPHYSICS_API
+    NLPHYSICS_EXPORT
     ~Fem( void );
 
     /*
      * Method that solve the system
      */
-    NLPHYSICS_API
+    NLPHYSICS_EXPORT
     void solve( void );
 
   private:

@@ -102,7 +102,7 @@ int main( int argc, char* argv[] )
 #ifdef NSOL_USE_HDF5
   nsol::VasculatureReader vascur;
 #endif
-  auto fileExt = boost::filesystem::extension( inFile );
+  auto fileExt = boost::filesystem::path(inFile).extension().string();
   nsol::MorphologyPtr morphology = nullptr;
   if ( fileExt.compare( ".swc" ) == 0 )
   {
@@ -128,7 +128,7 @@ int main( int argc, char* argv[] )
     renderer.projectionMatrix( ) = projection;
     Eigen::Matrix4f view( camera.viewMatrix( ));
     renderer.viewMatrix( ) = view;
-    fileExt = boost::filesystem::extension( outFile );
+    fileExt = boost::filesystem::path(outFile).extension().string();
     if ( fileExt.compare( ".obj" ) == 0 )
     {
       nlgeometry::ObjWriter::writeMesh(

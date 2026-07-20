@@ -23,12 +23,12 @@
 #ifndef __NLRENDER_CONFIG__
 #define __NLRENDER_CONFIG__
 
-#include <nlrender/api.h>
+#include <nlrender/nlrender_export.h>
 
 namespace nlrender
 {
 
-  class NLRENDER_API Config
+  class NLRENDER_EXPORT Config
   {
 
   public:

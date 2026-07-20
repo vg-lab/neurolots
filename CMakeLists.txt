@@ -1,84 +1,141 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-#   neurolots
-#   2015 (c) Universidad Rey Juan Carlos
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
-project( neurolots VERSION 0.3.5 )
-set( neurolots_VERSION_ABI 4 )
+cmake_minimum_required(VERSION 3.25)
 
-# Disable in source building
-if( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" )
-  message( FATAL "no in source building allowed." )
-endif( )
+project(neurolots
+  VERSION 0.3.5
+  LANGUAGES CXX
+  DESCRIPTION "NeuroLOTs"
+)
+string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 
-list( APPEND CMAKE_MODULE_PATH
-  ${PROJECT_SOURCE_DIR}/CMake
-  ${CMAKE_SOURCE_DIR}/CMake/common )
-
-if( NOT EXISTS ${CMAKE_SOURCE_DIR}/CMake/common/Common.cmake )
-  message( FATAL_ERROR "CMake/common missing, run: git submodule update --init")
-endif( )
-
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE Release )
-endif( NOT CMAKE_BUILD_TYPE )
-
-option( NEUROLOTS_OPTIONALS_AS_REQUIRED
-  "Force optional dependencies as required" OFF )
-
-if ( NEUROLOTS_OPTIONALS_AS_REQUIRED )
-  set( NEUROLOTS_OPTS_FIND_ARGS "REQUIRED" )
-else()
-  set( NEUROLOTS_OPTS_FIND_ARGS "" )
+# Prevent in-source builds
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+  message(FATAL_ERROR "In-source builds are not allowed. Please create a separate build directory.")
 endif()
 
-include( GitExternal )
+# Set default build type if not specified
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+endif()
 
-set( COMMON_PROJECT_DOMAIN vg-lab.es )
-set( NEUROLOTS_DESCRIPTION "NeuroLOTs" )
+# Include custom modules
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-option( NEUROLOTS_WITH_EXAMPLES "NEUROLOTS_WITH_EXAMPLES" ON )
+# Options
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(BUILD_DOCS "Build documentation" ON)
+option(NEUROLOTS_WITH_EXAMPLES "Build examples" ON)
+# option(NEUROLOTS_WITH_TESTS "Build tests" ON)
+option(NEUROLOTS_OPTIONALS_AS_REQUIRED "Force optional dependencies as required" OFF)
 
-include( Common )
+# Dependencies
+find_package(Boost CONFIG REQUIRED COMPONENTS unit_test_framework filesystem)
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(Eigen3 REQUIRED NO_MODULE)
+# find_package(nsol REQUIRED)
+# find_package(ReTo REQUIRED)
 
-common_find_package(Boost COMPONENTS unit_test_framework system filesystem
-  REQUIRED SYSTEM)
-common_find_package(OpenGL REQUIRED SYSTEM)
-common_find_package(GLEW REQUIRED SYSTEM)
-common_find_package(Eigen3 REQUIRED SYSTEM)
-common_find_package(nsol REQUIRED)
-common_find_package(ReTo REQUIRED)
-common_find_package(GLUT SYSTEM)
+include(FetchContent)
+FetchContent_Declare(
+    nsol
+    GIT_REPOSITORY https://github.com/vg-lab/nsol.git
+    GIT_SHALLOW ON
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(nsol)
 
-list(APPEND NEUROLOTS_DEPENDENT_LIBRARIES OpenGL GLEW Eigen3 nsol ReTo )
+FetchContent_Declare(
+    ReTo
+    GIT_REPOSITORY https://github.com/vg-lab/ReTo.git
+    GIT_SHALLOW ON
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(ReTo)
+list(APPEND CMAKE_MODULE_PATH "${ReTo_BINARY_DIR}/modules")
 
-common_find_package_post( )
+# Optional dependencies
+set(NEUROLOTS_OPTS_FIND_ARGS "")
+if(NEUROLOTS_OPTIONALS_AS_REQUIRED)
+  set(NEUROLOTS_OPTS_FIND_ARGS REQUIRED)
+endif()
 
-set( PROJECT_INCLUDE_NAME neurolots )
+find_package(GLUT ${NEUROLOTS_OPTS_FIND_ARGS} QUIET)
 
-add_subdirectory( nlgeometry )
-add_subdirectory( nlphysics )
-add_subdirectory( nlgenerator )
-add_subdirectory( nlrender )
-add_subdirectory( examples )
+# Definitions
+option(NEUROLOTS_USE_GLUT "" ${GLUT_FOUND})
 
-install( FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines.h
-  DESTINATION include/neurolots )
-install( FILES ${PROJECT_BINARY_DIR}/include/neurolots/defines${SYSTEM}.h
-  DESTINATION include/neurolots )
+# Add subdirectories
+add_subdirectory(nlgeometry)
+add_subdirectory(nlphysics)
+add_subdirectory(nlgenerator)
+add_subdirectory(nlrender)
 
-set( DOCS README.md LICENSE.txt )
-install( FILES ${DOCS} DESTINATION share/neurolots COMPONENT dev )
+# Don't build examples when others include the library
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NEUROLOTS_WITH_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
-set( DOXYGEN_MAINPAGE_MD README.md )
-set( DOXYGEN_EXTRA_INPUT ${PROJECT_SOURCE_DIR}/README.md
-  ${CMAKE_INSTALL_PREFIX}/include/nlgeometry
-  ${CMAKE_INSTALL_PREFIX}/include/nlphysics
-  ${CMAKE_INSTALL_PREFIX}/include/nlgenerator
-  ${CMAKE_INSTALL_PREFIX}/include/nlrender )
-include( DoxygenRule )
+# Define installation directory variables
+include(GNUInstallDirs)
 
-include( CPackConfig )
-include( CTest )
+# Include the CMake module that provides helpers for creating package config files
+include(CMakePackageConfigHelpers)
+
+# Generate the project-specific cmake config file
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project-config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LOWER}-config.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME_LOWER}
+)
+
+# Generate the project-specific cmake config file
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LOWER}-config-version.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+# Generate the project-specific cmake config version file
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LOWER}-config.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME_LOWER}-config-version.cmake"
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME_LOWER}
+)
+
+# Install repo data
+install(FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+  "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt"
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME_LOWER}
+)
+
+# Generate documentation
+find_package(Doxygen)
+if(DOXYGEN_FOUND AND BUILD_DOCS)
+  set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/docs_doxygen)
+  set(DOXYFILE_IN ${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in)
+  set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+  configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+
+  doxygen_add_docs(
+    ${PROJECT_NAME}_doxygen
+    CONFIG_FILE ${DOXYFILE_OUT}
+  )
+
+  install(DIRECTORY
+    ${DOXYGEN_OUTPUT_DIR}/html
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    COMPONENT ${PROJECT_NAME}_documentation
+    OPTIONAL
+  )
+endif()
+
+# Packaging
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
+set(CPACK_SOURCE_GENERATOR "TGZ")
+include(CPack)

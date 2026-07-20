@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(Boost CONFIG COMPONENTS unit_test_framework system filesystem)
+find_dependency(OpenGL)
+find_dependency(GLEW)
+find_dependency(Eigen3 NO_MODULE)
+
+foreach(component ${${PROJECT_NAME}_FIND_COMPONENTS})
+    include("${CMAKE_CURRENT_LIST_DIR}/${component}/${component}-config.cmake")
+endforeach()

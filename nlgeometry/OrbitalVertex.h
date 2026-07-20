@@ -24,7 +24,7 @@
 
 #include "Vertex.h"
 
-#include <nlgeometry/api.h>
+#include <nlgeometry/nlgeometry_export.h>
 
 namespace nlgeometry
 {
@@ -45,7 +45,7 @@ namespace nlgeometry
      * @param tangent_ vertex tanget
      * @param color_ vertex color
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     OrbitalVertex(
       const Eigen::Vector3f& position_,
       const Eigen::Vector3f& center_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
@@ -56,72 +56,72 @@ namespace nlgeometry
      * Copy constructor
      * @param other_ vertex to be copied
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     OrbitalVertex( const OrbitalVertex& other_ );
 
     /**
      * Default constructor
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual ~OrbitalVertex( );
 
     /**
      * Method that returns the orbital vertex center
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Eigen::Vector3f& center( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& center( void ) const;
 
     /**
      * Method that returns the orbital vertex tangent
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Eigen::Vector3f& tangent( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& tangent( void ) const;
 
     /**
      * Method to displace the orbital vertex position
      * @param displacement_ displacement applied to the orbital vertex position
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void displace( const Eigen::Vector3f& displacement_ );
 
     /**
      * Method to place the orbital vertex position
      * @param placement_ placement to place the orbital vertex position
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void place( const Eigen::Vector3f& placement_ );
 
     /**
      * Method to rotate the orbital vertex position and normal
      * @param rotation_ matrix with the rotation to be applied
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void rotate( const Eigen::Matrix3f& rotation_ );
 
     /**
      * Method to rotate the orbital vertex position and normal
      * @param rotation_ quaternion with the rotation to be applied
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void rotate( const Eigen::Quaternion< float >& rotation_ );
 
     /**
      * Method to change the modulus of the position vector
      * @param norm_ new position vector modulus
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void norm( const float norm_ );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void normalize( const Eigen::Vector3f& axis_ );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void store( std::vector< float >& buffer_,
                         const TAttribType attribType_ );
 
@@ -129,7 +129,7 @@ namespace nlgeometry
      * Method that return a cloned orbtial vertex
      * @return a cloned orbital vertex from the actual orbital vertex
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     VertexPtr clone( void );
 
   protected:

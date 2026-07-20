@@ -1,16 +1,35 @@
-if ( NLGEOMETRY_WITH_TESTS )
+if(NLGEOMETRY_WITH_TESTS)
 
-  include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+  # Function to add a test
+  function(add_component_test NAME SOURCE)
+    add_executable(${NAME} ${SOURCE})
+    target_include_directories(${NAME}
+      PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    target_link_libraries(${NAME} PRIVATE
+      ${CURRENT_TARGET_NAME}
+      Boost::unit_test_framework
+    )
+    add_test(NAME ${NAME} COMMAND ${NAME})
 
-  if( ${Boost_FOUND})
+    # Create all tests target
+    if(NOT TARGET ${CURRENT_TARGET_NAME}_all_tests)
+      add_custom_target(${CURRENT_TARGET_NAME}_all_tests)
+    endif()
 
-    set(TEST_LIBRARIES
-      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-      nlgeometry
-      )
+    # Add test to global tests target
+    add_dependencies(${CURRENT_TARGET_NAME}_all_tests ${NAME})
+  endfunction()
 
-      include(CommonCTest)
-
-  endif()
+  # Add tests
+  add_component_test(nlgeometryAxisAlignedBoundingBox AxisAlignedBoundingBox.cpp)
+  add_component_test(nlgeometryFacet Facet.cpp)
+  add_component_test(nlgeometrySectionQuad SectionQuad.cpp)
+  add_component_test(nlgeometryVertex Vertex.cpp)
+  add_component_test(nlgeometryMesh Mesh.cpp)
+  add_component_test(nlgeometryOrbitalVertex OrbitalVertex.cpp)
+  add_component_test(nlgeometrySpatialHashTable SpatialHashTable.cpp)
 
 endif()

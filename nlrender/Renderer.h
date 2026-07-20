@@ -26,7 +26,7 @@
 
 #include <reto/reto.h>
 
-#include <nlrender/api.h>
+#include <nlrender/nlrender_export.h>
 
 namespace nlrender
 {
@@ -55,82 +55,82 @@ namespace nlrender
         /**
          * Default constructor
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         Renderer( bool keepOpenGLServerStack_ = false );
 
         /**
          * Default destructors
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         ~Renderer( void );
 
         /**
          * Method that return the scene camera view matrix
          * @return the scene camera view matrix
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         Eigen::Matrix4f& viewMatrix( void );
 
         /**
         * Method that return the scene camera view matrix
          * @return the scene camera view matrix
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         Eigen::Matrix4f& projectionMatrix( void );
 
         /**
          * Method that return the level of detail
          * @return the level of detail
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         float& lod( void );
 
         /**
          * Method that return the tangent modulus
          * @return the tanget modulus
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         float& tangentModulus( void );
 
         /**
          * Method that return the maximum distance
          * @return the maximum distance
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         float& maximumDistance( void );
 
         /**
          * Method that return the transparency factor
          * @return the transparency factor
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         float& alpha( void );
 
         /**
          * Method that return the tessellation criteria
          * @return the tessellation criteria
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         TTessCriteria tessCriteria( void );
 
-        NLRENDER_API
+        NLRENDER_EXPORT
         void tessCriteria( TTessCriteria tessCriteria_ );
 
         /**
          * Method that return the type of color function
          * @return the color funciton type
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         TColorFunc colorFunc( void );
 
-        NLRENDER_API
+        NLRENDER_EXPORT
         void colorFunc( TColorFunc colorFunc_ );
 
         /**
          * Method that return the transparency status
          * @return the transparency status
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         TTransparencyStatus transparencyStatus( void );
 
         /**
@@ -143,7 +143,7 @@ namespace nlrender
          * @param renderLines_ True to render mesh lines and false otherwise.
          *
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         void render(
           nlgeometry::MeshPtr mesh_,
           const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
@@ -160,7 +160,7 @@ namespace nlrender
          * @param renderLines_ True to render mesh lines and false otherwise.
          *
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         void render(
           nlgeometry::Meshes meshes_,
           const std::vector< Eigen::Matrix4f >& modelMatrices_,
@@ -179,7 +179,7 @@ namespace nlrender
          * @param renderLines_ True to render mesh lines and false otherwise.
          *
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         void render(
           nlgeometry::Meshes meshes_,
           const std::vector< Eigen::Matrix4f >& modelMatrices_,
@@ -193,7 +193,7 @@ namespace nlrender
          * @param mesh_ mesh to extract
          * @return the extracted mesh
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         nlgeometry::MeshPtr extract(
           nlgeometry::MeshPtr mesh_,
           const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
@@ -204,24 +204,24 @@ namespace nlrender
          * @param mesh_ meshes to extract
          * @return the extracted meshesh
          */
-        NLRENDER_API
+        NLRENDER_EXPORT
         nlgeometry::Meshes& extract(
           nlgeometry::Meshes meshes_,
           const std::vector< Eigen::Matrix4f >& modelMatrices_,
           bool extractTriangles_ = true, bool extractQuads_ = true ) const;
 
-        NLRENDER_API
+        NLRENDER_EXPORT
         void initTransparencySystem( unsigned int width_, unsigned int height_ );
 
-        NLRENDER_API
+        NLRENDER_EXPORT
         void setUpOpaqueTransparencyScene( Eigen::Vector3f backgroundColor_,
                                            unsigned int width_,
                                            unsigned int height_ );
 
-        NLRENDER_API
+        NLRENDER_EXPORT
         void setUpTransparentTransparencyScene( void );
 
-        NLRENDER_API
+        NLRENDER_EXPORT
         void composeTransparencyScene( unsigned int finalFbo_ );
 
     protected:

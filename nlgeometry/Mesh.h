@@ -25,7 +25,7 @@
 #include "Facet.h"
 #include "AxisAlignedBoundingBox.h"
 
-#include <nlgeometry/api.h>
+#include <nlgeometry/nlgeometry_export.h>
 
 namespace nlgeometry
 {
@@ -43,90 +43,90 @@ namespace nlgeometry
     /**
     * Default constructor
     */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Mesh( void );
 
     /**
      * Default destructor
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual ~Mesh( void );
 
     /**
      * Method to initialize the geometric data
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void init( void );
 
     /**
      * Method that return the mesh vertices
      * @return the mesh vertices
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Vertices& vertices( void );
 
     /**
      * Method that return the mesh lines
      * @return the mesh lines
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Facets& lines( void );
 
     /**
      * Method that return the mesh triangles
      * @return the mesh triangles
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Facets& triangles( void );
 
     /**
      * Method that return the returns the mesh quads
      * @return the mesh quads
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Facets& quads( void );
 
     /**
      * Method that return the uploaded vertices size
      * @return the uploades vertices size
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     unsigned int verticesSize( void );
 
     /**
      * Method that returns the returns the mesh axis aligned bounding box
      * @return the mesh axis aligned bounding box
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     AxisAlignedBoundingBox& aaBoundingBox( void );
 
     /**
      * Method that return the returns the mesh model matrix
      * @return the mesh model matrix
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Eigen::Matrix4f& modelMatrix( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     float*  modelMatrixVectorized( void );
 
     /**
      * Method that free the cpu geometric information of the mesh
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void clearCPUData( void );
 
     /**
      * Method that free the gpu geometric information of the mesh
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void clearGPUData( void );
 
     /**
      * Method that upload the geometric information of the mesh to the gpu
      * @param format_ format of the gpu buffers
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void uploadGPU( AttribsFormat format_,
                             Facet::TFacetType facetType_ = Facet::TRIANGLES );
 
@@ -135,43 +135,43 @@ namespace nlgeometry
      * @param format_ format of the gpu buffer
      * @param buffer_ geometric data to upload
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void uploadBuffer( TAttribType format_, std::vector< float >& buffer_ );
 
     /**
      * Method that computes the axis aligned bounding box of the mesh geometry
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void computeBoundingBox( void );
 
     /**
      * Method that computes the normals of the mesh geometry
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void computeNormals( void );
 
     /**
      * Method that render the mesh lines
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void renderLines( void );
 
     /**
      * Method that render the mesh triangles
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void renderTriangles( void );
 
     /**
      * Method that render the mesh quads
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     virtual void renderQuads( void );
 
     /**
      * Method that render the all mesh
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void render( void );
 
   private:

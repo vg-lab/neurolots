@@ -27,7 +27,7 @@
 
 #include "JointNode.h"
 
-#include <nlgenerator/api.h>
+#include <nlgenerator/nlgenerator_export.h>
 
 
 class MyPair
@@ -78,7 +78,7 @@ namespace nlgenerator
      * @param node2_ third quad node
      * @param node3_ fourth quad node
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     Quad( nlphysics::NodePtr node0_, nlphysics::NodePtr node1_,
           nlphysics::NodePtr node2_, nlphysics::NodePtr node3_ )
       : _node0( node0_ )
@@ -146,7 +146,7 @@ namespace nlgenerator
     /**
      * Default constructor
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     Icosphere( const Eigen::Vector3f& center_ =
                Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
                float radius_ = 1.0f,
@@ -155,28 +155,28 @@ namespace nlgenerator
     /**
      * Default destructor
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     ~Icosphere( );
 
     /**
      * Method that computes the final icospehere shape
      * @param joints_ joint nodes that conects to the icospehere
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     nlgeometry::Facets compute( const std::vector< JointNodePtr >& joints_ );
 
     /**
      * Method that return the final icoshepre shape as facets
      * @return the final icospehere shape as facets
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     nlgeometry::Facets surface( void );
 
     /**
      * Method that return the final icoshepre structure as facets
      * @return the final icospehere structure as facets
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     nlgeometry::Facets structure( void );
 
 

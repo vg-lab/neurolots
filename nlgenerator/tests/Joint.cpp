@@ -23,7 +23,7 @@
 #include <nlgenerator/nlgenerator.h>
 #include <nsol/nsol.h>
 #include "nlgeneratorTests.h"
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 using namespace nlgenerator;
 

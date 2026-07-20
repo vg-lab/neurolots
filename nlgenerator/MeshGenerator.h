@@ -30,7 +30,7 @@
 // #include "VectorizedNode.h"
 // #include "Icosphere.h"
 
-#include <nlgenerator/api.h>
+#include <nlgenerator/nlgenerator_export.h>
 
 namespace nlgenerator
 {
@@ -52,7 +52,7 @@ namespace nlgenerator
      * @param moprholgy_ to be reconstructed
      * @return a mesh generated from the given morphology
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     static nlgeometry::MeshPtr
     generateMesh( nsol::MorphologyPtr morphology_ );
 
@@ -65,7 +65,7 @@ namespace nlgenerator
      * neurites with the morphology soma
      * @return a mesh generated from the given morphology
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     static nlgeometry::MeshPtr
     generateMesh( nsol::NeuronMorphologyPtr morphology_,
                   float alphaRadius_,
@@ -79,7 +79,7 @@ namespace nlgenerator
      * morphology nodes index and mesh vertices
      * @return a structure mesh generated from the given morphology
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     static nlgeometry::MeshPtr
     generateStructureMesh(
       nsol::MorphologyPtr morphology_, NodeIdToVertices& nodeIdToVertices_,
@@ -94,7 +94,7 @@ namespace nlgenerator
      * @param nodeIdToVerticesIds_ output structure that keeps the relationship
      * between morphology node index and mesh vertices indices
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     static void
     verticesToIndices( NodeIdToVertices& nodeIdToVertices_,
                        NodeIdToVerticesIds& nodeIdToVerticesIds_ );
@@ -108,7 +108,7 @@ namespace nlgenerator
      * @param buffer_ float buffer to fill
      * @param value_ value to insert in the buffer
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     static void
     conformBuffer( std::vector< unsigned int >& nodeIds_,
                    NodeIdToVerticesIds& nodeIdToVerticesIds_,

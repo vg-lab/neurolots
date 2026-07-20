@@ -24,7 +24,7 @@
 
 #include "Vertex.h"
 
-#include <nlgeometry/api.h>
+#include <nlgeometry/nlgeometry_export.h>
 
 namespace nlgeometry
 {
@@ -44,7 +44,7 @@ namespace nlgeometry
      * @param prime1_ Y axis prime number of the hash function
      * @param prime2_ Z axis prime number of the hash function
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     SpatialHashTable( unsigned int size_ = 100000,
                       float cellSize_ = 0.1f,
                       float tolerance_ = 0.00001f,
@@ -55,7 +55,7 @@ namespace nlgeometry
     /**
      * Default destructor
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     ~SpatialHashTable( void );
 
     /**
@@ -65,14 +65,14 @@ namespace nlgeometry
      * @param vertex_ vertex pointer to be inserted in the table
      * @return vertex pointer to the inserted vertex or equivalent
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     VertexPtr insert( const VertexPtr& vertex_ );
 
     /**
      * Method that return a vector of the vertices contained in the table
      * @return a list of vector of vertices contained in the table
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void vertices( Vertices& vertices_ ) const;
 
   private:

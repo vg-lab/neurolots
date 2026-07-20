@@ -111,7 +111,7 @@ int main( int argc, char* argv[] )
   for ( int i = 1; i < argc; i++ )
   {
     std::string fileName( argv[i] );
-    auto fileExt = boost::filesystem::extension( fileName );
+    auto fileExt = boost::filesystem::path(fileName).extension().string();
     nsol::MorphologyPtr morphology = nullptr;
     if ( fileExt.compare( ".swc" ) == 0 )
     {

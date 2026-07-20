@@ -29,7 +29,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <nlgeometry/api.h>
+#include <nlgeometry/nlgeometry_export.h>
 
 namespace nlgeometry
 {

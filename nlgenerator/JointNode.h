@@ -26,7 +26,7 @@
 
 #include <nsol/nsol.h>
 
-#include <nlgenerator/api.h>
+#include <nlgenerator/nlgenerator_export.h>
 
 namespace nlgenerator
 {
@@ -44,34 +44,34 @@ namespace nlgenerator
      * @param position_ position of the joint node
      * @param radius_ radius of the joint node
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     JointNode( const Eigen::Vector3f& position_, float radius_ );
 
     /**
      * Default destructor
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     ~JointNode( void );
 
     /**
      * Method that returns the joint node position
      * @return the joint node position
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     Eigen::Vector3f& position( void );
 
     /**
      * Method that returns the join node radius
      * @return the joint node radius
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     float& radius( void );
 
     /**
      * Method that returns the connected soma conditional
      * @return the connected soma conditional
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     bool& connectedSoma( void );
 
     /**
@@ -80,41 +80,41 @@ namespace nlgenerator
      * @param neighbour_ nsol neighbour node
      * @return the corresponding section quad
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     nlgeometry::SectionQuadPtr sectionQuad( nsol::NodePtr neighbour_ );
 
     /**
      * Method that returns the first section quad
      * @return the first section quad
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     nlgeometry::SectionQuadPtr sectionQuad( void );
 
     /**
      * Method that return the first neighbour node
      * @return the first neigbour node
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     nsol::NodePtr neighbour( void );
 
     /**
      * Method that returns the number of neighbors of the joint node
      * @return the number of neighbors of the joint node
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     unsigned int numberNeighbors( void );
 
     /**
      * Method that adds a new nsol neighbour node to the joint
      * @param neighbour_ nsol neighbour node
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     void addNeighbour( nsol::NodePtr neighbour_ );
 
     /**
      * Method that computes the joint node geometry
      */
-    NLGENERATOR_API
+    NLGENERATOR_EXPORT
     void computeGeometry( void );
 
   protected:

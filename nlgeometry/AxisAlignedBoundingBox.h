@@ -24,7 +24,7 @@
 
 #include <Eigen/Dense>
 
-#include <nlgeometry/api.h>
+#include <nlgeometry/nlgeometry_export.h>
 
 namespace nlgeometry
 {
@@ -43,54 +43,54 @@ namespace nlgeometry
      * @param minimum_ minimum axis aligned bounding box position
      * @param maximum_ maximum axis aligned bounding box position
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     AxisAlignedBoundingBox( const Eigen::Vector3f& minimum_,
                             const Eigen::Vector3f& maximum_ );
 
     /**
      * Default constructor
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     AxisAlignedBoundingBox( void );
 
     /**
      * Default destructor
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     ~AxisAlignedBoundingBox( void );
 
     /**
      * Method that returns the minimum axis aligned bounding box position
      * @return the minimum axis aligned bounding box position
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Eigen::Vector3f& minimum( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& minimum( void ) const;
 
     /**
      * Method that returns the maximum axis aligned bounding box position
      * @return the maximum axis aligned bounding box position
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Eigen::Vector3f& maximum( void );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& maximum( void ) const;
 
     /**
      * Method that computes and return the axis aligned bounding box center
      * @return the axis aligned bounding box center
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     Eigen::Vector3f center( void ) const;
 
     /**
      * Method that computes and return the axis aligned bounding box radius
      * @return the axis aligned bounding box radius
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     float radius( void ) const;
 
     /**
@@ -99,7 +99,7 @@ namespace nlgeometry
      * @param point given point to expand current bounds
      *
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void expand( const Eigen::Vector3f& point );
 
     /**
@@ -108,10 +108,10 @@ namespace nlgeometry
      * @param other given bounding box to expand current bounds
      *
      */
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void expand( const AxisAlignedBoundingBox& other );
 
-    NLGEOMETRY_API
+    NLGEOMETRY_EXPORT
     void clear( void );
 
   protected:
