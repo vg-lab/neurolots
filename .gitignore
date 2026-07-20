@@ -9,3 +9,6 @@ ci.*
 jambs*
 
 nlrender/Shaders.h
+
+build/
+.cache/
