@@ -29,7 +29,7 @@ option(NEUROLOTS_WITH_EXAMPLES "Build examples" ON)
 option(NEUROLOTS_OPTIONALS_AS_REQUIRED "Force optional dependencies as required" OFF)
 
 # Dependencies
-find_package(Boost CONFIG REQUIRED COMPONENTS unit_test_framework filesystem)
+find_package(Boost CONFIG REQUIRED COMPONENTS unit_test_framework)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(Eigen3 REQUIRED NO_MODULE)

@@ -105,7 +105,6 @@ if(NEUROLOTS_WITH_EXAMPLES)
           neurolots::nlgeometry
           neurolots::nlgenerator
           neurolots::nlrender
-          Boost::filesystem
           GLUT::GLUT
       )
 
@@ -123,7 +122,6 @@ if(NEUROLOTS_WITH_EXAMPLES)
           neurolots::nlgeometry
           neurolots::nlgenerator
           neurolots::nlrender
-          Boost::filesystem
           GLUT::GLUT
       )
 
@@ -139,7 +137,6 @@ if(NEUROLOTS_WITH_EXAMPLES)
           neurolots::nlgeometry
           neurolots::nlgenerator
           neurolots::nlrender
-          Boost::filesystem
           GLUT::GLUT
       )
 

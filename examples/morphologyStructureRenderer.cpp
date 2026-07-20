@@ -20,7 +20,6 @@
  *
  */
 #include <iostream>
-#include <boost/filesystem.hpp>
 
 #include <nlgeometry/nlgeometry.h>
 #include <nlgenerator/nlgenerator.h>
@@ -111,7 +110,7 @@ int main( int argc, char* argv[] )
   for ( int i = 1; i < argc; i++ )
   {
     std::string fileName( argv[i] );
-    auto fileExt = boost::filesystem::path(fileName).extension().string();
+    auto fileExt = std::filesystem::path(fileName).extension().string();
     nsol::MorphologyPtr morphology = nullptr;
     if ( fileExt.compare( ".swc" ) == 0 )
     {
