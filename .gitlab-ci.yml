@@ -1,91 +1,22 @@
-stages:
- - build
+stages: [run]
 
-Ubuntu-OptionalDeps:
- stage: build
- script:
-  - date
-  - hostname
-  - uname -a
-  - export CMAKE_EXTRA_TARGETS="install"
-  - export BUILD_OPTIONALS_SUBPROJECTS=1
-  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DNEUROLOTS_OPTIONALS_AS_REQUIRED=ON"
-  - export BUILD_GENERATOR="Ninja"
-  - bash .gitlab-ci.sh
- tags:
-  - ubuntu
+include:
+  - component: $CI_SERVER_FQDN/common/ci-shared/cmake-workflow@main
+    inputs:
+      job_prefix: debug
+      image: "docker.io/ubuntu:24.04"
+      before_script:
+        - apt update
+        - DEBIAN_FRONTEND=noninteractive apt install -y git doxygen g++ cmake ninja-build libboost-all-dev libglew-dev libeigen3-dev qtbase5-dev libhdf5-dev libomp-dev libglm-dev libglut-dev libfreeimageplus-dev
+      workflow_preset: "debug-test"
+      build_dir: "build/debug"
 
-Ubuntu-Subproject-master:
- stage: build
- script:
-  - date
-  - hostname
-  - uname -a
-  - export CMAKE_EXTRA_TARGETS="neurolots-tests doxygen"
-  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
-  - export BUILD_GENERATOR="Ninja"
-  - export DEPLOY_DOC_REPO="git@github.com:vg-lab/vg-lab.github.io"
-  - export GITHUB_MIRROR_URL="git@github.com:vg-lab/neurolots"
-  - bash .gitlab-ci.sh
- only:
-  - master
- tags:
-  - ubuntu
-
-Ubuntu-Subproject:
- stage: build
- script:
-  - date
-  - hostname
-  - uname -a
-  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON"
-  - export BUILD_GENERATOR="Ninja"
-  - bash .gitlab-ci.sh
- except:
-  - master
- tags:
-  - ubuntu
-
-# OSX-OptionalDeps:
-# stage: build
-# script:
-#  - date
-#  - hostname
-#  - uname -a
-#  - module load Qt-5.9.1
-#  - export BUILD_OPTIONALS_SUBPROJECTS=1
-#  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DNEUROLOTS_OPTIONALS_AS_REQUIRED=ON -DLibJpegTurbo_INCLUDE_DIR=/usr/local/opt/jpeg-turbo/include -DLibJpegTurbo_LIBRARY=/usr/local/opt/jpeg-turbo/lib/libturbojpeg.dylib -DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/3.0.0/lib/libglut.dylib"
-#  - export BUILD_GENERATOR="Ninja"
-#  - export CMAKE_OSX_ARCHITECTURES=x86_64
-#  - bash .gitlab-ci.sh
-# tags:
-#  - osx-sierra
-
-# OSX-Subproject:
-# stage: build
-# script:
-#  - date
-#  - hostname
-#  - uname -a
-#  - module load Qt-5.9.1
-#  - export BUILD_GENERATOR="Ninja"
-#  - export CMAKE_OSX_ARCHITECTURES=x86_64
-#  - export CMAKE_EXTRA_ARGS="-DCLONE_SUBPROJECTS=ON -DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/3.0.0/lib/libglut.dylib"
-#  - bash .gitlab-ci.sh
-# tags:
-#  - osx-sierra
-
-Win7:
- stage: build
- script:
-  - call %ENVFILESDIR%\glut.bat
-  - call %ENVFILESDIR%\glew-2.1.0.bat
-  - call %ENVFILESDIR%\Boost-1.64-vs14-x64.bat
-  - call %ENVFILESDIR%\Qt-5.9-vs14.bat
-  - call %ENVFILESDIR%\eigen-3.1.2-vs12-x64.bat
-  - set BUILD_GENERATOR=Visual Studio 14 Win64
-  - set CMAKE_EXTRA_ARGS=-DCLONE_SUBPROJECTS=ON -DGLEW_ROOT=c:\libs\glew-1.11.0   -DGLUT_glut_LIBRARY=c:\libs\freeglut\lib\x64\freeglut.lib -DGLUT_INCLUDE_DIR=c:\libs\freeglut\include
-  - set PATH=%PATH%;"c:\Program Files\Git\bin"
-  - bash.exe --login .gitlab-ci.sh
- tags:
-  - win7
+  - component: $CI_SERVER_FQDN/common/ci-shared/cmake-workflow@main
+    inputs:
+      job_prefix: debug-unstable
+      image: "docker.io/debian:unstable"
+      before_script:
+        - apt update
+        - DEBIAN_FRONTEND=noninteractive apt install -y git doxygen g++ cmake ninja-build libboost-all-dev libglew-dev libeigen3-dev qtbase5-dev libhdf5-dev libomp-dev libglm-dev libglut-dev libfreeimageplus-dev
+      workflow_preset: "debug-test"
+      build_dir: "build/debug"
