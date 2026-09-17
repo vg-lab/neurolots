@@ -31,7 +31,7 @@ void transparencyEnable( void )
 subroutine( transparencyFuncType )
 void transparencyDisable( void )
 {
-  accum = vec4( colorFunc( ), 1.0 );
+  accum = vec4( colorFunc( ), 1.f );
 }
 
 void main( )
