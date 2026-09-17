@@ -27,6 +27,9 @@
 
 #include <nlgeometry/nlgeometry_export.h>
 
+#include <unordered_map>
+#include <set>
+
 namespace nlgeometry
 {
 
@@ -123,6 +126,15 @@ namespace nlgeometry
     void clearGPUData( void );
 
     /**
+     * Clears the morphology_nodes->vertices map.
+     */
+    NLGEOMETRY_EXPORT    
+    inline void clearVerticesMap()
+    {
+      _nodesToIndicesMap.clear();
+    }
+
+    /**
      * Method that upload the geometric information of the mesh to the gpu
      * @param format_ format of the gpu buffers
      */
@@ -136,7 +148,15 @@ namespace nlgeometry
      * @param buffer_ geometric data to upload
      */
     NLGEOMETRY_EXPORT
-    void uploadBuffer( TAttribType format_, std::vector< float >& buffer_ );
+    void uploadDataBuffer( TAttribType format_, std::vector< float >& buffer_ );
+
+    /**
+     * Method that upload a indexes buffer to the gpu
+     * @param type_ Type of indexes
+     * @param buffer_ geometric data to upload
+     */
+    NLGEOMETRY_EXPORT
+    void uploadIndexesBuffer(std::vector<unsigned int>& buffer_ );
 
     /**
      * Method that computes the axis aligned bounding box of the mesh geometry
@@ -168,11 +188,22 @@ namespace nlgeometry
     NLGEOMETRY_EXPORT
     virtual void renderQuads( void );
 
+    /** \brief Method to render the custom vertices buffer. 
+     */
+    NLGEOMETRY_EXPORT
+    virtual void renderPart( void );
+
     /**
      * Method that render the all mesh
      */
     NLGEOMETRY_EXPORT
     void render( void );
+
+    NLGEOMETRY_EXPORT
+    void printVerticesMap() const;
+
+    NLGEOMETRY_EXPORT
+    std::vector<uint32_t> morphologyNodeToVertices(const uint32_t &nodeId) const;
 
   private:
 
@@ -180,8 +211,10 @@ namespace nlgeometry
 
     void _createBuffer( TAttribType type_, unsigned int vaoPosition_ );
 
-    void _uploadBuffer( std::vector< float >& buffer_,
+    void _uploadAttribBuffer( std::vector< float >& buffer_,
                         unsigned int vaoPosition_ );
+
+                            
 
     bool _equalFormat( AttribsFormat format0_, AttribsFormat format1_ );
 
@@ -219,6 +252,9 @@ namespace nlgeometry
     //! Size of uploaded vertices
     unsigned int _verticesSize;
 
+    //! Size of vertices in custom buffer
+    unsigned int _verticesBufferSize;
+
     //! Model matrix of the mesh
     Eigen::Matrix4f _modelMatrix;
 
@@ -227,6 +263,9 @@ namespace nlgeometry
 
     //! Facet type uploaded to the gpu
     Facet::TFacetType _facetType;
+
+    //! Morphological node->vertex map.
+    std::unordered_map<uint32_t, std::vector<uint32_t>> _nodesToIndicesMap;
 
   }; // class Mesh
 

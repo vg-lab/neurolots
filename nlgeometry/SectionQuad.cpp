@@ -224,7 +224,7 @@ namespace nlgeometry
 
   void SectionQuad::createPipe( SectionQuadPtr startQuad_,
                                 SectionQuadPtr endQuad_,
-                                Facets& facets_, bool checkDirection_ )
+                                Facets& facets_, uint32_t id, bool checkDirection_ )
   {
     std::vector< OrbitalVertexPtr > ids0( 4 );
     std::vector< OrbitalVertexPtr > ids1( 4 );
@@ -257,7 +257,7 @@ namespace nlgeometry
     {
       facets_.push_back(
         new Facet( ids0[i], ids0[(i+1)%4], ids1[(i+offset)%4],
-                   ids1[(i+1+offset)%4] ));
+                   ids1[(i+1+offset)%4], id ));
     }
   }
 

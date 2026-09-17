@@ -226,7 +226,7 @@ namespace nlgeometry
      */
     NLGEOMETRY_EXPORT
     static void createPipe( SectionQuadPtr startQuad_, SectionQuadPtr endQuad_,
-                            Facets& facets_, bool checkDirection_ = false );
+                            Facets& facets_, uint32_t id, bool checkDirection_ = false );
 
     /**
      * Static method that returns a quaternion with the minimum z rotation

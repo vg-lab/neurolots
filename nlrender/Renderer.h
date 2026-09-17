@@ -107,6 +107,20 @@ namespace nlrender
         float& alpha( void );
 
         /**
+         * Method that return the number of samples in the transparency textures
+         * @return the transparency textures samples
+         */
+        NLRENDER_EXPORT
+        unsigned int samples();
+
+        /** \brief Method to set the number of samples in the textures of the 
+         * transparency system.
+         * \param[in] value Number of samples, must be power of 2 and supported by GPU.
+         */
+        NLRENDER_EXPORT
+        void setTextureSampling(const unsigned int value);
+
+        /**
          * Method that return the tessellation criteria
          * @return the tessellation criteria
          */
@@ -189,6 +203,24 @@ namespace nlrender
           bool renderQuads_ = true) const;
 
         /**
+         * Method that renderize the given meshes parts (in the vertex buffer with the color buffer)
+         * @param meshes_ meshes to renderize
+         * @param modelMatrices Model matrices transform.
+         * @param baseColors Default mesh colors.
+         * @param color_ Rendering color of the meshes, default gray.
+         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderQuads_ True to render mesh quads and false otherwise.
+         * @param renderLines_ True to render mesh lines and false otherwise.
+         *
+         */          
+        NLRENDER_EXPORT
+        void renderPart( nlgeometry::MeshPtr mesh_,
+          const Eigen::Matrix4f& modelMatrix_,
+          const Eigen::Vector3f& color_,
+          bool renderTriangles_ = true,
+          bool renderQuads_ = true) const;
+
+        /**
          * Method that extract the given mesh
          * @param mesh_ mesh to extract
          * @return the extracted mesh
@@ -232,6 +264,20 @@ namespace nlrender
 
         void _composeVertexSubroutines( void );
         void _composeFragmentSubroutines( void );
+
+        /** \brief Helper method to blit multisample textures to normal 2D textures before composition.
+         */
+        void _blitTextures();
+
+        /** \brief Debug method to check the status of a framebuffer. Returns <0 if error and >0 on success.
+         * \param[out] tag Location tag or message.
+         */
+        int _glCheckFramebufferStatus(const std::string &tag) const;
+
+        /** \brief Saves the currently binded framebuffer to a BMP file on disk. 
+         * \param[in] filename Filename of the bmp file. 
+         */
+        void _saveFrameBufferToBMP(const std::string &filename) const;
 
         //! Variable to determine if keep the OpenGL server status
         bool _keepOpenGLServerStack;
@@ -308,6 +354,12 @@ namespace nlrender
         //! Transparency factor
         float _alpha;
 
+        // number of samples of the textures in the transparency system.
+        unsigned int _samples;
+
+        // True if sampling changed used to re-init the textures on next transparency pass.
+        bool _samplingChanged;
+
         //! Tessellation level of detail criteria
         TTessCriteria _tessCriteria;
 
@@ -331,21 +383,34 @@ namespace nlrender
 
         //! FBO used in the transparency composition to save opaque objects
         unsigned int _opaqueFbo;
+        unsigned int _opaqueFboMS;
 
         //! FBO used in the transparency composition to save transparent objects
         unsigned int _transFbo;
+        unsigned int _transFboMS;
+
+        //! FBO used in the transparency composition to save transparent objects
+        unsigned int _accumFbo;
+        unsigned int _accumFboMS;
+
+        //! FBO used in the transparency composition to save transparent objects
+        unsigned int _revealageFbo;
+        unsigned int _revealageFboMS;
 
         //! Texture to save the opaque objects color
         reto::Texture2D* _opaqueTexture;
+        reto::Texture2D* _opaqueTextureMS;
 
         //! Texture to save the tranparent accumulated objects color
         reto::Texture2D* _accumTexture;
+        reto::Texture2D* _accumTextureMS;
 
         //! Texture to save the traparent revealage objects color
         reto::Texture2D* _revealageTexture;
+        reto::Texture2D* _revealageTextureMS;
 
         //! Texture to save the opaque objects depth
-        reto::Texture2D* _depthTexture;
+        reto::Texture2D* _depthTextureMS;
 
         //! Width of the screen for the transparency system
         unsigned int _transSystemWidth;

@@ -32,7 +32,7 @@ namespace nlgenerator
     nsol::NeuronMorphologyPtr neuronMorphology =
       dynamic_cast< nsol::NeuronMorphologyPtr >( morphology_ );
     if ( neuronMorphology )
-      return _generateMophology( neuronMorphology );
+      return _generateMorphology( neuronMorphology );
     else
       return _generateMorphology( morphology_ );
   }
@@ -101,22 +101,24 @@ namespace nlgenerator
         Eigen::Vector3f position = ( center - node->point( )
           ).normalized( ) * joint->radius( ) + center;
         auto vertex = new nlgeometry::OrbitalVertex( position, center );
+        const auto id = element.first->id();
+
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex0( ),
                                  sectionQuad->vertex1( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex1( ),
                                  sectionQuad->vertex2( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex2( ),
                                  sectionQuad->vertex3( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex3( ),
                                  sectionQuad->vertex0( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
       }
     }
 
@@ -192,7 +194,7 @@ namespace nlgenerator
                   Eigen::Vector3f( 0.0f, 0.0f, 0.0f ), color_ );
               nodeIdToVertices_[currentNode->id( )].push_back( currentVertex );
               mesh->lines( ).push_back(
-                new nlgeometry::Facet( previousVertex, currentVertex ));
+                new nlgeometry::Facet( previousVertex, currentVertex, nullptr, nullptr, currentNode->id() ));
               if ( generateNodes_ )
               {
                 auto triangles = _generateCube( currentNode, nodeIdToVertices_,
@@ -206,7 +208,7 @@ namespace nlgenerator
             }
           }
           mesh->lines( ).push_back(
-            new nlgeometry::Facet( previousVertex, lastVertex ));
+            new nlgeometry::Facet( previousVertex, lastVertex, nullptr, nullptr, nodes[nodes.size() - 1]->id() ));
         }
       }
     }
@@ -265,23 +267,24 @@ namespace nlgenerator
         const auto center = joint->position( );
         const auto position = (center - node->point( )).normalized( ) * joint->radius( ) + center;
         auto vertex = new nlgeometry::OrbitalVertex( position, center );
+        const auto id = element.first->id();
 
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex1( ),
                                  sectionQuad->vertex0( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex2( ),
                                  sectionQuad->vertex1( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex3( ),
                                  sectionQuad->vertex2( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex0( ),
                                  sectionQuad->vertex3( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
       }
     }
 
@@ -290,7 +293,7 @@ namespace nlgenerator
     return mesh;
   }
 
-  nlgeometry::MeshPtr MeshGenerator::_generateMophology(
+  nlgeometry::MeshPtr MeshGenerator::_generateMorphology(
     nsol::NeuronMorphologyPtr morphology_ )
   {
     auto mesh = new nlgeometry::Mesh( );
@@ -346,22 +349,24 @@ namespace nlgenerator
         Eigen::Vector3f position = ( center - node->point( )
           ).normalized( ) * joint->radius( ) + center;
         auto vertex = new nlgeometry::OrbitalVertex( position, center );
+        const auto id = element.first->id();
+
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex1( ),
                                  sectionQuad->vertex0( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex2( ),
                                  sectionQuad->vertex1( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex3( ),
                                  sectionQuad->vertex2( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
         facets.push_back(
           new nlgeometry::Facet( sectionQuad->vertex0( ),
                                  sectionQuad->vertex3( ),
-                                 vertex, vertex ));
+                                 vertex, vertex, id ));
       }
     }
 
@@ -469,7 +474,7 @@ namespace nlgenerator
           prim1 = endJoint->sectionQuad( nodes.front( ));
           if ( prim0 && prim1 )
             nlgeometry::SectionQuad::createPipe(
-              prim0, prim1->inversed( ), facets_, true );
+              prim0, prim1->inversed( ), facets_, nodes.front()->id(), true );
         }
         else if ( numNodes > 2 )
         {
@@ -542,15 +547,15 @@ namespace nlgenerator
               quad->rotate( q );
               quad->norm( radius );
               if ( nodeId == 1 )
-                nlgeometry::SectionQuad::createPipe( prim0, quad, facets_ );
+                nlgeometry::SectionQuad::createPipe( prim0, quad, facets_ , nodes[nodeId]->id());
               else
-                nlgeometry::SectionQuad::createPipe( preQuad, quad, facets_ );
+                nlgeometry::SectionQuad::createPipe( preQuad, quad, facets_ , nodes[nodeId]->id());
 
               delete preQuad;
               preQuad = quad;
             }
             nlgeometry::SectionQuad::createPipe(
-              quad, prim1->inversed( ), facets_, true );
+              quad, prim1->inversed( ), facets_, nodes[numNodes - 1]->id(), true );
             delete quad;
           }
         }
@@ -657,15 +662,15 @@ namespace nlgenerator
       Eigen::Vector3f( 0.0f, 0.0f, 0.0f ), color_ );
     nodeIdToVertices_[node_->id( )].push_back( vertex5 );
 
-    triangles.push_back( new nlgeometry::Facet( vertex2, vertex4, vertex0 ));
-    triangles.push_back( new nlgeometry::Facet( vertex2, vertex1, vertex4 ));
-    triangles.push_back( new nlgeometry::Facet( vertex2, vertex5, vertex1 ));
-    triangles.push_back( new nlgeometry::Facet( vertex2, vertex0, vertex5 ));
+    triangles.push_back( new nlgeometry::Facet( vertex2, vertex4, vertex0, nullptr, node_->id()));
+    triangles.push_back( new nlgeometry::Facet( vertex2, vertex1, vertex4, nullptr, node_->id()));
+    triangles.push_back( new nlgeometry::Facet( vertex2, vertex5, vertex1, nullptr, node_->id()));
+    triangles.push_back( new nlgeometry::Facet( vertex2, vertex0, vertex5, nullptr, node_->id()));
 
-    triangles.push_back( new nlgeometry::Facet( vertex3, vertex0, vertex4 ));
-    triangles.push_back( new nlgeometry::Facet( vertex3, vertex4, vertex1 ));
-    triangles.push_back( new nlgeometry::Facet( vertex3, vertex1, vertex5 ));
-    triangles.push_back( new nlgeometry::Facet( vertex3, vertex5, vertex0 ));
+    triangles.push_back( new nlgeometry::Facet( vertex3, vertex0, vertex4, nullptr, node_->id()));
+    triangles.push_back( new nlgeometry::Facet( vertex3, vertex4, vertex1, nullptr, node_->id()));
+    triangles.push_back( new nlgeometry::Facet( vertex3, vertex1, vertex5, nullptr, node_->id()));
+    triangles.push_back( new nlgeometry::Facet( vertex3, vertex5, vertex0, nullptr, node_->id()));
 
     return triangles;
   }

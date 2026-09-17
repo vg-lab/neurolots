@@ -33,7 +33,9 @@ namespace nlrender
     if ( !_initialized )
     {
       glewExperimental = GL_TRUE;
-      glewInit( );
+
+      if(glewInit( ) != GLEW_OK) return;
+
       _initialized = true;
     }
   }

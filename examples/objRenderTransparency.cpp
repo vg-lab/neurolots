@@ -166,8 +166,6 @@ void initOGL( void )
   texConfig.internalFormat = GL_RGBA32F;
   texConfig.format = GL_RGBA;
   texConfig.type = GL_FLOAT;
-  texConfig.wrapS = GL_LINEAR;
-  texConfig.wrapT = GL_LINEAR;
 
   opaqueTexture = new reto::Texture2D( texConfig, 600, 600 );
   accumTexture = new reto::Texture2D( texConfig, 600, 600 );

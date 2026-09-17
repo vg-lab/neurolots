@@ -9,6 +9,9 @@ ci.*
 jambs*
 
 nlrender/Shaders.h
+examples/Shaders.h
 
 build/
 .cache/
+build/*
+CMakeUserPresets.json

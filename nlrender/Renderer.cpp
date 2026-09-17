@@ -47,6 +47,8 @@ namespace nlrender
         , _tng( 0.2f )
         , _maximumDistance( 100.0f )
         , _alpha( 0.5f )
+        , _samples(1)
+        , _samplingChanged{false}
         , _tessCriteria( HOMOGENEOUS )
         , _colorFunc( GLOBAL )
         , _transparencyStatus( DISABLE )
@@ -76,7 +78,6 @@ namespace nlrender
         _programQuads->loadFragmentShaderFromText( nlrender::quad_frag );
         _programQuads->compileAndLink( );
         _programQuads->autocatching( );
-
 
         const char* fbVaryings[ ] = { "outValue0", "outValue1" };
         _programQuadsFB->loadVertexShaderFromText( nlrender::quad_vert );
@@ -253,6 +254,20 @@ namespace nlrender
         return _alpha;
     }
 
+    unsigned int Renderer::samples()
+    {
+        return _samples;
+    }
+
+    void Renderer::setTextureSampling(const unsigned int value)
+    {
+        if(_samples != value)
+        {
+            _samples = value;
+            _samplingChanged = true;
+        }
+    }
+
     Renderer::TTessCriteria Renderer::tessCriteria( void )
     {
         return _tessCriteria;
@@ -278,6 +293,55 @@ namespace nlrender
     Renderer::TTransparencyStatus Renderer::transparencyStatus( void )
     {
         return _transparencyStatus;
+    }
+
+    void Renderer::renderPart( nlgeometry::MeshPtr mesh_,
+            const Eigen::Matrix4f& modelMatrix_,
+            const Eigen::Vector3f& color_,
+            bool renderTriangles_,
+            bool renderQuads_ ) const
+    {
+        if ( _keepOpenGLServerStack )
+          glPushAttrib( GL_ALL_ATTRIB_BITS );
+
+        const Eigen::Matrix4f viewModel = _viewMatrix * modelMatrix_;
+
+        if( renderTriangles_ )
+        {
+            _programTriangles->use( );
+            _programTriangles->sendUniform4m( "proy", _projectionMatrix.data( ));
+            _programTriangles->sendUniform4m( "viewModel", viewModel.data( ));
+            _programTriangles->sendUniform3v( "color", color_.data( ));
+            _programTriangles->sendUniformf( "lod", _lod );
+            _programTriangles->sendUniformf( "maxDist", _maximumDistance );
+            _programTriangles->sendUniformf( "tng", _tng );
+            _programTriangles->sendUniformf( "alpha", _alpha );
+            glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
+                  _tVertexSubroutines.data( ));
+            glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                  _tFragmentSubroutines.data( ));
+            mesh_->renderTriangles( );
+        }
+
+        if ( renderQuads_ )
+        {
+            _programQuads->use( );
+            _programQuads->sendUniform4m( "proy", _projectionMatrix.data( ));
+            _programQuads->sendUniform4m( "viewModel", viewModel.data( ));
+            _programQuads->sendUniform3v( "color", color_.data( ));
+            _programQuads->sendUniformf( "lod", _lod);
+            _programQuads->sendUniformf( "maxDist", _maximumDistance);
+            _programQuads->sendUniformf( "tng", _tng);
+            _programQuads->sendUniformf( "alpha", _alpha );
+            glUniformSubroutinesuiv( GL_VERTEX_SHADER, 1,
+                  _qVertexSubroutines.data( ) );
+            glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 2,
+                  _qFragmentSubroutines.data( ));
+            mesh_->renderPart( );
+        }
+
+        if ( _keepOpenGLServerStack )
+            glPopAttrib( );
     }
 
     void Renderer::render( nlgeometry::MeshPtr mesh_,
@@ -423,8 +487,7 @@ namespace nlrender
             bool renderQuads_ ) const
     {
       // TODO: @felix 2023-06-28 Manage colors_ != baseColors...
-      // @felix 2023-10-05 Pending a working method for spike
-      // representations.
+      // @felix 2023-10-05 Pending a working method for spike representations.
       UNUSED(colors_);
 
         if ( meshes_.size( ) != modelMatrices_.size( ) ||
@@ -636,8 +699,7 @@ namespace nlrender
         return mesh;
     }
 
-    void Renderer::initTransparencySystem( unsigned int width_,
-            unsigned int height_ )
+    void Renderer::initTransparencySystem( unsigned int width_, unsigned int height_)
     {
         if ( !_transSystemInit )
         {
@@ -648,70 +710,118 @@ namespace nlrender
             texConfig.internalFormat = GL_RGBA32F;
             texConfig.format = GL_RGBA;
             texConfig.type = GL_FLOAT;
-            texConfig.wrapS = GL_LINEAR;
-            texConfig.wrapT = GL_LINEAR;
-            _opaqueTexture =
-            new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
-            _accumTexture =
-            new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
-            _revealageTexture =
-            new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
+            texConfig.wrapS = GL_CLAMP_TO_EDGE;
+            texConfig.wrapT = GL_CLAMP_TO_EDGE;
+            texConfig.samples = 1; // textures for final blit
+
+            // textures for final blit, faster on composition shader. Otherwise shader will need to do antialias and will be slower.
+            _opaqueTexture = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
+            _accumTexture = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
+            _revealageTexture = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
+
+            texConfig.samples = _samples;
+            _opaqueTextureMS = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
+            _accumTextureMS = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
+            _revealageTextureMS = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
 
             texConfig.internalFormat = GL_DEPTH_COMPONENT;
             texConfig.format = GL_DEPTH_COMPONENT;
             texConfig.type = GL_UNSIGNED_INT;
-            _depthTexture =
-            new reto::Texture2D( texConfig, _transSystemWidth, _transSystemHeight );
+            _depthTextureMS = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
 
-            glGenFramebuffers( 1, &_opaqueFbo );
-            glBindFramebuffer( GL_FRAMEBUFFER, _opaqueFbo );
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                 GL_TEXTURE_2D, _opaqueTexture->handler( ), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                 GL_TEXTURE_2D, _depthTexture->handler( ), 0);
+            // Need an fbo to blit later
+            glGenFramebuffers(1, &_revealageFbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, _revealageFbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _revealageTexture->handler(), 0);
 
-            glGenFramebuffers( 1, &_transFbo );
-            glBindFramebuffer( GL_FRAMEBUFFER, _transFbo );
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                 GL_TEXTURE_2D, _accumTexture->handler( ), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-                                 GL_TEXTURE_2D, _revealageTexture->handler( ), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                 GL_TEXTURE_2D, _depthTexture->handler( ), 0);
+            glGenFramebuffers(1, &_accumFbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, _accumFbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _accumTexture->handler(), 0);
+
+            glGenFramebuffers(1, &_opaqueFbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, _opaqueFbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _opaqueTexture->handler(), 0);
+
+            glGenFramebuffers(1, &_transFbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, _transFbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _accumTexture->handler(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _revealageTexture->handler(), 0);
+
+            glGenFramebuffers(1, &_revealageFboMS);
+            glBindFramebuffer(GL_FRAMEBUFFER, _revealageFboMS);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _revealageTextureMS->handler(), 0);
+
+            glGenFramebuffers(1, &_accumFboMS);
+            glBindFramebuffer(GL_FRAMEBUFFER, _accumFboMS);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _accumTextureMS->handler(), 0);
+
+            glGenFramebuffers(1, &_opaqueFboMS);
+            glBindFramebuffer(GL_FRAMEBUFFER, _opaqueFboMS);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _opaqueTextureMS->handler(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _depthTextureMS->handler(), 0);
+
+            glGenFramebuffers(1, &_transFboMS);
+            glBindFramebuffer(GL_FRAMEBUFFER, _transFboMS);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _accumTextureMS->handler(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _revealageTextureMS->handler(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
+                                   _depthTextureMS->handler(), 0);
+
             GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
             glDrawBuffers( 2, drawBuffers );
-
+            // Enable multisampling for FBO attachments
+            glEnable(GL_MULTISAMPLE);
             _uploadQuad( );
 
             _transSystemInit = true;
         }
     }
 
-
     void Renderer::setUpOpaqueTransparencyScene(
             Eigen::Vector3f backgroundColor_, unsigned int width_,
-            unsigned int height_ )
+            unsigned int height_)
     {
         if ( _transSystemInit )
         {
-            if ( _transSystemWidth != width_ || _transSystemHeight != height_ )
+            if(_samplingChanged)
             {
-                _opaqueTexture->resize( width_, height_ );
-                _accumTexture->resize( width_, height_ );
-                _revealageTexture->resize( width_, height_ );
-                _depthTexture->resize( width_, height_ );
+                _opaqueTextureMS->setMultisampling(_samples);
+                _accumTextureMS->setMultisampling(_samples);
+                _revealageTextureMS->setMultisampling(_samples);
+                _depthTextureMS->setMultisampling(_samples);
+                _samplingChanged = false;
+            }
+
+            if ( _transSystemWidth != width_ || _transSystemHeight != height_)
+            {
+                _opaqueTextureMS->resize(width_, height_);
+                _accumTextureMS->resize(width_, height_);
+                _revealageTextureMS->resize(width_, height_);
+                _depthTextureMS->resize(width_, height_);
+
+                _opaqueTexture->resize(width_, height_);
+                _accumTexture->resize(width_, height_);
+                _revealageTexture->resize(width_, height_);
+
                 _transSystemWidth = width_;
                 _transSystemHeight = height_;
             }
-
+           
             _transparencyStatus = TTransparencyStatus::DISABLE;
             _composeFragmentSubroutines( );
-            glBindFramebuffer( GL_FRAMEBUFFER, _opaqueFbo );
-            glClearColor( backgroundColor_.x( ), backgroundColor_.y( ),
-                        backgroundColor_.z( ), 1.0f );
-            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-            glDisable( GL_BLEND );
-            glEnable( GL_DEPTH_TEST );
+
+            glBindFramebuffer(GL_FRAMEBUFFER, _opaqueFboMS);
+            glClearColor(backgroundColor_.x(), backgroundColor_.y(), backgroundColor_.z(), 1.0f);
+            glEnable(GL_MULTISAMPLE);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glDisable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
             glDepthMask(GL_TRUE);
         }
     }
@@ -722,41 +832,40 @@ namespace nlrender
         {
             _transparencyStatus = TTransparencyStatus::ENABLE;
             _composeFragmentSubroutines( );
-            glBindFramebuffer( GL_FRAMEBUFFER, _transFbo );
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                   GL_TEXTURE_2D, _accumTexture->handler( ), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-                                   GL_TEXTURE_2D, _revealageTexture->handler( ), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                   GL_TEXTURE_2D, _depthTexture->handler( ), 0);
-            float zeros[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-            float ones[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-            glClearBufferfv( GL_COLOR, 0, zeros );
-            glClearBufferfv( GL_COLOR, 1, ones );
-            glEnable( GL_BLEND );
+
+            glBindFramebuffer( GL_FRAMEBUFFER, _transFboMS);
+
+            float zeros[] = {0.0f, 0.0f, 0.0f, 0.0f};
+            float ones[] = {1.0f, 1.0f, 1.0f, 1.0f};
+            glClearBufferfv(GL_COLOR, 0, zeros);
+            glClearBufferfv(GL_COLOR, 1, ones);
+            glEnable(GL_BLEND);
             glBlendFunci(0, GL_ONE, GL_ONE);
             glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
             glDepthMask( GL_FALSE );
         }
     }
 
-    void Renderer::composeTransparencyScene( unsigned int finalFbo_ )
+    void Renderer::composeTransparencyScene(unsigned int finalFbo_)
     {
-        glBindFramebuffer( GL_FRAMEBUFFER, finalFbo_ );
+        glBindFramebuffer(GL_FRAMEBUFFER, finalFbo_);
         glDisable( GL_DEPTH_TEST );
         glDisable( GL_BLEND );
         glDepthMask(GL_TRUE);
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        _programTransCompose->use( );
-        glBindVertexArray( _quadVao );
-        _opaqueTexture->bind( 0 );
-        _accumTexture->bind( 1 );
-        _revealageTexture->bind( 2 );
-        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<void*>(0) );
+
+        _blitTextures();
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, finalFbo_);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, finalFbo_);
+
+        _programTransCompose->use();
+        glBindVertexArray(_quadVao);
+        _opaqueTexture->bind(0);
+        _accumTexture->bind(1);
+        _revealageTexture->bind(2);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<void*>(0));
     }
-
-
-
 
     nlgeometry::MeshPtr Renderer::_vectorToMesh(
             std::vector< float > positions_,
@@ -878,4 +987,143 @@ namespace nlrender
                 break;
         }
     }
-}
+
+    void Renderer::_blitTextures()
+    {
+            const std::vector<std::pair<GLuint, GLuint>> textures = {
+                {_opaqueFboMS, _opaqueFbo},
+                { _accumFboMS, _accumFbo},
+                { _revealageFboMS, _revealageFbo}
+            };
+
+            //int mode = 0;
+            for (const auto& ms2s : textures) {
+                glBindFramebuffer(GL_READ_FRAMEBUFFER, ms2s.first); 
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ms2s.second);
+
+                glBlitFramebuffer(0, 0, _transSystemWidth, _transSystemHeight, // Source rectangle
+                                  0, 0, _transSystemWidth, _transSystemHeight, // Destination rectangle
+                                  GL_COLOR_BUFFER_BIT,                         // Mask
+                                  GL_NEAREST);                                 // Filter
+
+                // glBindFramebuffer(GL_FRAMEBUFFER, ms2s.second);
+                // if (mode == 0) {
+                //     _saveFrameBufferToBMP("/home/felix/Downloads/0-opaque.bmp");
+                // } else if (mode == 1) {
+                //     _saveFrameBufferToBMP("/home/felix/Downloads/1-trans.bmp");
+                // } else {
+                //     _saveFrameBufferToBMP("/home/felix/Downloads/2-accum.bmp");
+                // }
+                // ++mode;
+            }
+    }
+
+    int Renderer::_glCheckFramebufferStatus(const std::string &tag) const
+    {
+        GLenum status;
+        status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        std::string message;
+        int returnVal = 0;
+        switch (status) {
+            case GL_FRAMEBUFFER_COMPLETE:
+                message = "No error";
+                break;
+            case GL_FRAMEBUFFER_UNSUPPORTED:
+                //Choose different formats
+                message = "Framebuffer object format is unsupported by the video hardware. "
+                          "(GL_FRAMEBUFFER_UNSUPPORTED_EXT)(FBO - 820)";
+                returnVal = -1;
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                message = "Incomplete attachment. (GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT)(FBO - 820)";
+                returnVal = -1;
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                message =
+                    "Incomplete missing attachment. (GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT)(FBO - 820)";
+                returnVal = -1;
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+                message = "Incomplete draw buffer. (GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT)(FBO - 820)";
+                returnVal = -1;
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+                message = "Incomplete read buffer. (GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT)(FBO - 820)";
+                returnVal = -1;
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                message = "Incomplete multisample buffer. (GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT)(FBO - 820)";
+                returnVal = -1;
+                break;
+            default:
+                //Programming error; will fail on all hardware
+                message = "Some video driver error or programming error occured. Framebuffer object status "
+                          "is invalid. (FBO - 823)";
+                return -2;
+                break;
+        }
+
+        (returnVal == 0 ? std::cout : std::cerr) << tag << " (" << returnVal << "): " << message << std::endl;
+        return returnVal;
+    }
+
+    void Renderer::_saveFrameBufferToBMP(const std::string& filename) const
+    {
+        struct __attribute__((packed)) bmp_header
+        {
+            uint16_t bfType;
+            uint32_t bfSize;
+            uint32_t bfReserved;
+            uint32_t bfOffBits;
+            uint32_t biSize;
+            uint32_t biWidth;
+            int32_t biHeight;
+            uint16_t biPlanes;
+            uint16_t biBitCount;
+            uint32_t biCompression;
+            uint32_t biSizeImage;
+            int32_t biXPelsPerMeter;
+            int32_t biYPelsPerMeter;
+            uint32_t biClrUsed;
+            uint32_t biClrImportant;
+        };
+        
+        unsigned char* buffer = new unsigned char[_transSystemWidth * _transSystemHeight * 3];
+        if (!buffer) {
+            return;
+        }
+
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        glReadBuffer(GL_BACK);
+        glReadPixels(0, 0, _transSystemWidth, _transSystemHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+
+        FILE* fileOut = fopen(filename.c_str(), "wb");
+        if (!fileOut) {
+            return;
+        }
+        bmp_header bitmapFileHeader;
+
+        bitmapFileHeader.bfType = 0x4D42;
+        bitmapFileHeader.bfSize = _transSystemWidth * _transSystemHeight * 3;
+        bitmapFileHeader.bfReserved = 0;
+        bitmapFileHeader.bfOffBits = sizeof(bmp_header);
+
+        bitmapFileHeader.biSize = sizeof(struct bmp_header) - ((32*3 + 16) /8);
+        bitmapFileHeader.biWidth = _transSystemWidth - 1;
+        bitmapFileHeader.biHeight = _transSystemHeight - 1;
+        bitmapFileHeader.biPlanes = 1;
+        bitmapFileHeader.biBitCount = 24;
+        bitmapFileHeader.biCompression = 0x0; //BI_RGB;
+        bitmapFileHeader.biSizeImage = 0;
+        bitmapFileHeader.biXPelsPerMeter = 0; // ?
+        bitmapFileHeader.biYPelsPerMeter = 0; // ?
+        bitmapFileHeader.biClrUsed = 0;
+        bitmapFileHeader.biClrImportant = 0;
+
+        fwrite(&bitmapFileHeader, sizeof(bmp_header), 1, fileOut);
+        fwrite(buffer, _transSystemWidth * _transSystemHeight * 3, 1, fileOut);
+        fclose(fileOut);
+
+        delete[] buffer;
+    }
+} // namespace nlrender

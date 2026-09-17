@@ -25,52 +25,13 @@ namespace nlgeometry
 {
 
   Facet::Facet( VertexPtr vertex0_, VertexPtr vertex1_, VertexPtr vertex2_,
-                VertexPtr vertex3_ )
+                VertexPtr vertex3_, uint32_t id)
     : _vertex0( vertex0_ )
     , _vertex1( vertex1_ )
     , _vertex2( vertex2_ )
     , _vertex3( vertex3_ )
+    , _id{id}
   {
-  }
-
-  VertexPtr& Facet::vertex0( void )
-  {
-    return _vertex0;
-  }
-
-  const VertexPtr& Facet::vertex0( void ) const
-  {
-    return _vertex0;
-  }
-
-  VertexPtr& Facet::vertex1( void )
-  {
-    return _vertex1;
-  }
-
-  const VertexPtr& Facet::vertex1( void ) const
-  {
-    return _vertex1;
-  }
-
-  VertexPtr& Facet::vertex2( void )
-  {
-    return _vertex2;
-  }
-
-  const VertexPtr& Facet::vertex2( void ) const
-  {
-    return _vertex2;
-  }
-
-  VertexPtr& Facet::vertex3( void )
-  {
-    return _vertex3;
-  }
-
-  const VertexPtr& Facet::vertex3( void ) const
-  {
-    return _vertex3;
   }
 
   void Facet::store( Attribs& attribs_, const AttribsFormat format_ )

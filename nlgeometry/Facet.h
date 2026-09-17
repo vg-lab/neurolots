@@ -34,7 +34,7 @@ namespace nlgeometry
   typedef std::vector< FacetPtr > Facets;
 
   /*! \class Facet */
-  class Facet
+  class NLGEOMETRY_EXPORT Facet
   {
 
   public:
@@ -51,15 +51,14 @@ namespace nlgeometry
      * @param vertex1_ pointer to the second triangle/quad vertex
      * @param vertex2_ pointer to the third triangle/quad vertex
      * @param vertex3_ pointer to the fourth quad vertex
+     * @param id_ id of the correspoding original node.
      */
-    NLGEOMETRY_EXPORT
     Facet( VertexPtr vertex0_ = nullptr, VertexPtr vertex1_ = nullptr,
-           VertexPtr vertex2_ = nullptr, VertexPtr vertex3_ = nullptr );
+           VertexPtr vertex2_ = nullptr, VertexPtr vertex3_ = nullptr, uint32_t id_ = 0);
 
     /**
      * Default destructor
      */
-    NLGEOMETRY_EXPORT
     ~Facet( void )
     {};
 
@@ -67,47 +66,68 @@ namespace nlgeometry
      * Method to get the first triangle/quad vertex pointer
      * @return first triangle/quad vertex pointer
      */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex0( void );
+    inline VertexPtr& vertex0( void )
+    {
+      return _vertex0;
+    }
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex0( void ) const;
+    inline const VertexPtr& vertex0( void ) const
+    {
+      return _vertex0;
+    }
 
     /**
      * Method to get the second triangle/quad vertex pointer
      * @return second triangle/quad vertex pointer
      */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex1( void );
+    inline VertexPtr& vertex1( void )
+    {
+      return _vertex1;
+    }
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex1( void ) const;
+    inline const VertexPtr& vertex1( void ) const
+    {
+      return _vertex1;
+    }
 
     /**
      * Method to get the third triangle/quad vertex pointer
      * @return first triangle/quad vertex pointer
      */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex2( void );
+    inline VertexPtr& vertex2( void )
+    {
+      return _vertex2;
+    }
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex2( void ) const;
+    inline const VertexPtr& vertex2( void ) const
+    {
+      return _vertex2;
+    }
 
     /**
      * Method to get the fourth triangle/quad vertex pointer
      * @return fourth quad vertex pointer
      */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex3( void );
+    inline VertexPtr& vertex3( void )
+    {
+      return _vertex3;
+    }
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex3( void ) const;
+    inline const VertexPtr& vertex3( void ) const
+    {
+      return _vertex3;
+    }
+
+    /** \brief RMethod to get the associated original morphology node.
+     * @return id of the associated morphology node.
+     */
+    inline uint32_t id() const
+    { return _id; }
 
     /**
      * Method that store the facet vertices attribs and assigns the vertices ids
      * @param attribs_ reference to the vertex attribs to return
      */
-    NLGEOMETRY_EXPORT
     void store( Attribs& attribs_, const AttribsFormat format_ );
 
     /**
@@ -115,7 +135,6 @@ namespace nlgeometry
      * @param facetType_ format to the returns indices
      * @return vector with the facet indices
      */
-    NLGEOMETRY_EXPORT
     std::vector< unsigned int > getIndicesAs( TFacetType facetType_ ) const;
 
     /**
@@ -123,7 +142,6 @@ namespace nlgeometry
      * @param facetType_ format to the added indices
      * @param indices_ indices vector where indices are added
      */
-    NLGEOMETRY_EXPORT
     void addIndicesAs( TFacetType facetType_,
                        std::vector< unsigned int >& indices_ ) const;
   private:
@@ -139,6 +157,9 @@ namespace nlgeometry
 
     //! Fourth vertex quad facet
     VertexPtr _vertex3;
+
+    //! Id of the corresponding original morphologycal node. 
+    uint32_t _id;
 
   }; // class Facet
 

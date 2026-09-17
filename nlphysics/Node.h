@@ -37,7 +37,7 @@ namespace nlphysics
   typedef std::vector< NodePtr > Nodes;
 
   /* \class Node */
-  class Node
+  class NLPHYSICS_EXPORT Node
   {
 
   public:
@@ -48,7 +48,6 @@ namespace nlphysics
      * @param id_ node index
      * @param contour_ condition of inner or contour node
      */
-    NLPHYSICS_EXPORT
     Node( const Eigen::Vector3f& initialPosition_, unsigned int id_ = 0,
           bool contour_ = false )
       : _id( id_ )
@@ -67,27 +66,22 @@ namespace nlphysics
     /**
      * Default destructor
      */
-    NLPHYSICS_EXPORT
     ~Node( void ) { }
 
     /**
      * Method that returns the node id
      * @return the node id
      */
-    NLPHYSICS_EXPORT
     unsigned int& id( void ) { return _id; }
 
-    NLPHYSICS_EXPORT
     unsigned int id( void ) const { return _id; }
 
     /**
      * Method that returns the node initial position
      * @return the node initial position
      */
-    NLPHYSICS_EXPORT
     Eigen::Vector3f& initialPosition( void ) { return _initialPosition; }
 
-    NLPHYSICS_EXPORT
     const Eigen::Vector3f& initialPosition( void )  const
     { return _initialPosition; }
 
@@ -95,70 +89,56 @@ namespace nlphysics
      * Method that returns the node displacement
      * @return the node displacement
      */
-    NLPHYSICS_EXPORT
     Eigen::Vector3f& displacement( void ) { return _displacement; }
 
-    NLPHYSICS_EXPORT
     const Eigen::Vector3f& displacement( void )  const { return _displacement; }
 
     /**
      * Method that returns the node position
      * @return the node position
      */
-    NLPHYSICS_EXPORT
     Eigen::Vector3f& position( void ) { return _position; }
 
-    NLPHYSICS_EXPORT
     const Eigen::Vector3f& position( void )  const { return _position; }
 
     /**
      * Method that returns the node center
      * @return the node center
      */
-    NLPHYSICS_EXPORT
     Eigen::Vector3f& center( void ) { return _center; }
 
-    NLPHYSICS_EXPORT
     const Eigen::Vector3f& center( void )  const { return _center; }
 
     /**
      * Method that returns the node tangent
      * @return the node tangent
      */
-    NLPHYSICS_EXPORT
     Eigen::Vector3f& tangent( void ) { return _tangent; }
 
-    NLPHYSICS_EXPORT
     const Eigen::Vector3f& tangent( void )  const { return _tangent; }
 
     /**
      * Method that returns the node force
      * @return the node force
      */
-    NLPHYSICS_EXPORT
     Eigen::Vector3f& force( void ) { return _force; }
 
-    NLPHYSICS_EXPORT
     const Eigen::Vector3f& force( void )  const { return _force; }
 
     /**
      * Method that returns the node fixed condition
      * @return the node fixed condition
      */
-    NLPHYSICS_EXPORT
     bool& fixed( void ) { return _fixed; }
 
-    NLPHYSICS_EXPORT
     bool fixed( void )  const { return _fixed; }
 
     /**
      * Method that returns the node contour condition
      * @return the node contour condition
      */
-    NLPHYSICS_EXPORT
     bool& contour( void ) { return _contour; }
 
-    NLPHYSICS_EXPORT
     bool contour( void )  const { return _contour; }
 
   protected:

@@ -120,7 +120,7 @@ namespace nlgenerator
     _generateMorphology( nsol::MorphologyPtr morphology_ );
 
     static nlgeometry::MeshPtr
-    _generateMophology( nsol::NeuronMorphologyPtr morphology_ );
+    _generateMorphology( nsol::NeuronMorphologyPtr morphology_ );
 
     static std::unordered_map< nsol::NodePtr, JointNodePtr >
     _vectorizeJoints( const nsol::Sections& sections_ );

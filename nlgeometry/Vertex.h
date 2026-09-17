@@ -36,13 +36,13 @@ namespace nlgeometry
 
   typedef enum
     {
-      NONE = 0,
-      POSITION,
-      NORMAL,
+      POSITION = 0,
       COLOR,
       CENTER,
+      NORMAL,
       TANGENT,
-      UV
+      UV,
+      NONE
     } TAttribType;
 
     typedef std::vector< std::vector< float >> Attribs;
@@ -50,7 +50,7 @@ namespace nlgeometry
     typedef std::vector< TAttribType > AttribsFormat;
 
   /*! \class Vertex */
-  class Vertex
+  class NLGEOMETRY_EXPORT Vertex
   {
 
   public:
@@ -62,7 +62,6 @@ namespace nlgeometry
      * @param color_ vertex color
      * @param uv_ vertex uv coordinates
      */
-    NLGEOMETRY_EXPORT
     Vertex(
       const Eigen::Vector3f& position_,
       const Eigen::Vector3f& normal_ = Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
@@ -73,101 +72,83 @@ namespace nlgeometry
      * Copy constructor
      * @param other_ vertex to be copied
      */
-    NLGEOMETRY_EXPORT
     Vertex( const Vertex& other_ );
 
     /**
      * Default destructor
      */
-    NLGEOMETRY_EXPORT
     virtual ~Vertex( void );
 
     /**
      * Method to get the vertex id
      * @return vertex id
      */
-    NLGEOMETRY_EXPORT
     const unsigned int& id( void ) const;
 
     /**
      * Method to get the vertex position
      * @return vertex position
      */
-    NLGEOMETRY_EXPORT
     Eigen::Vector3f& position( void );
 
-    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& position( void ) const;
 
     /**
      * Method to get the vertex normal
      * @return vertex normal
      */
-    NLGEOMETRY_EXPORT
     Eigen::Vector3f& normal( void );
 
-    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& normal( void ) const;
 
     /**
      * Method to get the vertex color
      * @return vertex color
      */
-    NLGEOMETRY_EXPORT
     Eigen::Vector3f& color( void );
 
-    NLGEOMETRY_EXPORT
     const Eigen::Vector3f& color( void ) const;
 
     /**
      * Method to get the vertex uv coordinates
      * @return vertex uv coordinates
      */
-    NLGEOMETRY_EXPORT
     Eigen::Vector2f& uv( void );
 
-    NLGEOMETRY_EXPORT
     const Eigen::Vector2f& uv( void ) const;
 
     /**
      * Method to displace the vertex position
      * @param displacement_ displacement applied to the vertex position
      */
-    NLGEOMETRY_EXPORT
     virtual void displace( const Eigen::Vector3f& displacement_ );
 
     /**
      * Method to place the vertex position
      * @param placement_ placement to place the vertex position
      */
-    NLGEOMETRY_EXPORT
     virtual void place( const Eigen::Vector3f& placement_ );
 
     /**
      * Method to rotate the vertex position and normal
      * @param rotation_ matrix with the rotation to be applied
      */
-    NLGEOMETRY_EXPORT
     virtual void rotate( const Eigen::Matrix3f& rotation_ );
 
     /**
      * Method to rotate the vertex position and normal
      * @param rotation_ quaternion with the rotation to be applied
      */
-    NLGEOMETRY_EXPORT
     virtual void rotate( const Eigen::Quaternion< float >& rotation_ );
 
     /**
      * Method to change the modulus of the position vector
      * @param norm_ new position vector modulus
      */
-    NLGEOMETRY_EXPORT
     virtual void norm( const float norm_ );
 
-    NLGEOMETRY_EXPORT
     virtual void normalize( const Eigen::Vector3f& /*axis_*/ ){ }
 
-    NLGEOMETRY_EXPORT
     virtual void store( std::vector< float >& buffer_,
                         const TAttribType attribType_ );
 
@@ -177,14 +158,12 @@ namespace nlgeometry
      * @param attribs_ reference to the vertex attribs to return
      * @param fomat_ vector with the attribs format
      */
-    NLGEOMETRY_EXPORT
     void store( Attribs& attribs_, const AttribsFormat format_ );
 
     /**
      * Method that return a cloned vertex
      * @return a cloned vertex from the actual vertex
      */
-    NLGEOMETRY_EXPORT
     virtual VertexPtr clone( void );
 
   protected:
