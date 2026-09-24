@@ -52,7 +52,7 @@ FetchContent_Declare(
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(ReTo)
-list(APPEND CMAKE_MODULE_PATH "${ReTo_BINARY_DIR}/modules")
+list(APPEND CMAKE_MODULE_PATH "${ReTo_BINARY_DIR}")
 
 # Optional dependencies
 set(NEUROLOTS_OPTS_FIND_ARGS "")
