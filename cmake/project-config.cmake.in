@@ -6,6 +6,14 @@ find_dependency(OpenGL)
 find_dependency(GLEW)
 find_dependency(Eigen3 NO_MODULE)
 
-foreach(component ${${PROJECT_NAME}_FIND_COMPONENTS})
+set(_neurolots_components ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS})
+if(NOT _neurolots_components)
+  set(_neurolots_components nlgeometry nlphysics nlgenerator nlrender)
+
+  find_dependency(nsol)
+  find_dependency(ReTo)
+endif()
+
+foreach(component ${_neurolots_components})
     include("${CMAKE_CURRENT_LIST_DIR}/${component}/${component}-config.cmake")
 endforeach()
