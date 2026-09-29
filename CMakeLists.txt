@@ -46,7 +46,7 @@ FetchContent_MakeAvailable(nsol)
 FetchContent_Declare(
     ReTo
     GIT_REPOSITORY https://github.com/vg-lab/ReTo.git
-    GIT_TAG ce74d698d9b132799168e8fdd76ad6c58826f6c7 # v1.0.0
+    GIT_TAG 8431f434180b944b5255db37830a559704699240 # v1.0.1
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(ReTo)
