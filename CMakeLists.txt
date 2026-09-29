@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 
 project(neurolots
-  VERSION 0.3.5
+  VERSION 1.0.0
   LANGUAGES CXX
   DESCRIPTION "NeuroLOTs"
 )
@@ -33,8 +33,6 @@ find_package(Boost CONFIG REQUIRED COMPONENTS unit_test_framework)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(Eigen3 REQUIRED NO_MODULE)
-# find_package(nsol REQUIRED)
-# find_package(ReTo REQUIRED)
 
 include(FetchContent)
 FetchContent_Declare(
