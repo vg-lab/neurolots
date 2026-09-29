@@ -40,7 +40,7 @@ include(FetchContent)
 FetchContent_Declare(
     nsol
     GIT_REPOSITORY https://github.com/vg-lab/nsol.git
-    GIT_SHALLOW ON
+    GIT_TAG d5ca1e20592847b9475c277d7cc79ff915bc99d2 # v1.0.0
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(nsol)
@@ -48,7 +48,7 @@ FetchContent_MakeAvailable(nsol)
 FetchContent_Declare(
     ReTo
     GIT_REPOSITORY https://github.com/vg-lab/ReTo.git
-    GIT_SHALLOW ON
+    GIT_TAG ce74d698d9b132799168e8fdd76ad6c58826f6c7 # v1.0.0
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(ReTo)
