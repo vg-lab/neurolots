@@ -712,7 +712,7 @@ namespace nlrender
             texConfig.type = GL_FLOAT;
             texConfig.wrapS = GL_CLAMP_TO_EDGE;
             texConfig.wrapT = GL_CLAMP_TO_EDGE;
-            texConfig.samples = 1; // textures for final blit
+            texConfig.samples = 0; // textures for final blit, no multisampling.
 
             // textures for final blit, faster on composition shader. Otherwise shader will need to do antialias and will be slower.
             _opaqueTexture = new reto::Texture2D(texConfig, _transSystemWidth, _transSystemHeight);
