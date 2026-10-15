@@ -29,207 +29,211 @@
 
 #include <nlgenerator/nlgenerator_export.h>
 
-
 class MyPair
 {
-public:
+  public:
+    bool operator==(const MyPair& other_)
+    {
+        return (this->first_int == other_.first_int
+                && this->second_int == other_.second_int);
+    }
 
-  bool operator==( const MyPair& other_ )
-  {
-    return ( this->first_int == other_.first_int &&
-             this->second_int == other_.second_int );
-  }
-
-  unsigned int first_int;
-  unsigned int second_int;
-
+    unsigned int first_int;
+    unsigned int second_int;
 };
 
-namespace std {
-  template<>
-  struct hash<MyPair> {
-  public:
-    size_t operator()(const MyPair &myPair) const
+namespace std
+{
+    template<>
+    struct hash<MyPair>
     {
-        size_t h1 = std::hash<unsigned int>()(myPair.first_int);
-        size_t h2 = std::hash<unsigned int>()(myPair.second_int);
-        return h1 ^ ( h2 << 1 );
-    }
-  };
-}
+      public:
+        size_t operator()(const MyPair& myPair) const
+        {
+            size_t h1 = std::hash<unsigned int>()(myPair.first_int);
+            size_t h2 = std::hash<unsigned int>()(myPair.second_int);
+            return h1 ^ (h2 << 1);
+        }
+    };
+} // namespace std
 
 namespace nlgenerator
 {
 
-  class Quad;
-  typedef Quad* QuadPtr;
-  typedef std::vector< QuadPtr > Quads;
+    class Quad;
+    typedef Quad* QuadPtr;
+    typedef std::vector<QuadPtr> Quads;
 
-  /* \class Quad */
-  class Quad
-  {
-
-  public:
-
-    /**
-     * Constructor
-     * @param node0_ first quad node
-     * @param node1_ second quad node
-     * @param node2_ third quad node
-     * @param node3_ fourth quad node
-     */
-    NLGENERATOR_EXPORT
-    Quad( nlphysics::NodePtr node0_, nlphysics::NodePtr node1_,
-          nlphysics::NodePtr node2_, nlphysics::NodePtr node3_ )
-      : _node0( node0_ )
-      , _node1( node1_ )
-      , _node2( node2_ )
-      , _node3( node3_ )
+    /* \class Quad */
+    class Quad
     {
-    }
+      public:
+        /**
+         * Constructor
+         * @param node0_ first quad node
+         * @param node1_ second quad node
+         * @param node2_ third quad node
+         * @param node3_ fourth quad node
+         */
+        NLGENERATOR_EXPORT
+        Quad(nlphysics::NodePtr node0_, nlphysics::NodePtr node1_,
+             nlphysics::NodePtr node2_, nlphysics::NodePtr node3_) :
+            _node0(node0_),
+            _node1(node1_),
+            _node2(node2_),
+            _node3(node3_)
+        {
+        }
 
-    /**
-     * Default destructor
-     */
-    ~Quad( void ) { }
+        /**
+         * Default destructor
+         */
+        ~Quad(void)
+        {
+        }
 
-    /**
-     * Method that returns the reference to the first node
-     * @return reference to the first node
-     */
-    nlphysics::NodePtr node0( void ){ return _node0; }
+        /**
+         * Method that returns the reference to the first node
+         * @return reference to the first node
+         */
+        nlphysics::NodePtr node0(void)
+        {
+            return _node0;
+        }
 
-    /**
-     * Method that returns the reference to the second node
-     * @return reference to the second node
-     */
-    nlphysics::NodePtr node1( void ){ return _node1; }
+        /**
+         * Method that returns the reference to the second node
+         * @return reference to the second node
+         */
+        nlphysics::NodePtr node1(void)
+        {
+            return _node1;
+        }
 
-    /**
-     * Method that returns the reference to the third node
-     * @return reference to the third node
-     */
-    nlphysics::NodePtr node2( void ){ return _node2; }
+        /**
+         * Method that returns the reference to the third node
+         * @return reference to the third node
+         */
+        nlphysics::NodePtr node2(void)
+        {
+            return _node2;
+        }
 
+        /**
+         * Method that returns the reference to the fourth node
+         * @return reference to the fourth node
+         */
+        nlphysics::NodePtr node3(void)
+        {
+            return _node3;
+        }
 
-    /**
-     * Method that returns the reference to the fourth node
-     * @return reference to the fourth node
-     */
-    nlphysics::NodePtr node3( void ){ return _node3; }
+      protected:
+        //! Quad first node
+        nlphysics::NodePtr _node0;
 
-  protected:
+        //! Quad second node
+        nlphysics::NodePtr _node1;
 
-    //! Quad first node
-    nlphysics::NodePtr _node0;
+        //! Quad third node
+        nlphysics::NodePtr _node2;
 
-    //! Quad second node
-    nlphysics::NodePtr _node1;
+        //! Quad fourth node
+        nlphysics::NodePtr _node3;
+    };
 
-    //! Quad third node
-    nlphysics::NodePtr _node2;
+    class Icosphere;
+    typedef Icosphere* IcospherePtr;
 
-    //! Quad fourth node
-    nlphysics::NodePtr _node3;
+    /* \class Icosphere */
+    class Icosphere
+    {
+      public:
+        /**
+         * Default constructor
+         */
+        NLGENERATOR_EXPORT
+        Icosphere(const Eigen::Vector3f& center_ = Eigen::Vector3f(0.0f, 0.0f,
+                                                                   0.0f),
+                  float radius_ = 1.0f, unsigned int subdivisionlevel_ = 3);
 
-  };
+        /**
+         * Default destructor
+         */
+        NLGENERATOR_EXPORT
+        ~Icosphere();
 
-  class Icosphere;
-  typedef Icosphere* IcospherePtr;
+        /**
+         * Method that computes the final icospehere shape
+         * @param joints_ joint nodes that conects to the icospehere
+         */
+        NLGENERATOR_EXPORT
+        nlgeometry::Facets compute(const std::vector<JointNodePtr>& joints_);
 
-  /* \class Icosphere */
-  class Icosphere
-  {
+        /**
+         * Method that return the final icoshepre shape as facets
+         * @return the final icospehere shape as facets
+         */
+        NLGENERATOR_EXPORT
+        nlgeometry::Facets surface(void);
 
-  public:
+        /**
+         * Method that return the final icoshepre structure as facets
+         * @return the final icospehere structure as facets
+         */
+        NLGENERATOR_EXPORT
+        nlgeometry::Facets structure(void);
 
-    /**
-     * Default constructor
-     */
-    NLGENERATOR_EXPORT
-    Icosphere( const Eigen::Vector3f& center_ =
-               Eigen::Vector3f( 0.0f, 0.0f, 0.0f ),
-               float radius_ = 1.0f,
-               unsigned int subdivisionlevel_ = 3 );
+      protected:
+        void _surface(
+            nlgeometry::Facets& facets_,
+            std::unordered_map<unsigned int, nlgeometry::OrbitalVertexPtr>&
+                vertices_);
 
-    /**
-     * Default destructor
-     */
-    NLGENERATOR_EXPORT
-    ~Icosphere( );
+        nlphysics::NodePtr _nearestSurfaceNode(
+            const Eigen::Vector3f& point_) const;
 
-    /**
-     * Method that computes the final icospehere shape
-     * @param joints_ joint nodes that conects to the icospehere
-     */
-    NLGENERATOR_EXPORT
-    nlgeometry::Facets compute( const std::vector< JointNodePtr >& joints_ );
+        QuadPtr _nearestSurfaceQuad(const Eigen::Vector3f& point_) const;
 
-    /**
-     * Method that return the final icoshepre shape as facets
-     * @return the final icospehere shape as facets
-     */
-    NLGENERATOR_EXPORT
-    nlgeometry::Facets surface( void );
+        void _subdivideSphere(unsigned int subdivisionlevel_);
 
-    /**
-     * Method that return the final icoshepre structure as facets
-     * @return the final icospehere structure as facets
-     */
-    NLGENERATOR_EXPORT
-    nlgeometry::Facets structure( void );
+        void _computeCenters(void);
 
+        nlphysics::NodePtr _middleNode(
+            nlphysics::NodePtr node0_, nlphysics::NodePtr node1_,
+            std::unordered_map<MyPair, nlphysics::NodePtr, std::hash<MyPair>>&
+                newNodes_);
 
-  protected:
+        nlgeometry::OrbitalVertexPtr _nodeToVertex(
+            nlphysics::NodePtr node_,
+            std::unordered_map<unsigned int, nlgeometry::OrbitalVertexPtr>&
+                vertices_);
 
-    void _surface( nlgeometry::Facets& facets_,
-                   std::unordered_map< unsigned int,
-                   nlgeometry::OrbitalVertexPtr >& vertices_ );
+        //! Icosphere center position
+        Eigen::Vector3f _center;
 
-    nlphysics::NodePtr _nearestSurfaceNode( const Eigen::Vector3f& point_ )
-      const;
+        //! Icosphere radius
+        float _radius;
 
-    QuadPtr _nearestSurfaceQuad( const Eigen::Vector3f& point_ ) const;
+        //! Icosphere nodes
+        nlphysics::Nodes _nodes;
 
-    void _subdivideSphere( unsigned int subdivisionlevel_ );
+        //! Icosphere surface nodes
+        nlphysics::Nodes _surfaceNodes;
 
-    void _computeCenters( void );
+        //! Icosphere tetrahedra
+        nlphysics::Tetrahedra _tetrahedra;
 
-    nlphysics::NodePtr _middleNode(
-      nlphysics::NodePtr node0_, nlphysics::NodePtr node1_,
-      std::unordered_map< MyPair, nlphysics::NodePtr,
-      std::hash<MyPair> >& newNodes_ );
+        //! Icosphere surface tetrahedra
+        nlphysics::Tetrahedra _surfaceTetrahedra;
 
-    nlgeometry::OrbitalVertexPtr _nodeToVertex(
-      nlphysics::NodePtr node_,
-      std::unordered_map< unsigned int, nlgeometry::OrbitalVertexPtr >&
-      vertices_ );
+        //! Icosphere section quads
+        Quads _surfaceQuads;
 
-    //! Icosphere center position
-    Eigen::Vector3f _center;
+        //! Finite element method system
+        nlphysics::Fem* _femSystem;
 
-    //! Icosphere radius
-    float _radius;
-
-    //! Icosphere nodes
-    nlphysics::Nodes _nodes;
-
-    //! Icosphere surface nodes
-    nlphysics::Nodes _surfaceNodes;
-
-    //! Icosphere tetrahedra
-    nlphysics::Tetrahedra _tetrahedra;
-
-    //! Icosphere surface tetrahedra
-    nlphysics::Tetrahedra _surfaceTetrahedra;
-
-    //! Icosphere section quads
-    Quads _surfaceQuads;
-
-    //! Finite element method system
-    nlphysics::Fem* _femSystem;
-
-  }; // class Icosphere
+    }; // class Icosphere
 
 } // namespace nlgenerator
 

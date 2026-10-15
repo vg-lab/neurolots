@@ -26,5 +26,4 @@
 #define BOOST_TEST_MODULE nlphysics
 #include <boost/test/unit_test.hpp>
 
-
 #endif // __NLPHYSICS_TESTS_H__

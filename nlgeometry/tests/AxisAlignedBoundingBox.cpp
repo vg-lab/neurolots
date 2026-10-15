@@ -26,28 +26,28 @@
 
 using namespace nlgeometry;
 
-BOOST_AUTO_TEST_CASE( axisAlignedBoundingbox_constructor )
+BOOST_AUTO_TEST_CASE(axisAlignedBoundingbox_constructor)
 {
-  {
-    Eigen::Vector3f minimum( -1.0f, -1.0f, -1.0f );
-    Eigen::Vector3f maximum( 1.0f, 1.0f, 1.0f );
-    AxisAlignedBoundingBox aabb( minimum, maximum );
+    {
+        Eigen::Vector3f minimum(-1.0f, -1.0f, -1.0f);
+        Eigen::Vector3f maximum(1.0f, 1.0f, 1.0f);
+        AxisAlignedBoundingBox aabb(minimum, maximum);
 
-    BOOST_CHECK_EQUAL( aabb.minimum( ), minimum );
-    BOOST_CHECK_EQUAL( aabb.maximum( ), maximum );
+        BOOST_CHECK_EQUAL(aabb.minimum(), minimum);
+        BOOST_CHECK_EQUAL(aabb.maximum(), maximum);
 
-    BOOST_CHECK_EQUAL( aabb.center( ), Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-    BOOST_CHECK_EQUAL( aabb.radius( ), maximum.norm( ));
-  }
-  {
-    float minLimit = std::numeric_limits<float>::min( );
-    float maxLimit = std::numeric_limits<float>::max( );
-    Eigen::Vector3f minimum( maxLimit, maxLimit, maxLimit );
-    Eigen::Vector3f maximum( minLimit, minLimit, minLimit );
+        BOOST_CHECK_EQUAL(aabb.center(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+        BOOST_CHECK_EQUAL(aabb.radius(), maximum.norm());
+    }
+    {
+        float minLimit = std::numeric_limits<float>::min();
+        float maxLimit = std::numeric_limits<float>::max();
+        Eigen::Vector3f minimum(maxLimit, maxLimit, maxLimit);
+        Eigen::Vector3f maximum(minLimit, minLimit, minLimit);
 
-    AxisAlignedBoundingBox aabb;
+        AxisAlignedBoundingBox aabb;
 
-    BOOST_CHECK_EQUAL( aabb.minimum( ), minimum );
-    BOOST_CHECK_EQUAL( aabb.maximum( ), maximum );
-  }
+        BOOST_CHECK_EQUAL(aabb.minimum(), minimum);
+        BOOST_CHECK_EQUAL(aabb.maximum(), maximum);
+    }
 }

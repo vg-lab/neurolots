@@ -24,114 +24,113 @@
 namespace nlgeometry
 {
 
-  Facet::Facet( VertexPtr vertex0_, VertexPtr vertex1_, VertexPtr vertex2_,
-                VertexPtr vertex3_ )
-    : _vertex0( vertex0_ )
-    , _vertex1( vertex1_ )
-    , _vertex2( vertex2_ )
-    , _vertex3( vertex3_ )
-  {
-  }
-
-  VertexPtr& Facet::vertex0( void )
-  {
-    return _vertex0;
-  }
-
-  const VertexPtr& Facet::vertex0( void ) const
-  {
-    return _vertex0;
-  }
-
-  VertexPtr& Facet::vertex1( void )
-  {
-    return _vertex1;
-  }
-
-  const VertexPtr& Facet::vertex1( void ) const
-  {
-    return _vertex1;
-  }
-
-  VertexPtr& Facet::vertex2( void )
-  {
-    return _vertex2;
-  }
-
-  const VertexPtr& Facet::vertex2( void ) const
-  {
-    return _vertex2;
-  }
-
-  VertexPtr& Facet::vertex3( void )
-  {
-    return _vertex3;
-  }
-
-  const VertexPtr& Facet::vertex3( void ) const
-  {
-    return _vertex3;
-  }
-
-  void Facet::store( Attribs& attribs_, const AttribsFormat format_ )
-  {
-    if ( _vertex0 )
-      _vertex0->store( attribs_, format_ );
-    if ( _vertex1 )
-      _vertex1->store( attribs_, format_ );
-    if ( _vertex2 )
-      _vertex2->store( attribs_, format_ );
-    if ( _vertex3 )
-      _vertex3->store( attribs_, format_ );
-  }
-
-  std::vector< unsigned int > Facet::getIndicesAs( TFacetType facetType_ ) const
-  {
-    std::vector< unsigned int > indices;
-
-    if ( !_vertex0 | !_vertex1 )
-      return indices;
-
-    if ( _vertex3 )
+    Facet::Facet(VertexPtr vertex0_, VertexPtr vertex1_, VertexPtr vertex2_,
+                 VertexPtr vertex3_) :
+        _vertex0(vertex0_),
+        _vertex1(vertex1_),
+        _vertex2(vertex2_),
+        _vertex3(vertex3_)
     {
-      switch( facetType_ )
-      {
-      case TRIANGLES:
-        indices.push_back( _vertex0->id( ));
-        indices.push_back( _vertex1->id( ));
-        indices.push_back( _vertex2->id( ));
-        indices.push_back( _vertex1->id( ));
-        indices.push_back( _vertex3->id( ));
-        indices.push_back( _vertex2->id( ));
-        break;
-      case PATCHES:
-        indices.push_back( _vertex0->id( ));
-        indices.push_back( _vertex1->id( ));
-        indices.push_back( _vertex2->id( ));
-        indices.push_back( _vertex3->id( ));
-        break;
-      }
-    }
-    else if ( _vertex2 )
-    {
-      indices.push_back( _vertex0->id( ));
-      indices.push_back( _vertex1->id( ));
-      indices.push_back( _vertex2->id( ));
-    }
-    else
-    {
-      indices.push_back( _vertex0->id( ));
-      indices.push_back( _vertex1->id( ));
     }
 
-    return indices;
-  }
+    VertexPtr& Facet::vertex0(void)
+    {
+        return _vertex0;
+    }
 
-  void Facet::addIndicesAs( TFacetType facetType_,
-                            std::vector< unsigned int >& indices_ ) const
-  {
-    auto indices = getIndicesAs( facetType_);
-    indices_.insert( indices_.end( ), indices.begin(), indices.end( ));
-  }
+    const VertexPtr& Facet::vertex0(void) const
+    {
+        return _vertex0;
+    }
+
+    VertexPtr& Facet::vertex1(void)
+    {
+        return _vertex1;
+    }
+
+    const VertexPtr& Facet::vertex1(void) const
+    {
+        return _vertex1;
+    }
+
+    VertexPtr& Facet::vertex2(void)
+    {
+        return _vertex2;
+    }
+
+    const VertexPtr& Facet::vertex2(void) const
+    {
+        return _vertex2;
+    }
+
+    VertexPtr& Facet::vertex3(void)
+    {
+        return _vertex3;
+    }
+
+    const VertexPtr& Facet::vertex3(void) const
+    {
+        return _vertex3;
+    }
+
+    void Facet::store(Attribs& attribs_, const AttribsFormat format_)
+    {
+        if (_vertex0) {
+            _vertex0->store(attribs_, format_);
+        }
+        if (_vertex1) {
+            _vertex1->store(attribs_, format_);
+        }
+        if (_vertex2) {
+            _vertex2->store(attribs_, format_);
+        }
+        if (_vertex3) {
+            _vertex3->store(attribs_, format_);
+        }
+    }
+
+    std::vector<unsigned int> Facet::getIndicesAs(TFacetType facetType_) const
+    {
+        std::vector<unsigned int> indices;
+
+        if (!_vertex0 | !_vertex1) {
+            return indices;
+        }
+
+        if (_vertex3) {
+            switch (facetType_) {
+                case TRIANGLES:
+                    indices.push_back(_vertex0->id());
+                    indices.push_back(_vertex1->id());
+                    indices.push_back(_vertex2->id());
+                    indices.push_back(_vertex1->id());
+                    indices.push_back(_vertex3->id());
+                    indices.push_back(_vertex2->id());
+                    break;
+                case PATCHES:
+                    indices.push_back(_vertex0->id());
+                    indices.push_back(_vertex1->id());
+                    indices.push_back(_vertex2->id());
+                    indices.push_back(_vertex3->id());
+                    break;
+            }
+        } else if (_vertex2) {
+            indices.push_back(_vertex0->id());
+            indices.push_back(_vertex1->id());
+            indices.push_back(_vertex2->id());
+        } else {
+            indices.push_back(_vertex0->id());
+            indices.push_back(_vertex1->id());
+        }
+
+        return indices;
+    }
+
+    void Facet::addIndicesAs(TFacetType facetType_,
+                             std::vector<unsigned int>& indices_) const
+    {
+        auto indices = getIndicesAs(facetType_);
+        indices_.insert(indices_.end(), indices.begin(), indices.end());
+    }
 
 } // end namespace nlgeometry

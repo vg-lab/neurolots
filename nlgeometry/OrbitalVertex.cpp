@@ -24,110 +24,105 @@
 namespace nlgeometry
 {
 
-  OrbitalVertex::OrbitalVertex(
-    const Eigen::Vector3f& position_,
-    const Eigen::Vector3f& center_,
-    const Eigen::Vector3f& tangent_,
-    const Eigen::Vector3f& color_ )
-    : Vertex( position_, Eigen::Vector3f( 0.0f, 0.0f, 0.0f ), color_ )
-    , _center( center_ )
-    , _tangent( tangent_ )
-  {
-
-  }
-
-  OrbitalVertex::OrbitalVertex( const OrbitalVertex& other_  )
-    : Vertex( other_ )
-    , _center( other_.center( ))
-    , _tangent( other_.tangent( ))
-  {
-
-  }
-
-  OrbitalVertex::~OrbitalVertex( void )
-  {
-
-  }
-
-  Eigen::Vector3f& OrbitalVertex::center( void )
-  {
-    return _center;
-  }
-
-  const Eigen::Vector3f& OrbitalVertex::center( void ) const
-  {
-    return _center;
-  }
-
-  Eigen::Vector3f& OrbitalVertex::tangent( void )
-  {
-    return _tangent;
-  }
-
-  const Eigen::Vector3f& OrbitalVertex::tangent( void ) const
-  {
-    return _tangent;
-  }
-
-  void OrbitalVertex::displace( const Eigen::Vector3f& displacement_ )
-  {
-    _position += displacement_;
-    _center += displacement_;
-  }
-
-  void OrbitalVertex::place( const Eigen::Vector3f& placement_ )
-  {
-    Eigen::Vector3f axis = _position - _center;
-    _center = placement_;
-    _position = _center + axis;
-  }
-
-  void OrbitalVertex::rotate( const Eigen::Matrix3f& rotation_ )
-  {
-    Eigen::Vector3f axis = _position - _center;
-    _position = _center + rotation_ * axis;
-  }
-
-  void OrbitalVertex::rotate( const Eigen::Quaternion< float >& rotation_ )
-  {
-    Eigen::Vector3f axis = _position - _center;
-    _position = _center + rotation_ * axis;
-  }
-
-  void OrbitalVertex::norm( const float norm_ )
-  {
-    _position = ( _position - _center ).normalized( ) * norm_ + _center;
-  }
-
-  void OrbitalVertex::normalize( const Eigen::Vector3f& axis_ )
-  {
-    _position = _center + axis_.normalized( );
-  }
-
-  void OrbitalVertex::store( std::vector< float >& buffer_,
-                        const TAttribType attribType_ )
-  {
-    switch( attribType_ )
+    OrbitalVertex::OrbitalVertex(const Eigen::Vector3f& position_,
+                                 const Eigen::Vector3f& center_,
+                                 const Eigen::Vector3f& tangent_,
+                                 const Eigen::Vector3f& color_) :
+        Vertex(position_, Eigen::Vector3f(0.0f, 0.0f, 0.0f), color_),
+        _center(center_),
+        _tangent(tangent_)
     {
-    case CENTER:
-      buffer_.push_back( _center.x( ));
-      buffer_.push_back( _center.y( ));
-      buffer_.push_back( _center.z( ));
-      break;
-    case TANGENT:
-      buffer_.push_back( _tangent.x( ));
-      buffer_.push_back( _tangent.y( ));
-      buffer_.push_back( _tangent.z( ));
-      break;
-    default:
-      Vertex::store( buffer_, attribType_ );
-      break;
     }
-  }
 
-  VertexPtr OrbitalVertex::clone( void )
-  {
-    return new OrbitalVertex( *this );
-  }
+    OrbitalVertex::OrbitalVertex(const OrbitalVertex& other_) :
+        Vertex(other_),
+        _center(other_.center()),
+        _tangent(other_.tangent())
+    {
+    }
+
+    OrbitalVertex::~OrbitalVertex(void)
+    {
+    }
+
+    Eigen::Vector3f& OrbitalVertex::center(void)
+    {
+        return _center;
+    }
+
+    const Eigen::Vector3f& OrbitalVertex::center(void) const
+    {
+        return _center;
+    }
+
+    Eigen::Vector3f& OrbitalVertex::tangent(void)
+    {
+        return _tangent;
+    }
+
+    const Eigen::Vector3f& OrbitalVertex::tangent(void) const
+    {
+        return _tangent;
+    }
+
+    void OrbitalVertex::displace(const Eigen::Vector3f& displacement_)
+    {
+        _position += displacement_;
+        _center += displacement_;
+    }
+
+    void OrbitalVertex::place(const Eigen::Vector3f& placement_)
+    {
+        Eigen::Vector3f axis = _position - _center;
+        _center = placement_;
+        _position = _center + axis;
+    }
+
+    void OrbitalVertex::rotate(const Eigen::Matrix3f& rotation_)
+    {
+        Eigen::Vector3f axis = _position - _center;
+        _position = _center + rotation_ * axis;
+    }
+
+    void OrbitalVertex::rotate(const Eigen::Quaternion<float>& rotation_)
+    {
+        Eigen::Vector3f axis = _position - _center;
+        _position = _center + rotation_ * axis;
+    }
+
+    void OrbitalVertex::norm(const float norm_)
+    {
+        _position = (_position - _center).normalized() * norm_ + _center;
+    }
+
+    void OrbitalVertex::normalize(const Eigen::Vector3f& axis_)
+    {
+        _position = _center + axis_.normalized();
+    }
+
+    void OrbitalVertex::store(std::vector<float>& buffer_,
+                              const TAttribType attribType_)
+    {
+        switch (attribType_) {
+            case CENTER:
+                buffer_.push_back(_center.x());
+                buffer_.push_back(_center.y());
+                buffer_.push_back(_center.z());
+                break;
+            case TANGENT:
+                buffer_.push_back(_tangent.x());
+                buffer_.push_back(_tangent.y());
+                buffer_.push_back(_tangent.z());
+                break;
+            default:
+                Vertex::store(buffer_, attribType_);
+                break;
+        }
+    }
+
+    VertexPtr OrbitalVertex::clone(void)
+    {
+        return new OrbitalVertex(*this);
+    }
 
 } // namespace nlgeometry

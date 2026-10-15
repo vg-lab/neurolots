@@ -26,38 +26,35 @@
 
 class DemoCallbacks
 {
+  public:
+    static void camera(reto::OrbitalCameraController* camera_);
 
-public:
+    static void idleFunc(void);
 
-  static void camera( reto::OrbitalCameraController* camera_ );
+    static void keyboardFunc(unsigned char key_, int x_, int y_);
 
-  static void idleFunc( void );
+    static void mouseFunc(int button_, int state_, int x_, int y_);
 
-  static void keyboardFunc( unsigned char key_, int x_, int y_ );
+    static void mouseMotionFunc(int x_, int y_);
 
-  static void mouseFunc( int button_, int state_, int x_, int y_ );
+    static void resizeFunc(int width_, int height_);
 
-  static void mouseMotionFunc( int x_, int y_ );
+  protected:
+    static reto::OrbitalCameraController* _camera;
 
-  static void resizeFunc( int width_, int height_ );
+    // X Y mouse position.
+    static int _previousX;
+    static int _previousY;
 
-protected:
+    static bool _wireframe;
+    static bool _mouseDown;
+    static bool _mouseScrolling;
+    static bool _rotation;
+    static bool _traslation;
 
-  static reto::OrbitalCameraController* _camera;
-
-  // X Y mouse position.
-  static int _previousX;
-  static int _previousY;
-
-  static bool _wireframe;
-  static bool _mouseDown;
-  static bool _mouseScrolling;
-  static bool _rotation;
-  static bool _traslation;
-
-  static float _mouseWheelFactor;
-  static float _rotationScale;
-  static float _traslationScale;
+    static float _mouseWheelFactor;
+    static float _rotationScale;
+    static float _traslationScale;
 
 }; // class DemosCallBacks
 

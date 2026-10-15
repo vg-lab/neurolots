@@ -28,17 +28,15 @@
 namespace nlrender
 {
 
-  class NLRENDER_EXPORT Config
-  {
+    class NLRENDER_EXPORT Config
+    {
+      public:
+        static void init(void);
+        static bool isInitialized(void);
 
-  public:
-    static void init( void );
-    static bool isInitialized( void );
-
-  private:
-    static bool _initialized;
-
-  };
+      private:
+        static bool _initialized;
+    };
 
 } // namespace nlrender
 

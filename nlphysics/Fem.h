@@ -33,83 +33,79 @@
 namespace nlphysics
 {
 
-  /* \class Fem */
-  class Fem
-  {
+    /* \class Fem */
+    class Fem
+    {
+      public:
+        /**
+         * Constructor
+         * @param nodes_ geometry nodes of the FEM system
+         * @param tetrahedra_ geometry tetrahedra of the FEM system
+         * @param poissonRatio_ Poisson's ratio
+         * @param youngModulus_ Young modulus
+         */
+        NLPHYSICS_EXPORT
+        Fem(Nodes& nodes_, Tetrahedra& tetrahedra_, float poissonRatio_ = 0.3f,
+            float youngModulus_ = 1.0f);
 
-  public:
+        /*
+         * Default destructor
+         */
+        NLPHYSICS_EXPORT
+        ~Fem(void);
 
-    /**
-     * Constructor
-     * @param nodes_ geometry nodes of the FEM system
-     * @param tetrahedra_ geometry tetrahedra of the FEM system
-     * @param poissonRatio_ Poisson's ratio
-     * @param youngModulus_ Young modulus
-     */
-    NLPHYSICS_EXPORT
-    Fem( Nodes& nodes_, Tetrahedra& tetrahedra_,
-         float poissonRatio_ = 0.3f, float youngModulus_ = 1.0f );
+        /*
+         * Method that solve the system
+         */
+        NLPHYSICS_EXPORT
+        void solve(void);
 
-    /*
-     * Default destructor
-     */
-    NLPHYSICS_EXPORT
-    ~Fem( void );
+      private:
+        void _addTokMatrix(unsigned int id0_, unsigned int id1_,
+                           const Eigen::Matrix3f& sum_);
 
-    /*
-     * Method that solve the system
-     */
-    NLPHYSICS_EXPORT
-    void solve( void );
+        void _addToB(unsigned int id_, const Eigen::Vector3f& sum_);
 
-  private:
+        void _computeTetrahedra(void);
 
-    void _addTokMatrix( unsigned int id0_, unsigned int id1_,
-                        const Eigen::Matrix3f& sum_ );
+        void _conformMatrixSystem(void);
 
-    void _addToB( unsigned int id_, const Eigen::Vector3f& sum_ );
+        //! Geometry nodes
+        std::vector<NodePtr> _nodes;
+        //! Geometry tetrahedra
+        Tetrahedra _tetrahedra;
 
-    void _computeTetrahedra( void );
+        //! Vector of indices
+        std::vector<unsigned int> _indices;
 
-    void _conformMatrixSystem( void );
+        //! Poisson's ratio
+        float _poissonRatio;
 
+        //! Young modulus
+        float _youngModulus;
 
-    //! Geometry nodes
-    std::vector< NodePtr > _nodes;
-    //! Geometry tetrahedra
-    Tetrahedra _tetrahedra;
+        //! Material matrix
+        Eigen::MatrixXf _material;
 
-    //! Vector of indices
-    std::vector< unsigned int > _indices;
+        //! Vector of triplets that forms the system
+        std::vector<Eigen::Triplet<float>> _triplets;
 
-    //! Poisson's ratio
-    float _poissonRatio;
+        //! System stiffness matrix
+        Eigen::SparseMatrix<float> _kMatrix;
 
-    //! Young modulus
-    float _youngModulus;
+        //! System solutions matrix
+        Eigen::VectorXf _b;
 
-    //! Material matrix
-    Eigen::MatrixXf _material;
+        //! System rigth vector
+        Eigen::VectorXf _u;
 
-    //! Vector of triplets that forms the system
-    std::vector< Eigen::Triplet< float >> _triplets;
+        //! Conjugate Gradient solver
+        Eigen::ConjugateGradient<Eigen::SparseMatrix<float>> _solver;
 
-    //! System stiffness matrix
-    Eigen::SparseMatrix< float > _kMatrix;
+        //! System size
+        unsigned int _size;
 
-    //! System solutions matrix
-    Eigen::VectorXf _b;
-
-    //! System rigth vector
-    Eigen::VectorXf _u;
-
-    //! Conjugate Gradient solver
-    Eigen::ConjugateGradient< Eigen::SparseMatrix< float >> _solver;
-
-    //! System size
-    unsigned int _size;
-
-  }; // class Fem
+    }; // class Fem
 
 } // namespace nlphysics
 

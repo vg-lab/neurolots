@@ -30,108 +30,108 @@
 
 namespace nlgenerator
 {
-  class JointNode;
-  typedef JointNode* JointNodePtr;
-  typedef std::vector< JointNodePtr > JointNodes;
+    class JointNode;
+    typedef JointNode* JointNodePtr;
+    typedef std::vector<JointNodePtr> JointNodes;
 
-  /* \class JointNode */
-  class JointNode
-  {
-  public:
+    /* \class JointNode */
+    class JointNode
+    {
+      public:
+        /**
+         * Constructor
+         * @param position_ position of the joint node
+         * @param radius_ radius of the joint node
+         */
+        NLGENERATOR_EXPORT
+        JointNode(const Eigen::Vector3f& position_, float radius_);
 
-    /**
-     * Constructor
-     * @param position_ position of the joint node
-     * @param radius_ radius of the joint node
-     */
-    NLGENERATOR_EXPORT
-    JointNode( const Eigen::Vector3f& position_, float radius_ );
+        /**
+         * Default destructor
+         */
+        NLGENERATOR_EXPORT
+        ~JointNode(void);
 
-    /**
-     * Default destructor
-     */
-    NLGENERATOR_EXPORT
-    ~JointNode( void );
+        /**
+         * Method that returns the joint node position
+         * @return the joint node position
+         */
+        NLGENERATOR_EXPORT
+        Eigen::Vector3f& position(void);
 
-    /**
-     * Method that returns the joint node position
-     * @return the joint node position
-     */
-    NLGENERATOR_EXPORT
-    Eigen::Vector3f& position( void );
+        /**
+         * Method that returns the join node radius
+         * @return the joint node radius
+         */
+        NLGENERATOR_EXPORT
+        float& radius(void);
 
-    /**
-     * Method that returns the join node radius
-     * @return the joint node radius
-     */
-    NLGENERATOR_EXPORT
-    float& radius( void );
+        /**
+         * Method that returns the connected soma conditional
+         * @return the connected soma conditional
+         */
+        NLGENERATOR_EXPORT
+        bool& connectedSoma(void);
 
-    /**
-     * Method that returns the connected soma conditional
-     * @return the connected soma conditional
-     */
-    NLGENERATOR_EXPORT
-    bool& connectedSoma( void );
+        /**
+         * Method that returns the corresponding section quad for each neighbour
+         * nsol node
+         * @param neighbour_ nsol neighbour node
+         * @return the corresponding section quad
+         */
+        NLGENERATOR_EXPORT
+        nlgeometry::SectionQuadPtr sectionQuad(nsol::NodePtr neighbour_);
 
-    /**
-     * Method that returns the corresponding section quad for each neighbour
-     * nsol node
-     * @param neighbour_ nsol neighbour node
-     * @return the corresponding section quad
-     */
-    NLGENERATOR_EXPORT
-    nlgeometry::SectionQuadPtr sectionQuad( nsol::NodePtr neighbour_ );
+        /**
+         * Method that returns the first section quad
+         * @return the first section quad
+         */
+        NLGENERATOR_EXPORT
+        nlgeometry::SectionQuadPtr sectionQuad(void);
 
-    /**
-     * Method that returns the first section quad
-     * @return the first section quad
-     */
-    NLGENERATOR_EXPORT
-    nlgeometry::SectionQuadPtr sectionQuad( void );
+        /**
+         * Method that return the first neighbour node
+         * @return the first neigbour node
+         */
+        NLGENERATOR_EXPORT
+        nsol::NodePtr neighbour(void);
 
-    /**
-     * Method that return the first neighbour node
-     * @return the first neigbour node
-     */
-    NLGENERATOR_EXPORT
-    nsol::NodePtr neighbour( void );
+        /**
+         * Method that returns the number of neighbors of the joint node
+         * @return the number of neighbors of the joint node
+         */
+        NLGENERATOR_EXPORT
+        unsigned int numberNeighbors(void);
 
-    /**
-     * Method that returns the number of neighbors of the joint node
-     * @return the number of neighbors of the joint node
-     */
-    NLGENERATOR_EXPORT
-    unsigned int numberNeighbors( void );
+        /**
+         * Method that adds a new nsol neighbour node to the joint
+         * @param neighbour_ nsol neighbour node
+         */
+        NLGENERATOR_EXPORT
+        void addNeighbour(nsol::NodePtr neighbour_);
 
-    /**
-     * Method that adds a new nsol neighbour node to the joint
-     * @param neighbour_ nsol neighbour node
-     */
-    NLGENERATOR_EXPORT
-    void addNeighbour( nsol::NodePtr neighbour_ );
+        /**
+         * Method that computes the joint node geometry
+         */
+        NLGENERATOR_EXPORT
+        void computeGeometry(void);
 
-    /**
-     * Method that computes the joint node geometry
-     */
-    NLGENERATOR_EXPORT
-    void computeGeometry( void );
+      protected:
+        //! Joint node position
+        Eigen::Vector3f _position;
 
-  protected:
+        //! Joint node radius
+        float _radius;
 
-    //! Joint node position
-    Eigen::Vector3f _position;
+        //! Conditional that indicates if the joint node is connected to the
+        //! soma
+        bool _connectedSoma;
 
-    //! Joint node radius
-    float _radius;
+        //! Joint node neighbour nodes
+        std::unordered_map<nsol::NodePtr, nlgeometry::SectionQuadPtr>
+            _neighbors;
 
-    //! Conditional that indicates if the joint node is connected to the soma
-    bool _connectedSoma;
-
-    //! Joint node neighbour nodes
-    std::unordered_map< nsol::NodePtr, nlgeometry::SectionQuadPtr > _neighbors;
-
-  }; // class JointNode
+    }; // class JointNode
 
 } // namespace nlgenerator
 

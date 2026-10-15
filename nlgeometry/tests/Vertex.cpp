@@ -26,54 +26,54 @@
 
 using namespace nlgeometry;
 
-void checkEqualVertices( VertexPtr vertex0_, VertexPtr vertex1_ )
+void checkEqualVertices(VertexPtr vertex0_, VertexPtr vertex1_)
 {
-  BOOST_CHECK( vertex0_ != vertex1_ );
-  BOOST_CHECK_EQUAL( vertex0_->id( ), vertex1_->id( ));
-  BOOST_CHECK_EQUAL( vertex0_->position( ), vertex1_->position( ));
-  BOOST_CHECK_EQUAL( vertex0_->normal( ), vertex1_->normal( ));
-  BOOST_CHECK_EQUAL( vertex0_->color( ), vertex1_->color( ));
-  BOOST_CHECK_EQUAL( vertex0_->uv( ), vertex1_->uv( ));
+    BOOST_CHECK(vertex0_ != vertex1_);
+    BOOST_CHECK_EQUAL(vertex0_->id(), vertex1_->id());
+    BOOST_CHECK_EQUAL(vertex0_->position(), vertex1_->position());
+    BOOST_CHECK_EQUAL(vertex0_->normal(), vertex1_->normal());
+    BOOST_CHECK_EQUAL(vertex0_->color(), vertex1_->color());
+    BOOST_CHECK_EQUAL(vertex0_->uv(), vertex1_->uv());
 }
 
-BOOST_AUTO_TEST_CASE( vertex_constructor )
+BOOST_AUTO_TEST_CASE(vertex_constructor)
 {
-  Eigen::Vector3f vec3Zero( 0.0f, 0.0f, 0.0f );
-  Eigen::Vector2f vec2Zero( 0.0f, 0.0f );
+    Eigen::Vector3f vec3Zero(0.0f, 0.0f, 0.0f);
+    Eigen::Vector2f vec2Zero(0.0f, 0.0f);
 
-  Vertex vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    Vertex vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
 
-  BOOST_CHECK_EQUAL( vertex.id( ), 0 );
-  BOOST_CHECK_EQUAL( vertex.position( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.normal( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.color( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.uv( ), vec2Zero );
+    BOOST_CHECK_EQUAL(vertex.id(), 0);
+    BOOST_CHECK_EQUAL(vertex.position(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.normal(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.color(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.uv(), vec2Zero);
 }
 
-BOOST_AUTO_TEST_CASE( vertex_clone )
+BOOST_AUTO_TEST_CASE(vertex_clone)
 {
-  Vertex vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-  VertexPtr otherVertex = vertex.clone( );
+    Vertex vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+    VertexPtr otherVertex = vertex.clone();
 
-  checkEqualVertices( &vertex, otherVertex );
+    checkEqualVertices(&vertex, otherVertex);
 }
 
-BOOST_AUTO_TEST_CASE( vertex_meythods )
+BOOST_AUTO_TEST_CASE(vertex_meythods)
 {
-  Vertex vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    Vertex vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
 
-  vertex.displace( Eigen::Vector3f( 1.0f, 2.0f, 3.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 1.0f, 2.0f, 3.0f ));
+    vertex.displace(Eigen::Vector3f(1.0f, 2.0f, 3.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(1.0f, 2.0f, 3.0f));
 
-  vertex.place( Eigen::Vector3f( 3.0f, 2.0f, 1.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 3.0f, 2.0f, 1.0f ));
+    vertex.place(Eigen::Vector3f(3.0f, 2.0f, 1.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(3.0f, 2.0f, 1.0f));
 
-  vertex.rotate( Eigen::Matrix3f::Identity( ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 3.0f, 2.0f, 1.0f ));
+    vertex.rotate(Eigen::Matrix3f::Identity());
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(3.0f, 2.0f, 1.0f));
 
-  vertex.rotate( Eigen::Quaternion< float >::Identity( ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 3.0f, 2.0f, 1.0f ));
+    vertex.rotate(Eigen::Quaternion<float>::Identity());
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(3.0f, 2.0f, 1.0f));
 
-  vertex.norm( 5.0f );
-  BOOST_CHECK_EQUAL( vertex.position( ).norm( ), 5.0f );
+    vertex.norm(5.0f);
+    BOOST_CHECK_EQUAL(vertex.position().norm(), 5.0f);
 }

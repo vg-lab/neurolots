@@ -29,28 +29,26 @@
 namespace nlgeometry
 {
 
-  /* \class ObjWriter */
-  class ObjWriter
-  {
+    /* \class ObjWriter */
+    class ObjWriter
+    {
+      public:
+        /**
+         * Static method to write mesh to a obj file
+         */
+        NLGEOMETRY_EXPORT
+        static void writeMesh(const MeshPtr mesh, const std::string& fileName_,
+                              const std::string& headerString_ = "");
 
-  public:
+        /**
+         * Static method to write a vector of facets and vertices to a obj file
+         */
+        NLGEOMETRY_EXPORT
+        static void writeMesh(const Facets& facets_, const Vertices& vertices_,
+                              const std::string& fileName_,
+                              const std::string& headerString_ = "");
 
-    /**
-     * Static method to write mesh to a obj file
-     */
-    NLGEOMETRY_EXPORT
-    static void writeMesh( const MeshPtr mesh, const std::string& fileName_,
-                           const std::string& headerString_ = "" );
-
-    /**
-     * Static method to write a vector of facets and vertices to a obj file
-     */
-    NLGEOMETRY_EXPORT
-    static void writeMesh( const Facets& facets_, const Vertices& vertices_,
-                           const std::string& fileName_,
-                           const std::string& headerString_ = "" );
-
-  }; // class ObjWriter
+    }; // class ObjWriter
 
 } // namespace nlgeometry
 

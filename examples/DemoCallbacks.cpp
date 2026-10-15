@@ -22,15 +22,15 @@
 #include "DemoCallbacks.h"
 
 #ifdef Darwin
-  #define __gl_h_
-  #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-  #include <OpenGL/gl.h>
-  #include <OpenGL/glu.h>
-  #include <GL/freeglut.h>
+    #define __gl_h_
+    #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
+    #include <GL/freeglut.h>
 #else
-  #include <GL/gl.h>
-  #include <GL/glu.h>
-  #include <GL/freeglut.h>
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+    #include <GL/freeglut.h>
 #endif
 
 reto::OrbitalCameraController* DemoCallbacks::_camera = nullptr;
@@ -55,108 +55,101 @@ float DemoCallbacks::_rotationScale = 0.01f;
 
 float DemoCallbacks::_traslationScale = 0.2f;
 
-void DemoCallbacks::camera( reto::OrbitalCameraController* camera_ )
+void DemoCallbacks::camera(reto::OrbitalCameraController* camera_)
 {
-  _camera = camera_;
+    _camera = camera_;
 }
 
-void DemoCallbacks::idleFunc( void )
+void DemoCallbacks::idleFunc(void)
 {
-  glutPostRedisplay( );
-}
-
-void DemoCallbacks::keyboardFunc(
-  unsigned char key_, int /*x_*/, int /*y_*/ )
-{
-  switch( key_ )
-  {
-  // Camera control.
-  case 'c':
-  case 'C':
-    _camera->position( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-    _camera->radius( 1000.0f );
-    _camera->rotation( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ) );
-    glutPostRedisplay( );
-    break;
-  case 'm':
-  case 'M':
-    _wireframe = !_wireframe;
-    if ( _wireframe )
-    {
-      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    }
-    else
-    {
-      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    }
-    glutPostRedisplay( );
-    break;
-  }
-}
-
-void DemoCallbacks::mouseFunc(
-  int button_, int state_, int x_, int y_ )
-{
-  /**
-   * GLUT
-   * button: 0 (left), 1 (central), 2 (right), 3 (wheel up), 4 (wheel down).
-   * state: GLUT_DOWN (button down), GLUT_UP (button released).
-   */
-  if ( state_ == GLUT_DOWN )
-  {
-    _mouseDown = true;
-    if ( button_ == 0 ) _rotation = true;
-    if ( button_ == 1 ) _traslation = true;
-    if (( button_ == 3 ) || ( button_ == 4 ))
-    {
-      _mouseScrolling = true;
-      float newRadius = ( button_ == 3 ) ?
-        _camera->radius( ) / _mouseWheelFactor :
-        _camera->radius( ) * _mouseWheelFactor;
-      _camera->radius( newRadius );
-      glutPostRedisplay();
-    }
-    // We save X and Y previous positions.
-    _previousX = x_;
-    _previousY = y_;
-  }
-  else
-  {
-    _mouseDown = false;
-    if( button_ == 0 ) _rotation = false;
-    if( button_ == 1 ) _traslation = false;
-    if (( button_ == 3 ) || ( button_ == 4 ))
-    {
-      _mouseScrolling = false;
-    }
-  }
-}
-
-void DemoCallbacks::mouseMotionFunc( int x_, int y_ )
-{
- if( _mouseDown )
-  {
-    float deltaX = ( float )x_ - _previousX;
-    float deltaY = ( float )y_ - _previousY;
-    if( _rotation )
-    {
-      _camera->rotate( Eigen::Vector3f (deltaX * _rotationScale,
-                              deltaY * _rotationScale, 0.0f ));
-    }
-    if( _traslation )
-    {
-      _camera->translate( Eigen::Vector3f ( -deltaX * _traslationScale,
-                                             deltaY * _traslationScale,
-                                             0.0f ) );
-    }
-    _previousX = x_;
-    _previousY = y_;
     glutPostRedisplay();
-  }
 }
 
-void DemoCallbacks::resizeFunc( int width_, int height_ )
+void DemoCallbacks::keyboardFunc(unsigned char key_, int /*x_*/, int /*y_*/)
 {
-  _camera->windowSize(width_, height_);
-  glViewport( 0, 0, width_, height_ );
+    switch (key_) {
+        // Camera control.
+        case 'c':
+        case 'C':
+            _camera->position(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+            _camera->radius(1000.0f);
+            _camera->rotation(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+            glutPostRedisplay();
+            break;
+        case 'm':
+        case 'M':
+            _wireframe = !_wireframe;
+            if (_wireframe) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            } else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+            glutPostRedisplay();
+            break;
+    }
+}
+
+void DemoCallbacks::mouseFunc(int button_, int state_, int x_, int y_)
+{
+    /**
+     * GLUT
+     * button: 0 (left), 1 (central), 2 (right), 3 (wheel up), 4 (wheel down).
+     * state: GLUT_DOWN (button down), GLUT_UP (button released).
+     */
+    if (state_ == GLUT_DOWN) {
+        _mouseDown = true;
+        if (button_ == 0) {
+            _rotation = true;
+        }
+        if (button_ == 1) {
+            _traslation = true;
+        }
+        if ((button_ == 3) || (button_ == 4)) {
+            _mouseScrolling = true;
+            float newRadius = (button_ == 3)
+                                  ? _camera->radius() / _mouseWheelFactor
+                                  : _camera->radius() * _mouseWheelFactor;
+            _camera->radius(newRadius);
+            glutPostRedisplay();
+        }
+        // We save X and Y previous positions.
+        _previousX = x_;
+        _previousY = y_;
+    } else {
+        _mouseDown = false;
+        if (button_ == 0) {
+            _rotation = false;
+        }
+        if (button_ == 1) {
+            _traslation = false;
+        }
+        if ((button_ == 3) || (button_ == 4)) {
+            _mouseScrolling = false;
+        }
+    }
+}
+
+void DemoCallbacks::mouseMotionFunc(int x_, int y_)
+{
+    if (_mouseDown) {
+        float deltaX = (float)x_ - _previousX;
+        float deltaY = (float)y_ - _previousY;
+        if (_rotation) {
+            _camera->rotate(Eigen::Vector3f(deltaX * _rotationScale,
+                                            deltaY * _rotationScale, 0.0f));
+        }
+        if (_traslation) {
+            _camera->translate(Eigen::Vector3f(
+                -deltaX * _traslationScale, deltaY * _traslationScale, 0.0f));
+        }
+        _previousX = x_;
+        _previousY = y_;
+        glutPostRedisplay();
+    }
+}
+
+void DemoCallbacks::resizeFunc(int width_, int height_)
+{
+    _camera->windowSize(width_, height_);
+    glViewport(0, 0, width_, height_);
 }

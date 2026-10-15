@@ -21,16 +21,16 @@
  */
 #include "Mesh.h"
 
-//OpenGL
+// OpenGL
 #ifndef NEUROLOTS_SKIP_GLEW_INCLUDE
-#include <GL/glew.h>
+    #include <GL/glew.h>
 #endif
 #ifdef Darwin
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
 #else
-#include <GL/gl.h>
-#include <GL/glu.h>
+    #include <GL/gl.h>
+    #include <GL/glu.h>
 #endif
 
 #include <iostream>
@@ -38,343 +38,336 @@
 
 namespace nlgeometry
 {
-  Mesh::Mesh( void )
-    : _vao( GL_INVALID_VALUE )
-    , _linesSize( 0 )
-    , _trianglesSize( 0 )
-    , _quadsSize( 0 )
-    , _verticesSize( 0 )
-    , _facetType( Facet::TRIANGLES )
-  {
-    _modelMatrix = Eigen::Matrix4f::Identity( );
-  }
-
-  Mesh::~Mesh( void )
-  {
-    clearCPUData( );
-    clearGPUData( );
-  }
-
-  void Mesh::init( void )
-  {
-  }
-
-  Vertices& Mesh::vertices( void )
-  {
-    return _vertices;
-  }
-
-  Facets& Mesh::lines( void )
-  {
-    return _lines;
-  }
-
-  Facets& Mesh::triangles( void )
-  {
-    return _triangles;
-  }
-
-  Facets& Mesh::quads( void )
-  {
-    return _quads;
-  }
-
-  unsigned int Mesh::verticesSize( void )
-  {
-    return _verticesSize;
-  }
-
-  AxisAlignedBoundingBox& Mesh::aaBoundingBox( void )
-  {
-    return _aaBoundingBox;
-  }
-
-  Eigen::Matrix4f& Mesh::modelMatrix( void )
-  {
-    return _modelMatrix;
-  }
-
-  float* Mesh::modelMatrixVectorized( void )
-  {
-   return _modelMatrix.transpose( ).data( );
-  }
-
-  void Mesh::clearCPUData( void )
-  {
-    for ( auto vertex: _vertices )
-      delete vertex;
-    _vertices.clear( );
-    _lines.clear( );
-    _triangles.clear( );
-    _quads.clear( );
-  }
-
-  void Mesh::clearGPUData( void )
-  {
-    if ( _vao != GL_INVALID_VALUE )
-      glDeleteVertexArrays( 1, &_vao );
-    if ( _vbos.size( ) > 0 )
-      glDeleteBuffers( (GLsizei)_vbos.size( ), _vbos.data( ));
-    _format.clear( );
-    _verticesSize = 0;
-  }
-
-  void Mesh::uploadGPU( AttribsFormat format_, Facet::TFacetType facetType_ )
-  {
-    _facetType = facetType_;
-
-    if ( !_equalFormat( _format, format_ ))
+    Mesh::Mesh(void) :
+        _vao(GL_INVALID_VALUE),
+        _linesSize(0),
+        _trianglesSize(0),
+        _quadsSize(0),
+        _verticesSize(0),
+        _facetType(Facet::TRIANGLES)
     {
-      clearGPUData( );
-      _format = format_;
-      glGenVertexArrays( 1, &_vao );
-      glBindVertexArray( _vao );
-
-      _vbos.resize( _format.size(  ) + 1 );
-      glGenBuffers( ( unsigned int )_format.size( ) + 1, _vbos.data( ));
-
-      for ( unsigned int i = 0; i < _format.size( ); i++ )
-      {
-        _createBuffer( format_[i], i );
-      }
-      _conformVertices( );
+        _modelMatrix = Eigen::Matrix4f::Identity();
     }
 
-    Attribs attribs;
-    attribs.resize( format_.size( ));
-    std::vector< unsigned int > indices;
-
-    for ( auto vertex: _vertices )
-      vertex->store( attribs, format_ );
-
-    for ( auto line: _lines )
-      line->addIndicesAs( facetType_, indices );
-    _linesSize = ( unsigned int )_lines.size( ) * 2;
-
-    for ( auto triangle: _triangles )
-      triangle->addIndicesAs( facetType_, indices );
-    _trianglesSize = (unsigned int)_triangles.size( ) * 3;
-
-    for ( auto quad: _quads )
-      quad->addIndicesAs( facetType_, indices );
-
-    switch( facetType_ )
+    Mesh::~Mesh(void)
     {
-    case Facet::TRIANGLES:
-      _quadsSize = (unsigned int)_quads.size( ) * 6;
-      break;
-    case Facet::PATCHES:
-      _quadsSize = (unsigned int)_quads.size( ) * 4;
-      break;
+        clearCPUData();
+        clearGPUData();
     }
 
-    for ( unsigned int i = 0; i < attribs.size( ); i++ )
+    void Mesh::init(void)
     {
-      _uploadBuffer( attribs[i], i );
-      attribs[i].clear( );
     }
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _vbos[attribs.size( )] );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( unsigned int) *
-                  indices.size( ), indices.data( ), GL_STATIC_DRAW );
-
-    glBindVertexArray( 0 );
-    indices.clear();
-  }
-
-  void Mesh::uploadBuffer( TAttribType format_, std::vector< float >& buffer_ )
-  {
-    unsigned int vaoPosition = 0;
-    for ( unsigned int i = 0; i < _format.size( ); i++ )
+    Vertices& Mesh::vertices(void)
     {
-      if ( _format[i] == format_ )
-      {
-        vaoPosition = i;
-        break;
-      }
-    }
-    glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition]);
-    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),
-                  buffer_.data( ), GL_STATIC_DRAW );
-  }
-
-  void Mesh::computeBoundingBox( void )
-  {
-    Eigen::Array3f minimum =
-      Eigen::Array3f::Constant( std::numeric_limits< float >::max( ));
-    Eigen::Array3f maximum =
-      Eigen::Array3f::Constant( std::numeric_limits< float >::min( ));
-
-    const Eigen::Matrix3f rotMatrix = _modelMatrix.block( 0, 0, 3, 3 );
-    const Eigen::Array3f trVec = _modelMatrix.block( 0, 3, 3, 1 );
-
-    _conformVertices( );
-    for ( auto vertex: _vertices )
-    {
-      Eigen::Array3f v0( rotMatrix * vertex->position( ));
-      minimum = minimum.min( v0 );
-      maximum = maximum.max( v0 );
-    }
-    _aaBoundingBox.minimum( ) = minimum + trVec;
-    _aaBoundingBox.maximum( ) = maximum + trVec;
-  }
-
-  void Mesh::computeNormals( void )
-  {
-    _conformVertices( );
-    for ( auto vertex: _vertices )
-    {
-      vertex->normal( ) = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
-    }
-    for ( auto facet: _triangles )
-    {
-      Eigen::Vector3f exe0 = ( facet->vertex1( )->position( ) -
-                              facet->vertex0( )->position( )).normalized( );
-      Eigen::Vector3f exe1 = ( facet->vertex2( )->position( ) -
-                              facet->vertex0( )->position( )).normalized( );
-      Eigen::Vector3f normal = ( exe0.cross( exe1 )).normalized( );
-
-      facet->vertex0( )->normal( ) += normal;
-      facet->vertex1( )->normal( ) += normal;
-      facet->vertex2( )->normal( ) += normal;
-    }
-    for ( auto facet: _quads )
-    {
-      Eigen::Vector3f exe0 = facet->vertex1( )->position( ) -
-        facet->vertex0( )->position( );
-      Eigen::Vector3f exe1 = facet->vertex2( )->position( ) -
-        facet->vertex0( )->position( );
-      Eigen::Vector3f normal = (exe0.cross( exe1 )).normalized( );
-
-      facet->vertex0( )->normal( ) += normal;
-      facet->vertex1( )->normal( ) += normal;
-      facet->vertex2( )->normal( ) += normal;
-      facet->vertex3( )->normal( ) += normal;
-    }
-    for ( auto vertex: _vertices )
-    {
-      vertex->normal( ).normalize( );
-    }
-  }
-
-  void Mesh::renderLines( void )
-  {
-    glBindVertexArray( _vao );
-    glDrawElements( GL_LINES, _linesSize, GL_UNSIGNED_INT,
-                    (void*) 0 );
-  }
-
-  void Mesh::renderTriangles( void )
-  {
-    switch( _facetType )
-    {
-    case Facet::TRIANGLES:
-      glBindVertexArray( _vao );
-      glDrawElements( GL_TRIANGLES, _trianglesSize, GL_UNSIGNED_INT,
-                      (void*) ( _linesSize * sizeof( unsigned int )));
-      break;
-    case Facet::PATCHES:
-      glBindVertexArray( _vao );
-      glPatchParameteri( GL_PATCH_VERTICES, 3 );
-      glDrawElements( GL_PATCHES, _trianglesSize, GL_UNSIGNED_INT,
-                      (void*) ( _linesSize * sizeof( unsigned int )));
-      break;
-    }
-  }
-
-  void Mesh::renderQuads( void )
-  {
-    switch( _facetType )
-    {
-    case Facet::TRIANGLES:
-      glBindVertexArray( _vao );
-      glDrawElements( GL_TRIANGLES, _quadsSize, GL_UNSIGNED_INT,
-                      (void*) (( _linesSize + _trianglesSize ) *
-                               sizeof( unsigned int )));
-      break;
-    case Facet::PATCHES:
-      glBindVertexArray( _vao );
-      glPatchParameteri( GL_PATCH_VERTICES, 4 );
-      glDrawElements( GL_PATCHES, _quadsSize, GL_UNSIGNED_INT,
-                      (void*) (( _linesSize + _trianglesSize ) *
-                               sizeof( unsigned int )));
-      break;
-    }
-  }
-
-  void Mesh::render( void )
-  {
-    renderLines( );
-    renderTriangles( );
-    renderQuads( );
-  }
-
-  void Mesh::_conformVertices( void )
-  {
-    if ( _verticesSize == 0 )
-    {
-      std::unordered_set< VertexPtr > vertices;
-      for ( auto line: _lines )
-      {
-        vertices.insert( line->vertex0( ));
-        vertices.insert( line->vertex1( ));
-      }
-      for( auto triangle: _triangles )
-      {
-        vertices.insert( triangle->vertex0( ));
-        vertices.insert( triangle->vertex1( ));
-        vertices.insert( triangle->vertex2( ));
-      }
-      for( auto quad: _quads )
-      {
-        vertices.insert( quad->vertex0( ));
-        vertices.insert( quad->vertex1( ));
-        vertices.insert( quad->vertex2( ));
-        vertices.insert( quad->vertex3( ));
-      }
-      _vertices.clear( );
-      _vertices.insert( _vertices.begin( ), vertices.begin( ), vertices.end( ));
-      _verticesSize = _vertices.size( );
-    }
-  }
-
-  void Mesh::_createBuffer( TAttribType type_, unsigned int vaoPosition_ )
-  {
-    unsigned int numComponents;
-    switch( type_ )
-    {
-    case UV:
-      numComponents = 2;
-      break;
-    default:
-      numComponents = 3;
+        return _vertices;
     }
 
-    glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
-    glVertexAttribPointer( vaoPosition_, numComponents,
-                           GL_FLOAT, GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( vaoPosition_ );
-  }
-
-  void Mesh::_uploadBuffer( std::vector< float >& buffer_,
-                            unsigned int vaoPosition_ )
-  {
-    glBindBuffer( GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
-    glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * buffer_.size( ),
-                  buffer_.data( ), GL_STATIC_DRAW );
-  }
-
-  bool Mesh::_equalFormat( AttribsFormat format0_, AttribsFormat format1_ )
-  {
-    if ( format0_.size( ) != format1_.size( ))
-      return false;
-
-    for ( unsigned int i = 0; i < format0_.size( ); i++ )
+    Facets& Mesh::lines(void)
     {
-      if ( format0_[i] != format1_[i] )
-        return false;
+        return _lines;
     }
-    return true;
-  }
+
+    Facets& Mesh::triangles(void)
+    {
+        return _triangles;
+    }
+
+    Facets& Mesh::quads(void)
+    {
+        return _quads;
+    }
+
+    unsigned int Mesh::verticesSize(void)
+    {
+        return _verticesSize;
+    }
+
+    AxisAlignedBoundingBox& Mesh::aaBoundingBox(void)
+    {
+        return _aaBoundingBox;
+    }
+
+    Eigen::Matrix4f& Mesh::modelMatrix(void)
+    {
+        return _modelMatrix;
+    }
+
+    float* Mesh::modelMatrixVectorized(void)
+    {
+        return _modelMatrix.transpose().data();
+    }
+
+    void Mesh::clearCPUData(void)
+    {
+        for (auto vertex : _vertices) {
+            delete vertex;
+        }
+        _vertices.clear();
+        _lines.clear();
+        _triangles.clear();
+        _quads.clear();
+    }
+
+    void Mesh::clearGPUData(void)
+    {
+        if (_vao != GL_INVALID_VALUE) {
+            glDeleteVertexArrays(1, &_vao);
+        }
+        if (_vbos.size() > 0) {
+            glDeleteBuffers((GLsizei)_vbos.size(), _vbos.data());
+        }
+        _format.clear();
+        _verticesSize = 0;
+    }
+
+    void Mesh::uploadGPU(AttribsFormat format_, Facet::TFacetType facetType_)
+    {
+        _facetType = facetType_;
+
+        if (!_equalFormat(_format, format_)) {
+            clearGPUData();
+            _format = format_;
+            glGenVertexArrays(1, &_vao);
+            glBindVertexArray(_vao);
+
+            _vbos.resize(_format.size() + 1);
+            glGenBuffers((unsigned int)_format.size() + 1, _vbos.data());
+
+            for (unsigned int i = 0; i < _format.size(); i++) {
+                _createBuffer(format_[i], i);
+            }
+            _conformVertices();
+        }
+
+        Attribs attribs;
+        attribs.resize(format_.size());
+        std::vector<unsigned int> indices;
+
+        for (auto vertex : _vertices) {
+            vertex->store(attribs, format_);
+        }
+
+        for (auto line : _lines) {
+            line->addIndicesAs(facetType_, indices);
+        }
+        _linesSize = (unsigned int)_lines.size() * 2;
+
+        for (auto triangle : _triangles) {
+            triangle->addIndicesAs(facetType_, indices);
+        }
+        _trianglesSize = (unsigned int)_triangles.size() * 3;
+
+        for (auto quad : _quads) {
+            quad->addIndicesAs(facetType_, indices);
+        }
+
+        switch (facetType_) {
+            case Facet::TRIANGLES:
+                _quadsSize = (unsigned int)_quads.size() * 6;
+                break;
+            case Facet::PATCHES:
+                _quadsSize = (unsigned int)_quads.size() * 4;
+                break;
+        }
+
+        for (unsigned int i = 0; i < attribs.size(); i++) {
+            _uploadBuffer(attribs[i], i);
+            attribs[i].clear();
+        }
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbos[attribs.size()]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof(unsigned int) * indices.size(), indices.data(),
+                     GL_STATIC_DRAW);
+
+        glBindVertexArray(0);
+        indices.clear();
+    }
+
+    void Mesh::uploadBuffer(TAttribType format_, std::vector<float>& buffer_)
+    {
+        unsigned int vaoPosition = 0;
+        for (unsigned int i = 0; i < _format.size(); i++) {
+            if (_format[i] == format_) {
+                vaoPosition = i;
+                break;
+            }
+        }
+        glBindBuffer(GL_ARRAY_BUFFER, _vbos[vaoPosition]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * buffer_.size(),
+                     buffer_.data(), GL_STATIC_DRAW);
+    }
+
+    void Mesh::computeBoundingBox(void)
+    {
+        Eigen::Array3f minimum =
+            Eigen::Array3f::Constant(std::numeric_limits<float>::max());
+        Eigen::Array3f maximum =
+            Eigen::Array3f::Constant(std::numeric_limits<float>::min());
+
+        const Eigen::Matrix3f rotMatrix = _modelMatrix.block(0, 0, 3, 3);
+        const Eigen::Array3f trVec = _modelMatrix.block(0, 3, 3, 1);
+
+        _conformVertices();
+        for (auto vertex : _vertices) {
+            Eigen::Array3f v0(rotMatrix * vertex->position());
+            minimum = minimum.min(v0);
+            maximum = maximum.max(v0);
+        }
+        _aaBoundingBox.minimum() = minimum + trVec;
+        _aaBoundingBox.maximum() = maximum + trVec;
+    }
+
+    void Mesh::computeNormals(void)
+    {
+        _conformVertices();
+        for (auto vertex : _vertices) {
+            vertex->normal() = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+        }
+        for (auto facet : _triangles) {
+            Eigen::Vector3f exe0 =
+                (facet->vertex1()->position() - facet->vertex0()->position())
+                    .normalized();
+            Eigen::Vector3f exe1 =
+                (facet->vertex2()->position() - facet->vertex0()->position())
+                    .normalized();
+            Eigen::Vector3f normal = (exe0.cross(exe1)).normalized();
+
+            facet->vertex0()->normal() += normal;
+            facet->vertex1()->normal() += normal;
+            facet->vertex2()->normal() += normal;
+        }
+        for (auto facet : _quads) {
+            Eigen::Vector3f exe0 =
+                facet->vertex1()->position() - facet->vertex0()->position();
+            Eigen::Vector3f exe1 =
+                facet->vertex2()->position() - facet->vertex0()->position();
+            Eigen::Vector3f normal = (exe0.cross(exe1)).normalized();
+
+            facet->vertex0()->normal() += normal;
+            facet->vertex1()->normal() += normal;
+            facet->vertex2()->normal() += normal;
+            facet->vertex3()->normal() += normal;
+        }
+        for (auto vertex : _vertices) {
+            vertex->normal().normalize();
+        }
+    }
+
+    void Mesh::renderLines(void)
+    {
+        glBindVertexArray(_vao);
+        glDrawElements(GL_LINES, _linesSize, GL_UNSIGNED_INT, (void*)0);
+    }
+
+    void Mesh::renderTriangles(void)
+    {
+        switch (_facetType) {
+            case Facet::TRIANGLES:
+                glBindVertexArray(_vao);
+                glDrawElements(GL_TRIANGLES, _trianglesSize, GL_UNSIGNED_INT,
+                               (void*)(_linesSize * sizeof(unsigned int)));
+                break;
+            case Facet::PATCHES:
+                glBindVertexArray(_vao);
+                glPatchParameteri(GL_PATCH_VERTICES, 3);
+                glDrawElements(GL_PATCHES, _trianglesSize, GL_UNSIGNED_INT,
+                               (void*)(_linesSize * sizeof(unsigned int)));
+                break;
+        }
+    }
+
+    void Mesh::renderQuads(void)
+    {
+        switch (_facetType) {
+            case Facet::TRIANGLES:
+                glBindVertexArray(_vao);
+                glDrawElements(GL_TRIANGLES, _quadsSize, GL_UNSIGNED_INT,
+                               (void*)((_linesSize + _trianglesSize)
+                                       * sizeof(unsigned int)));
+                break;
+            case Facet::PATCHES:
+                glBindVertexArray(_vao);
+                glPatchParameteri(GL_PATCH_VERTICES, 4);
+                glDrawElements(GL_PATCHES, _quadsSize, GL_UNSIGNED_INT,
+                               (void*)((_linesSize + _trianglesSize)
+                                       * sizeof(unsigned int)));
+                break;
+        }
+    }
+
+    void Mesh::render(void)
+    {
+        renderLines();
+        renderTriangles();
+        renderQuads();
+    }
+
+    void Mesh::_conformVertices(void)
+    {
+        if (_verticesSize == 0) {
+            std::unordered_set<VertexPtr> vertices;
+            for (auto line : _lines) {
+                vertices.insert(line->vertex0());
+                vertices.insert(line->vertex1());
+            }
+            for (auto triangle : _triangles) {
+                vertices.insert(triangle->vertex0());
+                vertices.insert(triangle->vertex1());
+                vertices.insert(triangle->vertex2());
+            }
+            for (auto quad : _quads) {
+                vertices.insert(quad->vertex0());
+                vertices.insert(quad->vertex1());
+                vertices.insert(quad->vertex2());
+                vertices.insert(quad->vertex3());
+            }
+            _vertices.clear();
+            _vertices.insert(_vertices.begin(), vertices.begin(),
+                             vertices.end());
+            _verticesSize = _vertices.size();
+        }
+    }
+
+    void Mesh::_createBuffer(TAttribType type_, unsigned int vaoPosition_)
+    {
+        unsigned int numComponents;
+        switch (type_) {
+            case UV:
+                numComponents = 2;
+                break;
+            default:
+                numComponents = 3;
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
+        glVertexAttribPointer(vaoPosition_, numComponents, GL_FLOAT, GL_FALSE,
+                              0, 0);
+        glEnableVertexAttribArray(vaoPosition_);
+    }
+
+    void Mesh::_uploadBuffer(std::vector<float>& buffer_,
+                             unsigned int vaoPosition_)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, _vbos[vaoPosition_]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * buffer_.size(),
+                     buffer_.data(), GL_STATIC_DRAW);
+    }
+
+    bool Mesh::_equalFormat(AttribsFormat format0_, AttribsFormat format1_)
+    {
+        if (format0_.size() != format1_.size()) {
+            return false;
+        }
+
+        for (unsigned int i = 0; i < format0_.size(); i++) {
+            if (format0_[i] != format1_[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 } // namespace nlgeometry

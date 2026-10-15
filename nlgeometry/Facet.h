@@ -29,118 +29,116 @@
 namespace nlgeometry
 {
 
-  class Facet;
-  typedef Facet* FacetPtr;
-  typedef std::vector< FacetPtr > Facets;
+    class Facet;
+    typedef Facet* FacetPtr;
+    typedef std::vector<FacetPtr> Facets;
 
-  /*! \class Facet */
-  class Facet
-  {
-
-  public:
-
-    typedef enum
+    /*! \class Facet */
+    class Facet
     {
-      TRIANGLES = 0,
-      PATCHES
-    } TFacetType;
+      public:
+        typedef enum
+        {
+            TRIANGLES = 0,
+            PATCHES
+        } TFacetType;
 
-    /**
-     * Constructor
-     * @param vertex0_ pointer to the first triangle/quad vertex
-     * @param vertex1_ pointer to the second triangle/quad vertex
-     * @param vertex2_ pointer to the third triangle/quad vertex
-     * @param vertex3_ pointer to the fourth quad vertex
-     */
-    NLGEOMETRY_EXPORT
-    Facet( VertexPtr vertex0_ = nullptr, VertexPtr vertex1_ = nullptr,
-           VertexPtr vertex2_ = nullptr, VertexPtr vertex3_ = nullptr );
+        /**
+         * Constructor
+         * @param vertex0_ pointer to the first triangle/quad vertex
+         * @param vertex1_ pointer to the second triangle/quad vertex
+         * @param vertex2_ pointer to the third triangle/quad vertex
+         * @param vertex3_ pointer to the fourth quad vertex
+         */
+        NLGEOMETRY_EXPORT
+        Facet(VertexPtr vertex0_ = nullptr, VertexPtr vertex1_ = nullptr,
+              VertexPtr vertex2_ = nullptr, VertexPtr vertex3_ = nullptr);
 
-    /**
-     * Default destructor
-     */
-    NLGEOMETRY_EXPORT
-    ~Facet( void )
-    {};
+        /**
+         * Default destructor
+         */
+        NLGEOMETRY_EXPORT
+        ~Facet(void) {};
 
-    /**
-     * Method to get the first triangle/quad vertex pointer
-     * @return first triangle/quad vertex pointer
-     */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex0( void );
+        /**
+         * Method to get the first triangle/quad vertex pointer
+         * @return first triangle/quad vertex pointer
+         */
+        NLGEOMETRY_EXPORT
+        VertexPtr& vertex0(void);
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex0( void ) const;
+        NLGEOMETRY_EXPORT
+        const VertexPtr& vertex0(void) const;
 
-    /**
-     * Method to get the second triangle/quad vertex pointer
-     * @return second triangle/quad vertex pointer
-     */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex1( void );
+        /**
+         * Method to get the second triangle/quad vertex pointer
+         * @return second triangle/quad vertex pointer
+         */
+        NLGEOMETRY_EXPORT
+        VertexPtr& vertex1(void);
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex1( void ) const;
+        NLGEOMETRY_EXPORT
+        const VertexPtr& vertex1(void) const;
 
-    /**
-     * Method to get the third triangle/quad vertex pointer
-     * @return first triangle/quad vertex pointer
-     */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex2( void );
+        /**
+         * Method to get the third triangle/quad vertex pointer
+         * @return first triangle/quad vertex pointer
+         */
+        NLGEOMETRY_EXPORT
+        VertexPtr& vertex2(void);
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex2( void ) const;
+        NLGEOMETRY_EXPORT
+        const VertexPtr& vertex2(void) const;
 
-    /**
-     * Method to get the fourth triangle/quad vertex pointer
-     * @return fourth quad vertex pointer
-     */
-    NLGEOMETRY_EXPORT
-    VertexPtr& vertex3( void );
+        /**
+         * Method to get the fourth triangle/quad vertex pointer
+         * @return fourth quad vertex pointer
+         */
+        NLGEOMETRY_EXPORT
+        VertexPtr& vertex3(void);
 
-    NLGEOMETRY_EXPORT
-    const VertexPtr& vertex3( void ) const;
+        NLGEOMETRY_EXPORT
+        const VertexPtr& vertex3(void) const;
 
-    /**
-     * Method that store the facet vertices attribs and assigns the vertices ids
-     * @param attribs_ reference to the vertex attribs to return
-     */
-    NLGEOMETRY_EXPORT
-    void store( Attribs& attribs_, const AttribsFormat format_ );
+        /**
+         * Method that store the facet vertices attribs and assigns the vertices
+         * ids
+         * @param attribs_ reference to the vertex attribs to return
+         */
+        NLGEOMETRY_EXPORT
+        void store(Attribs& attribs_, const AttribsFormat format_);
 
-    /**
-     * Method that returns the facet indices stored in a vector
-     * @param facetType_ format to the returns indices
-     * @return vector with the facet indices
-     */
-    NLGEOMETRY_EXPORT
-    std::vector< unsigned int > getIndicesAs( TFacetType facetType_ ) const;
+        /**
+         * Method that returns the facet indices stored in a vector
+         * @param facetType_ format to the returns indices
+         * @return vector with the facet indices
+         */
+        NLGEOMETRY_EXPORT
+        std::vector<unsigned int> getIndicesAs(TFacetType facetType_) const;
 
-    /**
-     * Method that add the facet indices to the referenced vector
-     * @param facetType_ format to the added indices
-     * @param indices_ indices vector where indices are added
-     */
-    NLGEOMETRY_EXPORT
-    void addIndicesAs( TFacetType facetType_,
-                       std::vector< unsigned int >& indices_ ) const;
-  private:
+        /**
+         * Method that add the facet indices to the referenced vector
+         * @param facetType_ format to the added indices
+         * @param indices_ indices vector where indices are added
+         */
+        NLGEOMETRY_EXPORT
+        void addIndicesAs(TFacetType facetType_,
+                          std::vector<unsigned int>& indices_) const;
 
-    //! First vertex triangle/quad facet
-    VertexPtr _vertex0;
+      private:
+        //! First vertex triangle/quad facet
+        VertexPtr _vertex0;
 
-    //! Second vertex triangle/quad facet
-    VertexPtr _vertex1;
+        //! Second vertex triangle/quad facet
+        VertexPtr _vertex1;
 
-    //! Third vertex triangle/quad facet
-    VertexPtr _vertex2;
+        //! Third vertex triangle/quad facet
+        VertexPtr _vertex2;
 
-    //! Fourth vertex quad facet
-    VertexPtr _vertex3;
+        //! Fourth vertex quad facet
+        VertexPtr _vertex3;
 
-  }; // class Facet
+    }; // class Facet
 
 } // namespace nlgeometry
 

@@ -27,25 +27,26 @@
 
 using namespace nlgenerator;
 
-BOOST_AUTO_TEST_CASE( joint_constructor )
+BOOST_AUTO_TEST_CASE(joint_constructor)
 {
-  JointNode joint( Eigen::Vector3f::Zero( ), 1.0f );
+    JointNode joint(Eigen::Vector3f::Zero(), 1.0f);
 
-  BOOST_CHECK_EQUAL( joint.position( ), Eigen::Vector3f::Zero( ));
-  BOOST_REQUIRE_CLOSE( joint.radius( ),  1.0f, 0.00001f );
-  BOOST_CHECK( !joint.connectedSoma( ));
-  BOOST_CHECK_EQUAL( joint.numberNeighbors( ), 0 );
+    BOOST_CHECK_EQUAL(joint.position(), Eigen::Vector3f::Zero());
+    BOOST_REQUIRE_CLOSE(joint.radius(), 1.0f, 0.00001f);
+    BOOST_CHECK(!joint.connectedSoma());
+    BOOST_CHECK_EQUAL(joint.numberNeighbors(), 0);
 }
-BOOST_AUTO_TEST_CASE( joint_compute_geometry)
+
+BOOST_AUTO_TEST_CASE(joint_compute_geometry)
 {
-  auto node0 = new nsol::Node( Eigen::Vector3f( -1.0f, 0.0f, 0.0f ), 0, 1.0f );
-  auto node1 = new nsol::Node( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ), 1, 1.0f );
-  JointNode joint( Eigen::Vector3f::Zero( ), 1.0f );
-  joint.addNeighbour( node0 );
-  joint.addNeighbour( node1 );
-  joint.computeGeometry( );
-  BOOST_CHECK( joint.sectionQuad( node0 ));
-  BOOST_CHECK( joint.sectionQuad( node1 ));
-  delete node0;
-  delete node1;
+    auto node0 = new nsol::Node(Eigen::Vector3f(-1.0f, 0.0f, 0.0f), 0, 1.0f);
+    auto node1 = new nsol::Node(Eigen::Vector3f(1.0f, 0.0f, 0.0f), 1, 1.0f);
+    JointNode joint(Eigen::Vector3f::Zero(), 1.0f);
+    joint.addNeighbour(node0);
+    joint.addNeighbour(node1);
+    joint.computeGeometry();
+    BOOST_CHECK(joint.sectionQuad(node0));
+    BOOST_CHECK(joint.sectionQuad(node1));
+    delete node0;
+    delete node1;
 }

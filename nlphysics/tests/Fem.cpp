@@ -27,35 +27,35 @@
 
 using namespace nlphysics;
 
-BOOST_AUTO_TEST_CASE( fem_constructor )
+BOOST_AUTO_TEST_CASE(fem_constructor)
 {
-  Nodes nodes;
-  auto node0 = new Node( Eigen::Vector3f( 0.0f, 1.0f, 0.0f ), 0 );
-  nodes.push_back( node0 );
-  node0->fixed( ) = true;
-  auto node1 = new Node( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ), 1 );
-  nodes.push_back( node1 );
-  node1->fixed( ) = true;
-  auto node2 = new Node( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ), 2 );
-  nodes.push_back( node2 );
-  node2->position( ) = Eigen::Vector3f( 2.0f, 0.0f, .0f );
-  node2->fixed( ) = true;
-  auto node3 = new Node( Eigen::Vector3f( 0.0f, 0.0f, 1.0f ), 3 );
-  nodes.push_back( node3 );
+    Nodes nodes;
+    auto node0 = new Node(Eigen::Vector3f(0.0f, 1.0f, 0.0f), 0);
+    nodes.push_back(node0);
+    node0->fixed() = true;
+    auto node1 = new Node(Eigen::Vector3f(0.0f, 0.0f, 0.0f), 1);
+    nodes.push_back(node1);
+    node1->fixed() = true;
+    auto node2 = new Node(Eigen::Vector3f(1.0f, 0.0f, 0.0f), 2);
+    nodes.push_back(node2);
+    node2->position() = Eigen::Vector3f(2.0f, 0.0f, .0f);
+    node2->fixed() = true;
+    auto node3 = new Node(Eigen::Vector3f(0.0f, 0.0f, 1.0f), 3);
+    nodes.push_back(node3);
 
-  Tetrahedra tetrahedra;
-  auto tetrahedron = new Tetrahedron( node0, node1, node2, node3 );
-  tetrahedra.push_back( tetrahedron );
-  Fem fem( nodes, tetrahedra );
-  fem.solve( );
+    Tetrahedra tetrahedra;
+    auto tetrahedron = new Tetrahedron(node0, node1, node2, node3);
+    tetrahedra.push_back(tetrahedron);
+    Fem fem(nodes, tetrahedra);
+    fem.solve();
 
-  BOOST_REQUIRE_CLOSE( node3->position( ).x( ),  0.0f, 0.00001f );
-  BOOST_REQUIRE_CLOSE( node3->position( ).y( ),  0.0f, 0.00001f );
-  BOOST_REQUIRE_CLOSE( node3->position( ).z( ),  0.571429f, 0.0001f );
+    BOOST_REQUIRE_CLOSE(node3->position().x(), 0.0f, 0.00001f);
+    BOOST_REQUIRE_CLOSE(node3->position().y(), 0.0f, 0.00001f);
+    BOOST_REQUIRE_CLOSE(node3->position().z(), 0.571429f, 0.0001f);
 
-  delete node0;
-  delete node1;
-  delete node2;
-  delete node3;
-  delete tetrahedron;
+    delete node0;
+    delete node1;
+    delete node2;
+    delete node3;
+    delete tetrahedron;
 }

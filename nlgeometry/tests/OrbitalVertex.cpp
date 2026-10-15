@@ -26,66 +26,66 @@
 
 using namespace nlgeometry;
 
-void checkEqualVertices( OrbitalVertexPtr vertex0_, OrbitalVertexPtr vertex1_ )
+void checkEqualVertices(OrbitalVertexPtr vertex0_, OrbitalVertexPtr vertex1_)
 {
-  BOOST_CHECK( vertex0_ != vertex1_ );
-  BOOST_CHECK_EQUAL( vertex0_->id( ), vertex1_->id( ));
-  BOOST_CHECK_EQUAL( vertex0_->position( ), vertex1_->position( ));
-  BOOST_CHECK_EQUAL( vertex0_->normal( ), vertex1_->normal( ));
-  BOOST_CHECK_EQUAL( vertex0_->color( ), vertex1_->color( ));
-  BOOST_CHECK_EQUAL( vertex0_->uv( ), vertex1_->uv( ));
+    BOOST_CHECK(vertex0_ != vertex1_);
+    BOOST_CHECK_EQUAL(vertex0_->id(), vertex1_->id());
+    BOOST_CHECK_EQUAL(vertex0_->position(), vertex1_->position());
+    BOOST_CHECK_EQUAL(vertex0_->normal(), vertex1_->normal());
+    BOOST_CHECK_EQUAL(vertex0_->color(), vertex1_->color());
+    BOOST_CHECK_EQUAL(vertex0_->uv(), vertex1_->uv());
 }
 
-BOOST_AUTO_TEST_CASE( orbitalVertex_constructor )
+BOOST_AUTO_TEST_CASE(orbitalVertex_constructor)
 {
-  Eigen::Vector3f vec3Zero( 0.0f, 0.0f, 0.0f );
-  Eigen::Vector2f vec2Zero( 0.0f, 0.0f );
+    Eigen::Vector3f vec3Zero(0.0f, 0.0f, 0.0f);
+    Eigen::Vector2f vec2Zero(0.0f, 0.0f);
 
-  OrbitalVertex vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
+    OrbitalVertex vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
 
-  BOOST_CHECK_EQUAL( vertex.id( ), 0 );
-  BOOST_CHECK_EQUAL( vertex.position( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.center( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.tangent( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.normal( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.color( ), vec3Zero );
-  BOOST_CHECK_EQUAL( vertex.uv( ), vec2Zero );
+    BOOST_CHECK_EQUAL(vertex.id(), 0);
+    BOOST_CHECK_EQUAL(vertex.position(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.center(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.tangent(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.normal(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.color(), vec3Zero);
+    BOOST_CHECK_EQUAL(vertex.uv(), vec2Zero);
 }
 
-BOOST_AUTO_TEST_CASE( orbitalVertex_clone )
+BOOST_AUTO_TEST_CASE(orbitalVertex_clone)
 {
-  OrbitalVertex vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-  OrbitalVertexPtr otherVertex =
-    dynamic_cast< OrbitalVertexPtr >( vertex.clone( ));
+    OrbitalVertex vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+    OrbitalVertexPtr otherVertex =
+        dynamic_cast<OrbitalVertexPtr>(vertex.clone());
 
-  checkEqualVertices( &vertex, otherVertex );
+    checkEqualVertices(&vertex, otherVertex);
 }
 
-BOOST_AUTO_TEST_CASE( orbitalVertex_meythods )
+BOOST_AUTO_TEST_CASE(orbitalVertex_meythods)
 {
-  OrbitalVertex vertex( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
+    OrbitalVertex vertex(Eigen::Vector3f(1.0f, 0.0f, 0.0f));
 
-  vertex.displace( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.center( ), Eigen::Vector3f( 1.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 2.0f, 0.0f, 0.0f ));
+    vertex.displace(Eigen::Vector3f(1.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.center(), Eigen::Vector3f(1.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(2.0f, 0.0f, 0.0f));
 
-  vertex.place( Eigen::Vector3f( 3.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.center( ), Eigen::Vector3f( 3.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 4.0f, 0.0f, 0.0f ));
+    vertex.place(Eigen::Vector3f(3.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.center(), Eigen::Vector3f(3.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(4.0f, 0.0f, 0.0f));
 
-  vertex.rotate( Eigen::Matrix3f::Identity( ));
-  BOOST_CHECK_EQUAL( vertex.center( ), Eigen::Vector3f( 3.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 4.0f, 0.0f, 0.0f ));
+    vertex.rotate(Eigen::Matrix3f::Identity());
+    BOOST_CHECK_EQUAL(vertex.center(), Eigen::Vector3f(3.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(4.0f, 0.0f, 0.0f));
 
-  vertex.rotate( Eigen::Quaternion< float >::Identity( ));
-  BOOST_CHECK_EQUAL( vertex.center( ), Eigen::Vector3f( 3.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 4.0f, 0.0f, 0.0f ));
+    vertex.rotate(Eigen::Quaternion<float>::Identity());
+    BOOST_CHECK_EQUAL(vertex.center(), Eigen::Vector3f(3.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(4.0f, 0.0f, 0.0f));
 
-  vertex.norm( 5.0f );
-  BOOST_CHECK_EQUAL(( vertex.position( ) - vertex.center( )).norm( ), 5.0f );
+    vertex.norm(5.0f);
+    BOOST_CHECK_EQUAL((vertex.position() - vertex.center()).norm(), 5.0f);
 
-  vertex.normalize( Eigen::Vector3f( 0.0f, 1.0f, 0.0f ));
-  BOOST_CHECK_EQUAL(( vertex.position( ) - vertex.center( )).norm( ), 1.0f );
-  BOOST_CHECK_EQUAL( vertex.center( ), Eigen::Vector3f( 3.0f, 0.0f, 0.0f ));
-  BOOST_CHECK_EQUAL( vertex.position( ), Eigen::Vector3f( 3.0f, 1.0f, 0.0f ));
+    vertex.normalize(Eigen::Vector3f(0.0f, 1.0f, 0.0f));
+    BOOST_CHECK_EQUAL((vertex.position() - vertex.center()).norm(), 1.0f);
+    BOOST_CHECK_EQUAL(vertex.center(), Eigen::Vector3f(3.0f, 0.0f, 0.0f));
+    BOOST_CHECK_EQUAL(vertex.position(), Eigen::Vector3f(3.0f, 1.0f, 0.0f));
 }

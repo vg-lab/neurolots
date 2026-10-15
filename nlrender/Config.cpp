@@ -26,21 +26,20 @@
 namespace nlrender
 {
 
-  bool Config::_initialized = false;
+    bool Config::_initialized = false;
 
-  void Config::init( void )
-  {
-    if ( !_initialized )
+    void Config::init(void)
     {
-      glewExperimental = GL_TRUE;
-      glewInit( );
-      _initialized = true;
+        if (!_initialized) {
+            glewExperimental = GL_TRUE;
+            glewInit();
+            _initialized = true;
+        }
     }
-  }
 
-  bool Config::isInitialized( void )
-  {
-    return _initialized;
-  }
+    bool Config::isInitialized(void)
+    {
+        return _initialized;
+    }
 
 } // namespace nlrender

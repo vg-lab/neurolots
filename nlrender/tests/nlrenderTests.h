@@ -26,5 +26,4 @@
 #define BOOST_TEST_MODULE nlrender
 #include <boost/test/unit_test.hpp>
 
-
 #endif // __NLRENDER_TESTS_H__

@@ -26,5 +26,4 @@
 #define BOOST_TEST_MODULE nlgeometry
 #include <boost/test/unit_test.hpp>
 
-
 #endif // __NLGEOMETRY_TESTS_H__

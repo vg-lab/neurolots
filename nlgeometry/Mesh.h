@@ -30,205 +30,204 @@
 namespace nlgeometry
 {
 
-  class Mesh;
-  typedef Mesh* MeshPtr;
-  typedef std::vector< MeshPtr > Meshes;
+    class Mesh;
+    typedef Mesh* MeshPtr;
+    typedef std::vector<MeshPtr> Meshes;
 
-  /* \class Mesh */
-  class Mesh
-  {
+    /* \class Mesh */
+    class Mesh
+    {
+      public:
+        /**
+         * Default constructor
+         */
+        NLGEOMETRY_EXPORT
+        Mesh(void);
 
-  public:
+        /**
+         * Default destructor
+         */
+        NLGEOMETRY_EXPORT
+        virtual ~Mesh(void);
 
-    /**
-    * Default constructor
-    */
-    NLGEOMETRY_EXPORT
-    Mesh( void );
+        /**
+         * Method to initialize the geometric data
+         */
+        NLGEOMETRY_EXPORT
+        virtual void init(void);
 
-    /**
-     * Default destructor
-     */
-    NLGEOMETRY_EXPORT
-    virtual ~Mesh( void );
+        /**
+         * Method that return the mesh vertices
+         * @return the mesh vertices
+         */
+        NLGEOMETRY_EXPORT
+        Vertices& vertices(void);
 
-    /**
-     * Method to initialize the geometric data
-     */
-    NLGEOMETRY_EXPORT
-    virtual void init( void );
+        /**
+         * Method that return the mesh lines
+         * @return the mesh lines
+         */
+        NLGEOMETRY_EXPORT
+        Facets& lines(void);
 
-    /**
-     * Method that return the mesh vertices
-     * @return the mesh vertices
-     */
-    NLGEOMETRY_EXPORT
-    Vertices& vertices( void );
+        /**
+         * Method that return the mesh triangles
+         * @return the mesh triangles
+         */
+        NLGEOMETRY_EXPORT
+        Facets& triangles(void);
 
-    /**
-     * Method that return the mesh lines
-     * @return the mesh lines
-     */
-    NLGEOMETRY_EXPORT
-    Facets& lines( void );
+        /**
+         * Method that return the returns the mesh quads
+         * @return the mesh quads
+         */
+        NLGEOMETRY_EXPORT
+        Facets& quads(void);
 
-    /**
-     * Method that return the mesh triangles
-     * @return the mesh triangles
-     */
-    NLGEOMETRY_EXPORT
-    Facets& triangles( void );
+        /**
+         * Method that return the uploaded vertices size
+         * @return the uploades vertices size
+         */
+        NLGEOMETRY_EXPORT
+        unsigned int verticesSize(void);
 
-    /**
-     * Method that return the returns the mesh quads
-     * @return the mesh quads
-     */
-    NLGEOMETRY_EXPORT
-    Facets& quads( void );
+        /**
+         * Method that returns the returns the mesh axis aligned bounding box
+         * @return the mesh axis aligned bounding box
+         */
+        NLGEOMETRY_EXPORT
+        AxisAlignedBoundingBox& aaBoundingBox(void);
 
-    /**
-     * Method that return the uploaded vertices size
-     * @return the uploades vertices size
-     */
-    NLGEOMETRY_EXPORT
-    unsigned int verticesSize( void );
+        /**
+         * Method that return the returns the mesh model matrix
+         * @return the mesh model matrix
+         */
+        NLGEOMETRY_EXPORT
+        Eigen::Matrix4f& modelMatrix(void);
 
-    /**
-     * Method that returns the returns the mesh axis aligned bounding box
-     * @return the mesh axis aligned bounding box
-     */
-    NLGEOMETRY_EXPORT
-    AxisAlignedBoundingBox& aaBoundingBox( void );
+        NLGEOMETRY_EXPORT
+        float* modelMatrixVectorized(void);
 
-    /**
-     * Method that return the returns the mesh model matrix
-     * @return the mesh model matrix
-     */
-    NLGEOMETRY_EXPORT
-    Eigen::Matrix4f& modelMatrix( void );
+        /**
+         * Method that free the cpu geometric information of the mesh
+         */
+        NLGEOMETRY_EXPORT
+        void clearCPUData(void);
 
-    NLGEOMETRY_EXPORT
-    float*  modelMatrixVectorized( void );
+        /**
+         * Method that free the gpu geometric information of the mesh
+         */
+        NLGEOMETRY_EXPORT
+        void clearGPUData(void);
 
-    /**
-     * Method that free the cpu geometric information of the mesh
-     */
-    NLGEOMETRY_EXPORT
-    void clearCPUData( void );
+        /**
+         * Method that upload the geometric information of the mesh to the gpu
+         * @param format_ format of the gpu buffers
+         */
+        NLGEOMETRY_EXPORT
+        virtual void uploadGPU(AttribsFormat format_,
+                               Facet::TFacetType facetType_ = Facet::TRIANGLES);
 
-    /**
-     * Method that free the gpu geometric information of the mesh
-     */
-    NLGEOMETRY_EXPORT
-    void clearGPUData( void );
+        /**
+         * Method that upload the geometric information of the mesh to the gpu
+         * @param format_ format of the gpu buffer
+         * @param buffer_ geometric data to upload
+         */
+        NLGEOMETRY_EXPORT
+        void uploadBuffer(TAttribType format_, std::vector<float>& buffer_);
 
-    /**
-     * Method that upload the geometric information of the mesh to the gpu
-     * @param format_ format of the gpu buffers
-     */
-    NLGEOMETRY_EXPORT
-    virtual void uploadGPU( AttribsFormat format_,
-                            Facet::TFacetType facetType_ = Facet::TRIANGLES );
+        /**
+         * Method that computes the axis aligned bounding box of the mesh
+         * geometry
+         */
+        NLGEOMETRY_EXPORT
+        void computeBoundingBox(void);
 
-    /**
-     * Method that upload the geometric information of the mesh to the gpu
-     * @param format_ format of the gpu buffer
-     * @param buffer_ geometric data to upload
-     */
-    NLGEOMETRY_EXPORT
-    void uploadBuffer( TAttribType format_, std::vector< float >& buffer_ );
+        /**
+         * Method that computes the normals of the mesh geometry
+         */
+        NLGEOMETRY_EXPORT
+        void computeNormals(void);
 
-    /**
-     * Method that computes the axis aligned bounding box of the mesh geometry
-     */
-    NLGEOMETRY_EXPORT
-    void computeBoundingBox( void );
+        /**
+         * Method that render the mesh lines
+         */
+        NLGEOMETRY_EXPORT
+        virtual void renderLines(void);
 
-    /**
-     * Method that computes the normals of the mesh geometry
-     */
-    NLGEOMETRY_EXPORT
-    void computeNormals( void );
+        /**
+         * Method that render the mesh triangles
+         */
+        NLGEOMETRY_EXPORT
+        virtual void renderTriangles(void);
 
-    /**
-     * Method that render the mesh lines
-     */
-    NLGEOMETRY_EXPORT
-    virtual void renderLines( void );
+        /**
+         * Method that render the mesh quads
+         */
+        NLGEOMETRY_EXPORT
+        virtual void renderQuads(void);
 
-    /**
-     * Method that render the mesh triangles
-     */
-    NLGEOMETRY_EXPORT
-    virtual void renderTriangles( void );
+        /**
+         * Method that render the all mesh
+         */
+        NLGEOMETRY_EXPORT
+        void render(void);
 
-    /**
-     * Method that render the mesh quads
-     */
-    NLGEOMETRY_EXPORT
-    virtual void renderQuads( void );
+      private:
+        void _conformVertices(void);
 
-    /**
-     * Method that render the all mesh
-     */
-    NLGEOMETRY_EXPORT
-    void render( void );
+        void _createBuffer(TAttribType type_, unsigned int vaoPosition_);
 
-  private:
+        void _uploadBuffer(std::vector<float>& buffer_,
+                           unsigned int vaoPosition_);
 
-    void _conformVertices( void );
+        bool _equalFormat(AttribsFormat format0_, AttribsFormat format1_);
 
-    void _createBuffer( TAttribType type_, unsigned int vaoPosition_ );
+      protected:
+        //! Mesh vertices
+        Vertices _vertices;
 
-    void _uploadBuffer( std::vector< float >& buffer_,
-                        unsigned int vaoPosition_ );
+        //! Mesh lines
+        Facets _lines;
 
-    bool _equalFormat( AttribsFormat format0_, AttribsFormat format1_ );
+        //! Mesh triangles
+        Facets _triangles;
 
-  protected:
-    //! Mesh vertices
-    Vertices _vertices;
+        //! Mesh quads
+        Facets _quads;
 
-    //! Mesh lines
-    Facets _lines;
+        //! Mesh axis aligned bounding box
+        AxisAlignedBoundingBox _aaBoundingBox;
 
-    //! Mesh triangles
-    Facets _triangles;
+        //! Index to the Vertex Array Object of the mesh in the gpu
+        unsigned int _vao;
 
-    //! Mesh quads
-    Facets _quads;
+        //! Vector of indices of the Vertex Buffer Objects of the mesh in the
+        //! gpu
+        std::vector<unsigned int> _vbos;
 
-    //! Mesh axis aligned bounding box
-    AxisAlignedBoundingBox _aaBoundingBox;
+        //! Size of the mesh lines
+        unsigned int _linesSize;
 
-    //! Index to the Vertex Array Object of the mesh in the gpu
-    unsigned int _vao;
+        //! Size of the mesh triangles
+        unsigned int _trianglesSize;
 
-    //! Vector of indices of the Vertex Buffer Objects of the mesh in the gpu
-    std::vector< unsigned int > _vbos;
+        //! Size of the mesh quads
+        unsigned int _quadsSize;
 
-    //! Size of the mesh lines
-    unsigned int _linesSize;
+        //! Size of uploaded vertices
+        unsigned int _verticesSize;
 
-    //! Size of the mesh triangles
-    unsigned int _trianglesSize;
+        //! Model matrix of the mesh
+        Eigen::Matrix4f _modelMatrix;
 
-    //! Size of the mesh quads
-    unsigned int _quadsSize;
+        //! Attribs format in gpu
+        AttribsFormat _format;
 
-    //! Size of uploaded vertices
-    unsigned int _verticesSize;
+        //! Facet type uploaded to the gpu
+        Facet::TFacetType _facetType;
 
-    //! Model matrix of the mesh
-    Eigen::Matrix4f _modelMatrix;
-
-    //! Attribs format in gpu
-    AttribsFormat _format;
-
-    //! Facet type uploaded to the gpu
-    Facet::TFacetType _facetType;
-
-  }; // class Mesh
+    }; // class Mesh
 
 } // namespace nlgeometry
 

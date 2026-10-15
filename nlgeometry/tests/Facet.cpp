@@ -26,51 +26,51 @@
 
 using namespace nlgeometry;
 
-BOOST_AUTO_TEST_CASE( facet_constructor )
+BOOST_AUTO_TEST_CASE(facet_constructor)
 {
-  {
-    Facet facet;
+    {
+        Facet facet;
 
-    BOOST_CHECK( facet.vertex0( ) == nullptr );
-    BOOST_CHECK( facet.vertex1( ) == nullptr );
-    BOOST_CHECK( facet.vertex2( ) == nullptr );
-    BOOST_CHECK( facet.vertex3( ) == nullptr );
+        BOOST_CHECK(facet.vertex0() == nullptr);
+        BOOST_CHECK(facet.vertex1() == nullptr);
+        BOOST_CHECK(facet.vertex2() == nullptr);
+        BOOST_CHECK(facet.vertex3() == nullptr);
 
-    std::vector< unsigned int > indices;
-    indices = facet.getIndicesAs( Facet::TRIANGLES );
-    BOOST_CHECK_EQUAL( indices.size( ), 0 );
-    indices = facet.getIndicesAs( Facet::PATCHES );
-    BOOST_CHECK_EQUAL( indices.size( ), 0 );
-  }
-  {
-    VertexPtr vertex = new Vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-    vertex->clone( );
-    Facet facet( vertex, vertex, vertex );
+        std::vector<unsigned int> indices;
+        indices = facet.getIndicesAs(Facet::TRIANGLES);
+        BOOST_CHECK_EQUAL(indices.size(), 0);
+        indices = facet.getIndicesAs(Facet::PATCHES);
+        BOOST_CHECK_EQUAL(indices.size(), 0);
+    }
+    {
+        VertexPtr vertex = new Vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+        vertex->clone();
+        Facet facet(vertex, vertex, vertex);
 
-    BOOST_CHECK( facet.vertex0( ) == vertex );
-    BOOST_CHECK( facet.vertex1( ) == vertex );
-    BOOST_CHECK( facet.vertex2( ) == vertex );
-    BOOST_CHECK( facet.vertex3( ) == nullptr );
+        BOOST_CHECK(facet.vertex0() == vertex);
+        BOOST_CHECK(facet.vertex1() == vertex);
+        BOOST_CHECK(facet.vertex2() == vertex);
+        BOOST_CHECK(facet.vertex3() == nullptr);
 
-    std::vector< unsigned int > indices;
-    indices = facet.getIndicesAs( Facet::TRIANGLES );
-    BOOST_CHECK_EQUAL( indices.size( ), 3 );
-    indices = facet.getIndicesAs( Facet::PATCHES );
-    BOOST_CHECK_EQUAL( indices.size( ), 3 );
-  }
-  {
-    VertexPtr vertex = new Vertex( Eigen::Vector3f( 0.0f, 0.0f, 0.0f ));
-    Facet facet( vertex, vertex, vertex, vertex );
+        std::vector<unsigned int> indices;
+        indices = facet.getIndicesAs(Facet::TRIANGLES);
+        BOOST_CHECK_EQUAL(indices.size(), 3);
+        indices = facet.getIndicesAs(Facet::PATCHES);
+        BOOST_CHECK_EQUAL(indices.size(), 3);
+    }
+    {
+        VertexPtr vertex = new Vertex(Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+        Facet facet(vertex, vertex, vertex, vertex);
 
-    BOOST_CHECK( facet.vertex0( ) == vertex );
-    BOOST_CHECK( facet.vertex1( ) == vertex );
-    BOOST_CHECK( facet.vertex2( ) == vertex );
-    BOOST_CHECK( facet.vertex3( ) == vertex );
+        BOOST_CHECK(facet.vertex0() == vertex);
+        BOOST_CHECK(facet.vertex1() == vertex);
+        BOOST_CHECK(facet.vertex2() == vertex);
+        BOOST_CHECK(facet.vertex3() == vertex);
 
-    std::vector< unsigned int > indices;
-    indices = facet.getIndicesAs( Facet::TRIANGLES );
-    BOOST_CHECK_EQUAL( indices.size( ), 6 );
-    indices = facet.getIndicesAs( Facet::PATCHES );
-    BOOST_CHECK_EQUAL( indices.size( ), 4 );
-  }
+        std::vector<unsigned int> indices;
+        indices = facet.getIndicesAs(Facet::TRIANGLES);
+        BOOST_CHECK_EQUAL(indices.size(), 6);
+        indices = facet.getIndicesAs(Facet::PATCHES);
+        BOOST_CHECK_EQUAL(indices.size(), 4);
+    }
 }

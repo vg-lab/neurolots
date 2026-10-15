@@ -33,140 +33,142 @@ namespace nlrender
     /* \class Renderer */
     class Renderer
     {
-    public:
+      public:
         typedef enum
         {
             HOMOGENEOUS = 0,
             LINEAR
-        }TTessCriteria;
+        } TTessCriteria;
 
         typedef enum
         {
             PERVERTEX = 0,
             GLOBAL
-        }TColorFunc;
+        } TColorFunc;
 
         typedef enum
         {
             DISABLE = 0,
             ENABLE
-        }TTransparencyStatus;
+        } TTransparencyStatus;
 
         /**
          * Default constructor
          */
         NLRENDER_EXPORT
-        Renderer( bool keepOpenGLServerStack_ = false );
+        Renderer(bool keepOpenGLServerStack_ = false);
 
         /**
          * Default destructors
          */
         NLRENDER_EXPORT
-        ~Renderer( void );
+        ~Renderer(void);
 
         /**
          * Method that return the scene camera view matrix
          * @return the scene camera view matrix
          */
         NLRENDER_EXPORT
-        Eigen::Matrix4f& viewMatrix( void );
+        Eigen::Matrix4f& viewMatrix(void);
 
         /**
-        * Method that return the scene camera view matrix
+         * Method that return the scene camera view matrix
          * @return the scene camera view matrix
          */
         NLRENDER_EXPORT
-        Eigen::Matrix4f& projectionMatrix( void );
+        Eigen::Matrix4f& projectionMatrix(void);
 
         /**
          * Method that return the level of detail
          * @return the level of detail
          */
         NLRENDER_EXPORT
-        float& lod( void );
+        float& lod(void);
 
         /**
          * Method that return the tangent modulus
          * @return the tanget modulus
          */
         NLRENDER_EXPORT
-        float& tangentModulus( void );
+        float& tangentModulus(void);
 
         /**
          * Method that return the maximum distance
          * @return the maximum distance
          */
         NLRENDER_EXPORT
-        float& maximumDistance( void );
+        float& maximumDistance(void);
 
         /**
          * Method that return the transparency factor
          * @return the transparency factor
          */
         NLRENDER_EXPORT
-        float& alpha( void );
+        float& alpha(void);
 
         /**
          * Method that return the tessellation criteria
          * @return the tessellation criteria
          */
         NLRENDER_EXPORT
-        TTessCriteria tessCriteria( void );
+        TTessCriteria tessCriteria(void);
 
         NLRENDER_EXPORT
-        void tessCriteria( TTessCriteria tessCriteria_ );
+        void tessCriteria(TTessCriteria tessCriteria_);
 
         /**
          * Method that return the type of color function
          * @return the color funciton type
          */
         NLRENDER_EXPORT
-        TColorFunc colorFunc( void );
+        TColorFunc colorFunc(void);
 
         NLRENDER_EXPORT
-        void colorFunc( TColorFunc colorFunc_ );
+        void colorFunc(TColorFunc colorFunc_);
 
         /**
          * Method that return the transparency status
          * @return the transparency status
          */
         NLRENDER_EXPORT
-        TTransparencyStatus transparencyStatus( void );
+        TTransparencyStatus transparencyStatus(void);
 
         /**
          * Method that renderize the given mesh
          * @param mesh_ mesh to renderize
          * @param modelMatrix model matrix transform.
          * @param color_ Rendering color of the mesh, default gray.
-         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderTriangles_ True to render mesh triangles and false
+         * otherwise.
          * @param renderQuads_ True to render mesh quads and false otherwise.
          * @param renderLines_ True to render mesh lines and false otherwise.
          *
          */
         NLRENDER_EXPORT
         void render(
-          nlgeometry::MeshPtr mesh_,
-          const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
-          const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-          bool renderTriangles_ = true, bool renderQuads_ = true,
-          bool renderLines = true ) const;
+            nlgeometry::MeshPtr mesh_,
+            const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity(),
+            const Eigen::Vector3f& color_ = Eigen::Vector3f(0.5f, 0.5f, 0.5f),
+            bool renderTriangles_ = true, bool renderQuads_ = true,
+            bool renderLines = true) const;
         /**
          * Method that renderize the given meshes
          * @param meshes_ meshes to renderize
          * @param modelMatrices Model matrices transform.
          * @param color_ Rendering color of the meshes, default gray.
-         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderTriangles_ True to render mesh triangles and false
+         * otherwise.
          * @param renderQuads_ True to render mesh quads and false otherwise.
          * @param renderLines_ True to render mesh lines and false otherwise.
          *
          */
         NLRENDER_EXPORT
-        void render(
-          nlgeometry::Meshes meshes_,
-          const std::vector< Eigen::Matrix4f >& modelMatrices_,
-          const Eigen::Vector3f& color_ = Eigen::Vector3f( 0.5f, 0.5f, 0.5f ),
-          bool renderLines_ = true, bool renderTriangles_ = true,
-          bool renderQuads_ = true) const;
+        void render(nlgeometry::Meshes meshes_,
+                    const std::vector<Eigen::Matrix4f>& modelMatrices_,
+                    const Eigen::Vector3f& color_ = Eigen::Vector3f(0.5f, 0.5f,
+                                                                    0.5f),
+                    bool renderLines_ = true, bool renderTriangles_ = true,
+                    bool renderQuads_ = true) const;
 
         /**
          * Method that renderize the given meshes
@@ -174,19 +176,19 @@ namespace nlrender
          * @param modelMatrices Model matrices transform.
          * @param baseColors Default mesh colors.
          * @param color_ Rendering color of the meshes, default gray.
-         * @param renderTriangles_ True to render mesh triangles and false otherwise.
+         * @param renderTriangles_ True to render mesh triangles and false
+         * otherwise.
          * @param renderQuads_ True to render mesh quads and false otherwise.
          * @param renderLines_ True to render mesh lines and false otherwise.
          *
          */
         NLRENDER_EXPORT
-        void render(
-          nlgeometry::Meshes meshes_,
-          const std::vector< Eigen::Matrix4f >& modelMatrices_,
-          const std::vector< Eigen::Vector3f >& baseColors,
-          const std::vector< Eigen::Vector3f >& colors_,
-          bool renderLines_ = true, bool renderTriangles_ = true,
-          bool renderQuads_ = true) const;
+        void render(nlgeometry::Meshes meshes_,
+                    const std::vector<Eigen::Matrix4f>& modelMatrices_,
+                    const std::vector<Eigen::Vector3f>& baseColors,
+                    const std::vector<Eigen::Vector3f>& colors_,
+                    bool renderLines_ = true, bool renderTriangles_ = true,
+                    bool renderQuads_ = true) const;
 
         /**
          * Method that extract the given mesh
@@ -195,9 +197,9 @@ namespace nlrender
          */
         NLRENDER_EXPORT
         nlgeometry::MeshPtr extract(
-          nlgeometry::MeshPtr mesh_,
-          const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity( ),
-          bool extractTriangles_ = true, bool extractQuads_ = true ) const;
+            nlgeometry::MeshPtr mesh_,
+            const Eigen::Matrix4f& modelMatrix_ = Eigen::Matrix4f::Identity(),
+            bool extractTriangles_ = true, bool extractQuads_ = true) const;
 
         /**
          * Method that extract the given meshes
@@ -206,32 +208,31 @@ namespace nlrender
          */
         NLRENDER_EXPORT
         nlgeometry::Meshes& extract(
-          nlgeometry::Meshes meshes_,
-          const std::vector< Eigen::Matrix4f >& modelMatrices_,
-          bool extractTriangles_ = true, bool extractQuads_ = true ) const;
+            nlgeometry::Meshes meshes_,
+            const std::vector<Eigen::Matrix4f>& modelMatrices_,
+            bool extractTriangles_ = true, bool extractQuads_ = true) const;
 
         NLRENDER_EXPORT
-        void initTransparencySystem( unsigned int width_, unsigned int height_ );
+        void initTransparencySystem(unsigned int width_, unsigned int height_);
 
         NLRENDER_EXPORT
-        void setUpOpaqueTransparencyScene( Eigen::Vector3f backgroundColor_,
-                                           unsigned int width_,
-                                           unsigned int height_ );
+        void setUpOpaqueTransparencyScene(Eigen::Vector3f backgroundColor_,
+                                          unsigned int width_,
+                                          unsigned int height_);
 
         NLRENDER_EXPORT
-        void setUpTransparentTransparencyScene( void );
+        void setUpTransparentTransparencyScene(void);
 
         NLRENDER_EXPORT
-        void composeTransparencyScene( unsigned int finalFbo_ );
+        void composeTransparencyScene(unsigned int finalFbo_);
 
-    protected:
+      protected:
+        nlgeometry::MeshPtr _vectorToMesh(std::vector<float> positions_,
+                                          std::vector<float> normals_) const;
+        void _uploadQuad(void);
 
-        nlgeometry::MeshPtr _vectorToMesh( std::vector< float > positions_,
-                                           std::vector< float > normals_  ) const;
-        void _uploadQuad( void );
-
-        void _composeVertexSubroutines( void );
-        void _composeFragmentSubroutines( void );
+        void _composeVertexSubroutines(void);
+        void _composeFragmentSubroutines(void);
 
         //! Variable to determine if keep the OpenGL server status
         bool _keepOpenGLServerStack;
@@ -271,7 +272,6 @@ namespace nlrender
         unsigned int _qFBLinearDistInd;
         unsigned int _qFBHomogeDistInd;
 
-
         unsigned int _ulColorSub;
         unsigned int _utColorSub;
         unsigned int _uqColorSub;
@@ -279,13 +279,13 @@ namespace nlrender
         unsigned int _utTransSub;
         unsigned int _uqTransSub;
 
-        std::vector< unsigned int > _tVertexSubroutines;
-        std::vector< unsigned int > _qVertexSubroutines;
-        std::vector< unsigned int > _tFBVertexSubroutines;
-        std::vector< unsigned int > _qFBVertexSubroutines;
-        std::vector< unsigned int > _lFragmentSubroutines;
-        std::vector< unsigned int > _tFragmentSubroutines;
-        std::vector< unsigned int > _qFragmentSubroutines;
+        std::vector<unsigned int> _tVertexSubroutines;
+        std::vector<unsigned int> _qVertexSubroutines;
+        std::vector<unsigned int> _tFBVertexSubroutines;
+        std::vector<unsigned int> _qFBVertexSubroutines;
+        std::vector<unsigned int> _lFragmentSubroutines;
+        std::vector<unsigned int> _tFragmentSubroutines;
+        std::vector<unsigned int> _qFragmentSubroutines;
 
         //! Program to compose the transparency scene
         reto::ShaderProgram* _programTransCompose;
@@ -321,7 +321,7 @@ namespace nlrender
         unsigned int _tfo;
 
         //! Vertex buffers object indices to mesh extraction
-        std::vector< unsigned int > _tbos;
+        std::vector<unsigned int> _tbos;
 
         //! Vertex array object index to quad
         unsigned int _quadVao;

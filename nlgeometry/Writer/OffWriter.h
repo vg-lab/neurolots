@@ -29,28 +29,26 @@
 namespace nlgeometry
 {
 
-  /* \class OffWriter */
-  class OffWriter
-  {
+    /* \class OffWriter */
+    class OffWriter
+    {
+      public:
+        /**
+         * Static method to write mesh to a off file
+         */
+        NLGEOMETRY_EXPORT
+        static void writeMesh(const MeshPtr mesh, const std::string& fileName_,
+                              const std::string& headerString_ = "");
 
-  public:
+        /**
+         * Static method to write a vector of facets and vertices to a off file
+         */
+        NLGEOMETRY_EXPORT
+        static void writeMesh(const Facets& facets_, const Vertices& vertices_,
+                              const std::string& fileName_,
+                              const std::string& headerString_ = "");
 
-    /**
-     * Static method to write mesh to a off file
-     */
-    NLGEOMETRY_EXPORT
-    static void writeMesh( const MeshPtr mesh, const std::string& fileName_,
-                           const std::string& headerString_ = "" );
-
-    /**
-     * Static method to write a vector of facets and vertices to a off file
-     */
-    NLGEOMETRY_EXPORT
-    static void writeMesh( const Facets& facets_, const Vertices& vertices_,
-                           const std::string& fileName_,
-                           const std::string& headerString_ = "" );
-
-  }; // class OffWriter
+    }; // class OffWriter
 
 } // namespace nlgeometry
 

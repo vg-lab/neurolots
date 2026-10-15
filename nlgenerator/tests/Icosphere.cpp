@@ -27,20 +27,20 @@
 
 using namespace nlgenerator;
 
-BOOST_AUTO_TEST_CASE( icosphere_constructor )
+BOOST_AUTO_TEST_CASE(icosphere_constructor)
 {
-  {
-    Icosphere icosphere;
-    auto facets = icosphere.surface( );
-    BOOST_CHECK_EQUAL( facets.size( ), 512 );
-    facets = icosphere.structure( );
-    BOOST_CHECK_EQUAL( facets.size( ), 16384 );
-  }
-  {
-    Icosphere icosphere( Eigen::Vector3f( 1.0f, 0.0f, 0.0f ), 2.0f, 2 );
-    auto facets = icosphere.surface( );
-    BOOST_CHECK_EQUAL( facets.size( ), 128 );
-    facets = icosphere.structure( );
-    BOOST_CHECK_EQUAL( facets.size( ), 2048 );
-  }
+    {
+        Icosphere icosphere;
+        auto facets = icosphere.surface();
+        BOOST_CHECK_EQUAL(facets.size(), 512);
+        facets = icosphere.structure();
+        BOOST_CHECK_EQUAL(facets.size(), 16384);
+    }
+    {
+        Icosphere icosphere(Eigen::Vector3f(1.0f, 0.0f, 0.0f), 2.0f, 2);
+        auto facets = icosphere.surface();
+        BOOST_CHECK_EQUAL(facets.size(), 128);
+        facets = icosphere.structure();
+        BOOST_CHECK_EQUAL(facets.size(), 2048);
+    }
 }

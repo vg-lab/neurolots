@@ -26,20 +26,20 @@
 
 using namespace nlgeometry;
 
-BOOST_AUTO_TEST_CASE( mesh_constructor )
+BOOST_AUTO_TEST_CASE(mesh_constructor)
 {
-  float minLimit = std::numeric_limits<float>::min( );
-  float maxLimit = std::numeric_limits<float>::max( );
-  Eigen::Vector3f minimum( maxLimit, maxLimit, maxLimit );
-  Eigen::Vector3f maximum( minLimit, minLimit, minLimit );
+    float minLimit = std::numeric_limits<float>::min();
+    float maxLimit = std::numeric_limits<float>::max();
+    Eigen::Vector3f minimum(maxLimit, maxLimit, maxLimit);
+    Eigen::Vector3f maximum(minLimit, minLimit, minLimit);
 
-  Mesh mesh;
+    Mesh mesh;
 
-  BOOST_CHECK_EQUAL( mesh.vertices( ).size( ), 0 );
-  BOOST_CHECK_EQUAL( mesh.triangles( ).size( ), 0 );
-  BOOST_CHECK_EQUAL( mesh.quads( ).size( ), 0 );
+    BOOST_CHECK_EQUAL(mesh.vertices().size(), 0);
+    BOOST_CHECK_EQUAL(mesh.triangles().size(), 0);
+    BOOST_CHECK_EQUAL(mesh.quads().size(), 0);
 
-  AxisAlignedBoundingBox aabb = mesh.aaBoundingBox( );
-  BOOST_CHECK_EQUAL( aabb.minimum( ), minimum );
-  BOOST_CHECK_EQUAL( aabb.maximum( ), maximum );
+    AxisAlignedBoundingBox aabb = mesh.aaBoundingBox();
+    BOOST_CHECK_EQUAL(aabb.minimum(), minimum);
+    BOOST_CHECK_EQUAL(aabb.maximum(), maximum);
 }

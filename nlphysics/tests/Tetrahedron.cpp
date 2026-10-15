@@ -26,48 +26,48 @@
 
 using namespace nlphysics;
 
-BOOST_AUTO_TEST_CASE( tetrahedron_constructor )
+BOOST_AUTO_TEST_CASE(tetrahedron_constructor)
 {
-  {
-    Eigen::Vector3f vec3Zero( 0.0f, 0.0f, 0.0f );
-    NodePtr node0 = new Node( vec3Zero, 0 );
-    NodePtr node1 = new Node( vec3Zero, 1 );
-    NodePtr node2 = new Node( vec3Zero, 2 );
-    NodePtr node3 = new Node( vec3Zero, 3 );
+    {
+        Eigen::Vector3f vec3Zero(0.0f, 0.0f, 0.0f);
+        NodePtr node0 = new Node(vec3Zero, 0);
+        NodePtr node1 = new Node(vec3Zero, 1);
+        NodePtr node2 = new Node(vec3Zero, 2);
+        NodePtr node3 = new Node(vec3Zero, 3);
 
-    Tetrahedron tetrahedron( node0, node1, node2, node3 );
+        Tetrahedron tetrahedron(node0, node1, node2, node3);
 
-    BOOST_CHECK( tetrahedron.node0( ) == node0 );
-    BOOST_CHECK( tetrahedron.node1( ) == node1 );
-    BOOST_CHECK( tetrahedron.node2( ) == node2 );
-    BOOST_CHECK( tetrahedron.node3( ) == node3 );
+        BOOST_CHECK(tetrahedron.node0() == node0);
+        BOOST_CHECK(tetrahedron.node1() == node1);
+        BOOST_CHECK(tetrahedron.node2() == node2);
+        BOOST_CHECK(tetrahedron.node3() == node3);
 
-    BOOST_CHECK_EQUAL( tetrahedron.volume( ), 0.0f );
+        BOOST_CHECK_EQUAL(tetrahedron.volume(), 0.0f);
 
-    BOOST_CHECK( !tetrahedron.face0( ));
-    BOOST_CHECK( !tetrahedron.face1( ));
-    BOOST_CHECK( !tetrahedron.face2( ));
-    BOOST_CHECK( !tetrahedron.face3( ));
-  }
-  {
-    Eigen::Vector3f vec3Zero( 0.0f, 0.0f, 0.0f );
-    NodePtr node0 = new Node( vec3Zero, 0, true );
-    NodePtr node1 = new Node( vec3Zero, 1, true );
-    NodePtr node2 = new Node( vec3Zero, 2, true );
-    NodePtr node3 = new Node( vec3Zero, 3, true );
+        BOOST_CHECK(!tetrahedron.face0());
+        BOOST_CHECK(!tetrahedron.face1());
+        BOOST_CHECK(!tetrahedron.face2());
+        BOOST_CHECK(!tetrahedron.face3());
+    }
+    {
+        Eigen::Vector3f vec3Zero(0.0f, 0.0f, 0.0f);
+        NodePtr node0 = new Node(vec3Zero, 0, true);
+        NodePtr node1 = new Node(vec3Zero, 1, true);
+        NodePtr node2 = new Node(vec3Zero, 2, true);
+        NodePtr node3 = new Node(vec3Zero, 3, true);
 
-    Tetrahedron tetrahedron( node0, node1, node2, node3 );
+        Tetrahedron tetrahedron(node0, node1, node2, node3);
 
-    BOOST_CHECK( tetrahedron.node0( ) == node0 );
-    BOOST_CHECK( tetrahedron.node1( ) == node1 );
-    BOOST_CHECK( tetrahedron.node2( ) == node2 );
-    BOOST_CHECK( tetrahedron.node3( ) == node3 );
+        BOOST_CHECK(tetrahedron.node0() == node0);
+        BOOST_CHECK(tetrahedron.node1() == node1);
+        BOOST_CHECK(tetrahedron.node2() == node2);
+        BOOST_CHECK(tetrahedron.node3() == node3);
 
-    BOOST_CHECK_EQUAL( tetrahedron.volume( ), 0.0f );
+        BOOST_CHECK_EQUAL(tetrahedron.volume(), 0.0f);
 
-    BOOST_CHECK( tetrahedron.face0( ));
-    BOOST_CHECK( tetrahedron.face1( ));
-    BOOST_CHECK( tetrahedron.face2( ));
-    BOOST_CHECK( tetrahedron.face3( ));
-  }
+        BOOST_CHECK(tetrahedron.face0());
+        BOOST_CHECK(tetrahedron.face1());
+        BOOST_CHECK(tetrahedron.face2());
+        BOOST_CHECK(tetrahedron.face3());
+    }
 }

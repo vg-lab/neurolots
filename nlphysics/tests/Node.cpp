@@ -26,36 +26,36 @@
 
 using namespace nlphysics;
 
-BOOST_AUTO_TEST_CASE( node_constructor )
+BOOST_AUTO_TEST_CASE(node_constructor)
 {
-  {
-    Eigen::Vector3f vec3Zero( 0.0f, 0.0f, 0.0f );
+    {
+        Eigen::Vector3f vec3Zero(0.0f, 0.0f, 0.0f);
 
-    Node node( vec3Zero, 0 );
+        Node node(vec3Zero, 0);
 
-    BOOST_CHECK_EQUAL( node.id( ), 0 );
-    BOOST_CHECK_EQUAL( node.initialPosition( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.displacement( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.position( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.center( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.tangent( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.force( ), vec3Zero );
-    BOOST_CHECK( !node.fixed( ));
-    BOOST_CHECK( !node.contour( ));
-  }
-  {
-    Eigen::Vector3f vec3Zero( 0.0f, 0.0f, 0.0f );
+        BOOST_CHECK_EQUAL(node.id(), 0);
+        BOOST_CHECK_EQUAL(node.initialPosition(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.displacement(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.position(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.center(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.tangent(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.force(), vec3Zero);
+        BOOST_CHECK(!node.fixed());
+        BOOST_CHECK(!node.contour());
+    }
+    {
+        Eigen::Vector3f vec3Zero(0.0f, 0.0f, 0.0f);
 
-    Node node( vec3Zero, 0, true );
+        Node node(vec3Zero, 0, true);
 
-    BOOST_CHECK_EQUAL( node.id( ), 0 );
-    BOOST_CHECK_EQUAL( node.initialPosition( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.displacement( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.position( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.center( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.tangent( ), vec3Zero );
-    BOOST_CHECK_EQUAL( node.force( ), vec3Zero );
-    BOOST_CHECK( !node.fixed( ));
-    BOOST_CHECK( node.contour( ));
-  }
+        BOOST_CHECK_EQUAL(node.id(), 0);
+        BOOST_CHECK_EQUAL(node.initialPosition(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.displacement(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.position(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.center(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.tangent(), vec3Zero);
+        BOOST_CHECK_EQUAL(node.force(), vec3Zero);
+        BOOST_CHECK(!node.fixed());
+        BOOST_CHECK(node.contour());
+    }
 }

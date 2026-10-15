@@ -29,78 +29,74 @@
 namespace nlgeometry
 {
 
-  /* \class SpatialHashTable */
-  class SpatialHashTable
-  {
+    /* \class SpatialHashTable */
+    class SpatialHashTable
+    {
+      public:
+        /**
+         * Default Constructor
+         * @param size_ number of Spatial Hash Table cells
+         * @param cellSize_ size of the cells
+         * @param tolerance_ vertices position comparison tolerance
+         * @param prime0_ X axis prime number of the hash function
+         * @param prime1_ Y axis prime number of the hash function
+         * @param prime2_ Z axis prime number of the hash function
+         */
+        NLGEOMETRY_EXPORT
+        SpatialHashTable(unsigned int size_ = 100000, float cellSize_ = 0.1f,
+                         float tolerance_ = 0.00001f,
+                         unsigned int primeX_ = 73856093,
+                         unsigned int primeY_ = 19349663,
+                         unsigned int primeZ_ = 83492791);
 
-  public:
+        /**
+         * Default destructor
+         */
+        NLGEOMETRY_EXPORT
+        ~SpatialHashTable(void);
 
-    /**
-     * Default Constructor
-     * @param size_ number of Spatial Hash Table cells
-     * @param cellSize_ size of the cells
-     * @param tolerance_ vertices position comparison tolerance
-     * @param prime0_ X axis prime number of the hash function
-     * @param prime1_ Y axis prime number of the hash function
-     * @param prime2_ Z axis prime number of the hash function
-     */
-    NLGEOMETRY_EXPORT
-    SpatialHashTable( unsigned int size_ = 100000,
-                      float cellSize_ = 0.1f,
-                      float tolerance_ = 0.00001f,
-                      unsigned int primeX_ = 73856093,
-                      unsigned int primeY_ = 19349663,
-                      unsigned int primeZ_ = 83492791 );
+        /**
+         * Method that return a pointer to a vertex in the table with the same
+         * position of the given vertex if the is not vertex with the same
+         * position the given vertex will be inserted in the table and returned
+         * @param vertex_ vertex pointer to be inserted in the table
+         * @return vertex pointer to the inserted vertex or equivalent
+         */
+        NLGEOMETRY_EXPORT
+        VertexPtr insert(const VertexPtr& vertex_);
 
-    /**
-     * Default destructor
-     */
-    NLGEOMETRY_EXPORT
-    ~SpatialHashTable( void );
+        /**
+         * Method that return a vector of the vertices contained in the table
+         * @return a list of vector of vertices contained in the table
+         */
+        NLGEOMETRY_EXPORT
+        void vertices(Vertices& vertices_) const;
 
-    /**
-     * Method that return a pointer to a vertex in the table with the same
-     * position of the given vertex if the is not vertex with the same position
-     * the given vertex will be inserted in the table and returned
-     * @param vertex_ vertex pointer to be inserted in the table
-     * @return vertex pointer to the inserted vertex or equivalent
-     */
-    NLGEOMETRY_EXPORT
-    VertexPtr insert( const VertexPtr& vertex_ );
+      private:
+        bool _equal(const VertexPtr v0, const VertexPtr v1) const;
 
-    /**
-     * Method that return a vector of the vertices contained in the table
-     * @return a list of vector of vertices contained in the table
-     */
-    NLGEOMETRY_EXPORT
-    void vertices( Vertices& vertices_ ) const;
+        //! Number of cells in the table
+        unsigned int _size;
 
-  private:
+        //! Size of the cells of the table
+        float _cellSize;
 
-    bool _equal( const VertexPtr v0, const VertexPtr v1 ) const;
+        //! Vertices position comparison tolerance
+        float _tolerance;
 
-    //! Number of cells in the table
-    unsigned int _size;
+        //! X axis prime number of the hash function
+        unsigned int _primeX;
 
-    //! Size of the cells of the table
-    float _cellSize;
+        //! Y axis prime number of the hash function
+        unsigned int _primeY;
 
-    //! Vertices position comparison tolerance
-    float _tolerance;
+        //! Z axis prime number of the hash function
+        unsigned int _primeZ;
 
-    //! X axis prime number of the hash function
-    unsigned int _primeX;
+        //! Table
+        std::vector<Vertices> _table;
 
-    //! Y axis prime number of the hash function
-    unsigned int _primeY;
-
-    //! Z axis prime number of the hash function
-    unsigned int _primeZ;
-
-    //! Table
-    std::vector< Vertices > _table;
-
-  }; // class SpatialHashTable
+    }; // class SpatialHashTable
 
 } // namespace nlgeometry
 
