@@ -13,3 +13,4 @@ examples/Shaders.h
 
 build/
 .cache/
+compile_commands.json
